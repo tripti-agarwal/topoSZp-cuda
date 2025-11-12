@@ -18,6 +18,10 @@
 extern "C" {
 #endif
 
+void szp_float_decompress_openmp_threadblock_randomaccess_topology_preserved(float **newData, size_t nbEle, float absErrBound, int blockSize, unsigned char *cmpBytes, int **FN);
+
+int *szp_decompress_sort_positions(unsigned char *cmpBytes, size_t critical_count, int blockSize);
+
 float *szp_float_decompress_openmp_threadblock(size_t nbEle, float absErrBound, int blockSize, unsigned char *cmpBytes);
 
 void szp_float_decompress_openmp_threadblock_arg(float *newData, size_t nbEle, float absErrBound, int blockSize, unsigned char *cmpBytes);

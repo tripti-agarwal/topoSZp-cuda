@@ -21,6 +21,1079 @@
 
 using namespace szp;
 
+CriticalPoint *szp_find_critical_points(float *data, size_t *outCount, int rows, int cols, float absErrBound) {
+    #ifdef _OPENMP
+        if (!data || rows <= 2 || cols <= 2) {
+            *outCount = 0;
+            return NULL;
+        }
+        
+        // Allocate space for maximum possible critical points
+        CriticalPoint *results = (CriticalPoint *)malloc(rows * cols * sizeof(CriticalPoint));
+        if (!results) {
+            *outCount = 0;
+            return NULL;
+        }
+        
+        size_t count = 0;
+        int nbThreads = 0;
+        size_t threadblocksize = 0;
+        int tid = 0;
+        double inver_bound = 1.0 / absErrBound;
+        
+    #pragma omp parallel
+        {
+    #pragma omp single
+            {
+                nbThreads = omp_get_num_threads();
+                threadblocksize = ((rows - 2) * (cols - 2)) / nbThreads;
+            }
+            
+            tid = omp_get_thread_num();
+            size_t start_idx = tid * threadblocksize;
+            size_t end_idx = (tid == nbThreads - 1) ? (rows - 2) * (cols - 2) : (tid + 1) * threadblocksize;
+            
+            size_t local_count = 0;
+            CriticalPoint *local_results = (CriticalPoint *)malloc(((rows - 2) * (cols - 2)) * sizeof(CriticalPoint));
+            
+            for (size_t idx = start_idx; idx < end_idx; idx++) {
+                int i = 1 + idx / (cols - 2);
+                int j = 1 + idx % (cols - 2);
+                
+                float center = data[i * cols + j];
+                float up = data[(i-1) * cols + j];
+                float down = data[(i+1) * cols + j];
+                float left = data[i * cols + (j-1)];
+                float right = data[i * cols + (j+1)];
+                
+                if (center > up && center > down && 
+                    center > left && center > right) {
+                    // Local maximum (type 1) - compute quantized bin using same formula as other functions
+                    int quantized_bin = (int)((center + absErrBound) * inver_bound);
+                    local_results[local_count++] = (CriticalPoint){i, j, 1, quantized_bin};
+                } else if (center < up && center < down && 
+                           center < left && center < right) {
+                    // Local minimum (type 2) - compute quantized bin using same formula as other functions
+                    int quantized_bin = (int)((center + absErrBound) * inver_bound);
+                    local_results[local_count++] = (CriticalPoint){i, j, 2, quantized_bin};
+                } else if ((center < up && center < down && 
+                           center > left && center > right) ||  
+                          (center > up && center > down && 
+                           center < left && center < right)) {
+                    //  saddle (type 3) - compute quantized bin using same formula as other functions
+                    int quantized_bin = (int)((center + absErrBound) * inver_bound);
+                    local_results[local_count++] = (CriticalPoint){i, j, 3, quantized_bin};
+                }
+            }
+            
+            // Use atomic operations for thread-safe updates
+            size_t my_offset;
+    #pragma omp atomic capture
+            {
+                my_offset = count;
+                count += local_count;
+            }
+            
+            memcpy(results + my_offset, local_results, local_count * sizeof(CriticalPoint));
+            free(local_results);
+        }
+        
+        *outCount = count;
+        
+        if (count == 0) {
+            free(results);
+            return NULL;
+        }
+        
+        // Resize to actual size
+        results = (CriticalPoint *)realloc(results, count * sizeof(CriticalPoint));
+        return results;
+    #else
+        printf("Error! OpenMP not supported!\n");
+        *outCount = 0;
+        return NULL;
+    #endif
+}
+
+/**
+ * Sort critical points by their original data values within each quantized bin independently.
+ * Each bin gets its own sorting sequence starting from 0.
+ * Uses 32-bit float comparison for sorting by original data values.
+ * Points with the same quantized_bin AND same original data value get the same sort_position.
+ * Highly optimized with OpenMP threading, hash tables, and efficient algorithms while preserving deterministic output.
+ * For example: CP1 in bin 1 with value 0.01 gets sort position 0, CP2 in bin 1 with value 0.02 gets sort position 1,
+ * CP3 in bin 2 with value 0.005 gets sort position 0 (since it's the first in bin 2).
+ * If CP4 in bin 1 also has value 0.01, it gets sort position 0 (same as CP1).
+ * 
+ * @param critical_points Array of critical points to sort
+ * @param critical_count Number of critical points
+ * @param data Original data array (32-bit float values)
+ * @param cols Number of columns in the data grid
+ */
+void szp_sort_critical_points_by_original_data(CriticalPoint *critical_points, size_t critical_count, 
+                                             float *data, int cols) {
+#ifdef _OPENMP
+    if (!critical_points || critical_count == 0 || !data) {
+        return;
+    }
+    
+    // Optimization 1: Use hash table for faster unique bin discovery
+    // Find min/max bin values for efficient hash table sizing
+    int min_bin = critical_points[0].quantized_bin;
+    int max_bin = critical_points[0].quantized_bin;
+    
+    #pragma omp parallel for reduction(min:min_bin) reduction(max:max_bin)
+    for (size_t i = 1; i < critical_count; i++) {
+        int bin = critical_points[i].quantized_bin;
+        if (bin < min_bin) min_bin = bin;
+        if (bin > max_bin) max_bin = bin;
+    }
+    
+    // Create hash table for bin tracking
+    int bin_range = max_bin - min_bin + 1;
+    bool *bin_exists = (bool *)calloc(bin_range, sizeof(bool));
+    int *unique_bins = (int *)malloc(critical_count * sizeof(int));
+    int num_unique_bins = 0;
+    
+    // Mark existing bins and collect unique bins
+    for (size_t i = 0; i < critical_count; i++) {
+        int bin = critical_points[i].quantized_bin;
+        int hash_idx = bin - min_bin;
+        if (!bin_exists[hash_idx]) {
+            bin_exists[hash_idx] = true;
+            unique_bins[num_unique_bins++] = bin;
+        }
+    }
+    
+    // Optimization 2: Pre-allocate arrays for each thread to avoid malloc overhead
+    int num_threads = omp_get_max_threads();
+    size_t **thread_bin_indices = (size_t **)malloc(num_threads * sizeof(size_t *));
+    for (int t = 0; t < num_threads; t++) {
+        thread_bin_indices[t] = (size_t *)malloc(critical_count * sizeof(size_t));
+    }
+    
+    // Optimization 3: Parallelize processing of each bin with better load balancing
+    #pragma omp parallel for schedule(dynamic, 1)
+    for (int bin_idx = 0; bin_idx < num_unique_bins; bin_idx++) {
+        int current_bin = unique_bins[bin_idx];
+        int tid = omp_get_thread_num();
+        size_t *bin_indices = thread_bin_indices[tid];
+        
+        // Find all points in this bin (vectorized-friendly loop)
+        int bin_count = 0;
+        for (size_t i = 0; i < critical_count; i++) {
+            if (critical_points[i].quantized_bin == current_bin) {
+                bin_indices[bin_count++] = i;
+            }
+        }
+        
+        if (bin_count == 0) continue;
+        
+        // Optimization 4: Use quicksort for better performance on larger bins
+        if (bin_count > 32) {
+            // Custom quicksort implementation for stability
+            typedef struct {
+                size_t idx;
+                float value;
+            } SortItem;
+            
+            SortItem *sort_items = (SortItem *)malloc(bin_count * sizeof(SortItem));
+            for (int i = 0; i < bin_count; i++) {
+                sort_items[i].idx = bin_indices[i];
+                sort_items[i].value = data[critical_points[bin_indices[i]].x * cols + critical_points[bin_indices[i]].y];
+            }
+            
+            // Simple quicksort implementation
+            #define SWAP(a, b) do { SortItem temp = (a); (a) = (b); (b) = temp; } while(0)
+            
+            // Quicksort implementation
+            typedef struct { int left, right; } StackItem;
+            StackItem *stack = (StackItem *)malloc(bin_count * sizeof(StackItem));
+            int stack_size = 0;
+            stack[stack_size++] = (StackItem){0, bin_count - 1};
+            
+            while (stack_size > 0) {
+                StackItem item = stack[--stack_size];
+                int left = item.left, right = item.right;
+                
+                if (left < right) {
+                    // Partition
+                    float pivot = sort_items[right].value;
+                    int i = left - 1;
+                    
+                    for (int j = left; j < right; j++) {
+                        if (sort_items[j].value <= pivot) {
+                            i++;
+                            SWAP(sort_items[i], sort_items[j]);
+                        }
+                    }
+                    SWAP(sort_items[i + 1], sort_items[right]);
+                    int pivot_idx = i + 1;
+                    
+                    // Push subarrays to stack
+                    if (pivot_idx - 1 > left) {
+                        stack[stack_size++] = (StackItem){left, pivot_idx - 1};
+                    }
+                    if (pivot_idx + 1 < right) {
+                        stack[stack_size++] = (StackItem){pivot_idx + 1, right};
+                    }
+                }
+            }
+            
+            // Copy back sorted indices
+            for (int i = 0; i < bin_count; i++) {
+                bin_indices[i] = sort_items[i].idx;
+            }
+            
+            free(sort_items);
+            free(stack);
+        } else {
+            // Use insertion sort for smaller bins (more stable)
+            for (int i = 1; i < bin_count; i++) {
+                size_t key_idx = bin_indices[i];
+                float key_data = data[critical_points[key_idx].x * cols + critical_points[key_idx].y];
+                
+                int j = i;
+                while (j > 0) {
+                    size_t prev_idx = bin_indices[j - 1];
+                    float prev_data = data[critical_points[prev_idx].x * cols + critical_points[prev_idx].y];
+                    
+                    if (prev_data > key_data) {
+                        bin_indices[j] = bin_indices[j - 1];
+                        j--;
+                    } else {
+                        break;
+                    }
+                }
+                bin_indices[j] = key_idx;
+            }
+        }
+        
+        // Optimization 5: Efficient sort position assignment
+        int current_sort_position = 0;
+        float prev_data_value = data[critical_points[bin_indices[0]].x * cols + critical_points[bin_indices[0]].y];
+        critical_points[bin_indices[0]].sort_position = current_sort_position;
+        
+        for (int i = 1; i < bin_count; i++) {
+            size_t idx = bin_indices[i];
+            float current_data_value = data[critical_points[idx].x * cols + critical_points[idx].y];
+            
+            if (current_data_value != prev_data_value) {
+                current_sort_position++;
+            }
+            critical_points[idx].sort_position = current_sort_position;
+            prev_data_value = current_data_value;
+        }
+    }
+    
+    // Cleanup
+    for (int t = 0; t < num_threads; t++) {
+        free(thread_bin_indices[t]);
+    }
+    free(thread_bin_indices);
+    free(bin_exists);
+    free(unique_bins);
+    
+#else
+    // Fallback to optimized sequential version if OpenMP not available
+    if (!critical_points || critical_count == 0 || !data) {
+        return;
+    }
+    
+    // Use hash table for faster unique bin discovery
+    int min_bin = critical_points[0].quantized_bin;
+    int max_bin = critical_points[0].quantized_bin;
+    
+    for (size_t i = 1; i < critical_count; i++) {
+        int bin = critical_points[i].quantized_bin;
+        if (bin < min_bin) min_bin = bin;
+        if (bin > max_bin) max_bin = bin;
+    }
+    
+    int bin_range = max_bin - min_bin + 1;
+    bool *bin_exists = (bool *)calloc(bin_range, sizeof(bool));
+    int *unique_bins = (int *)malloc(critical_count * sizeof(int));
+    int num_unique_bins = 0;
+    
+    for (size_t i = 0; i < critical_count; i++) {
+        int bin = critical_points[i].quantized_bin;
+        int hash_idx = bin - min_bin;
+        if (!bin_exists[hash_idx]) {
+            bin_exists[hash_idx] = true;
+            unique_bins[num_unique_bins++] = bin;
+        }
+    }
+    
+    size_t *bin_indices = (size_t *)malloc(critical_count * sizeof(size_t));
+    
+    for (int bin_idx = 0; bin_idx < num_unique_bins; bin_idx++) {
+        int current_bin = unique_bins[bin_idx];
+        
+        int bin_count = 0;
+        for (size_t i = 0; i < critical_count; i++) {
+            if (critical_points[i].quantized_bin == current_bin) {
+                bin_indices[bin_count++] = i;
+            }
+        }
+        
+        if (bin_count == 0) continue;
+        
+        // Use quicksort for larger bins, insertion sort for smaller ones
+        if (bin_count > 32) {
+            typedef struct {
+                size_t idx;
+                float value;
+            } SortItem;
+            
+            SortItem *sort_items = (SortItem *)malloc(bin_count * sizeof(SortItem));
+            for (int i = 0; i < bin_count; i++) {
+                sort_items[i].idx = bin_indices[i];
+                sort_items[i].value = data[critical_points[bin_indices[i]].x * cols + critical_points[bin_indices[i]].y];
+            }
+            
+            #define SWAP(a, b) do { SortItem temp = (a); (a) = (b); (b) = temp; } while(0)
+            
+            typedef struct { int left, right; } StackItem;
+            StackItem *stack = (StackItem *)malloc(bin_count * sizeof(StackItem));
+            int stack_size = 0;
+            stack[stack_size++] = (StackItem){0, bin_count - 1};
+            
+            while (stack_size > 0) {
+                StackItem item = stack[--stack_size];
+                int left = item.left, right = item.right;
+                
+                if (left < right) {
+                    float pivot = sort_items[right].value;
+                    int i = left - 1;
+                    
+                    for (int j = left; j < right; j++) {
+                        if (sort_items[j].value <= pivot) {
+                            i++;
+                            SWAP(sort_items[i], sort_items[j]);
+                        }
+                    }
+                    SWAP(sort_items[i + 1], sort_items[right]);
+                    int pivot_idx = i + 1;
+                    
+                    if (pivot_idx - 1 > left) {
+                        stack[stack_size++] = (StackItem){left, pivot_idx - 1};
+                    }
+                    if (pivot_idx + 1 < right) {
+                        stack[stack_size++] = (StackItem){pivot_idx + 1, right};
+                    }
+                }
+            }
+            
+            for (int i = 0; i < bin_count; i++) {
+                bin_indices[i] = sort_items[i].idx;
+            }
+            
+            free(sort_items);
+            free(stack);
+        } else {
+            for (int i = 1; i < bin_count; i++) {
+                size_t key_idx = bin_indices[i];
+                float key_data = data[critical_points[key_idx].x * cols + critical_points[key_idx].y];
+                
+                int j = i;
+                while (j > 0) {
+                    size_t prev_idx = bin_indices[j - 1];
+                    float prev_data = data[critical_points[prev_idx].x * cols + critical_points[prev_idx].y];
+                    
+                    if (prev_data > key_data) {
+                        bin_indices[j] = bin_indices[j - 1];
+                        j--;
+                    } else {
+                        break;
+                    }
+                }
+                bin_indices[j] = key_idx;
+            }
+        }
+        
+        int current_sort_position = 0;
+        float prev_data_value = data[critical_points[bin_indices[0]].x * cols + critical_points[bin_indices[0]].y];
+        critical_points[bin_indices[0]].sort_position = current_sort_position;
+        
+        for (int i = 1; i < bin_count; i++) {
+            size_t idx = bin_indices[i];
+            float current_data_value = data[critical_points[idx].x * cols + critical_points[idx].y];
+            
+            if (current_data_value != prev_data_value) {
+                current_sort_position++;
+            }
+            critical_points[idx].sort_position = current_sort_position;
+            prev_data_value = current_data_value;
+        }
+    }
+    
+    free(bin_indices);
+    free(bin_exists);
+    free(unique_bins);
+#endif
+}
+
+/**
+ * Compress sort_position values from critical points using integer compression with blocking and prediction.
+ * Optimized for integer data with OpenMP threading, blocking, and prediction-based compression.
+ * 
+ * @param critical_points Array of critical points with sort_position values
+ * @param critical_count Number of critical points
+ * @param outSize Output size in bytes
+ * @param blockSize Block size for compression
+ * @return Compressed data as unsigned char array
+ */
+unsigned char *
+szp_compress_sort_positions(CriticalPoint *critical_points, size_t critical_count, size_t *outSize, int blockSize) {
+#ifdef _OPENMP
+    if (!critical_points || critical_count == 0) {
+        *outSize = 0;
+        return NULL;
+    }
+    
+    // Count maxima and minima only (types 1 and 2)
+    size_t extrema_count = 0;
+    for (size_t i = 0; i < critical_count; i++) {
+        if (critical_points[i].type == 1 || critical_points[i].type == 2) {
+            extrema_count++;
+        }
+    }
+    
+    if (extrema_count == 0) {
+        *outSize = 0;
+        return NULL;
+    }
+    
+    // Extract sort_position values for extrema only
+    int *sort_positions = (int *)malloc(extrema_count * sizeof(int));
+    if (!sort_positions) {
+        *outSize = 0;
+        return NULL;
+    }
+    
+    // Copy sort_position values for extrema only
+    size_t extrema_idx = 0;
+    for (size_t i = 0; i < critical_count; i++) {
+        if (critical_points[i].type == 1 || critical_points[i].type == 2) {
+            sort_positions[extrema_idx] = critical_points[i].sort_position;
+            extrema_idx++;
+        }
+    }
+    
+    // Allocate output buffer
+    size_t maxPreservedBufferSize = sizeof(int) * extrema_count + sizeof(int);
+    unsigned char *output = (unsigned char *)malloc(maxPreservedBufferSize);
+    if (!output) {
+        free(sort_positions);
+        *outSize = 0;
+        return NULL;
+    }
+    
+    // Write extrema_count as header
+    memcpy(output, &extrema_count, sizeof(size_t));
+    unsigned char *outputBytes = output + sizeof(size_t);
+    
+    size_t maxPreservedBufferSize_perthread = 0;
+    unsigned char *real_outputBytes; 
+    size_t *outSize_perthread_arr;
+    size_t *offsets_perthread_arr;
+    
+    (*outSize) = sizeof(size_t); // Start with header size
+    
+    unsigned int nbThreads = 0;
+    unsigned int threadblocksize = 0;
+    unsigned int block_size = blockSize;
+
+#pragma omp parallel
+    {
+#pragma omp single
+        {
+            nbThreads = omp_get_num_threads();
+            real_outputBytes = outputBytes + nbThreads * sizeof(size_t);
+            (*outSize) += nbThreads * sizeof(size_t); 
+            outSize_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
+            offsets_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
+
+            // Conservative buffer size estimate: account for worst-case compression
+            // Each block needs: initial int (4 bytes) + bit_count (1 byte) + 
+            // sign array (ceil((block_size-1)/8)) + saved bits (ceil((block_size-1)*bit_count/8))
+            // Use a safety factor of 2x to account for variable compression ratios
+            size_t elements_per_thread = (extrema_count + nbThreads - 1) / nbThreads;
+            size_t blocks_per_thread = (elements_per_thread + block_size - 1) / block_size;
+            // Worst case: each block needs ~4 + 1 + (block_size-1)/8 + (block_size-1)*32/8 bytes
+            size_t worst_case_per_block = sizeof(int) + 1 + ((block_size - 1) + 7) / 8 + ((block_size - 1) * 32 + 7) / 8;
+            maxPreservedBufferSize_perthread = blocks_per_thread * worst_case_per_block + 1024; // Add safety margin
+            threadblocksize = extrema_count / nbThreads;
+        }
+        size_t i = 0;
+        size_t j = 0;
+        unsigned char *outputBytes_perthread = (unsigned char *)malloc(maxPreservedBufferSize_perthread);
+        size_t outSize_perthread = 0;
+        
+        int tid = omp_get_thread_num();
+        size_t lo = tid * threadblocksize;
+        size_t hi = (tid + 1) * threadblocksize;
+        if (tid == nbThreads - 1) {
+            hi = extrema_count; // Ensure the last thread processes all remaining elements
+        }
+
+        int prior = 0;
+        int current = 0;
+        int diff = 0;
+        unsigned int max = 0;
+        unsigned int bit_count = 0;
+        unsigned char *block_pointer = outputBytes_perthread;
+        
+        unsigned char *temp_sign_arr = (unsigned char *)malloc((block_size - 1) * sizeof(unsigned char));
+        unsigned int *temp_predict_arr = (unsigned int *)malloc((block_size - 1) * sizeof(unsigned int));
+        unsigned int signbytelength = 0; 
+        unsigned int savedbitsbytelength = 0;
+        
+        for (i = lo; i < hi; i = i + block_size)
+        {
+            size_t current_block_size = (i + block_size > hi) ? (hi - i) : block_size;
+            if (current_block_size == 0) continue;
+
+            max = 0;
+            prior = sort_positions[i];
+            memcpy(block_pointer, &prior, sizeof(int));
+            block_pointer += sizeof(int);
+            outSize_perthread += sizeof(int);
+
+            if (current_block_size > 1)
+            {
+                for (j = 0; j < current_block_size - 1; j++)
+                {
+                    current = sort_positions[i + j + 1];
+                    diff = current - prior;
+                    prior = current;
+                    if (diff == 0)
+                    {
+                        temp_sign_arr[j] = 0;
+                        temp_predict_arr[j] = 0;
+                    }
+                    else
+                    {
+                        if (diff < 0)
+                        {
+                            temp_sign_arr[j] = 1;
+                            temp_predict_arr[j] = -diff;
+                        }
+                        else
+                        {
+                            temp_sign_arr[j] = 0;
+                            temp_predict_arr[j] = diff;
+                        }
+                        if (max < temp_predict_arr[j])
+                            max = temp_predict_arr[j];
+                    }
+                }
+            }
+
+            if (max == 0) 
+            {
+                block_pointer[0] = 0;
+                block_pointer++;
+                outSize_perthread++;
+            }
+            else
+            {
+                bit_count = (int)(log2f((float)max)) + 1;
+                block_pointer[0] = bit_count;
+                outSize_perthread++;
+                block_pointer++;
+                signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, current_block_size - 1, block_pointer); 
+                block_pointer += signbytelength;
+                outSize_perthread += signbytelength;
+                savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, current_block_size - 1, block_pointer, bit_count);
+                block_pointer += savedbitsbytelength;
+                outSize_perthread += savedbitsbytelength;
+            }
+        }
+
+        outSize_perthread_arr[tid] = outSize_perthread;
+#pragma omp barrier
+
+#pragma omp single
+        {
+            offsets_perthread_arr[0] = 0;
+            for (i = 1; i < nbThreads; i++)
+            {
+                offsets_perthread_arr[i] = offsets_perthread_arr[i - 1] + outSize_perthread_arr[i - 1];
+            }
+            (*outSize) += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1];
+            memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
+        }
+#pragma omp barrier
+        memcpy(real_outputBytes + offsets_perthread_arr[tid], outputBytes_perthread, outSize_perthread);
+#pragma omp barrier
+        
+        free(outputBytes_perthread);
+        free(temp_sign_arr);
+        free(temp_predict_arr);
+#pragma omp single
+        {
+            free(outSize_perthread_arr);
+            free(offsets_perthread_arr);
+        }
+    }
+    
+    free(sort_positions);
+    return output;
+    
+#else
+    // Fallback to sequential version if OpenMP not available
+    if (!critical_points || critical_count == 0) {
+        *outSize = 0;
+        return NULL;
+    }
+    
+    // Count maxima and minima only (types 1 and 2)
+    size_t extrema_count = 0;
+    for (size_t i = 0; i < critical_count; i++) {
+        if (critical_points[i].type == 1 || critical_points[i].type == 2) {
+            extrema_count++;
+        }
+    }
+    
+    if (extrema_count == 0) {
+        *outSize = 0;
+        return NULL;
+    }
+    
+    // Extract sort_position values for extrema only
+    int *sort_positions = (int *)malloc(extrema_count * sizeof(int));
+    if (!sort_positions) {
+        *outSize = 0;
+        return NULL;
+    }
+    
+    // Copy sort_position values for extrema only
+    size_t extrema_idx = 0;
+    for (size_t i = 0; i < critical_count; i++) {
+        if (critical_points[i].type == 1 || critical_points[i].type == 2) {
+            sort_positions[extrema_idx] = critical_points[i].sort_position;
+            extrema_idx++;
+        }
+    }
+    
+    // Allocate output buffer
+    size_t maxPreservedBufferSize = sizeof(int) * extrema_count + sizeof(size_t);
+    unsigned char *output = (unsigned char *)malloc(maxPreservedBufferSize);
+    if (!output) {
+        free(sort_positions);
+        *outSize = 0;
+        return NULL;
+    }
+    
+    // Write extrema_count as header
+    memcpy(output, &extrema_count, sizeof(size_t));
+    unsigned char *outputBytes = output + sizeof(size_t);
+    
+    size_t outSize_perthread = 0;
+    unsigned char *block_pointer = outputBytes;
+    
+    unsigned char *temp_sign_arr = (unsigned char *)malloc((blockSize - 1) * sizeof(unsigned char));
+    unsigned int *temp_predict_arr = (unsigned int *)malloc((blockSize - 1) * sizeof(unsigned int));
+    unsigned int signbytelength = 0; 
+    unsigned int savedbitsbytelength = 0;
+    
+    for (size_t i = 0; i < extrema_count; i = i + blockSize)
+    {
+        size_t current_block_size = (i + blockSize > extrema_count) ? (extrema_count - i) : blockSize;
+        if (current_block_size == 0) continue;
+
+        unsigned int max = 0;
+        int prior = sort_positions[i];
+        memcpy(block_pointer, &prior, sizeof(int));
+        block_pointer += sizeof(int);
+        outSize_perthread += sizeof(int);
+
+        if (current_block_size > 1)
+        {
+            for (size_t j = 0; j < current_block_size - 1; j++)
+            {
+                int current = sort_positions[i + j + 1];
+                int diff = current - prior;
+                prior = current;
+                if (diff == 0)
+                {
+                    temp_sign_arr[j] = 0;
+                    temp_predict_arr[j] = 0;
+                }
+                else
+                {
+                    if (diff < 0)
+                    {
+                        temp_sign_arr[j] = 1;
+                        temp_predict_arr[j] = -diff;
+                    }
+                    else
+                    {
+                        temp_sign_arr[j] = 0;
+                        temp_predict_arr[j] = diff;
+                    }
+                    if (max < temp_predict_arr[j])
+                        max = temp_predict_arr[j];
+                }
+            }
+        }
+
+        if (max == 0) 
+        {
+            block_pointer[0] = 0;
+            block_pointer++;
+            outSize_perthread++;
+        }
+        else
+        {
+            unsigned int bit_count = (int)(log2f((float)max)) + 1;
+            block_pointer[0] = bit_count;
+            outSize_perthread++;
+            block_pointer++;
+            signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, current_block_size - 1, block_pointer); 
+            block_pointer += signbytelength;
+            outSize_perthread += signbytelength;
+            savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, current_block_size - 1, block_pointer, bit_count);
+            block_pointer += savedbitsbytelength;
+            outSize_perthread += savedbitsbytelength;
+        }
+    }
+    
+    *outSize = sizeof(size_t) + outSize_perthread;
+    
+    free(sort_positions);
+    free(temp_sign_arr);
+    free(temp_predict_arr);
+    return output;
+#endif
+}
+
+unsigned char *
+szp_float_openmp_threadblock_randomaccess_topology_preserved(float *oriData, size_t *outSize, float absErrBound,
+                                                             size_t nbEle, int blockSize,
+                                                             CriticalPoint *critical_points, int critical_count,
+                                                             int rows, int cols)
+{
+#ifdef _OPENMP
+    if (absErrBound <= 0.0) return NULL;
+
+    float *op = oriData;
+
+    size_t maxPreservedBufferSize = 8ull * nbEle + 1024ull;
+    size_t maxPreservedBufferSize_perthread = 0;
+    unsigned char *outputBytes = (unsigned char *)malloc(maxPreservedBufferSize);
+    if (!outputBytes) return NULL;
+    unsigned char *real_outputBytes = NULL;
+    size_t *outSize_perthread_arr = NULL;
+    size_t *offsets_perthread_arr = NULL;
+
+    *outSize = 0;
+
+    unsigned char *critical_type = (unsigned char *)calloc(nbEle, 1);
+    if (!critical_type) { free(outputBytes); return NULL; }
+
+    size_t unique_marked = 0;
+    for (int i = 0; i < critical_count; i++) {
+        int x = critical_points[i].x, y = critical_points[i].y;
+        if (x < 0 || x >= rows || y < 0 || y >= cols) continue;
+        size_t flat = (size_t)x * (size_t)cols + (size_t)y;
+        unsigned char t = (unsigned char)critical_points[i].type;
+        if (t >= 1 && t <= 3) {
+            if (critical_type[flat] == 0) unique_marked++;
+            critical_type[flat] = t;
+        }
+    }
+
+    unsigned int nbThreads = 0;
+    double inver_bound = 1.0 / absErrBound;
+    unsigned int threadblocksize = 0;
+    unsigned int remainder = 0;
+    unsigned int block_size = (unsigned int)blockSize;
+    if (block_size == 0) { free(outputBytes); free(critical_type); return NULL; }
+    unsigned int new_block_size = block_size - 1;
+    unsigned int num_full_block_in_tb = 0;
+    unsigned int num_remainder_in_tb = 0;
+
+    size_t g_type_total = 0, g_t1 = 0, g_t2 = 0, g_t3 = 0;
+
+#pragma omp parallel
+    {
+#pragma omp single
+        {
+            nbThreads = omp_get_num_threads();
+            real_outputBytes = outputBytes + nbThreads * sizeof(size_t);
+            *outSize += nbThreads * sizeof(size_t);
+            outSize_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
+            offsets_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
+            if (!outSize_perthread_arr || !offsets_perthread_arr) {}
+
+            maxPreservedBufferSize_perthread = (maxPreservedBufferSize - nbThreads * sizeof(size_t)) / (nbThreads ? nbThreads : 1);
+            threadblocksize = (unsigned int)(nbEle / nbThreads);
+            remainder = (unsigned int)(nbEle % nbThreads);
+            num_full_block_in_tb = (threadblocksize) / block_size;
+            num_remainder_in_tb = (threadblocksize) % block_size;
+        }
+
+        size_t i = 0, j = 0;
+        unsigned char *outputBytes_perthread = (unsigned char *)malloc(maxPreservedBufferSize_perthread);
+        size_t outSize_perthread = 0;
+
+        int tid = omp_get_thread_num();
+        size_t lo = (size_t)tid * (size_t)threadblocksize;
+        size_t hi = (size_t)(tid + 1) * (size_t)threadblocksize;
+
+        int prior = 0, current = 0, diff = 0;
+        unsigned int maxv = 0, bit_count = 0;
+        unsigned char *block_pointer = outputBytes_perthread;
+
+        unsigned char *temp_sign_arr = (unsigned char *)malloc(new_block_size * sizeof(unsigned char));
+        unsigned char *temp_type_arr = (unsigned char *)malloc(block_size * sizeof(unsigned char));
+        unsigned int *temp_predict_arr = (unsigned int *)malloc(new_block_size * sizeof(unsigned int));
+        unsigned int signbytelength = 0, savedbitsbytelength = 0, typebytelength = 0;
+
+        size_t l_total = 0, l1 = 0, l2 = 0, l3 = 0;
+
+        if (outputBytes_perthread && temp_sign_arr && temp_type_arr && temp_predict_arr) {
+            if (num_full_block_in_tb > 0) {
+                for (i = lo; i + num_remainder_in_tb < hi; i += block_size) {
+                    maxv = 0;
+                    prior = (int)((double)op[i] * inver_bound);
+                    memcpy(block_pointer, &prior, sizeof(int));
+                    block_pointer += sizeof(int);
+                    outSize_perthread += sizeof(int);
+
+                    for (j = 0; j < new_block_size; j++) {
+                        current = (int)((double)op[i + j + 1] * inver_bound);
+                        diff = current - prior;
+                        prior = current;
+                        if (diff == 0) { temp_sign_arr[j] = 0; temp_predict_arr[j] = 0; }
+                        else if (diff > 0) { temp_sign_arr[j] = 0; if ((unsigned)diff > maxv) maxv = (unsigned)diff; temp_predict_arr[j] = (unsigned)diff; }
+                        else { temp_sign_arr[j] = 1; unsigned int ad = (unsigned)(-diff); if (ad > maxv) maxv = ad; temp_predict_arr[j] = ad; }
+                    }
+
+                    for (j = 0; j < block_size; j++) {
+                        size_t idx = i + j;
+                        unsigned char tt = (idx < nbEle) ? critical_type[idx] : 0;
+                        // Only store type information (1,2,3), not quantized_bin
+                        temp_type_arr[j] = tt;
+                        if (tt) { l_total++; if (tt==1) l1++; else if (tt==2) l2++; else l3++; }
+                    }
+
+                    if (maxv == 0) {
+                        *block_pointer++ = 0;
+                        outSize_perthread++;
+                    } else {
+                        bit_count = (unsigned int)floorf(log2f((float)maxv)) + 1u;
+                        *block_pointer++ = (unsigned char)bit_count;
+                        outSize_perthread++;
+                        signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, new_block_size, block_pointer);
+                        block_pointer += signbytelength; outSize_perthread += signbytelength;
+                        savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, new_block_size, block_pointer, bit_count);
+                        block_pointer += savedbitsbytelength; outSize_perthread += savedbitsbytelength;
+                    }
+
+                    unsigned char *type_output = NULL;
+                    // Only save type information (1,2,3), not quantized_bin
+                    typebytelength = convertIntArray2ByteArray_fast_2b(temp_type_arr, block_size, &type_output);
+                    memcpy(block_pointer, type_output, typebytelength);
+                    free(type_output);
+                    block_pointer += typebytelength; outSize_perthread += typebytelength;
+                }
+            }
+
+            if (num_remainder_in_tb > 0) {
+                size_t start = hi - num_remainder_in_tb;
+                for (i = start; i < hi; i += block_size) {
+                    prior = (int)((double)op[i] * inver_bound);
+                    memcpy(block_pointer, &prior, sizeof(int));
+                    block_pointer += sizeof(int);
+                    outSize_perthread += sizeof(int);
+
+                    maxv = 0;
+                    for (j = 0; j < num_remainder_in_tb - 1; j++) {
+                        current = (int)((double)op[i + j + 1] * inver_bound);
+                        diff = current - prior;
+                        prior = current;
+                        if (diff == 0) { temp_sign_arr[j] = 0; temp_predict_arr[j] = 0; }
+                        else if (diff > 0) { temp_sign_arr[j] = 0; if ((unsigned)diff > maxv) maxv = (unsigned)diff; temp_predict_arr[j] = (unsigned)diff; }
+                        else { temp_sign_arr[j] = 1; unsigned int ad = (unsigned)(-diff); if (ad > maxv) maxv = ad; temp_predict_arr[j] = ad; }
+                    }
+
+                    for (j = 0; j < num_remainder_in_tb; j++) {
+                        size_t idx = i + j;
+                        unsigned char tt = (idx < nbEle) ? critical_type[idx] : 0;
+                        // Only store type information (1,2,3), not quantized_bin
+                        temp_type_arr[j] = tt;
+                        if (tt) { l_total++; if (tt==1) l1++; else if (tt==2) l2++; else l3++; }
+                    }
+
+                    if (maxv == 0) { *block_pointer++ = 0; outSize_perthread++; }
+                    else {
+                        bit_count = (unsigned int)floorf(log2f((float)maxv)) + 1u;
+                        *block_pointer++ = (unsigned char)bit_count; outSize_perthread++;
+                        signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, num_remainder_in_tb - 1, block_pointer);
+                        block_pointer += signbytelength; outSize_perthread += signbytelength;
+                        savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, num_remainder_in_tb - 1, block_pointer, bit_count);
+                        block_pointer += savedbitsbytelength; outSize_perthread += savedbitsbytelength;
+                    }
+
+                    unsigned char *type_output = NULL;
+                    typebytelength = convertIntArray2ByteArray_fast_2b(temp_type_arr, num_remainder_in_tb, &type_output);
+                    memcpy(block_pointer, type_output, typebytelength);
+                    free(type_output);
+                    block_pointer += typebytelength; outSize_perthread += typebytelength;
+                }
+            }
+
+            if (tid == (int)nbThreads - 1 && remainder != 0) {
+                unsigned int num_full_block_in_rm = remainder / block_size;
+                unsigned int num_remainder_in_rm = remainder % block_size;
+
+                if (num_full_block_in_rm > 0) {
+                    for (i = hi; i + num_remainder_in_rm < nbEle; i += block_size) {
+                        prior = (int)((double)op[i] * inver_bound);
+                        memcpy(block_pointer, &prior, sizeof(int));
+                        block_pointer += sizeof(int);
+                        outSize_perthread += sizeof(int);
+
+                        maxv = 0;
+                        for (j = 0; j < new_block_size; j++) {
+                            current = (int)((double)op[i + j + 1] * inver_bound);
+                            diff = current - prior;
+                            prior = current;
+                            if (diff == 0) { temp_sign_arr[j] = 0; temp_predict_arr[j] = 0; }
+                            else if (diff > 0) { temp_sign_arr[j] = 0; if ((unsigned)diff > maxv) maxv = (unsigned)diff; temp_predict_arr[j] = (unsigned)diff; }
+                            else { temp_sign_arr[j] = 1; unsigned int ad = (unsigned)(-diff); if (ad > maxv) maxv = ad; temp_predict_arr[j] = ad; }
+                        }
+
+                        for (j = 0; j < block_size; j++) {
+                            size_t idx = i + j;
+                            unsigned char tt = (idx < nbEle) ? critical_type[idx] : 0;
+                            // Only store type information (1,2,3), not quantized_bin
+                            temp_type_arr[j] = tt;
+                            if (tt) { l_total++; if (tt==1) l1++; else if (tt==2) l2++; else l3++; }
+                        }
+
+                        if (maxv == 0) { *block_pointer++ = 0; outSize_perthread++; }
+                        else {
+                            bit_count = (unsigned int)floorf(log2f((float)maxv)) + 1u;
+                            *block_pointer++ = (unsigned char)bit_count; outSize_perthread++;
+                            signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, new_block_size, block_pointer);
+                            block_pointer += signbytelength; outSize_perthread += signbytelength;
+                            savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, new_block_size, block_pointer, bit_count);
+                            block_pointer += savedbitsbytelength; outSize_perthread += savedbitsbytelength;
+                        }
+
+                        unsigned char *type_output = NULL;
+                        typebytelength = convertIntArray2ByteArray_fast_2b(temp_type_arr, block_size, &type_output);
+                        memcpy(block_pointer, type_output, typebytelength);
+                        free(type_output);
+                        block_pointer += typebytelength; outSize_perthread += typebytelength;
+                    }
+                }
+
+                if (num_remainder_in_rm > 0) {
+                    for (i = nbEle - num_remainder_in_rm; i < nbEle; i += block_size) {
+                        prior = (int)((double)op[i] * inver_bound);
+                        memcpy(block_pointer, &prior, sizeof(int));
+                        block_pointer += sizeof(int);
+                        outSize_perthread += sizeof(int);
+
+                        maxv = 0;
+                        for (j = 0; j < num_remainder_in_rm - 1; j++) {
+                            current = (int)((double)op[i + j + 1] * inver_bound);
+                            diff = current - prior;
+                            prior = current;
+                            if (diff == 0) { temp_sign_arr[j] = 0; temp_predict_arr[j] = 0; }
+                            else if (diff > 0) { temp_sign_arr[j] = 0; if ((unsigned)diff > maxv) maxv = (unsigned)diff; temp_predict_arr[j] = (unsigned)diff; }
+                            else { temp_sign_arr[j] = 1; unsigned int ad = (unsigned)(-diff); if (ad > maxv) maxv = ad; temp_predict_arr[j] = ad; }
+                        }
+
+                        for (j = 0; j < num_remainder_in_rm; j++) {
+                            size_t idx = i + j;
+                            unsigned char tt = (idx < nbEle) ? critical_type[idx] : 0;
+                            // Only store type information (1,2,3), not quantized_bin
+                            temp_type_arr[j] = tt;
+                            if (tt) { l_total++; if (tt==1) l1++; else if (tt==2) l2++; else l3++; }
+                        }
+
+                        if (maxv == 0) { *block_pointer++ = 0; outSize_perthread++; }
+                        else {
+                            bit_count = (unsigned int)floorf(log2f((float)maxv)) + 1u;
+                            *block_pointer++ = (unsigned char)bit_count; outSize_perthread++;
+                            signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, num_remainder_in_rm - 1, block_pointer);
+                            block_pointer += signbytelength; outSize_perthread += signbytelength;
+                            savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, num_remainder_in_rm - 1, block_pointer, bit_count);
+                            block_pointer += savedbitsbytelength; outSize_perthread += savedbitsbytelength;
+                        }
+
+                        unsigned char *type_output = NULL;
+                        typebytelength = convertIntArray2ByteArray_fast_2b(temp_type_arr, num_remainder_in_rm, &type_output);
+                        memcpy(block_pointer, type_output, typebytelength);
+                        free(type_output);
+                        block_pointer += typebytelength; outSize_perthread += typebytelength;
+                    }
+                }
+            }
+        }
+
+        if (outSize_perthread_arr) outSize_perthread_arr[tid] = outSize_perthread;
+
+#pragma omp atomic
+        g_type_total += l_total;
+#pragma omp atomic
+        g_t1 += l1;
+#pragma omp atomic
+        g_t2 += l2;
+#pragma omp atomic
+        g_t3 += l3;
+
+#pragma omp barrier
+
+#pragma omp single
+        {
+            if (outSize_perthread_arr && offsets_perthread_arr) {
+                offsets_perthread_arr[0] = 0;
+                for (i = 1; i < nbThreads; i++)
+                    offsets_perthread_arr[i] = offsets_perthread_arr[i - 1] + outSize_perthread_arr[i - 1];
+
+                *outSize += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1];
+                memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
+            }
+        }
+#pragma omp barrier
+        if (outSize_perthread_arr)
+            memcpy(real_outputBytes + offsets_perthread_arr[tid], outputBytes_perthread, outSize_perthread);
+#pragma omp barrier
+
+        free(outputBytes_perthread);
+        free(temp_sign_arr);
+        free(temp_type_arr);
+        free(temp_predict_arr);
+
+#pragma omp single
+        {
+            free(outSize_perthread_arr);
+            free(offsets_perthread_arr);
+        }
+    }
+
+
+    free(critical_type);
+
+    if (*outSize > 0) {
+        unsigned char *tmp = (unsigned char *)realloc(outputBytes, *outSize);
+        if (tmp) outputBytes = tmp;
+    }
+
+    return outputBytes;
+#else
+    return NULL;
+#endif
+}
+
+
 int *
 szp_float_openmp_direct_predict_quantization(float *oriData, size_t *outSize, float absErrBound,
                                              size_t nbEle, int blockSize)
