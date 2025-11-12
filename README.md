@@ -4,8 +4,7 @@
 * Email: tripti.coer@gmail.com   tripti.agarwal@utah.edu
   
 
-This is the official repository of SZp, an extreme-fast error-bounded lossy compressor. It is a CPU compressor (supporting OpenMP). 
-The design and optimizations of SZp are published under the name fZ-light in SC '24.
+
 
 ## Installation
 Configure and build the SZp:
