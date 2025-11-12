@@ -1,4 +1,4 @@
-# SZp (Also known as fZ-light)
+# TopoSZp 
 
 * Developers: Tripti Agarwal(kernels, entries, and examples), Sheng Di (utility)
 * Email: tripti.coer@gmail.com   tripti.agarwal@utah.edu
