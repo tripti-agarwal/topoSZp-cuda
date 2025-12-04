@@ -1,9 +1,7 @@
 # TopoSZp 
 
-* Developers: Tripti Agarwal(kernels, entries, and examples), Sheng Di (utility)
-* Email: tripti.coer@gmail.com   tripti.agarwal@utah.edu
-  
-
+* Developers: Tripti Agarwal (topology part including kernels and utility), Sheng Di (utility)
+* Email: tripti.agarwal@utah.edu, tripti.coer@gmail.com
 
 
 ## Installation
@@ -29,5 +27,3 @@ make install
 ```bash
 export OMP_NUM_THREADS=$NUMTHREADS
 ```
-
-

@@ -4,6 +4,8 @@ Matplotlib-based visualization of critical points data
 """
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend (no display needed)
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.colors import LinearSegmentedColormap
@@ -130,9 +132,9 @@ def plot_critical_points_comparison(orig_data, orig_cps, decomp_data, decomp_cps
                    c='green', marker='^', s=20, alpha=0.8, edgecolors='darkgreen', linewidth=0.5,
                    label=f'Minima ({len(orig_minima)})')
     if orig_saddles:
-        # White X marks for saddles - thinner and lighter
+        # Black X marks for saddles - thinner and lighter
         ax1.scatter([cp['x'] for cp in orig_saddles], [cp['y'] for cp in orig_saddles],
-                   c='white', marker='x', s=25, alpha=0.7, linewidth=1.5,
+                   c='black', marker='x', s=25, alpha=0.7, linewidth=1.5,
                    label=f'Saddles ({len(orig_saddles)})')
     
     ax1.set_title(f'Original Data\n{len(orig_cps)} critical points', fontsize=14, fontweight='bold')
@@ -160,9 +162,9 @@ def plot_critical_points_comparison(orig_data, orig_cps, decomp_data, decomp_cps
                    c='green', marker='^', s=20, alpha=0.8, edgecolors='darkgreen', linewidth=0.5,
                    label=f'Minima ({len(decomp_minima)})')
     if decomp_saddles:
-        # White X marks for saddles - thinner and lighter
+        # Black X marks for saddles - thinner and lighter
         ax2.scatter([cp['x'] for cp in decomp_saddles], [cp['y'] for cp in decomp_saddles],
-                   c='white', marker='x', s=25, alpha=0.7, linewidth=1.5,
+                   c='black', marker='x', s=25, alpha=0.7, linewidth=1.5,
                    label=f'Saddles ({len(decomp_saddles)})')
     
     ax2.set_title(f'Decompressed Data\n{len(decomp_cps)} critical points', fontsize=14, fontweight='bold')

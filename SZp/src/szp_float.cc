@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <limits.h>
 #include "szp.h"
 #include "szp_float.h"
 #include <assert.h>
@@ -23,19 +24,19 @@ using namespace szp;
 
 CriticalPoint *szp_find_critical_points(float *data, size_t *outCount, int rows, int cols, float absErrBound) {
     #ifdef _OPENMP
-        if (!data || rows <= 2 || cols <= 2) {
-            *outCount = 0;
-            return NULL;
-        }
-        
-        // Allocate space for maximum possible critical points
-        CriticalPoint *results = (CriticalPoint *)malloc(rows * cols * sizeof(CriticalPoint));
-        if (!results) {
-            *outCount = 0;
-            return NULL;
-        }
-        
-        size_t count = 0;
+    if (!data || rows <= 2 || cols <= 2) {
+        *outCount = 0;
+        return NULL;
+    }
+    
+    // Allocate space for maximum possible critical points
+    CriticalPoint *results = (CriticalPoint *)malloc(rows * cols * sizeof(CriticalPoint));
+    if (!results) {
+        *outCount = 0;
+        return NULL;
+    }
+    
+    size_t count = 0;
         int nbThreads = 0;
         size_t threadblocksize = 0;
         int tid = 0;
@@ -60,26 +61,26 @@ CriticalPoint *szp_find_critical_points(float *data, size_t *outCount, int rows,
                 int i = 1 + idx / (cols - 2);
                 int j = 1 + idx % (cols - 2);
                 
-                float center = data[i * cols + j];
-                float up = data[(i-1) * cols + j];
-                float down = data[(i+1) * cols + j];
-                float left = data[i * cols + (j-1)];
-                float right = data[i * cols + (j+1)];
-                
-                if (center > up && center > down && 
-                    center > left && center > right) {
+            float center = data[i * cols + j];
+            float up = data[(i-1) * cols + j];
+            float down = data[(i+1) * cols + j];
+            float left = data[i * cols + (j-1)];
+            float right = data[i * cols + (j+1)];
+            
+            if (center > up && center > down && 
+                center > left && center > right) {
                     // Local maximum (type 1) - compute quantized bin using same formula as other functions
                     int quantized_bin = (int)((center + absErrBound) * inver_bound);
                     local_results[local_count++] = (CriticalPoint){i, j, 1, quantized_bin};
-                } else if (center < up && center < down && 
-                           center < left && center < right) {
+            } else if (center < up && center < down && 
+                       center < left && center < right) {
                     // Local minimum (type 2) - compute quantized bin using same formula as other functions
                     int quantized_bin = (int)((center + absErrBound) * inver_bound);
                     local_results[local_count++] = (CriticalPoint){i, j, 2, quantized_bin};
-                } else if ((center < up && center < down && 
-                           center > left && center > right) ||  
-                          (center > up && center > down && 
-                           center < left && center < right)) {
+            } else if ((center < up && center < down && 
+                       center > left && center > right) ||  
+                      (center > up && center > down && 
+                       center < left && center < right)) {
                     //  saddle (type 3) - compute quantized bin using same formula as other functions
                     int quantized_bin = (int)((center + absErrBound) * inver_bound);
                     local_results[local_count++] = (CriticalPoint){i, j, 3, quantized_bin};
@@ -96,18 +97,18 @@ CriticalPoint *szp_find_critical_points(float *data, size_t *outCount, int rows,
             
             memcpy(results + my_offset, local_results, local_count * sizeof(CriticalPoint));
             free(local_results);
-        }
-        
-        *outCount = count;
-        
-        if (count == 0) {
-            free(results);
-            return NULL;
-        }
-        
-        // Resize to actual size
-        results = (CriticalPoint *)realloc(results, count * sizeof(CriticalPoint));
-        return results;
+    }
+    
+    *outCount = count;
+    
+    if (count == 0) {
+        free(results);
+        return NULL;
+    }
+    
+    // Resize to actual size
+    results = (CriticalPoint *)realloc(results, count * sizeof(CriticalPoint));
+    return results;
     #else
         printf("Error! OpenMP not supported!\n");
         *outCount = 0;
@@ -480,8 +481,19 @@ szp_compress_sort_positions(CriticalPoint *critical_points, size_t critical_coun
         }
     }
     
-    // Allocate output buffer
-    size_t maxPreservedBufferSize = sizeof(int) * extrema_count + sizeof(int);
+    // Allocate output buffer with reasonable size estimate
+    // Each sort position is an int, worst case we need: header + offsets + compressed data
+    // Estimate: header (sizeof(size_t)) + thread offsets (will be calculated) + 
+    // worst case: each element needs sizeof(int) + overhead
+    size_t maxPreservedBufferSize = sizeof(size_t) + // header for extrema_count
+                                    (extrema_count * (sizeof(int) + 32)) + // worst case compressed size
+                                    1024; // safety margin
+    // Check for overflow
+    if (maxPreservedBufferSize < sizeof(size_t) || maxPreservedBufferSize < extrema_count) {
+        // Overflow detected, use a safer calculation
+        const size_t max_safe = (SIZE_MAX / 2 > 1024) ? (SIZE_MAX / 2) : 1024;
+        maxPreservedBufferSize = max_safe;
+    }
     unsigned char *output = (unsigned char *)malloc(maxPreservedBufferSize);
     if (!output) {
         free(sort_positions);
@@ -503,31 +515,67 @@ szp_compress_sort_positions(CriticalPoint *critical_points, size_t critical_coun
     unsigned int nbThreads = 0;
     unsigned int threadblocksize = 0;
     unsigned int block_size = blockSize;
+    
+    // Validate block_size to prevent underflow/overflow
+    if (block_size == 0) {
+        free(sort_positions);
+        free(output);
+        *outSize = 0;
+        return NULL;
+    }
 
 #pragma omp parallel
     {
 #pragma omp single
         {
             nbThreads = omp_get_num_threads();
+            if (nbThreads == 0) nbThreads = 1; // Safety check
             real_outputBytes = outputBytes + nbThreads * sizeof(size_t);
             (*outSize) += nbThreads * sizeof(size_t); 
             outSize_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
             offsets_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
+            if (!outSize_perthread_arr || !offsets_perthread_arr) {
+                // Set error flag - threads will see NULL and skip processing
+                if (outSize_perthread_arr) free(outSize_perthread_arr);
+                if (offsets_perthread_arr) free(offsets_perthread_arr);
+                outSize_perthread_arr = NULL;
+                offsets_perthread_arr = NULL;
+            }
 
             // Conservative buffer size estimate: account for worst-case compression
             // Each block needs: initial int (4 bytes) + bit_count (1 byte) + 
             // sign array (ceil((block_size-1)/8)) + saved bits (ceil((block_size-1)*bit_count/8))
             // Use a safety factor of 2x to account for variable compression ratios
             size_t elements_per_thread = (extrema_count + nbThreads - 1) / nbThreads;
-            size_t blocks_per_thread = (elements_per_thread + block_size - 1) / block_size;
+            size_t blocks_per_thread = (elements_per_thread > 0 && block_size > 0) ? 
+                                       (elements_per_thread + block_size - 1) / block_size : 1;
             // Worst case: each block needs ~4 + 1 + (block_size-1)/8 + (block_size-1)*32/8 bytes
-            size_t worst_case_per_block = sizeof(int) + 1 + ((block_size - 1) + 7) / 8 + ((block_size - 1) * 32 + 7) / 8;
-            maxPreservedBufferSize_perthread = blocks_per_thread * worst_case_per_block + 1024; // Add safety margin
-            threadblocksize = extrema_count / nbThreads;
+            // Ensure block_size > 0 to prevent underflow
+            size_t worst_case_per_block = sizeof(int) + 1;
+            if (block_size > 1) {
+                worst_case_per_block += ((block_size - 1) + 7) / 8;
+                worst_case_per_block += ((block_size - 1) * 32 + 7) / 8;
+            }
+            // Check for integer overflow in multiplication
+            size_t base_size = blocks_per_thread * worst_case_per_block;
+            if (base_size < blocks_per_thread || base_size < worst_case_per_block) {
+                // Integer overflow detected, use a safe maximum
+                maxPreservedBufferSize_perthread = extrema_count * (sizeof(int) + 32) + 1024;
+            } else {
+                maxPreservedBufferSize_perthread = base_size + 1024; // Add safety margin
+            }
+            // Ensure minimum buffer size
+            if (maxPreservedBufferSize_perthread < 1024) {
+                maxPreservedBufferSize_perthread = 1024;
+            }
+            threadblocksize = (extrema_count > 0) ? extrema_count / nbThreads : 0;
         }
         size_t i = 0;
         size_t j = 0;
-        unsigned char *outputBytes_perthread = (unsigned char *)malloc(maxPreservedBufferSize_perthread);
+        unsigned char *outputBytes_perthread = NULL;
+        if (maxPreservedBufferSize_perthread > 0) {
+            outputBytes_perthread = (unsigned char *)malloc(maxPreservedBufferSize_perthread);
+        }
         size_t outSize_perthread = 0;
         
         int tid = omp_get_thread_num();
@@ -544,12 +592,23 @@ szp_compress_sort_positions(CriticalPoint *critical_points, size_t critical_coun
         unsigned int bit_count = 0;
         unsigned char *block_pointer = outputBytes_perthread;
         
-        unsigned char *temp_sign_arr = (unsigned char *)malloc((block_size - 1) * sizeof(unsigned char));
-        unsigned int *temp_predict_arr = (unsigned int *)malloc((block_size - 1) * sizeof(unsigned int));
+        // Allocate temp arrays with size check
+        size_t temp_arr_size = (block_size > 1) ? (block_size - 1) : 1;
+        unsigned char *temp_sign_arr = NULL;
+        unsigned int *temp_predict_arr = NULL;
+        
+        // Only process if main buffer was allocated successfully
+        if (outputBytes_perthread) {
+            temp_sign_arr = (unsigned char *)malloc(temp_arr_size * sizeof(unsigned char));
+            temp_predict_arr = (unsigned int *)malloc(temp_arr_size * sizeof(unsigned int));
+        }
+        
         unsigned int signbytelength = 0; 
         unsigned int savedbitsbytelength = 0;
         
-        for (i = lo; i < hi; i = i + block_size)
+        // Only process if all allocations succeeded
+        if (outputBytes_perthread && temp_sign_arr && temp_predict_arr) {
+            for (i = lo; i < hi; i = i + block_size)
         {
             size_t current_block_size = (i + block_size > hi) ? (hi - i) : block_size;
             if (current_block_size == 0) continue;
@@ -610,6 +669,7 @@ szp_compress_sort_positions(CriticalPoint *critical_points, size_t critical_coun
                 outSize_perthread += savedbitsbytelength;
             }
         }
+        } // End of if (outputBytes_perthread && temp_sign_arr && temp_predict_arr)
 
         outSize_perthread_arr[tid] = outSize_perthread;
 #pragma omp barrier
@@ -625,16 +685,18 @@ szp_compress_sort_positions(CriticalPoint *critical_points, size_t critical_coun
             memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
         }
 #pragma omp barrier
-        memcpy(real_outputBytes + offsets_perthread_arr[tid], outputBytes_perthread, outSize_perthread);
+        if (outputBytes_perthread && real_outputBytes && offsets_perthread_arr) {
+            memcpy(real_outputBytes + offsets_perthread_arr[tid], outputBytes_perthread, outSize_perthread);
+        }
 #pragma omp barrier
         
-        free(outputBytes_perthread);
-        free(temp_sign_arr);
-        free(temp_predict_arr);
+        if (outputBytes_perthread) free(outputBytes_perthread);
+        if (temp_sign_arr) free(temp_sign_arr);
+        if (temp_predict_arr) free(temp_predict_arr);
 #pragma omp single
         {
-            free(outSize_perthread_arr);
-            free(offsets_perthread_arr);
+            if (outSize_perthread_arr) free(outSize_perthread_arr);
+            if (offsets_perthread_arr) free(offsets_perthread_arr);
         }
     }
     
@@ -780,7 +842,23 @@ szp_float_openmp_threadblock_randomaccess_topology_preserved(float *oriData, siz
 
     float *op = oriData;
 
-    size_t maxPreservedBufferSize = 8ull * nbEle + 1024ull;
+    // Calculate buffer size with overflow protection
+    // Check for potential overflow: 8 * nbEle + 1024
+    size_t maxPreservedBufferSize = 0;
+    const size_t max_safe_nbEle = (SIZE_MAX - 1024) / 8;
+    if (nbEle > 0 && nbEle <= max_safe_nbEle) {
+        maxPreservedBufferSize = 8ull * nbEle + 1024ull;
+    } else if (nbEle > max_safe_nbEle) {
+        // Fallback for very large arrays - use a reasonable maximum
+        maxPreservedBufferSize = (SIZE_MAX / 2 > 1024) ? (SIZE_MAX / 2) : 1024;
+    } else {
+        // nbEle is 0 or invalid
+        maxPreservedBufferSize = 1024;
+    }
+    // Ensure minimum size
+    if (maxPreservedBufferSize < 1024) {
+        maxPreservedBufferSize = 1024;
+    }
     size_t maxPreservedBufferSize_perthread = 0;
     unsigned char *outputBytes = (unsigned char *)malloc(maxPreservedBufferSize);
     if (!outputBytes) return NULL;
@@ -811,7 +889,7 @@ szp_float_openmp_threadblock_randomaccess_topology_preserved(float *oriData, siz
     unsigned int remainder = 0;
     unsigned int block_size = (unsigned int)blockSize;
     if (block_size == 0) { free(outputBytes); free(critical_type); return NULL; }
-    unsigned int new_block_size = block_size - 1;
+    unsigned int new_block_size = (block_size > 1) ? (block_size - 1) : 1;
     unsigned int num_full_block_in_tb = 0;
     unsigned int num_remainder_in_tb = 0;
 
@@ -822,13 +900,44 @@ szp_float_openmp_threadblock_randomaccess_topology_preserved(float *oriData, siz
 #pragma omp single
         {
             nbThreads = omp_get_num_threads();
+            if (nbThreads == 0) nbThreads = 1; // Safety check
             real_outputBytes = outputBytes + nbThreads * sizeof(size_t);
             *outSize += nbThreads * sizeof(size_t);
             outSize_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
             offsets_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
-            if (!outSize_perthread_arr || !offsets_perthread_arr) {}
+            if (!outSize_perthread_arr || !offsets_perthread_arr) {
+                if (outSize_perthread_arr) free(outSize_perthread_arr);
+                if (offsets_perthread_arr) free(offsets_perthread_arr);
+                outSize_perthread_arr = NULL;
+                offsets_perthread_arr = NULL;
+            }
 
-            maxPreservedBufferSize_perthread = (maxPreservedBufferSize - nbThreads * sizeof(size_t)) / (nbThreads ? nbThreads : 1);
+            // Calculate per-thread buffer size with safety checks
+            size_t header_size = nbThreads * sizeof(size_t);
+            // Ensure we have enough space for header
+            if (maxPreservedBufferSize <= header_size) {
+                // Not enough space, use minimum
+                maxPreservedBufferSize_perthread = 1024;
+            } else if (nbThreads > 0) {
+                size_t available_size = maxPreservedBufferSize - header_size;
+                // Check for integer overflow in division
+                if (available_size >= nbThreads) {
+                    maxPreservedBufferSize_perthread = available_size / nbThreads;
+                } else {
+                    maxPreservedBufferSize_perthread = 1024; // Fallback
+                }
+            } else {
+                maxPreservedBufferSize_perthread = 1024; // Minimum safe size
+            }
+            // Ensure minimum buffer size - critical check
+            if (maxPreservedBufferSize_perthread == 0 || maxPreservedBufferSize_perthread < 1024) {
+                maxPreservedBufferSize_perthread = 1024;
+            }
+            // Additional safety: ensure it's not unreasonably large (prevent overflow)
+            const size_t max_safe_perthread = SIZE_MAX / 4;
+            if (maxPreservedBufferSize_perthread > max_safe_perthread) {
+                maxPreservedBufferSize_perthread = max_safe_perthread;
+            }
             threadblocksize = (unsigned int)(nbEle / nbThreads);
             remainder = (unsigned int)(nbEle % nbThreads);
             num_full_block_in_tb = (threadblocksize) / block_size;
@@ -836,7 +945,14 @@ szp_float_openmp_threadblock_randomaccess_topology_preserved(float *oriData, siz
         }
 
         size_t i = 0, j = 0;
-        unsigned char *outputBytes_perthread = (unsigned char *)malloc(maxPreservedBufferSize_perthread);
+        unsigned char *outputBytes_perthread = NULL;
+        // Double-check size is valid before malloc
+        if (maxPreservedBufferSize_perthread > 0 && maxPreservedBufferSize_perthread < SIZE_MAX) {
+            outputBytes_perthread = (unsigned char *)malloc(maxPreservedBufferSize_perthread);
+        } else {
+            // Fallback to safe minimum if size is invalid
+            outputBytes_perthread = (unsigned char *)malloc(1024);
+        }
         size_t outSize_perthread = 0;
 
         int tid = omp_get_thread_num();
@@ -847,9 +963,18 @@ szp_float_openmp_threadblock_randomaccess_topology_preserved(float *oriData, siz
         unsigned int maxv = 0, bit_count = 0;
         unsigned char *block_pointer = outputBytes_perthread;
 
-        unsigned char *temp_sign_arr = (unsigned char *)malloc(new_block_size * sizeof(unsigned char));
-        unsigned char *temp_type_arr = (unsigned char *)malloc(block_size * sizeof(unsigned char));
-        unsigned int *temp_predict_arr = (unsigned int *)malloc(new_block_size * sizeof(unsigned int));
+        // Allocate temp arrays with size validation
+        size_t temp_sign_size = new_block_size * sizeof(unsigned char);
+        size_t temp_type_size = block_size * sizeof(unsigned char);
+        size_t temp_predict_size = new_block_size * sizeof(unsigned int);
+        
+        unsigned char *temp_sign_arr = NULL;
+        unsigned char *temp_type_arr = NULL;
+        unsigned int *temp_predict_arr = NULL;
+        
+        if (temp_sign_size > 0) temp_sign_arr = (unsigned char *)malloc(temp_sign_size);
+        if (temp_type_size > 0) temp_type_arr = (unsigned char *)malloc(temp_type_size);
+        if (temp_predict_size > 0) temp_predict_arr = (unsigned int *)malloc(temp_predict_size);
         unsigned int signbytelength = 0, savedbitsbytelength = 0, typebytelength = 0;
 
         size_t l_total = 0, l1 = 0, l2 = 0, l3 = 0;
@@ -1063,19 +1188,20 @@ szp_float_openmp_threadblock_randomaccess_topology_preserved(float *oriData, siz
             }
         }
 #pragma omp barrier
-        if (outSize_perthread_arr)
+        if (outSize_perthread_arr && outputBytes_perthread && real_outputBytes && offsets_perthread_arr) {
             memcpy(real_outputBytes + offsets_perthread_arr[tid], outputBytes_perthread, outSize_perthread);
+        }
 #pragma omp barrier
 
-        free(outputBytes_perthread);
-        free(temp_sign_arr);
-        free(temp_type_arr);
-        free(temp_predict_arr);
+        if (outputBytes_perthread) free(outputBytes_perthread);
+        if (temp_sign_arr) free(temp_sign_arr);
+        if (temp_type_arr) free(temp_type_arr);
+        if (temp_predict_arr) free(temp_predict_arr);
 
 #pragma omp single
         {
-            free(outSize_perthread_arr);
-            free(offsets_perthread_arr);
+            if (outSize_perthread_arr) free(outSize_perthread_arr);
+            if (offsets_perthread_arr) free(offsets_perthread_arr);
         }
     }
 

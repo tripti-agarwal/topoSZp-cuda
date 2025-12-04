@@ -159,37 +159,50 @@ static inline int cls_idx(const float* a, int r, int c, int i, int j, float eps)
     float e  = a[i*c + (j+1)];                 /* NOTE: uses c, not cols */
     return cls4(cc,n,s,w,e,eps);
 }
-void rbf_smooth_saddle_points_safe_extrema_aware(
-    float *data,const int *types0,const unsigned char *locks,
-    int rows,int cols,double sigma,int ksize,float eps,float errBound)
+
+// Forward declaration
+void rbf_smooth_saddle_points_safe_extrema_aware_targeted(
+    float *data, const int *types0, const unsigned char *locks, const unsigned char *target_mask,
+    int rows, int cols, double sigma, int ksize, float eps, float errBound);
+/**
+ * Targeted RBF smoothing: only applies to false negative saddles (lost during decompression)
+ * This preserves existing saddles while attempting to restore lost ones
+ */
+void rbf_smooth_saddle_points_safe_extrema_aware_targeted(
+    float *data, const int *types0, const unsigned char *locks, const unsigned char *target_mask,
+    int rows, int cols, double sigma, int ksize, float eps, float errBound)
 {
-//Validates input parameters
-if(!data||!types0||!locks||rows<3||cols<3||ksize<3||(ksize&1)==0||sigma<=0) return;
+    // Validates input parameters
+    if(!data || !types0 || !locks || !target_mask || rows<3 || cols<3 || ksize<3 || (ksize&1)==0 || sigma<=0) return;
 
-// Store original decompressed values before smoothing to preserve error bound
-// This ensures smoothed values stay within errBound of the original decompressed values
-float *orig_decomp = (float*)malloc((size_t)rows*(size_t)cols*sizeof(float));
-if(!orig_decomp) return;
-for(int i=0;i<rows*cols;i++) orig_decomp[i]=data[i];
+    // Store original decompressed values before smoothing to preserve error bound
+    float *orig_decomp = (float*)malloc((size_t)rows*(size_t)cols*sizeof(float));
+    if(!orig_decomp) return;
+    for(int i=0; i<rows*cols; i++) orig_decomp[i] = data[i];
 
-//Sets up Gaussian RBF weights based on distance from center
-int r=ksize/2; 
-double s2=sigma*sigma;
+    // Sets up Gaussian RBF weights based on distance from center
+    int r = ksize/2; 
+    double s2 = sigma*sigma;
 
-double *w=(double*)malloc((size_t)ksize*(size_t)ksize*sizeof(double));
-// Creates a Gaussian kernel where closer neighbors have higher weights
-// Uses sigma parameter (s2) to control the smoothing strength
-for(int di=-r;di<=r;di++)
-    for(int dj=-r;dj<=r;dj++){
-        double d2=(double)di*di+(double)dj*dj;
-        w[(size_t)(di+r)*ksize+(dj+r)]=exp(-d2/(2.0*s2));
+    double *w = (double*)malloc((size_t)ksize*(size_t)ksize*sizeof(double));
+    if(!w) { free(orig_decomp); return; }
+    // Creates a Gaussian kernel where closer neighbors have higher weights
+    for(int di=-r; di<=r; di++){
+        for(int dj=-r; dj<=r; dj++){
+            double d2 = (double)di*di + (double)dj*dj;
+            w[(size_t)(di+r)*ksize+(dj+r)] = exp(-d2/(2.0*s2));
+        }
     }
 
-// The function only processes points marked as saddle points (types0[idx]==3):
-for(int i=1;i<rows-1;i++){
-    for(int j=1;j<cols-1;j++){
-        int idx=i*cols+j;
-        if(types0[idx]!=3) continue;
+    int restored_count = 0;
+    int failed_count = 0;
+
+    // Only process false negative saddles (target_mask[idx]==1)
+    for(int i=1; i<rows-1; i++){
+        for(int j=1; j<cols-1; j++){
+            int idx = i*cols+j;
+            // Only process if this is a false negative saddle
+            if(!target_mask[idx] || types0[idx] != 3) continue;
 
         /* do NOT skip near locks; just reduce influence of locked neighbors */
         double num=0,den=0;
@@ -218,15 +231,7 @@ for(int i=1;i<rows-1;i++){
         
         // Preserve error bound: clamp smoothed value to stay within errBound of original decompressed value
         // The original decompressed value should already be within errBound of the original data.
-        // Since the decompressed value could be at the edge of the error bound, we use a very conservative
-        // constraint. The decompressed value is at the center of a quantization bin of size errBound,
-        // so the original is in [orig_val - errBound, orig_val + errBound). To ensure the smoothed value
-        // stays within errBound of the original, we constrain it to a tighter range to account for the
-        // worst case where the decompressed value is already at the edge.
-        // Using a tight safety margin to prevent exceeding the error bound.
-        // Use a very tight margin (10%) to ensure we stay within error bound, similar to restore_extrema_from_types
-        float safety_margin = 0.1f;  // Very tight: only allow smoothing within 10% of error bound
-        float effective_bound = errBound * safety_margin;
+        float effective_bound = errBound;
         float min_allowed = orig_val - effective_bound;
         float max_allowed = orig_val + effective_bound;
         if(cand < min_allowed) cand = min_allowed;
@@ -259,12 +264,52 @@ for(int i=1;i<rows-1;i++){
             // Validation: Checks if smoothing accidentally creates new critical points
             // Rollback: If smoothing creates problems, it reduces the smoothing strength
             if(!bad && cls_idx(data,rows,cols,i,j,eps)!=3) bad=1;
-            if(bad){ data[idx]=saved; alpha*=0.5f; } else { break; }
+            if(bad){ 
+                data[idx]=saved; 
+                alpha*=0.5f; 
+            } else { 
+                // Successfully restored saddle
+                restored_count++;
+                break; 
+            }
+        }
+        if(alpha < 0.01f){
+            // Failed to restore after all iterations
+            failed_count++;
+        }
+        } // End of inner for loop (j)
+    } // End of outer for loop (i)
+    
+    printf("RBF restoration results: restored=%d, failed=%d\n", restored_count, failed_count);
+    
+    free(w);
+    free(orig_decomp);
+}
+
+// Keep original function for backward compatibility
+void rbf_smooth_saddle_points_safe_extrema_aware(
+    float *data, const int *types0, const unsigned char *locks,
+    int rows, int cols, double sigma, int ksize, float eps, float errBound)
+{
+    // This function is kept for compatibility but should not be called directly
+    // Use the targeted version instead
+    printf("Warning: Using non-targeted RBF smoothing (not recommended)\n");
+    
+    // Create a mask that includes all original saddles (for backward compatibility)
+    unsigned char *all_saddles_mask = (unsigned char*)calloc((size_t)rows*(size_t)cols, sizeof(unsigned char));
+    if(!all_saddles_mask) return;
+    
+    for(int i=1; i<rows-1; i++){
+        for(int j=1; j<cols-1; j++){
+            int idx = i*cols+j;
+            if(types0[idx] == 3) all_saddles_mask[idx] = 1;
         }
     }
-}
-free(w);
-free(orig_decomp);
+    
+    rbf_smooth_saddle_points_safe_extrema_aware_targeted(
+        data, types0, locks, all_saddles_mask, rows, cols, sigma, ksize, eps, errBound);
+    
+    free(all_saddles_mask);
 }
 void restore_extrema_from_types(const int *types,
     float *data, const float *orig_decomp, int rows, int cols, float eps, float errBound){
@@ -486,8 +531,77 @@ int main(int argc, char *argv[])
         }
     }
     
-    //calculating the sigma and eps is done /u/tagarwal1/topoSZp/SZp/example/testfloat_decompress_fastmode1_topology.cc
-    // rbf_smooth_saddle_points_safe_extrema_aware(data, types_orig, locks, rows, cols, 0.8, 3, eps, errBound);
+    // Find critical points in decompressed data to identify false negatives
+    // False negatives = saddles that exist in types_orig but are missing in decompressed data
+    int *decomp_types = (int*)calloc((size_t)rows*(size_t)cols, sizeof(int));
+    if (!decomp_types) {
+        printf("Error: Failed to allocate memory for decompressed types\n");
+        free(orig_decomp);
+        free(bytes);
+        free(data);
+        free(critical_points_types);
+        exit(1);
+    }
+    
+    // Classify critical points in decompressed data
+    for(int i=1; i<rows-1; i++){
+        for(int j=1; j<cols-1; j++){
+            int idx = i*cols+j;
+            decomp_types[idx] = cls_idx(data, rows, cols, i, j, eps);
+        }
+    }
+    
+    // Identify false negatives for all critical point types
+    int false_negative_saddles = 0;
+    int false_negative_maxima = 0;
+    int false_negative_minima = 0;
+    unsigned char *false_negative_mask = (unsigned char*)calloc((size_t)rows*(size_t)cols, sizeof(unsigned char));
+    if (!false_negative_mask) {
+        printf("Error: Failed to allocate memory for false negative mask\n");
+        free(decomp_types);
+        free(orig_decomp);
+        free(bytes);
+        free(data);
+        free(critical_points_types);
+        exit(1);
+    }
+    
+    for(int i=1; i<rows-1; i++){
+        for(int j=1; j<cols-1; j++){
+            int idx = i*cols+j;
+            int orig_type = types_orig[idx];
+            int decomp_type = decomp_types[idx];
+            
+            // Track false negatives for each type
+            if(orig_type == 1 && decomp_type != 1){
+                // False negative maximum
+                false_negative_maxima++;
+            } else if(orig_type == 2 && decomp_type != 2){
+                // False negative minimum
+                false_negative_minima++;
+            } else if(orig_type == 3 && decomp_type != 3){
+                // False negative saddle - mark for RBF restoration
+                false_negative_mask[idx] = 1;
+                false_negative_saddles++;
+            }
+        }
+    }
+    
+    printf("False negatives detected:\n");
+    printf("  Maxima: %d\n", false_negative_maxima);
+    printf("  Minima: %d\n", false_negative_minima);
+    printf("  Saddles: %d\n", false_negative_saddles);
+    
+    // Only apply RBF smoothing to false negative saddles (targeted restoration)
+    if(false_negative_saddles > 0){
+        rbf_smooth_saddle_points_safe_extrema_aware_targeted(
+            data, types_orig, locks, false_negative_mask, rows, cols, 0.8, 3, eps, errBound);
+    } else {
+        printf("No false negative saddles - skipping RBF smoothing\n");
+    }
+    
+    free(false_negative_mask);
+    free(decomp_types);
     apply_stencils_on_critical_points(data, types_orig, sort_positions, sort_position_mapping, rows, cols, errBound, extrema_count);
     restore_extrema_from_types(types_orig, data, orig_decomp, rows, cols, eps, errBound);
     

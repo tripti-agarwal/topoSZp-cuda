@@ -91,7 +91,7 @@ EGREP="/usr/bin/grep -E"
 FGREP="/usr/bin/grep -F"
 
 # A BSD- or MS-compatible name lister.
-NM="/usr/bin/nm -B"
+NM="/opt/rh/gcc-toolset-13/root/usr/bin/nm -B"
 
 # Whether we need soft or hard links.
 LN_S="ln -s"
@@ -162,7 +162,7 @@ old_postuninstall_cmds=""
 lock_old_archive_extraction=no
 
 # A C compiler.
-LTCC="/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/bin/gcc"
+LTCC="cc"
 
 # LTCC compiler flags.
 LTCFLAGS="-O3 -std=c99 -Wall"
@@ -282,10 +282,10 @@ finish_eval=""
 hardcode_into_libs=yes
 
 # Compile-time system search path for libraries.
-sys_lib_search_path_spec="/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64 /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/gcc/x86_64-pc-linux-gnu/11.4.0 /lib64 /usr/lib64 /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-11.8.0-vfixfmc/lib64 /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib /lib /usr/lib "
+sys_lib_search_path_spec="/opt/rh/gcc-toolset-13/root/usr/lib/gcc/x86_64-redhat-linux/13 /opt/rh/gcc-toolset-13/root/usr/lib64 /lib64 /usr/lib64 /opt/rh/gcc-toolset-13/root/usr/lib /lib /usr/lib "
 
 # Detected run-time system search path for libraries.
-sys_lib_dlsearch_path_spec="/lib64 /usr/lib64 /lib /usr/lib /usr/local/cuda/targets/x86_64-linux/lib /opt/rocm-6.1.0/lib /opt/amdgpu/lib64 /opt/amdgpu/lib /usr/local/cuda-12/targets/x86_64-linux/lib /usr/lib64/atlas /usr/lib64//bind9-export/ /opt/ddn/ime//lib /usr/lib64/dyninst /usr/local/cuda-12.8/targets/x86_64-linux/lib /usr/local/cuda-12.9/targets/x86_64-linux/lib      "
+sys_lib_dlsearch_path_spec="/lib64 /usr/lib64 /lib /usr/lib /usr/local/cuda/targets/x86_64-linux/lib /opt/rocm-6.4.1/lib /opt/amdgpu/lib64 /opt/amdgpu/lib /usr/local/cuda-12/targets/x86_64-linux/lib /usr/local/cuda-11/targets/x86_64-linux/lib /opt/cray/pals/1.6/lib /opt/cray/pe/lib64 /opt/cray/pe/lib64/cce /usr/lib64/dyninst /usr/local/cuda-11.8/targets/x86_64-linux/lib /usr/local/cuda-12.8/targets/x86_64-linux/lib /usr/lib64/pipewire-0.3/jack/ "
 
 # Explicit LT_SYS_LIBRARY_PATH set during ./configure time.
 configure_time_lt_sys_library_path=""
@@ -305,7 +305,7 @@ striplib="strip --strip-unneeded"
 
 
 # The linker used to build libraries.
-LD="/usr/bin/ld -m elf_x86_64"
+LD="/opt/rh/gcc-toolset-13/root/usr/libexec/gcc/x86_64-redhat-linux/13/ld -m elf_x86_64"
 
 # How to create reloadable object files.
 reload_flag=" -r"
@@ -315,7 +315,7 @@ reload_cmds="\$LD\$reload_flag -o \$output\$reload_objs"
 old_archive_cmds="\$AR \$AR_FLAGS \$oldlib\$oldobjs~\$RANLIB \$tool_oldlib"
 
 # A language specific compiler.
-CC="/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/bin/gcc"
+CC="cc"
 
 # Is the compiler the GNU compiler?
 with_gcc=yes
@@ -11663,7 +11663,7 @@ build_old_libs=`case $build_libtool_libs in yes) echo no;; *) echo yes;; esac`
 # ### BEGIN LIBTOOL TAG CONFIG: CXX
 
 # The linker used to build libraries.
-LD="/usr/bin/ld -m elf_x86_64"
+LD="/opt/rh/gcc-toolset-13/root/usr/libexec/gcc/x86_64-redhat-linux/13/ld -m elf_x86_64"
 
 # How to create reloadable object files.
 reload_flag=" -r"
@@ -11673,7 +11673,7 @@ reload_cmds="\$LD\$reload_flag -o \$output\$reload_objs"
 old_archive_cmds="\$AR \$AR_FLAGS \$oldlib\$oldobjs~\$RANLIB \$tool_oldlib"
 
 # A language specific compiler.
-CC="/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/bin/g++"
+CC="CC"
 
 # Is the compiler the GNU compiler?
 with_gcc=yes
@@ -11794,25 +11794,25 @@ file_list_spec=""
 hardcode_action=immediate
 
 # The directories searched by this compiler when creating a shared library.
-compiler_lib_search_dirs="/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64/../lib64 /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/../lib64 /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/gcc/x86_64-pc-linux-gnu/11.4.0 /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/gcc/x86_64-pc-linux-gnu/11.4.0/../../../../lib64 /lib/../lib64 /usr/lib/../lib64 /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-11.8.0-vfixfmc/lib64 /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64 /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/gcc/x86_64-pc-linux-gnu/11.4.0/../../.."
+compiler_lib_search_dirs="/opt/nvidia/hpc_sdk/Linux_x86_64/25.3/cuda/12.8/lib64 /opt/nvidia/hpc_sdk/Linux_x86_64/25.3/cuda/12.8/nvvm/lib64 /opt/nvidia/hpc_sdk/Linux_x86_64/25.3/cuda/12.8/extras/CUPTI/lib64 /opt/nvidia/hpc_sdk/Linux_x86_64/25.3/math_libs/12.8/lib64 /opt/cray/pe/dsmml/0.3.1/dsmml/lib /opt/cray/pe/libsci/25.03.0/GNU/12.2/x86_64/lib /opt/cray/pe/mpich/8.1.32/ofi/gnu/11.2/lib /opt/cray/pe/mpich/8.1.32/gtl/lib /opt/rh/gcc-toolset-13/root/usr/lib/gcc/x86_64-redhat-linux/13 /opt/rh/gcc-toolset-13/root/usr/lib/gcc/x86_64-redhat-linux/13/../../../../lib64 /lib/../lib64 /usr/lib/../lib64 /opt/rh/gcc-toolset-13/root/usr/lib/gcc/x86_64-redhat-linux/13/../../.."
 
 # Dependencies to place before and after the objects being linked to
 # create a shared library.
-predep_objects="/lib/../lib64/crti.o /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/gcc/x86_64-pc-linux-gnu/11.4.0/crtbeginS.o"
-postdep_objects="/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/gcc/x86_64-pc-linux-gnu/11.4.0/crtendS.o /lib/../lib64/crtn.o"
+predep_objects="/lib/../lib64/crti.o /opt/rh/gcc-toolset-13/root/usr/lib/gcc/x86_64-redhat-linux/13/crtbeginS.o"
+postdep_objects="/opt/rh/gcc-toolset-13/root/usr/lib/gcc/x86_64-redhat-linux/13/crtendS.o /lib/../lib64/crtn.o"
 predeps=""
-postdeps="-lstdc++ -lm -lgcc_s -lc -lgcc_s"
+postdeps="-lcupti -lcudart -lcuda -ldsmml -lsci_gnu_mpi -lmpi_gtl_cuda -lsci_gnu -ldl -lmpi_gnu_112 -lmpi_gtl_cuda -lgfortran -lquadmath -lmvec -lm -lpthread -lstdc++ -lm -lgcc_s -lc -lgcc_s"
 
 # The library search path used internally by the compiler when linking
 # a shared library.
-compiler_lib_search_path="-L/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64/../lib64 -L/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/../lib64 -L/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/gcc/x86_64-pc-linux-gnu/11.4.0 -L/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/gcc/x86_64-pc-linux-gnu/11.4.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-11.8.0-vfixfmc/lib64 -L/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib -L/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64 -L/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib -L/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/gcc/x86_64-pc-linux-gnu/11.4.0/../../.."
+compiler_lib_search_path="-L/opt/nvidia/hpc_sdk/Linux_x86_64/25.3/cuda/12.8/lib64 -L/opt/nvidia/hpc_sdk/Linux_x86_64/25.3/cuda/12.8/nvvm/lib64 -L/opt/nvidia/hpc_sdk/Linux_x86_64/25.3/cuda/12.8/extras/CUPTI/lib64 -L/opt/nvidia/hpc_sdk/Linux_x86_64/25.3/math_libs/12.8/lib64 -L/opt/cray/pe/dsmml/0.3.1/dsmml/lib -L/opt/cray/pe/libsci/25.03.0/GNU/12.2/x86_64/lib -L/opt/cray/pe/mpich/8.1.32/ofi/gnu/11.2/lib -L/opt/cray/pe/mpich/8.1.32/gtl/lib -L/opt/rh/gcc-toolset-13/root/usr/lib/gcc/x86_64-redhat-linux/13 -L/opt/rh/gcc-toolset-13/root/usr/lib/gcc/x86_64-redhat-linux/13/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/opt/rh/gcc-toolset-13/root/usr/lib/gcc/x86_64-redhat-linux/13/../../.."
 
 # ### END LIBTOOL TAG CONFIG: CXX
 
 # ### BEGIN LIBTOOL TAG CONFIG: FC
 
 # The linker used to build libraries.
-LD="/usr/bin/ld -m elf_x86_64"
+LD="/opt/rh/gcc-toolset-13/root/usr/libexec/gcc/x86_64-redhat-linux/13/ld -m elf_x86_64"
 
 # How to create reloadable object files.
 reload_flag=" -r"
@@ -11822,7 +11822,7 @@ reload_cmds="\$LD\$reload_flag -o \$output\$reload_objs"
 old_archive_cmds="\$AR \$AR_FLAGS \$oldlib\$oldobjs~\$RANLIB \$tool_oldlib"
 
 # A language specific compiler.
-CC="/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/bin/gfortran"
+CC="ftn"
 
 # Is the compiler the GNU compiler?
 with_gcc=yes
@@ -11946,17 +11946,17 @@ file_list_spec=""
 hardcode_action=immediate
 
 # The directories searched by this compiler when creating a shared library.
-compiler_lib_search_dirs="/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64/../lib64 /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/../lib64 /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/gcc/x86_64-pc-linux-gnu/11.4.0 /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/gcc/x86_64-pc-linux-gnu/11.4.0/../../../../lib64 /lib/../lib64 /usr/lib/../lib64 /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-11.8.0-vfixfmc/lib64 /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64 /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/gcc/x86_64-pc-linux-gnu/11.4.0/../../.."
+compiler_lib_search_dirs=""
 
 # Dependencies to place before and after the objects being linked to
 # create a shared library.
-predep_objects="/lib/../lib64/crti.o /sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/gcc/x86_64-pc-linux-gnu/11.4.0/crtbeginS.o"
-postdep_objects="/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/gcc/x86_64-pc-linux-gnu/11.4.0/crtendS.o /lib/../lib64/crtn.o"
+predep_objects=""
+postdep_objects="/lib/../lib64/crti.o /opt/rh/gcc-toolset-13/root/usr/lib/gcc/x86_64-redhat-linux/13/crtbeginS.o /opt/rh/gcc-toolset-13/root/usr/lib/gcc/x86_64-redhat-linux/13/crtendS.o /lib/../lib64/crtn.o"
 predeps=""
-postdeps="-lgfortran -lm -lgcc_s -lquadmath -lm -lgcc_s -lc -lgcc_s"
+postdeps="-L/opt/nvidia/hpc_sdk/Linux_x86_64/25.3/cuda/12.8/lib64 -L/opt/nvidia/hpc_sdk/Linux_x86_64/25.3/cuda/12.8/nvvm/lib64 -L/opt/nvidia/hpc_sdk/Linux_x86_64/25.3/cuda/12.8/extras/CUPTI/lib64 -L/opt/nvidia/hpc_sdk/Linux_x86_64/25.3/math_libs/12.8/lib64 -lcuda -L/opt/cray/pe/dsmml/0.3.1/dsmml/lib -L/opt/cray/pe/libsci/25.03.0/GNU/12.2/x86_64/lib -L/opt/cray/pe/mpich/8.1.32/ofi/gnu/11.2/lib -L/opt/cray/pe/mpich/8.1.32/gtl/lib -lmpi_gtl_cuda -lmpi_gtl_cuda -ldl -lmpi_gtl_cuda -l -l -L/opt/nvidia/hpc_sdk/Linux_x86_64/25.3/cuda/12.8/lib64 -L/opt/nvidia/hpc_sdk/Linux_x86_64/25.3/cuda/12.8/nvvm/lib64 -L/opt/nvidia/hpc_sdk/Linux_x86_64/25.3/cuda/12.8/extras/CUPTI/lib64 -L/opt/nvidia/hpc_sdk/Linux_x86_64/25.3/math_libs/12.8/lib64 -L/opt/cray/pe/dsmml/0.3.1/dsmml/lib -L/opt/cray/pe/libsci/25.03.0/GNU/12.2/x86_64/lib -L/opt/cray/pe/mpich/8.1.32/ofi/gnu/11.2/lib -L/opt/cray/pe/mpich/8.1.32/gtl/lib -L/opt/rh/gcc-toolset-13/root/usr/lib/gcc/x86_64-redhat-linux/13 -L/opt/rh/gcc-toolset-13/root/usr/lib/gcc/x86_64-redhat-linux/13/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/opt/rh/gcc-toolset-13/root/usr/lib/gcc/x86_64-redhat-linux/13/../../.. -lcupti -lcudart -lcuda -lmpi_gtl_cuda -ldsmml -lsci_gnu_mpi -lmpi_gtl_cuda -lsci_gnu -ldl -lmpifort_gnu_112 -lmpi_gnu_112 -lmpi_gtl_cuda -lgfortran -lquadmath -lpthread -lgfortran -lm -lgcc_s -lquadmath -lm -lc -lgcc_s"
 
 # The library search path used internally by the compiler when linking
 # a shared library.
-compiler_lib_search_path="-L/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64/../lib64 -L/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/../lib64 -L/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/gcc/x86_64-pc-linux-gnu/11.4.0 -L/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/gcc/x86_64-pc-linux-gnu/11.4.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-11.8.0-vfixfmc/lib64 -L/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/openmpi-4.1.6-lranp74/lib -L/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib64 -L/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib -L/sw/spack/deltas11-2023-03/apps/linux-rhel8-x86_64/gcc-8.5.0/gcc-11.4.0-yycklku/lib/gcc/x86_64-pc-linux-gnu/11.4.0/../../.."
+compiler_lib_search_path=""
 
 # ### END LIBTOOL TAG CONFIG: FC
