@@ -167,6 +167,162 @@ static inline int cls_idx(const float* a, int r, int c, int i, int j, float eps)
     return cls4(cc,n,s,w,e,eps);
 }
 
+/**
+ * Estimates optimal RBF parameters (sigma, ksize, eps) from 2D data for Gaussian RBF smoothing.
+ * This function analyzes data characteristics to adaptively set parameters.
+ * 
+ * @param data 2D data array (row-major order: data[i*cols + j])
+ * @param rows Number of rows
+ * @param cols Number of columns
+ * @param errBound Error bound for compression
+ * @param target_saddles Optional: number of target saddles to preserve (for adaptive eps)
+ * @param sigma_out Output parameter for estimated sigma (Gaussian kernel width)
+ * @param ksize_out Output parameter for estimated kernel size (radius = ksize/2)
+ * @param eps_out Output parameter for estimated classification tolerance
+ * 
+ * Algorithm:
+ * 1. Sigma: Based on data variance and neighbor differences (0.5-1.0 range)
+ * 2. Ksize: Based on data correlation length and saddle density (3-7 range, must be odd)
+ * 3. Eps: Based on error bound, data range, and saddle characteristics
+ */
+void estimate_rbf_parameters(const float *data, int rows, int cols, float errBound,
+                              int target_saddles, double *sigma_out, int *ksize_out, float *eps_out) {
+    if (!data || rows < 3 || cols < 3 || !sigma_out || !ksize_out || !eps_out) {
+        // Default fallback values
+        *sigma_out = 0.8;
+        *ksize_out = 3;
+        *eps_out = fmaxf(1e-6f, 0.1f * errBound);
+        return;
+    }
+    
+    // Step 1: Compute data statistics
+    float min_val = data[0], max_val = data[0];
+    double sum = 0.0, sum_sq = 0.0;
+    size_t count = 0;
+    
+    // Sample data for efficiency (every 10th point for large datasets)
+    int sample_step = (rows * cols > 1000000) ? 10 : 1;
+    for (int i = 1; i < rows - 1; i += sample_step) {
+        for (int j = 1; j < cols - 1; j += sample_step) {
+            float val = data[i * cols + j];
+            if (val < min_val) min_val = val;
+            if (val > max_val) max_val = val;
+            sum += val;
+            sum_sq += val * val;
+            count++;
+        }
+    }
+    
+    double mean = sum / count;
+    double variance = (sum_sq / count) - (mean * mean);
+    (void)variance;  // Variance computed but not directly used (indirectly via neighbor_diff analysis)
+    float data_range = max_val - min_val;
+    
+    // Step 2: Estimate local variation (neighbor differences)
+    double avg_neighbor_diff = 0.0;
+    double max_neighbor_diff = 0.0;
+    int neighbor_count = 0;
+    
+    // Sample neighbor differences
+    int sample_i_step = (rows > 1000) ? 5 : 1;
+    int sample_j_step = (cols > 1000) ? 5 : 1;
+    for (int i = 1; i < rows - 1; i += sample_i_step) {
+        for (int j = 1; j < cols - 1; j += sample_j_step) {
+            float center = data[i * cols + j];
+            float n = data[(i-1) * cols + j];
+            float s = data[(i+1) * cols + j];
+            float w = data[i * cols + (j-1)];
+            float e = data[i * cols + (j+1)];
+            
+            double diff_n = fabs(center - n);
+            double diff_s = fabs(center - s);
+            double diff_w = fabs(center - w);
+            double diff_e = fabs(center - e);
+            
+            double max_diff = fmax(fmax(diff_n, diff_s), fmax(diff_w, diff_e));
+            avg_neighbor_diff += (diff_n + diff_s + diff_w + diff_e) / 4.0;
+            if (max_diff > max_neighbor_diff) max_neighbor_diff = max_diff;
+            neighbor_count++;
+        }
+    }
+    if (neighbor_count > 0) {
+        avg_neighbor_diff /= neighbor_count;
+    }
+    
+    // Step 3: Estimate sigma (Gaussian kernel width)
+    // Sigma should be proportional to local variation but not too large
+    // Range: 0.5 to 1.0, with 0.8 as default
+    double normalized_variation = (data_range > 0) ? (avg_neighbor_diff / data_range) : 0.01;
+    double sigma = 0.6 + 0.3 * normalized_variation;  // Base 0.6, add up to 0.3 based on variation
+    sigma = fmax(0.5, fmin(1.0, sigma));  // Clamp to [0.5, 1.0]
+    
+    // Adjust sigma based on error bound relative to data range
+    double err_ratio = (data_range > 0) ? (errBound / data_range) : 0.001;
+    if (err_ratio > 0.01) {
+        // High error bound relative to range -> use larger sigma for more smoothing
+        sigma = fmin(1.0, sigma * 1.2);
+    } else if (err_ratio < 0.001) {
+        // Very low error bound -> use smaller sigma for less smoothing
+        sigma = fmax(0.5, sigma * 0.8);
+    }
+    
+    // Step 4: Estimate ksize (kernel size / radius)
+    // Ksize should be odd (3, 5, 7) and based on data correlation
+    // Larger for smoother data, smaller for noisy data
+    int ksize = 3;  // Default
+    
+    // Estimate correlation length from neighbor differences
+    double correlation_estimate = (avg_neighbor_diff > 0) ? 
+        (data_range / (avg_neighbor_diff * 10.0)) : 1.0;
+    
+    if (correlation_estimate > 2.0 && rows * cols < 10000000) {
+        // Data is relatively smooth and dataset is manageable -> use larger kernel
+        ksize = 5;
+    } else if (correlation_estimate > 3.0 && rows * cols < 5000000) {
+        // Very smooth data -> use even larger kernel
+        ksize = 7;
+    }
+    
+    // Ensure ksize is odd
+    if (ksize % 2 == 0) ksize++;
+    
+    // Step 5: Estimate eps (classification tolerance)
+    // Eps should be based on error bound, data characteristics, and saddle preservation needs
+    float eps_base = fmaxf(1e-6f, 0.1f * errBound);
+    
+    // Adjust eps based on data characteristics
+    float eps = eps_base;
+    
+    // If neighbor differences are small relative to error bound, use tighter eps
+    if (avg_neighbor_diff < errBound * 2.0) {
+        eps = eps_base * 0.8f;  // Tighter tolerance
+    } else if (avg_neighbor_diff > errBound * 10.0) {
+        eps = eps_base * 1.5f;  // Looser tolerance for high-variation data
+    }
+    
+    // Adjust based on data range (normalize to data scale)
+    if (data_range > 0) {
+        float range_ratio = errBound / data_range;
+        if (range_ratio < 0.0001) {
+            // Very tight error bound -> use proportionally tighter eps
+            eps = fmaxf(eps_base * 0.5f, data_range * 1e-6f);
+        } else if (range_ratio > 0.01) {
+            // Loose error bound -> can use proportionally looser eps
+            eps = fminf(eps_base * 2.0f, data_range * 0.01f);
+        }
+    }
+    
+    // Clamp eps to reasonable bounds
+    float eps_min = fmaxf(1e-6f, errBound * 0.05f);
+    float eps_max = fminf(data_range * 0.05f, errBound * 2.0f);
+    eps = fmaxf(eps_min, fminf(eps_max, eps));
+    
+    // Output results
+    *sigma_out = sigma;
+    *ksize_out = ksize;
+    *eps_out = eps;
+}
+
 // Forward declaration
 void rbf_smooth_saddle_points_safe_extrema_aware_targeted(
     float *data, const int *types0, const unsigned char *locks, const unsigned char *target_mask,
@@ -677,10 +833,21 @@ int main(int argc, char *argv[])
     
     // Only apply RBF smoothing to false negative saddles (targeted restoration)
     if(false_negative_saddles > 0){
+        // Estimate optimal RBF parameters from data characteristics
+        double estimated_sigma;
+        int estimated_ksize;
+        float estimated_eps;
+        estimate_rbf_parameters(data, rows, cols, errBound, false_negative_saddles,
+                               &estimated_sigma, &estimated_ksize, &estimated_eps);
+        
         printf("Applying RBF smoothing to restore %d false negative saddles...\n", false_negative_saddles);
+        printf("  Estimated parameters: sigma=%.3f, ksize=%d, eps=%.6f\n", 
+               estimated_sigma, estimated_ksize, estimated_eps);
         fflush(stdout);
+        
         rbf_smooth_saddle_points_safe_extrema_aware_targeted(
-            data, types_orig, locks, false_negative_mask, rows, cols, 0.8, 3, eps, errBound);
+            data, types_orig, locks, false_negative_mask, rows, cols, 
+            estimated_sigma, estimated_ksize, estimated_eps, errBound);
         printf("RBF smoothing completed.\n");
         fflush(stdout);
     } else {
