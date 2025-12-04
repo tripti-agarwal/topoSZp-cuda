@@ -102,6 +102,13 @@ int* build_sort_position_mapping(int *critical_points_types, int *sort_positions
 
 void apply_stencils_on_critical_points(float *data, int *critical_points_types, int *sort_positions, 
                                      int *sort_position_mapping, int rows, int cols, float error_bound, size_t critical_count){
+    // Safety check: if sort_position_mapping is NULL, skip stencil application
+    // This can happen if extrema_count is 0 or mapping creation failed
+    if (!sort_position_mapping || !sort_positions || critical_count == 0) {
+        // No sort positions available, skip stencil application
+        return;
+    }
+    
     for(int i=1;i<rows-1;i++){
         for(int j=1;j<cols-1;j++){
             int idx=i*cols+j;
@@ -254,11 +261,23 @@ void rbf_smooth_saddle_points_safe_extrema_aware_targeted(
             // Check if smoothing creates unwanted critical points
             // Regular points (types0[idx]==0) should not become critical points
             if(types0[idx]==0 && cls_idx(data,rows,cols,i,j,eps)!=0) bad=1;
-            // Check neighbors too
-            if(!bad){ int ni=i-1; if(types0[ni*cols+j]==0 && cls_idx(data,rows,cols,ni,j,eps)!=0) bad=1; }
-            if(!bad){ int si=i+1; if(types0[si*cols+j]==0 && cls_idx(data,rows,cols,si,j,eps)!=0) bad=1; }
-            if(!bad){ int wj=j-1; if(types0[i*cols+wj]==0 && cls_idx(data,rows,cols,i,wj,eps)!=0) bad=1; }
-            if(!bad){ int ej=j+1; if(types0[i*cols+ej]==0 && cls_idx(data,rows,cols,i,ej,eps)!=0) bad=1; }
+            // Check neighbors too - ensure bounds are valid before calling cls_idx
+            if(!bad){ 
+                int ni=i-1; 
+                if(ni >= 1 && ni < rows-1 && types0[ni*cols+j]==0 && cls_idx(data,rows,cols,ni,j,eps)!=0) bad=1; 
+            }
+            if(!bad){ 
+                int si=i+1; 
+                if(si >= 1 && si < rows-1 && types0[si*cols+j]==0 && cls_idx(data,rows,cols,si,j,eps)!=0) bad=1; 
+            }
+            if(!bad){ 
+                int wj=j-1; 
+                if(wj >= 1 && wj < cols-1 && types0[i*cols+wj]==0 && cls_idx(data,rows,cols,i,wj,eps)!=0) bad=1; 
+            }
+            if(!bad){ 
+                int ej=j+1; 
+                if(ej >= 1 && ej < cols-1 && types0[i*cols+ej]==0 && cls_idx(data,rows,cols,i,ej,eps)!=0) bad=1; 
+            }
             
             // Safety mechanism: Gradually applies smoothing (using alpha factor)
             // Validation: Checks if smoothing accidentally creates new critical points
@@ -425,8 +444,28 @@ int main(int argc, char *argv[])
     float *data = NULL;
     int *critical_points_types = NULL;
     int *types_orig = (int*)malloc((size_t)rows*(size_t)cols*sizeof(int));
+    if (!types_orig) {
+        printf("Error: Failed to allocate memory for types_orig\n");
+        free(bytes);
+        exit(1);
+    }
     int *sort_positions = (int*)malloc((size_t)rows*(size_t)cols*sizeof(int));
+    if (!sort_positions) {
+        printf("Error: Failed to allocate memory for sort_positions\n");
+        free(types_orig);
+        free(bytes);
+        exit(1);
+    }
+    // Initialize types_orig to zeros before building locks (locks will be rebuilt after decompression)
+    memset(types_orig, 0, (size_t)rows*(size_t)cols*sizeof(int));
     unsigned char *locks = build_extrema_locks_from_types(types_orig, rows, cols);
+    if (!locks) {
+        printf("Error: Failed to allocate memory for locks\n");
+        free(types_orig);
+        free(sort_positions);
+        free(bytes);
+        exit(1);
+    }
     float eps = fmaxf(1e-6f, 0.1f*errBound);
     size_t extrema_count = 0;  // Number of extrema (maxima + minima) only
     size_t sort_positions_size = 0;
@@ -487,6 +526,25 @@ int main(int argc, char *argv[])
         &data, nbEle, errBound, blockSize, padded_topology, &critical_points_types);
     
     free(padded_topology);
+    
+    // Validate decompression results
+    if (!data) {
+        printf("Error: Decompression returned NULL data\n");
+        free(types_orig);
+        free(sort_positions);
+        free(locks);
+        free(bytes);
+        exit(1);
+    }
+    if (!critical_points_types) {
+        printf("Error: Decompression returned NULL critical_points_types\n");
+        free(types_orig);
+        free(sort_positions);
+        free(locks);
+        free(bytes);
+        free(data);
+        exit(1);
+    }
 
     // Decompress sort positions if available
     if (sort_positions_size > 0 && sort_positions_size + sizeof(size_t) <= byteLength) {
@@ -509,7 +567,32 @@ int main(int argc, char *argv[])
             }
         }
     }
+    
+    // Validate critical_points_types before using it
+    if (!critical_points_types) {
+        printf("Error: critical_points_types is NULL after decompression\n");
+        free(types_orig);
+        free(sort_positions);
+        free(locks);
+        free(bytes);
+        if (data) free(data);
+        exit(1);
+    }
+    
     memcpy(types_orig, critical_points_types, (size_t)rows*(size_t)cols*sizeof(int));
+    
+    // Rebuild locks now that types_orig is properly initialized
+    free(locks);
+    locks = build_extrema_locks_from_types(types_orig, rows, cols);
+    if (!locks) {
+        printf("Error: Failed to rebuild locks after decompression\n");
+        free(types_orig);
+        free(sort_positions);
+        free(bytes);
+        free(data);
+        free(critical_points_types);
+        exit(1);
+    }
     
     // Store original decompressed values before any modifications to preserve error bound
     float *orig_decomp = (float*)malloc((size_t)rows*(size_t)cols*sizeof(float));
@@ -594,22 +677,41 @@ int main(int argc, char *argv[])
     
     // Only apply RBF smoothing to false negative saddles (targeted restoration)
     if(false_negative_saddles > 0){
+        printf("Applying RBF smoothing to restore %d false negative saddles...\n", false_negative_saddles);
+        fflush(stdout);
         rbf_smooth_saddle_points_safe_extrema_aware_targeted(
             data, types_orig, locks, false_negative_mask, rows, cols, 0.8, 3, eps, errBound);
+        printf("RBF smoothing completed.\n");
+        fflush(stdout);
     } else {
         printf("No false negative saddles - skipping RBF smoothing\n");
     }
     
     free(false_negative_mask);
     free(decomp_types);
+    
+    printf("Applying stencils to critical points...\n");
+    fflush(stdout);
     apply_stencils_on_critical_points(data, types_orig, sort_positions, sort_position_mapping, rows, cols, errBound, extrema_count);
+    printf("Stencils applied.\n");
+    fflush(stdout);
+    
+    printf("Restoring extrema from types...\n");
+    fflush(stdout);
     restore_extrema_from_types(types_orig, data, orig_decomp, rows, cols, eps, errBound);
+    printf("Extrema restoration completed.\n");
+    fflush(stdout);
     
     free(orig_decomp);
     
     // Clean up mapping
     if (sort_position_mapping) {
         free(sort_position_mapping);
+    }
+    
+    // Clean up locks
+    if (locks) {
+        free(locks);
     }
     
     cost_end();

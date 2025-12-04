@@ -9,3 +9,14 @@ Makefile
 .dirstamp
 libszp.la
 install
+
+# Exclude large data directories
+example/CESM_output/
+example/SDRBENCH-CESM-ATM-cleared-1800x3600/
+example/CESM_ouptut/
+
+# Exclude temporary NFS files
+.nfs*
+
+# Exclude log files
+example/log_*

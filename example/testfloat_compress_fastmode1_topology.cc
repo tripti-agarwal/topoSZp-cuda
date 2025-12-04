@@ -57,6 +57,17 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
+  // Validate dimensions match file size
+  size_t expected_nbEle = (size_t)rows * (size_t)cols;
+  if (nbEle != expected_nbEle) {
+    printf("Error: Dimension mismatch!\n");
+    printf("  File contains: %zu elements\n", nbEle);
+    printf("  Expected from dimensions (%d x %d): %zu elements\n", rows, cols, expected_nbEle);
+    printf("  This will cause a segmentation fault. Please check your dimensions.\n");
+    free(data);
+    exit(1);
+  }
+
   
   size_t critical_count;
   size_t outSize;
