@@ -1,0 +1,336 @@
+Input directory: /lcrc/project/ECP-EZ/tripti/CESM-OCEAN-MODELS/4/log_normalized
+Output directory: /lcrc/project/ECP-EZ/tripti/CESM-OCEAN-MODELS/4/log_normalized/ZFP_1e-3
+Dimensions: 384x320
+Error bound: 1E-3
+
+Found 54 .dat file(s) to process
+
+[1/54] Processing: ADVS_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=132608 ratio=3.71 rate=8.633 rmse=3.887e-07 nrmse=3.887e-07 maxe=8.497e-07 psnr=122.19
+compressionTime = 0.002424
+decompressionTime = 0.001598
+  ✓ Compression successful (ratio: 3.70x)
+
+[2/54] Processing: ADVS_ISOP_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=132608 ratio=3.71 rate=8.633 rmse=2.381e-07 nrmse=2.381e-07 maxe=6.197e-07 psnr=126.44
+compressionTime = 0.002180
+decompressionTime = 0.001516
+  ✓ Compression successful (ratio: 3.70x)
+
+[3/54] Processing: ADVS_SUBM_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=132608 ratio=3.71 rate=8.633 rmse=6.12e-08 nrmse=6.12e-08 maxe=1.553e-07 psnr=138.24
+compressionTime = 0.002378
+decompressionTime = 0.001670
+  ✓ Compression successful (ratio: 3.70x)
+
+[4/54] Processing: ADVT_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=138832 ratio=3.54 rate=9.039 rmse=5.879e-05 nrmse=5.879e-05 maxe=0.0004161 psnr=78.59
+compressionTime = 0.002522
+decompressionTime = 0.001992
+  ✓ Compression successful (ratio: 3.54x)
+
+[5/54] Processing: ADVT_ISOP_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=137968 ratio=3.56 rate=8.982 rmse=5.456e-05 nrmse=5.456e-05 maxe=0.0003493 psnr=79.24
+compressionTime = 0.002609
+decompressionTime = 0.002239
+  ✓ Compression successful (ratio: 3.56x)
+
+[6/54] Processing: ADVT_SUBM_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=136784 ratio=3.59 rate=8.905 rmse=5.687e-05 nrmse=5.687e-05 maxe=0.0003467 psnr=78.88
+compressionTime = 0.002355
+decompressionTime = 0.001676
+  ✓ Compression successful (ratio: 3.59x)
+
+[7/54] Processing: BSF_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=151792 ratio=3.24 rate=9.882 rmse=7.434e-05 nrmse=7.434e-05 maxe=0.0003662 psnr=76.56
+compressionTime = 0.002913
+decompressionTime = 0.002589
+  ✓ Compression successful (ratio: 3.23x)
+
+[8/54] Processing: DIA_DEPTH_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=164384 ratio=2.99 rate=10.7 rmse=7.887e-05 nrmse=7.887e-05 maxe=0.0003869 psnr=76.04
+compressionTime = 0.003074
+decompressionTime = 0.002914
+  ✓ Compression successful (ratio: 2.99x)
+
+[9/54] Processing: dTEMP_NEG_2D_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=145544 ratio=3.38 rate=9.476 rmse=6.62e-05 nrmse=6.62e-05 maxe=0.0003895 psnr=77.56
+compressionTime = 0.002943
+decompressionTime = 0.002519
+  ✓ Compression successful (ratio: 3.37x)
+
+[10/54] Processing: dTEMP_POS_2D_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=149824 ratio=3.28 rate=9.754 rmse=7.555e-05 nrmse=7.555e-05 maxe=0.0003933 psnr=76.42
+compressionTime = 0.002912
+decompressionTime = 0.002383
+  ✓ Compression successful (ratio: 3.28x)
+
+[11/54] Processing: EVAP_F_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=132608 ratio=3.71 rate=8.633 rmse=2.068e-06 nrmse=2.068e-06 maxe=2.962e-06 psnr=107.67
+compressionTime = 0.002238
+decompressionTime = 0.001556
+  ✓ Compression successful (ratio: 3.70x)
+
+[12/54] Processing: FW_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=132608 ratio=3.71 rate=8.633 rmse=0 nrmse=0 maxe=0 psnr=inf
+compressionTime = 0.002307
+decompressionTime = 0.001538
+  ✓ Compression successful (ratio: 3.70x)
+
+[13/54] Processing: HBLT_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=164088 ratio=3 rate=10.68 rmse=8.093e-05 nrmse=8.093e-05 maxe=0.0004186 psnr=75.82
+compressionTime = 0.003177
+decompressionTime = 0.003151
+  ✓ Compression successful (ratio: 2.99x)
+
+[14/54] Processing: HDIFS_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=132608 ratio=3.71 rate=8.633 rmse=3.188e-07 nrmse=3.188e-07 maxe=8.314e-07 psnr=123.91
+compressionTime = 0.002276
+decompressionTime = 0.001659
+  ✓ Compression successful (ratio: 3.70x)
+
+[15/54] Processing: HDIFT_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=138136 ratio=3.56 rate=8.993 rmse=5.794e-05 nrmse=5.794e-05 maxe=0.0004005 psnr=78.72
+compressionTime = 0.002695
+decompressionTime = 0.002225
+  ✓ Compression successful (ratio: 3.55x)
+
+[16/54] Processing: HLS_SUBM_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=150856 ratio=3.26 rate=9.821 rmse=5.618e-05 nrmse=5.618e-05 maxe=0.000515 psnr=78.99
+compressionTime = 0.002799
+decompressionTime = 0.002337
+  ✓ Compression successful (ratio: 3.25x)
+
+[17/54] Processing: HMXL_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=165208 ratio=2.98 rate=10.76 rmse=7.968e-05 nrmse=7.968e-05 maxe=0.0004192 psnr=75.95
+compressionTime = 0.003070
+decompressionTime = 0.003129
+  ✓ Compression successful (ratio: 2.97x)
+
+[18/54] Processing: IFRAC_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=136832 ratio=3.59 rate=8.908 rmse=2.888e-05 nrmse=2.888e-05 maxe=0.0003548 psnr=84.77
+compressionTime = 0.002779
+decompressionTime = 0.001896
+  ✓ Compression successful (ratio: 3.59x)
+
+[19/54] Processing: INT_DEPTH_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=164496 ratio=2.99 rate=10.71 rmse=8.036e-05 nrmse=8.036e-05 maxe=0.0004196 psnr=75.88
+compressionTime = 0.003611
+decompressionTime = 0.003392
+  ✓ Compression successful (ratio: 2.98x)
+
+[20/54] Processing: IOFF_F_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=132608 ratio=3.71 rate=8.633 rmse=3.161e-08 nrmse=3.161e-08 maxe=1.091e-06 psnr=143.98
+compressionTime = 0.002279
+decompressionTime = 0.001538
+  ✓ Compression successful (ratio: 3.70x)
+
+[21/54] Processing: LWDN_F_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=151496 ratio=3.24 rate=9.863 rmse=6.762e-05 nrmse=6.762e-05 maxe=0.0003801 psnr=77.38
+compressionTime = 0.002930
+decompressionTime = 0.002757
+  ✓ Compression successful (ratio: 3.24x)
+
+[22/54] Processing: LWUP_F_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=156576 ratio=3.14 rate=10.19 rmse=7.327e-05 nrmse=7.327e-05 maxe=0.0004002 psnr=76.68
+compressionTime = 0.002989
+decompressionTime = 0.002976
+  ✓ Compression successful (ratio: 3.13x)
+
+[23/54] Processing: MELT_F_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=132608 ratio=3.71 rate=8.633 rmse=2.112e-06 nrmse=2.112e-06 maxe=6.723e-06 psnr=107.49
+compressionTime = 0.002387
+decompressionTime = 0.001615
+  ✓ Compression successful (ratio: 3.70x)
+
+[24/54] Processing: MELTH_F_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=143032 ratio=3.44 rate=9.312 rmse=5.532e-05 nrmse=5.532e-05 maxe=0.0003586 psnr=79.12
+compressionTime = 0.002601
+decompressionTime = 0.002395
+  ✓ Compression successful (ratio: 3.43x)
+
+[25/54] Processing: PREC_F_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=132608 ratio=3.71 rate=8.633 rmse=5.894e-07 nrmse=5.894e-07 maxe=5.439e-06 psnr=118.57
+compressionTime = 0.002247
+decompressionTime = 0.001442
+  ✓ Compression successful (ratio: 3.70x)
+
+[26/54] Processing: QFLUX_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=135312 ratio=3.63 rate=8.809 rmse=2.653e-05 nrmse=2.653e-05 maxe=0.0004349 psnr=85.51
+compressionTime = 0.002319
+decompressionTime = 0.001912
+  ✓ Compression successful (ratio: 3.63x)
+
+[27/54] Processing: QSW_HBL_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=158592 ratio=3.1 rate=10.32 rmse=7.945e-05 nrmse=7.945e-05 maxe=0.0003727 psnr=75.98
+compressionTime = 0.002904
+decompressionTime = 0.002810
+  ✓ Compression successful (ratio: 3.09x)
+
+[28/54] Processing: QSW_HTP_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=158728 ratio=3.1 rate=10.33 rmse=7.945e-05 nrmse=7.945e-05 maxe=0.0003843 psnr=75.98
+compressionTime = 0.003089
+decompressionTime = 0.002708
+  ✓ Compression successful (ratio: 3.09x)
+
+[29/54] Processing: RESID_S_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=132608 ratio=3.71 rate=8.633 rmse=0 nrmse=0 maxe=0 psnr=inf
+compressionTime = 0.002290
+decompressionTime = 0.001592
+  ✓ Compression successful (ratio: 3.70x)
+
+[30/54] Processing: RESID_T_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=132608 ratio=3.71 rate=8.633 rmse=0 nrmse=0 maxe=0 psnr=inf
+compressionTime = 0.002256
+decompressionTime = 0.001530
+  ✓ Compression successful (ratio: 3.70x)
+
+[31/54] Processing: RHO_VINT_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=169344 ratio=2.9 rate=11.03 rmse=8.161e-05 nrmse=8.161e-05 maxe=0.0004063 psnr=75.74
+compressionTime = 0.003146
+decompressionTime = 0.002959
+  ✓ Compression successful (ratio: 2.90x)
+
+[32/54] Processing: ROFF_F_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=132608 ratio=3.71 rate=8.633 rmse=2.782e-07 nrmse=2.782e-07 maxe=1.204e-05 psnr=125.09
+compressionTime = 0.002421
+decompressionTime = 0.001607
+  ✓ Compression successful (ratio: 3.70x)
+
+[33/54] Processing: SALT_F_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=132608 ratio=3.71 rate=8.633 rmse=8.417e-09 nrmse=8.417e-09 maxe=2.379e-08 psnr=155.48
+compressionTime = 0.002333
+decompressionTime = 0.001440
+  ✓ Compression successful (ratio: 3.70x)
+
+[34/54] Processing: SENH_F_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=146624 ratio=3.35 rate=9.546 rmse=6.411e-05 nrmse=6.411e-05 maxe=0.0003897 psnr=77.84
+compressionTime = 0.002743
+decompressionTime = 0.002600
+  ✓ Compression successful (ratio: 3.35x)
+
+[35/54] Processing: SFWF_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=132608 ratio=3.71 rate=8.633 rmse=2.774e-06 nrmse=2.774e-06 maxe=1.494e-05 psnr=105.12
+compressionTime = 0.002428
+decompressionTime = 0.001692
+  ✓ Compression successful (ratio: 3.70x)
+
+[36/54] Processing: SFWF_WRST_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=132608 ratio=3.71 rate=8.633 rmse=0 nrmse=0 maxe=0 psnr=inf
+compressionTime = 0.002210
+decompressionTime = 0.001545
+  ✓ Compression successful (ratio: 3.70x)
+
+[37/54] Processing: SHF_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=149488 ratio=3.29 rate=9.732 rmse=6.917e-05 nrmse=6.917e-05 maxe=0.0003634 psnr=77.18
+compressionTime = 0.002863
+decompressionTime = 0.002818
+  ✓ Compression successful (ratio: 3.28x)
+
+[38/54] Processing: SHF_QSW_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=157488 ratio=3.12 rate=10.25 rmse=7.78e-05 nrmse=7.78e-05 maxe=0.0003891 psnr=76.16
+compressionTime = 0.003127
+decompressionTime = 0.002764
+  ✓ Compression successful (ratio: 3.12x)
+
+[39/54] Processing: SNOW_F_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=132608 ratio=3.71 rate=8.633 rmse=2.919e-08 nrmse=2.919e-08 maxe=1.714e-06 psnr=144.67
+compressionTime = 0.002324
+decompressionTime = 0.001567
+  ✓ Compression successful (ratio: 3.70x)
+
+[40/54] Processing: SSH_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=156424 ratio=3.14 rate=10.18 rmse=7.206e-05 nrmse=7.206e-05 maxe=0.000374 psnr=76.83
+compressionTime = 0.003579
+decompressionTime = 0.003237
+  ✓ Compression successful (ratio: 3.14x)
+
+[41/54] Processing: SSH2_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=171328 ratio=2.87 rate=11.15 rmse=8.109e-05 nrmse=8.109e-05 maxe=0.0003967 psnr=75.80
+compressionTime = 0.003109
+decompressionTime = 0.002767
+  ✓ Compression successful (ratio: 2.86x)
+
+[42/54] Processing: SU_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=149400 ratio=3.29 rate=9.727 rmse=7.858e-05 nrmse=7.858e-05 maxe=0.0004044 psnr=76.07
+compressionTime = 0.003117
+decompressionTime = 0.002765
+  ✓ Compression successful (ratio: 3.28x)
+
+[43/54] Processing: SV_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=146864 ratio=3.35 rate=9.561 rmse=7.894e-05 nrmse=7.894e-05 maxe=0.0003814 psnr=76.03
+compressionTime = 0.002974
+decompressionTime = 0.002499
+  ✓ Compression successful (ratio: 3.34x)
+
+[44/54] Processing: TAUX_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=143848 ratio=3.42 rate=9.365 rmse=6.498e-05 nrmse=6.498e-05 maxe=0.0003866 psnr=77.72
+compressionTime = 0.002922
+decompressionTime = 0.002769
+  ✓ Compression successful (ratio: 3.41x)
+
+[45/54] Processing: TAUX2_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=155744 ratio=3.16 rate=10.14 rmse=7.565e-05 nrmse=7.565e-05 maxe=0.0003766 psnr=76.40
+compressionTime = 0.003057
+decompressionTime = 0.002777
+  ✓ Compression successful (ratio: 3.15x)
+
+[46/54] Processing: TAUY_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=144280 ratio=3.41 rate=9.393 rmse=6.698e-05 nrmse=6.698e-05 maxe=0.0003914 psnr=77.46
+compressionTime = 0.002759
+decompressionTime = 0.002416
+  ✓ Compression successful (ratio: 3.40x)
+
+[47/54] Processing: TAUY2_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=154320 ratio=3.19 rate=10.05 rmse=7.611e-05 nrmse=7.611e-05 maxe=0.0003738 psnr=76.35
+compressionTime = 0.002990
+decompressionTime = 0.002703
+  ✓ Compression successful (ratio: 3.18x)
+
+[48/54] Processing: TBLT_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=173840 ratio=2.83 rate=11.32 rmse=8.289e-05 nrmse=8.289e-05 maxe=0.0003835 psnr=75.61
+compressionTime = 0.002946
+decompressionTime = 0.002763
+  ✓ Compression successful (ratio: 2.82x)
+
+[49/54] Processing: TFW_S_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=132608 ratio=3.71 rate=8.633 rmse=0 nrmse=0 maxe=0 psnr=inf
+compressionTime = 0.002453
+decompressionTime = 0.001602
+  ✓ Compression successful (ratio: 3.70x)
+
+[50/54] Processing: TFW_T_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=132608 ratio=3.71 rate=8.633 rmse=0 nrmse=0 maxe=0 psnr=inf
+compressionTime = 0.002251
+decompressionTime = 0.001352
+  ✓ Compression successful (ratio: 3.70x)
+
+[51/54] Processing: TLT_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=171512 ratio=2.87 rate=11.17 rmse=8.291e-05 nrmse=8.291e-05 maxe=0.0003929 psnr=75.61
+compressionTime = 0.003208
+decompressionTime = 0.003184
+  ✓ Compression successful (ratio: 2.86x)
+
+[52/54] Processing: TMXL_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=173800 ratio=2.83 rate=11.32 rmse=7.926e-05 nrmse=7.926e-05 maxe=0.0004243 psnr=76.00
+compressionTime = 0.003085
+decompressionTime = 0.002977
+  ✓ Compression successful (ratio: 2.82x)
+
+[53/54] Processing: XBLT_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=164208 ratio=2.99 rate=10.69 rmse=8.061e-05 nrmse=8.061e-05 maxe=0.0003888 psnr=75.85
+compressionTime = 0.003112
+decompressionTime = 0.003094
+  ✓ Compression successful (ratio: 2.99x)
+
+[54/54] Processing: XMXL_1_384_320.dat
+type=float nx=384 ny=320 nz=1 nw=1 raw=491520 zfp=165712 ratio=2.97 rate=10.79 rmse=8.059e-05 nrmse=8.059e-05 maxe=0.0003914 psnr=75.85
+compressionTime = 0.003155
+decompressionTime = 0.003167
+  ✓ Compression successful (ratio: 2.96x)
+
+=== Summary ===
+Total files processed: 54
+Total files skipped: 0
+Total files failed: 0
+

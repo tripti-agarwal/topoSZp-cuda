@@ -1,0 +1,982 @@
+Input directory: ../../CESM-ICE-MODELS/4/log_normalized
+Output directory: ../../CESM-ICE-MODELS/4/log_normalized/tthresh_1E-3
+Dimensions: 384x320
+Error bound: 0.001
+
+Found 130 .dat file(s) to process
+
+[1/130] Skipping: aeroiceint001_1_384_320.dat (output files already exist)
+[2/130] Skipping: aeroiceint002_1_384_320.dat (output files already exist)
+[3/130] Skipping: aeroiceint003_1_384_320.dat (output files already exist)
+[4/130] Skipping: aeroicessl001_1_384_320.dat (output files already exist)
+[5/130] Skipping: aeroicessl002_1_384_320.dat (output files already exist)
+[6/130] Skipping: aeroicessl003_1_384_320.dat (output files already exist)
+[7/130] Skipping: aerosnoint001_1_384_320.dat (output files already exist)
+[8/130] Skipping: aerosnoint002_1_384_320.dat (output files already exist)
+[9/130] Skipping: aerosnoint003_1_384_320.dat (output files already exist)
+[10/130] Skipping: aerosnossl001_1_384_320.dat (output files already exist)
+[11/130] Processing: aerosnossl002_1_384_320.dat
+oldbits = 3932160, newbits = 334480, compressionratio = 11.756, bpv = 2.72201
+Total compression time: 179.957ms
+eps = 0.168572, rmse = 0.092085, psnr = 14.6956
+Total decompression time: 16.946ms
+Total time: 196.939ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[12/130] Processing: aerosnossl003_1_384_320.dat
+oldbits = 3932160, newbits = 334480, compressionratio = 11.756, bpv = 2.72201
+Total compression time: 180.546ms
+eps = 0.168572, rmse = 0.092085, psnr = 14.6956
+Total decompression time: 17.879ms
+Total time: 198.46ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[13/130] Processing: aice_1_384_320.dat
+oldbits = 3932160, newbits = 333968, compressionratio = 11.7741, bpv = 2.71784
+Total compression time: 182.083ms
+eps = 0.168148, rmse = 0.0918959, psnr = 14.7135
+Total decompression time: 17.531ms
+Total time: 199.666ms
+  ✓ Compression successful (ratio: 11.77x)
+
+[14/130] Processing: aicen001_1_384_320.dat
+oldbits = 3932160, newbits = 333456, compressionratio = 11.7921, bpv = 2.71367
+Total compression time: 182.476ms
+eps = 0.168171, rmse = 0.0918959, psnr = 14.7135
+Total decompression time: 19.636ms
+Total time: 202.167ms
+  ✓ Compression successful (ratio: 11.79x)
+
+[15/130] Processing: aicen002_1_384_320.dat
+oldbits = 3932160, newbits = 333136, compressionratio = 11.8035, bpv = 2.71107
+Total compression time: 185.008ms
+eps = 0.168355, rmse = 0.0919844, psnr = 14.7051
+Total decompression time: 16.964ms
+Total time: 202.009ms
+  ✓ Compression successful (ratio: 11.80x)
+
+[16/130] Processing: aicen003_1_384_320.dat
+oldbits = 3932160, newbits = 333264, compressionratio = 11.7989, bpv = 2.71211
+Total compression time: 182.537ms
+eps = 0.168118, rmse = 0.0918441, psnr = 14.7184
+Total decompression time: 18.736ms
+Total time: 201.307ms
+  ✓ Compression successful (ratio: 11.79x)
+
+[17/130] Processing: aicen004_1_384_320.dat
+oldbits = 3932160, newbits = 333392, compressionratio = 11.7944, bpv = 2.71315
+Total compression time: 203.292ms
+eps = 0.168267, rmse = 0.0919234, psnr = 14.7109
+Total decompression time: 16.29ms
+Total time: 219.62ms
+  ✓ Compression successful (ratio: 11.79x)
+
+[18/130] Processing: aicen005_1_384_320.dat
+oldbits = 3932160, newbits = 333456, compressionratio = 11.7921, bpv = 2.71367
+Total compression time: 182.339ms
+eps = 0.168268, rmse = 0.091923, psnr = 14.7109
+Total decompression time: 16.908ms
+Total time: 199.287ms
+  ✓ Compression successful (ratio: 11.79x)
+
+[19/130] Processing: aisnap_1_384_320.dat
+oldbits = 3932160, newbits = 334160, compressionratio = 11.7673, bpv = 2.7194
+Total compression time: 194.817ms
+eps = 0.168586, rmse = 0.0920935, psnr = 14.6948
+Total decompression time: 17.096ms
+Total time: 211.943ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[20/130] Processing: albice_1_384_320.dat
+oldbits = 3932160, newbits = 334480, compressionratio = 11.756, bpv = 2.72201
+Total compression time: 186.182ms
+eps = 0.168563, rmse = 0.0920802, psnr = 14.6961
+Total decompression time: 16.748ms
+Total time: 202.974ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[21/130] Processing: albpnd_1_384_320.dat
+oldbits = 3932160, newbits = 334608, compressionratio = 11.7515, bpv = 2.72305
+Total compression time: 183.334ms
+eps = 0.168556, rmse = 0.0920764, psnr = 14.6964
+Total decompression time: 16.37ms
+Total time: 199.742ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[22/130] Processing: albsno_1_384_320.dat
+oldbits = 3932160, newbits = 333840, compressionratio = 11.7786, bpv = 2.7168
+Total compression time: 187.495ms
+eps = 0.168472, rmse = 0.0920335, psnr = 14.7005
+Total decompression time: 17.243ms
+Total time: 204.783ms
+  ✓ Compression successful (ratio: 11.77x)
+
+[23/130] Processing: alidr_1_384_320.dat
+oldbits = 3932160, newbits = 335184, compressionratio = 11.7313, bpv = 2.72773
+Total compression time: 208.437ms
+eps = 0.168253, rmse = 0.0919392, psnr = 14.7094
+Total decompression time: 17.208ms
+Total time: 225.692ms
+  ✓ Compression successful (ratio: 11.73x)
+
+[24/130] Processing: alvdr_1_384_320.dat
+oldbits = 3932160, newbits = 336144, compressionratio = 11.6978, bpv = 2.73555
+Total compression time: 186.047ms
+eps = 0.168257, rmse = 0.0919478, psnr = 14.7086
+Total decompression time: 17.727ms
+Total time: 203.812ms
+  ✓ Compression successful (ratio: 11.69x)
+
+[25/130] Processing: ANGLE_384_320.dat
+oldbits = 3932160, newbits = 16592, compressionratio = 236.991, bpv = 0.135026
+Total compression time: 156.185ms
+eps = 0.0750782, rmse = 0.0536157, psnr = 19.3936
+Total decompression time: 7.613ms
+Total time: 163.841ms
+  ✓ Compression successful (ratio: 236.99x)
+
+[26/130] Processing: ANGLET_384_320.dat
+oldbits = 3932160, newbits = 22352, compressionratio = 175.92, bpv = 0.181901
+Total compression time: 127.77ms
+eps = 0.0158732, rmse = 0.0113505, psnr = 32.8791
+Total decompression time: 7.529ms
+Total time: 135.338ms
+  ✓ Compression successful (ratio: 175.91x)
+
+[27/130] Processing: apond001_1_384_320.dat
+oldbits = 3932160, newbits = 335440, compressionratio = 11.7224, bpv = 2.72982
+Total compression time: 246.939ms
+eps = 0.168684, rmse = 0.0921478, psnr = 14.6897
+Total decompression time: 17.315ms
+Total time: 264.301ms
+  ✓ Compression successful (ratio: 11.72x)
+
+[28/130] Processing: apond002_1_384_320.dat
+oldbits = 3932160, newbits = 333968, compressionratio = 11.7741, bpv = 2.71784
+Total compression time: 194.386ms
+eps = 0.168792, rmse = 0.0922362, psnr = 14.6814
+Total decompression time: 18.402ms
+Total time: 212.83ms
+  ✓ Compression successful (ratio: 11.77x)
+
+[29/130] Processing: apond003_1_384_320.dat
+oldbits = 3932160, newbits = 334608, compressionratio = 11.7515, bpv = 2.72305
+Total compression time: 202.436ms
+eps = 0.168336, rmse = 0.0919806, psnr = 14.7055
+Total decompression time: 17.823ms
+Total time: 220.305ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[30/130] Processing: apond004_1_384_320.dat
+oldbits = 3932160, newbits = 334352, compressionratio = 11.7605, bpv = 2.72096
+Total compression time: 192.846ms
+eps = 0.168248, rmse = 0.0919273, psnr = 14.7105
+Total decompression time: 17.13ms
+Total time: 210.02ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[31/130] Processing: apond005_1_384_320.dat
+oldbits = 3932160, newbits = 334416, compressionratio = 11.7583, bpv = 2.72148
+Total compression time: 190.604ms
+eps = 0.168208, rmse = 0.0919012, psnr = 14.713
+Total decompression time: 17.56ms
+Total time: 208.206ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[32/130] Processing: congel_1_384_320.dat
+oldbits = 3932160, newbits = 334416, compressionratio = 11.7583, bpv = 2.72148
+Total compression time: 193.053ms
+eps = 0.168487, rmse = 0.0920388, psnr = 14.7
+Total decompression time: 17.435ms
+Total time: 210.547ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[33/130] Processing: coszen_1_384_320.dat
+oldbits = 3932160, newbits = 333328, compressionratio = 11.7967, bpv = 2.71263
+Total compression time: 186.485ms
+eps = 0.168418, rmse = 0.0920037, psnr = 14.7033
+Total decompression time: 17.919ms
+Total time: 204.477ms
+  ✓ Compression successful (ratio: 11.79x)
+
+[34/130] Processing: daidtd_1_384_320.dat
+oldbits = 3932160, newbits = 541200, compressionratio = 7.26563, bpv = 4.4043
+Total compression time: 241.036ms
+eps = 0.0879157, rmse = 0.0481184, psnr = 20.3332
+Total decompression time: 21.533ms
+Total time: 262.626ms
+  ✓ Compression successful (ratio: 7.26x)
+
+[35/130] Processing: daidtt_1_384_320.dat
+oldbits = 3932160, newbits = 328336, compressionratio = 11.976, bpv = 2.67201
+Total compression time: 194.067ms
+eps = 0.167224, rmse = 0.0914132, psnr = 14.7592
+Total decompression time: 17.958ms
+Total time: 212.069ms
+  ✓ Compression successful (ratio: 11.97x)
+
+[36/130] Processing: dardg1dt_1_384_320.dat
+oldbits = 3932160, newbits = 334160, compressionratio = 11.7673, bpv = 2.7194
+Total compression time: 181.509ms
+eps = 0.168854, rmse = 0.0922393, psnr = 14.6811
+Total decompression time: 18.057ms
+Total time: 199.616ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[37/130] Processing: dardg2dt_1_384_320.dat
+oldbits = 3932160, newbits = 334416, compressionratio = 11.7583, bpv = 2.72148
+Total compression time: 193.816ms
+eps = 0.168512, rmse = 0.0920519, psnr = 14.6987
+Total decompression time: 17.676ms
+Total time: 211.572ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[38/130] Processing: divu_1_384_320.dat
+oldbits = 3932160, newbits = 536464, compressionratio = 7.32977, bpv = 4.36576
+Total compression time: 194.104ms
+eps = 0.0876342, rmse = 0.0480484, psnr = 20.3458
+Total decompression time: 20.99ms
+Total time: 215.134ms
+  ✓ Compression successful (ratio: 7.32x)
+
+[39/130] Processing: dvidtd_1_384_320.dat
+oldbits = 3932160, newbits = 678096, compressionratio = 5.79882, bpv = 5.51836
+Total compression time: 194.446ms
+eps = 0.0820934, rmse = 0.0448985, psnr = 20.9348
+Total decompression time: 23.882ms
+Total time: 218.369ms
+  ✓ Compression successful (ratio: 5.79x)
+
+[40/130] Processing: dvidtt_1_384_320.dat
+oldbits = 3932160, newbits = 330320, compressionratio = 11.9041, bpv = 2.68815
+Total compression time: 187.573ms
+eps = 0.167773, rmse = 0.0916896, psnr = 14.733
+Total decompression time: 17.314ms
+Total time: 204.931ms
+  ✓ Compression successful (ratio: 11.90x)
+
+[41/130] Processing: dvirdgdt_1_384_320.dat
+oldbits = 3932160, newbits = 334480, compressionratio = 11.756, bpv = 2.72201
+Total compression time: 200.382ms
+eps = 0.168658, rmse = 0.0921319, psnr = 14.6912
+Total decompression time: 16.434ms
+Total time: 216.876ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[42/130] Processing: dxt_384_320.dat
+oldbits = 3932160, newbits = 13648, compressionratio = 288.113, bpv = 0.111068
+Total compression time: 143.143ms
+eps = 0.0235012, rmse = 0.0226027, psnr = 26.8962
+Total decompression time: 7.258ms
+Total time: 150.445ms
+  ✓ Compression successful (ratio: 288.11x)
+
+[43/130] Processing: dxu_384_320.dat
+oldbits = 3932160, newbits = 13648, compressionratio = 288.113, bpv = 0.111068
+Total compression time: 140.492ms
+eps = 0.0234063, rmse = 0.022514, psnr = 26.9304
+Total decompression time: 7.775ms
+Total time: 148.306ms
+  ✓ Compression successful (ratio: 288.11x)
+
+[44/130] Processing: dyt_384_320.dat
+oldbits = 3932160, newbits = 20048, compressionratio = 196.137, bpv = 0.163151
+Total compression time: 150.183ms
+eps = 0.011401, rmse = 0.00999592, psnr = 33.9829
+Total decompression time: 7.556ms
+Total time: 157.78ms
+  ✓ Compression successful (ratio: 196.13x)
+
+[45/130] Processing: dyu_384_320.dat
+oldbits = 3932160, newbits = 19408, compressionratio = 202.605, bpv = 0.157943
+Total compression time: 138.15ms
+eps = 0.0115884, rmse = 0.0101599, psnr = 33.8416
+Total decompression time: 7.199ms
+Total time: 145.419ms
+  ✓ Compression successful (ratio: 202.60x)
+
+[46/130] Processing: evap_1_384_320.dat
+oldbits = 3932160, newbits = 334352, compressionratio = 11.7605, bpv = 2.72096
+Total compression time: 195.481ms
+eps = 0.168538, rmse = 0.0920662, psnr = 14.6974
+Total decompression time: 16.899ms
+Total time: 212.433ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[47/130] Processing: evap_ai_1_384_320.dat
+oldbits = 3932160, newbits = 334288, compressionratio = 11.7628, bpv = 2.72044
+Total compression time: 185.348ms
+eps = 0.168544, rmse = 0.0920698, psnr = 14.6971
+Total decompression time: 17.433ms
+Total time: 202.826ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[48/130] Processing: faero_atm001_1_384_320.dat
+oldbits = 3932160, newbits = 334480, compressionratio = 11.756, bpv = 2.72201
+Total compression time: 205.783ms
+eps = 0.168572, rmse = 0.092085, psnr = 14.6956
+Total decompression time: 17.628ms
+Total time: 223.452ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[49/130] Processing: faero_atm002_1_384_320.dat
+oldbits = 3932160, newbits = 334480, compressionratio = 11.756, bpv = 2.72201
+Total compression time: 194.389ms
+eps = 0.168572, rmse = 0.092085, psnr = 14.6956
+Total decompression time: 16.547ms
+Total time: 210.979ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[50/130] Processing: faero_atm003_1_384_320.dat
+oldbits = 3932160, newbits = 334480, compressionratio = 11.756, bpv = 2.72201
+Total compression time: 202.306ms
+eps = 0.168572, rmse = 0.092085, psnr = 14.6956
+Total decompression time: 18.352ms
+Total time: 220.729ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[51/130] Processing: faero_ocn001_1_384_320.dat
+oldbits = 3932160, newbits = 334480, compressionratio = 11.756, bpv = 2.72201
+Total compression time: 188.929ms
+eps = 0.168572, rmse = 0.092085, psnr = 14.6956
+Total decompression time: 17.065ms
+Total time: 206.031ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[52/130] Processing: faero_ocn002_1_384_320.dat
+oldbits = 3932160, newbits = 334480, compressionratio = 11.756, bpv = 2.72201
+Total compression time: 200.312ms
+eps = 0.168572, rmse = 0.092085, psnr = 14.6956
+Total decompression time: 16.956ms
+Total time: 217.303ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[53/130] Processing: faero_ocn003_1_384_320.dat
+oldbits = 3932160, newbits = 334480, compressionratio = 11.756, bpv = 2.72201
+Total compression time: 190.622ms
+eps = 0.168572, rmse = 0.092085, psnr = 14.6956
+Total decompression time: 17.306ms
+Total time: 207.986ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[54/130] Processing: fcondtop_ai_1_384_320.dat
+oldbits = 3932160, newbits = 534608, compressionratio = 7.35522, bpv = 4.35065
+Total compression time: 199.647ms
+eps = 0.0874828, rmse = 0.0479902, psnr = 20.3563
+Total decompression time: 21.164ms
+Total time: 220.851ms
+  ✓ Compression successful (ratio: 7.35x)
+
+[55/130] Processing: fhocn_1_384_320.dat
+oldbits = 3932160, newbits = 399120, compressionratio = 9.85207, bpv = 3.24805
+Total compression time: 176.239ms
+eps = 0.108582, rmse = 0.060063, psnr = 18.4073
+Total decompression time: 18.313ms
+Total time: 194.593ms
+  ✓ Compression successful (ratio: 9.85x)
+
+[56/130] Processing: fhocn_ai_1_384_320.dat
+oldbits = 3932160, newbits = 411152, compressionratio = 9.56376, bpv = 3.34596
+Total compression time: 197.278ms
+eps = 0.109928, rmse = 0.0603591, psnr = 18.3645
+Total decompression time: 18.52ms
+Total time: 215.848ms
+  ✓ Compression successful (ratio: 9.56x)
+
+[57/130] Processing: flat_1_384_320.dat
+oldbits = 3932160, newbits = 540240, compressionratio = 7.27854, bpv = 4.39648
+Total compression time: 192.111ms
+eps = 0.0877878, rmse = 0.0480694, psnr = 20.342
+Total decompression time: 21.148ms
+Total time: 213.299ms
+  ✓ Compression successful (ratio: 7.27x)
+
+[58/130] Processing: flat_ai_1_384_320.dat
+oldbits = 3932160, newbits = 542032, compressionratio = 7.25448, bpv = 4.41107
+Total compression time: 199.451ms
+eps = 0.0877906, rmse = 0.0480435, psnr = 20.3467
+Total decompression time: 22.638ms
+Total time: 222.132ms
+  ✓ Compression successful (ratio: 7.25x)
+
+[59/130] Processing: flwdn_1_384_320.dat
+oldbits = 3932160, newbits = 410128, compressionratio = 9.58764, bpv = 3.33763
+Total compression time: 192.307ms
+eps = 0.109818, rmse = 0.0603621, psnr = 18.3641
+Total decompression time: 18.277ms
+Total time: 210.625ms
+  ✓ Compression successful (ratio: 9.58x)
+
+[60/130] Processing: flwup_1_384_320.dat
+oldbits = 3932160, newbits = 540112, compressionratio = 7.28027, bpv = 4.39544
+Total compression time: 195.659ms
+eps = 0.087915, rmse = 0.0481303, psnr = 20.331
+Total decompression time: 20.761ms
+Total time: 216.474ms
+  ✓ Compression successful (ratio: 7.28x)
+
+[61/130] Processing: flwup_ai_1_384_320.dat
+oldbits = 3932160, newbits = 406864, compressionratio = 9.66456, bpv = 3.31107
+Total compression time: 192.86ms
+eps = 0.109493, rmse = 0.0602728, psnr = 18.377
+Total decompression time: 18.698ms
+Total time: 211.603ms
+  ✓ Compression successful (ratio: 9.66x)
+
+[62/130] Processing: frazil_1_384_320.dat
+oldbits = 3932160, newbits = 334352, compressionratio = 11.7605, bpv = 2.72096
+Total compression time: 195.86ms
+eps = 0.168491, rmse = 0.0920406, psnr = 14.6998
+Total decompression time: 17.209ms
+Total time: 213.125ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[63/130] Processing: fresh_1_384_320.dat
+oldbits = 3932160, newbits = 331280, compressionratio = 11.8696, bpv = 2.69596
+Total compression time: 191.841ms
+eps = 0.167572, rmse = 0.0915813, psnr = 14.7433
+Total decompression time: 16.915ms
+Total time: 208.797ms
+  ✓ Compression successful (ratio: 11.86x)
+
+[64/130] Processing: fresh_ai_1_384_320.dat
+oldbits = 3932160, newbits = 331216, compressionratio = 11.8719, bpv = 2.69544
+Total compression time: 192.863ms
+eps = 0.16785, rmse = 0.0917144, psnr = 14.7307
+Total decompression time: 16.763ms
+Total time: 209.683ms
+  ✓ Compression successful (ratio: 11.87x)
+
+[65/130] Processing: fs_1_384_320.dat
+oldbits = 3932160, newbits = 334352, compressionratio = 11.7605, bpv = 2.72096
+Total compression time: 193.586ms
+eps = 0.168578, rmse = 0.092089, psnr = 14.6952
+Total decompression time: 23.571ms
+Total time: 217.21ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[66/130] Processing: fsalt_1_384_320.dat
+oldbits = 3932160, newbits = 334224, compressionratio = 11.765, bpv = 2.71992
+Total compression time: 190.809ms
+eps = 0.168486, rmse = 0.0920384, psnr = 14.7
+Total decompression time: 16.398ms
+Total time: 207.246ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[67/130] Processing: fsalt_ai_1_384_320.dat
+oldbits = 3932160, newbits = 334288, compressionratio = 11.7628, bpv = 2.72044
+Total compression time: 186.363ms
+eps = 0.16856, rmse = 0.0920783, psnr = 14.6963
+Total decompression time: 16.973ms
+Total time: 203.377ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[68/130] Processing: fsens_1_384_320.dat
+oldbits = 3932160, newbits = 538448, compressionratio = 7.30277, bpv = 4.3819
+Total compression time: 192.226ms
+eps = 0.0877356, rmse = 0.0480677, psnr = 20.3423
+Total decompression time: 22.201ms
+Total time: 214.489ms
+  ✓ Compression successful (ratio: 7.30x)
+
+[69/130] Processing: fsens_ai_1_384_320.dat
+oldbits = 3932160, newbits = 539088, compressionratio = 7.2941, bpv = 4.38711
+Total compression time: 184.955ms
+eps = 0.0878121, rmse = 0.0481009, psnr = 20.3363
+Total decompression time: 23.002ms
+Total time: 208.01ms
+  ✓ Compression successful (ratio: 7.29x)
+
+[70/130] Processing: fsurf_ai_1_384_320.dat
+oldbits = 3932160, newbits = 534608, compressionratio = 7.35522, bpv = 4.35065
+Total compression time: 183.713ms
+eps = 0.0874714, rmse = 0.0479844, psnr = 20.3574
+Total decompression time: 21.793ms
+Total time: 205.576ms
+  ✓ Compression successful (ratio: 7.35x)
+
+[71/130] Processing: fswabs_1_384_320.dat
+oldbits = 3932160, newbits = 335120, compressionratio = 11.7336, bpv = 2.72721
+Total compression time: 196.905ms
+eps = 0.16839, rmse = 0.0920178, psnr = 14.702
+Total decompression time: 16.995ms
+Total time: 213.942ms
+  ✓ Compression successful (ratio: 11.73x)
+
+[72/130] Processing: fswabs_ai_1_384_320.dat
+oldbits = 3932160, newbits = 334288, compressionratio = 11.7628, bpv = 2.72044
+Total compression time: 191.731ms
+eps = 0.168377, rmse = 0.0919959, psnr = 14.704
+Total decompression time: 16.758ms
+Total time: 208.543ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[73/130] Processing: fswdn_1_384_320.dat
+oldbits = 3932160, newbits = 412496, compressionratio = 9.5326, bpv = 3.3569
+Total compression time: 188.055ms
+eps = 0.109728, rmse = 0.060312, psnr = 18.3713
+Total decompression time: 19.542ms
+Total time: 207.641ms
+  ✓ Compression successful (ratio: 9.53x)
+
+[74/130] Processing: fswfac_1_384_320.dat
+oldbits = 3932160, newbits = 336656, compressionratio = 11.6801, bpv = 2.73971
+Total compression time: 184.775ms
+eps = 0.168928, rmse = 0.0922898, psnr = 14.6763
+Total decompression time: 17.882ms
+Total time: 202.698ms
+  ✓ Compression successful (ratio: 11.68x)
+
+[75/130] Processing: fswthru_1_384_320.dat
+oldbits = 3932160, newbits = 335248, compressionratio = 11.7291, bpv = 2.72826
+Total compression time: 180.844ms
+eps = 0.168362, rmse = 0.091979, psnr = 14.7056
+Total decompression time: 18.195ms
+Total time: 199.095ms
+  ✓ Compression successful (ratio: 11.72x)
+
+[76/130] Processing: fswthru_ai_1_384_320.dat
+oldbits = 3932160, newbits = 334160, compressionratio = 11.7673, bpv = 2.7194
+Total compression time: 191.142ms
+eps = 0.168477, rmse = 0.0920368, psnr = 14.7002
+Total decompression time: 16.163ms
+Total time: 207.344ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[77/130] Processing: fswup_1_384_320.dat
+oldbits = 3932160, newbits = 412496, compressionratio = 9.5326, bpv = 3.3569
+Total compression time: 178.682ms
+eps = 0.109739, rmse = 0.0603166, psnr = 18.3707
+Total decompression time: 19.468ms
+Total time: 198.19ms
+  ✓ Compression successful (ratio: 9.53x)
+
+[78/130] Processing: FYarea_1_384_320.dat
+oldbits = 3932160, newbits = 334608, compressionratio = 11.7515, bpv = 2.72305
+Total compression time: 199.793ms
+eps = 0.168582, rmse = 0.0920916, psnr = 14.695
+Total decompression time: 16.897ms
+Total time: 216.75ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[79/130] Processing: hi_1_384_320.dat
+oldbits = 3932160, newbits = 334352, compressionratio = 11.7605, bpv = 2.72096
+Total compression time: 190.541ms
+eps = 0.168581, rmse = 0.0920909, psnr = 14.6951
+Total decompression time: 17.975ms
+Total time: 208.553ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[80/130] Processing: hisnap_1_384_320.dat
+oldbits = 3932160, newbits = 334288, compressionratio = 11.7628, bpv = 2.72044
+Total compression time: 203.475ms
+eps = 0.168616, rmse = 0.0921098, psnr = 14.6933
+Total decompression time: 17.021ms
+Total time: 220.555ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[81/130] Processing: hs_1_384_320.dat
+oldbits = 3932160, newbits = 334608, compressionratio = 11.7515, bpv = 2.72305
+Total compression time: 187.938ms
+eps = 0.168618, rmse = 0.0921101, psnr = 14.6933
+Total decompression time: 16.818ms
+Total time: 204.812ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[82/130] Processing: HTE_384_320.dat
+oldbits = 3932160, newbits = 19984, compressionratio = 196.765, bpv = 0.16263
+Total compression time: 134.493ms
+eps = 0.0113428, rmse = 0.00994485, psnr = 34.0274
+Total decompression time: 7.657ms
+Total time: 142.19ms
+  ✓ Compression successful (ratio: 196.76x)
+
+[83/130] Processing: HTN_384_320.dat
+oldbits = 3932160, newbits = 13648, compressionratio = 288.113, bpv = 0.111068
+Total compression time: 161.554ms
+eps = 0.023411, rmse = 0.0225186, psnr = 26.9286
+Total decompression time: 7.479ms
+Total time: 169.092ms
+  ✓ Compression successful (ratio: 288.11x)
+
+[84/130] Processing: iage_1_384_320.dat
+oldbits = 3932160, newbits = 334288, compressionratio = 11.7628, bpv = 2.72044
+Total compression time: 201.927ms
+eps = 0.168679, rmse = 0.0921446, psnr = 14.69
+Total decompression time: 16.817ms
+Total time: 218.786ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[85/130] Processing: ice_present_1_384_320.dat
+oldbits = 3932160, newbits = 334416, compressionratio = 11.7583, bpv = 2.72148
+Total compression time: 184.391ms
+eps = 0.168503, rmse = 0.0920485, psnr = 14.6991
+Total decompression time: 18.288ms
+Total time: 202.721ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[86/130] Processing: meltb_1_384_320.dat
+oldbits = 3932160, newbits = 334672, compressionratio = 11.7493, bpv = 2.72357
+Total compression time: 192.748ms
+eps = 0.168402, rmse = 0.0919925, psnr = 14.7043
+Total decompression time: 17.264ms
+Total time: 210.05ms
+  ✓ Compression successful (ratio: 11.74x)
+
+[87/130] Processing: meltl_1_384_320.dat
+oldbits = 3932160, newbits = 334544, compressionratio = 11.7538, bpv = 2.72253
+Total compression time: 180.261ms
+eps = 0.168557, rmse = 0.0920767, psnr = 14.6964
+Total decompression time: 16.69ms
+Total time: 196.987ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[88/130] Processing: melts_1_384_320.dat
+oldbits = 3932160, newbits = 334544, compressionratio = 11.7538, bpv = 2.72253
+Total compression time: 188.373ms
+eps = 0.168616, rmse = 0.0921094, psnr = 14.6933
+Total decompression time: 17.532ms
+Total time: 205.951ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[89/130] Processing: meltt_1_384_320.dat
+oldbits = 3932160, newbits = 334480, compressionratio = 11.756, bpv = 2.72201
+Total compression time: 190.176ms
+eps = 0.168584, rmse = 0.0920913, psnr = 14.695
+Total decompression time: 17.775ms
+Total time: 208ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[90/130] Processing: opening_1_384_320.dat
+oldbits = 3932160, newbits = 333584, compressionratio = 11.7876, bpv = 2.71471
+Total compression time: 195.844ms
+eps = 0.168355, rmse = 0.0919693, psnr = 14.7065
+Total decompression time: 16.967ms
+Total time: 212.851ms
+  ✓ Compression successful (ratio: 11.78x)
+
+[91/130] Processing: qi_1_384_320.dat
+oldbits = 3932160, newbits = 155088, compressionratio = 25.3544, bpv = 1.26211
+Total compression time: 175.474ms
+eps = 0.0851634, rmse = 0.0642072, psnr = 17.8277
+Total decompression time: 14.062ms
+Total time: 189.58ms
+  ✓ Compression successful (ratio: 25.35x)
+
+[92/130] Processing: Qref_1_384_320.dat
+oldbits = 3932160, newbits = 678096, compressionratio = 5.79882, bpv = 5.51836
+Total compression time: 193.37ms
+eps = 0.0820957, rmse = 0.0449107, psnr = 20.9324
+Total decompression time: 23.735ms
+Total time: 217.181ms
+  ✓ Compression successful (ratio: 5.79x)
+
+[93/130] Processing: qs_1_384_320.dat
+oldbits = 3932160, newbits = 164368, compressionratio = 23.9229, bpv = 1.33763
+Total compression time: 171.788ms
+eps = 0.0905099, rmse = 0.0666426, psnr = 17.5044
+Total decompression time: 14.544ms
+Total time: 186.376ms
+  ✓ Compression successful (ratio: 23.92x)
+
+[94/130] Processing: rain_1_384_320.dat
+oldbits = 3932160, newbits = 333968, compressionratio = 11.7741, bpv = 2.71784
+Total compression time: 173.629ms
+eps = 0.168499, rmse = 0.0920476, psnr = 14.6992
+Total decompression time: 17.18ms
+Total time: 190.852ms
+  ✓ Compression successful (ratio: 11.77x)
+
+[95/130] Processing: rain_ai_1_384_320.dat
+oldbits = 3932160, newbits = 334480, compressionratio = 11.756, bpv = 2.72201
+Total compression time: 193.917ms
+eps = 0.168571, rmse = 0.0920843, psnr = 14.6957
+Total decompression time: 17.358ms
+Total time: 211.334ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[96/130] Processing: shear_1_384_320.dat
+oldbits = 3932160, newbits = 334416, compressionratio = 11.7583, bpv = 2.72148
+Total compression time: 174.122ms
+eps = 0.168265, rmse = 0.0919286, psnr = 14.7104
+Total decompression time: 17.103ms
+Total time: 191.266ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[97/130] Processing: sig1_1_384_320.dat
+oldbits = 3932160, newbits = 50768, compressionratio = 77.4535, bpv = 0.413151
+Total compression time: 132.992ms
+eps = 0.093739, rmse = 0.0894333, psnr = 14.9494
+Total decompression time: 22.941ms
+Total time: 155.98ms
+  ✓ Compression successful (ratio: 77.45x)
+
+[98/130] Processing: sig2_1_384_320.dat
+oldbits = 3932160, newbits = 51024, compressionratio = 77.0649, bpv = 0.415234
+Total compression time: 137.395ms
+eps = 0.0938945, rmse = 0.0895815, psnr = 14.935
+Total decompression time: 9.451ms
+Total time: 146.911ms
+  ✓ Compression successful (ratio: 77.06x)
+
+[99/130] Processing: snoice_1_384_320.dat
+oldbits = 3932160, newbits = 334544, compressionratio = 11.7538, bpv = 2.72253
+Total compression time: 182.201ms
+eps = 0.168574, rmse = 0.0920861, psnr = 14.6955
+Total decompression time: 16.934ms
+Total time: 199.175ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[100/130] Processing: snow_1_384_320.dat
+oldbits = 3932160, newbits = 334544, compressionratio = 11.7538, bpv = 2.72253
+Total compression time: 190.831ms
+eps = 0.168541, rmse = 0.0920677, psnr = 14.6973
+Total decompression time: 18.765ms
+Total time: 209.638ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[101/130] Processing: snow_ai_1_384_320.dat
+oldbits = 3932160, newbits = 334416, compressionratio = 11.7583, bpv = 2.72148
+Total compression time: 171.782ms
+eps = 0.168525, rmse = 0.092059, psnr = 14.6981
+Total decompression time: 18.156ms
+Total time: 189.998ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[102/130] Processing: strairx_1_384_320.dat
+oldbits = 3932160, newbits = 333968, compressionratio = 11.7741, bpv = 2.71784
+Total compression time: 189.852ms
+eps = 0.168493, rmse = 0.0920425, psnr = 14.6996
+Total decompression time: 16.872ms
+Total time: 206.766ms
+  ✓ Compression successful (ratio: 11.77x)
+
+[103/130] Processing: strairy_1_384_320.dat
+oldbits = 3932160, newbits = 334160, compressionratio = 11.7673, bpv = 2.7194
+Total compression time: 179.647ms
+eps = 0.168523, rmse = 0.0920583, psnr = 14.6981
+Total decompression time: 17.253ms
+Total time: 196.943ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[104/130] Processing: strcorx_1_384_320.dat
+oldbits = 3932160, newbits = 334352, compressionratio = 11.7605, bpv = 2.72096
+Total compression time: 204.263ms
+eps = 0.168515, rmse = 0.0920539, psnr = 14.6986
+Total decompression time: 16.924ms
+Total time: 221.231ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[105/130] Processing: strcory_1_384_320.dat
+oldbits = 3932160, newbits = 334352, compressionratio = 11.7605, bpv = 2.72096
+Total compression time: 186.203ms
+eps = 0.168553, rmse = 0.0920746, psnr = 14.6966
+Total decompression time: 16.405ms
+Total time: 202.647ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[106/130] Processing: strength_1_384_320.dat
+oldbits = 3932160, newbits = 331728, compressionratio = 11.8536, bpv = 2.69961
+Total compression time: 196.642ms
+eps = 0.167603, rmse = 0.0916715, psnr = 14.7347
+Total decompression time: 17.776ms
+Total time: 214.462ms
+  ✓ Compression successful (ratio: 11.85x)
+
+[107/130] Processing: strintx_1_384_320.dat
+oldbits = 3932160, newbits = 334352, compressionratio = 11.7605, bpv = 2.72096
+Total compression time: 212.213ms
+eps = 0.168537, rmse = 0.0920659, psnr = 14.6974
+Total decompression time: 17.44ms
+Total time: 229.691ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[108/130] Processing: strinty_1_384_320.dat
+oldbits = 3932160, newbits = 334288, compressionratio = 11.7628, bpv = 2.72044
+Total compression time: 194.436ms
+eps = 0.168495, rmse = 0.0920429, psnr = 14.6996
+Total decompression time: 16.881ms
+Total time: 211.377ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[109/130] Processing: strocnx_1_384_320.dat
+oldbits = 3932160, newbits = 334224, compressionratio = 11.765, bpv = 2.71992
+Total compression time: 171.186ms
+eps = 0.168537, rmse = 0.0920661, psnr = 14.6974
+Total decompression time: 17.647ms
+Total time: 188.893ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[110/130] Processing: strocny_1_384_320.dat
+oldbits = 3932160, newbits = 334352, compressionratio = 11.7605, bpv = 2.72096
+Total compression time: 194.882ms
+eps = 0.168533, rmse = 0.0920637, psnr = 14.6976
+Total decompression time: 17.087ms
+Total time: 212.027ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[111/130] Processing: Tair_1_384_320.dat
+oldbits = 3932160, newbits = 537872, compressionratio = 7.31059, bpv = 4.37721
+Total compression time: 193.939ms
+eps = 0.0876689, rmse = 0.0480411, psnr = 20.3471
+Total decompression time: 21.183ms
+Total time: 215.162ms
+  ✓ Compression successful (ratio: 7.31x)
+
+[112/130] Processing: tarea_384_320.dat
+oldbits = 3932160, newbits = 13264, compressionratio = 296.454, bpv = 0.107943
+Total compression time: 144.164ms
+eps = 0.011363, rmse = 0.0110049, psnr = 33.1477
+Total decompression time: 7.813ms
+Total time: 152.046ms
+  ✓ Compression successful (ratio: 296.45x)
+
+[113/130] Processing: TLAT_384_320.dat
+oldbits = 3932160, newbits = 15632, compressionratio = 251.546, bpv = 0.127214
+Total compression time: 150.38ms
+eps = 0.00636469, rmse = 0.00529055, psnr = 39.5094
+Total decompression time: 7.785ms
+Total time: 158.203ms
+  ✓ Compression successful (ratio: 251.54x)
+
+[114/130] Processing: TLON_384_320.dat
+oldbits = 3932160, newbits = 39440, compressionratio = 99.6998, bpv = 0.320964
+Total compression time: 130.889ms
+eps = 0.0415224, rmse = 0.0354225, psnr = 22.9938
+Total decompression time: 8.532ms
+Total time: 139.502ms
+  ✓ Compression successful (ratio: 99.69x)
+
+[115/130] Processing: tmask_384_320.dat
+oldbits = 3932160, newbits = 252304, compressionratio = 15.585, bpv = 2.05326
+Total compression time: 205.006ms
+eps = 0.125488, rmse = 0.10511, psnr = 13.5465
+Total decompression time: 17.258ms
+Total time: 222.326ms
+  ✓ Compression successful (ratio: 15.58x)
+
+[116/130] Processing: transix_1_384_320.dat
+oldbits = 3932160, newbits = 272144, compressionratio = 14.4488, bpv = 2.21471
+Total compression time: 191.884ms
+eps = 0.146453, rmse = 0.0851007, psnr = 15.3807
+Total decompression time: 16.1ms
+Total time: 208.042ms
+  ✓ Compression successful (ratio: 14.44x)
+
+[117/130] Processing: transiy_1_384_320.dat
+oldbits = 3932160, newbits = 276176, compressionratio = 14.2379, bpv = 2.24753
+Total compression time: 182.007ms
+eps = 0.148038, rmse = 0.0855578, psnr = 15.3342
+Total decompression time: 16.323ms
+Total time: 198.391ms
+  ✓ Compression successful (ratio: 14.23x)
+
+[118/130] Processing: Tref_1_384_320.dat
+oldbits = 3932160, newbits = 538448, compressionratio = 7.30277, bpv = 4.3819
+Total compression time: 187.228ms
+eps = 0.0875727, rmse = 0.047987, psnr = 20.3569
+Total decompression time: 21.67ms
+Total time: 208.942ms
+  ✓ Compression successful (ratio: 7.30x)
+
+[119/130] Processing: trsig_1_384_320.dat
+oldbits = 3932160, newbits = 291984, compressionratio = 13.467, bpv = 2.37617
+Total compression time: 198.715ms
+eps = 0.155285, rmse = 0.0874864, psnr = 15.1406
+Total decompression time: 15.775ms
+Total time: 214.535ms
+  ✓ Compression successful (ratio: 13.46x)
+
+[120/130] Processing: Tsfc_1_384_320.dat
+oldbits = 3932160, newbits = 540816, compressionratio = 7.27079, bpv = 4.40117
+Total compression time: 206.128ms
+eps = 0.0877141, rmse = 0.048014, psnr = 20.3521
+Total decompression time: 21.627ms
+Total time: 227.808ms
+  ✓ Compression successful (ratio: 7.27x)
+
+[121/130] Processing: uarea_384_320.dat
+oldbits = 3932160, newbits = 13520, compressionratio = 290.84, bpv = 0.110026
+Total compression time: 130.576ms
+eps = 0.0116862, rmse = 0.0113194, psnr = 32.9029
+Total decompression time: 7.956ms
+Total time: 138.586ms
+  ✓ Compression successful (ratio: 290.84x)
+
+[122/130] Processing: ULAT_384_320.dat
+oldbits = 3932160, newbits = 15824, compressionratio = 248.493, bpv = 0.128776
+Total compression time: 154.733ms
+eps = 0.00643225, rmse = 0.00534573, psnr = 39.4193
+Total decompression time: 7.996ms
+Total time: 162.782ms
+  ✓ Compression successful (ratio: 248.49x)
+
+[123/130] Processing: ULON_384_320.dat
+oldbits = 3932160, newbits = 39696, compressionratio = 99.0568, bpv = 0.323047
+Total compression time: 121.179ms
+eps = 0.044821, rmse = 0.0382175, psnr = 22.3342
+Total decompression time: 8.794ms
+Total time: 130.034ms
+  ✓ Compression successful (ratio: 99.05x)
+
+[124/130] Processing: uvel_1_384_320.dat
+oldbits = 3932160, newbits = 536976, compressionratio = 7.32279, bpv = 4.36992
+Total compression time: 187.99ms
+eps = 0.0875827, rmse = 0.0480099, psnr = 20.3528
+Total decompression time: 21.15ms
+Total time: 209.184ms
+  ✓ Compression successful (ratio: 7.32x)
+
+[125/130] Processing: vicen001_1_384_320.dat
+oldbits = 3932160, newbits = 334352, compressionratio = 11.7605, bpv = 2.72096
+Total compression time: 192.103ms
+eps = 0.168635, rmse = 0.0921193, psnr = 14.6924
+Total decompression time: 17.179ms
+Total time: 209.325ms
+  ✓ Compression successful (ratio: 11.76x)
+
+[126/130] Processing: vicen002_1_384_320.dat
+oldbits = 3932160, newbits = 334480, compressionratio = 11.756, bpv = 2.72201
+Total compression time: 183.568ms
+eps = 0.168521, rmse = 0.0920573, psnr = 14.6982
+Total decompression time: 17.861ms
+Total time: 201.499ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[127/130] Processing: vicen003_1_384_320.dat
+oldbits = 3932160, newbits = 334736, compressionratio = 11.747, bpv = 2.72409
+Total compression time: 304.279ms
+eps = 0.16845, rmse = 0.0920182, psnr = 14.7019
+Total decompression time: 18.152ms
+Total time: 322.478ms
+  ✓ Compression successful (ratio: 11.74x)
+
+[128/130] Processing: vicen004_1_384_320.dat
+oldbits = 3932160, newbits = 334480, compressionratio = 11.756, bpv = 2.72201
+Total compression time: 203.803ms
+eps = 0.168561, rmse = 0.0920792, psnr = 14.6962
+Total decompression time: 17.276ms
+Total time: 221.124ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[129/130] Processing: vicen005_1_384_320.dat
+oldbits = 3932160, newbits = 334480, compressionratio = 11.756, bpv = 2.72201
+Total compression time: 190.211ms
+eps = 0.168679, rmse = 0.0921435, psnr = 14.6901
+Total decompression time: 17.469ms
+Total time: 207.755ms
+  ✓ Compression successful (ratio: 11.75x)
+
+[130/130] Processing: vvel_1_384_320.dat
+oldbits = 3932160, newbits = 538576, compressionratio = 7.30103, bpv = 4.38294
+Total compression time: 177.209ms
+eps = 0.0877217, rmse = 0.0480526, psnr = 20.3451
+Total decompression time: 21.674ms
+Total time: 198.956ms
+  ✓ Compression successful (ratio: 7.30x)
+
+=== Summary ===
+Total files processed: 120
+Total files skipped: 10
+Total files failed: 0
+

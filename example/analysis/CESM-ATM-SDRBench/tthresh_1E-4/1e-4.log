@@ -1,0 +1,492 @@
+Input directory: ../../SDRBENCH-CESM-ATM-cleared-1800x3600
+Output directory: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/tthresh_1E-4
+Dimensions: 1800x3600
+Error bound: 0.0001
+
+Found 60 .dat file(s) to process
+
+[1/60] Processing: AEROD_v_1_1800_3600.dat
+oldbits = 207360000, newbits = 1150032, compressionratio = 180.308, bpv = 0.177474
+Total compression time: 51176.8ms
+eps = 0.0197045, rmse = 0.00152038, psnr = 45.4815
+Total decompression time: 1027.05ms
+Total time: 52203.9ms
+  ✓ Compression successful (ratio: 180.30x)
+
+[2/60] Processing: CLDHGH_1_1800_3600.dat
+oldbits = 207360000, newbits = 2009232, compressionratio = 103.204, bpv = 0.310067
+Total compression time: 53685.2ms
+eps = 0.0228457, rmse = 0.00573897, psnr = 38.0856
+Total decompression time: 1212.81ms
+Total time: 54898.1ms
+  ✓ Compression successful (ratio: 103.20x)
+
+[3/60] Processing: CLDLOW_1_1800_3600.dat
+oldbits = 207360000, newbits = 1775824, compressionratio = 116.768, bpv = 0.274047
+Total compression time: 52549.9ms
+eps = 0.0259925, rmse = 0.00974344, psnr = 33.9989
+Total decompression time: 1468.37ms
+Total time: 54018.3ms
+  ✓ Compression successful (ratio: 116.76x)
+
+[4/60] Processing: CLDMED_1_1800_3600.dat
+oldbits = 207360000, newbits = 1918224, compressionratio = 108.1, bpv = 0.296022
+Total compression time: 56089.1ms
+eps = 0.0269911, rmse = 0.00518738, psnr = 38.0665
+Total decompression time: 1414.13ms
+Total time: 57503.2ms
+  ✓ Compression successful (ratio: 108.09x)
+
+[5/60] Processing: CLDTOT_1_1800_3600.dat
+oldbits = 207360000, newbits = 1165328, compressionratio = 177.941, bpv = 0.179835
+Total compression time: 55120.2ms
+eps = 0.0289571, rmse = 0.0140987, psnr = 30.7414
+Total decompression time: 1065.77ms
+Total time: 56186ms
+  ✓ Compression successful (ratio: 177.94x)
+
+[6/60] Processing: FLDS_1_1800_3600.dat
+oldbits = 207360000, newbits = 590736, compressionratio = 351.02, bpv = 0.091163
+Total compression time: 53816.8ms
+eps = 0.0101618, rmse = 3.02565, psnr = 34.6149
+Total decompression time: 705.835ms
+Total time: 54522.7ms
+  ✓ Compression successful (ratio: 351.01x)
+
+[7/60] Processing: FLDSC_1_1800_3600.dat
+oldbits = 207360000, newbits = 474192, compressionratio = 437.291, bpv = 0.0731778
+Total compression time: 52531.8ms
+eps = 0.0143448, rmse = 3.9278, psnr = 32.3446
+Total decompression time: 544.369ms
+Total time: 53076.3ms
+  ✓ Compression successful (ratio: 437.29x)
+
+[8/60] Processing: FLNS_1_1800_3600.dat
+oldbits = 207360000, newbits = 1196560, compressionratio = 173.297, bpv = 0.184654
+Total compression time: 55356.2ms
+eps = 0.0299835, rmse = 1.84937, psnr = 33.5155
+Total decompression time: 1108.64ms
+Total time: 56464.9ms
+  ✓ Compression successful (ratio: 173.29x)
+
+[9/60] Processing: FLNSC_1_1800_3600.dat
+oldbits = 207360000, newbits = 1249936, compressionratio = 165.896, bpv = 0.192891
+Total compression time: 55292ms
+eps = 0.0129976, rmse = 1.13099, psnr = 36.2291
+Total decompression time: 875.569ms
+Total time: 56167.7ms
+  ✓ Compression successful (ratio: 165.89x)
+
+[10/60] Processing: FLNT_1_1800_3600.dat
+oldbits = 207360000, newbits = 402768, compressionratio = 514.837, bpv = 0.0621556
+Total compression time: 53576.4ms
+eps = 0.0111353, rmse = 2.51588, psnr = 31.0759
+Total decompression time: 671.143ms
+Total time: 54247.6ms
+  ✓ Compression successful (ratio: 514.83x)
+
+[11/60] Processing: FLNTC_1_1800_3600.dat
+oldbits = 207360000, newbits = 324944, compressionratio = 638.141, bpv = 0.0501457
+Total compression time: 52575.5ms
+eps = 0.00931779, rmse = 2.29264, psnr = 31.651
+Total decompression time: 552.685ms
+Total time: 53128.2ms
+  ✓ Compression successful (ratio: 638.14x)
+
+[12/60] Processing: FLUT_1_1800_3600.dat
+oldbits = 207360000, newbits = 403280, compressionratio = 514.184, bpv = 0.0622346
+Total compression time: 55414.2ms
+eps = 0.0110729, rmse = 2.51517, psnr = 31.1112
+Total decompression time: 684.455ms
+Total time: 56098.7ms
+  ✓ Compression successful (ratio: 514.18x)
+
+[13/60] Processing: FLUTC_1_1800_3600.dat
+oldbits = 207360000, newbits = 324944, compressionratio = 638.141, bpv = 0.0501457
+Total compression time: 53595.7ms
+eps = 0.00926886, rmse = 2.2918, psnr = 31.6879
+Total decompression time: 558.456ms
+Total time: 54154.2ms
+  ✓ Compression successful (ratio: 638.14x)
+
+[14/60] Processing: FREQSH_1_1800_3600.dat
+oldbits = 207360000, newbits = 1337744, compressionratio = 155.007, bpv = 0.206442
+Total compression time: 53820.9ms
+eps = 0.0284796, rmse = 0.0178008, psnr = 28.9222
+Total decompression time: 1241.67ms
+Total time: 55062.6ms
+  ✓ Compression successful (ratio: 155.00x)
+
+[15/60] Processing: FREQZM_1_1800_3600.dat
+oldbits = 207360000, newbits = 1729168, compressionratio = 119.919, bpv = 0.266847
+Total compression time: 45959.5ms
+eps = 0.0298219, rmse = 0.00777706, psnr = 35.7054
+Total decompression time: 1101.41ms
+Total time: 47061ms
+  ✓ Compression successful (ratio: 119.91x)
+
+[16/60] Processing: FSDS_1_1800_3600.dat
+oldbits = 207360000, newbits = 772752, compressionratio = 268.34, bpv = 0.119252
+Total compression time: 49793ms
+eps = 0.0160181, rmse = 3.71754, psnr = 35.7928
+Total decompression time: 819.629ms
+Total time: 50612.7ms
+  ✓ Compression successful (ratio: 268.33x)
+
+[17/60] Processing: FSDSC_1_1800_3600.dat
+oldbits = 207360000, newbits = 192720, compressionratio = 1075.97, bpv = 0.0297407
+Total compression time: 50028ms
+eps = 0.00647164, rmse = 1.90771, psnr = 41.9663
+Total decompression time: 280.803ms
+Total time: 50308.9ms
+  ✓ Compression successful (ratio: 1075.96x)
+
+[18/60] Processing: FSDTOA_1_1800_3600.dat
+oldbits = 207360000, newbits = 62032, compressionratio = 3342.79, bpv = 0.00957284
+Total compression time: 59800.5ms
+eps = 0.00125985, rmse = 0.483331, psnr = 55.0779
+Total decompression time: 223.15ms
+Total time: 60023.8ms
+  ✓ Compression successful (ratio: 3342.79x)
+
+[19/60] Processing: FSNS_1_1800_3600.dat
+oldbits = 207360000, newbits = 843024, compressionratio = 245.972, bpv = 0.130096
+Total compression time: 50160ms
+eps = 0.0226405, rmse = 3.9255, psnr = 33.5593
+Total decompression time: 1105.07ms
+Total time: 51265.1ms
+  ✓ Compression successful (ratio: 245.97x)
+
+[20/60] Processing: FSNSC_1_1800_3600.dat
+oldbits = 207360000, newbits = 542864, compressionratio = 381.974, bpv = 0.0837753
+Total compression time: 49625.8ms
+eps = 0.0140985, rmse = 3.26287, psnr = 35.2797
+Total decompression time: 605.105ms
+Total time: 50231ms
+  ✓ Compression successful (ratio: 381.97x)
+
+[21/60] Processing: FSNT_1_1800_3600.dat
+oldbits = 207360000, newbits = 755024, compressionratio = 274.64, bpv = 0.116516
+Total compression time: 50101ms
+eps = 0.0153587, rmse = 3.79468, psnr = 35.6256
+Total decompression time: 886.214ms
+Total time: 50987.3ms
+  ✓ Compression successful (ratio: 274.64x)
+
+[22/60] Processing: FSNTC_1_1800_3600.dat
+oldbits = 207360000, newbits = 524752, compressionratio = 395.158, bpv = 0.0809802
+Total compression time: 50001.7ms
+eps = 0.0105395, rmse = 3.15307, psnr = 37.359
+Total decompression time: 795.991ms
+Total time: 50797.7ms
+  ✓ Compression successful (ratio: 395.15x)
+
+[23/60] Processing: FSNTOA_1_1800_3600.dat
+oldbits = 207360000, newbits = 753104, compressionratio = 275.34, bpv = 0.11622
+Total compression time: 50532.9ms
+eps = 0.0151459, rmse = 3.79237, psnr = 35.7099
+Total decompression time: 842.452ms
+Total time: 51375.4ms
+  ✓ Compression successful (ratio: 275.34x)
+
+[24/60] Processing: FSNTOAC_1_1800_3600.dat
+oldbits = 207360000, newbits = 524560, compressionratio = 395.303, bpv = 0.0809506
+Total compression time: 50529.1ms
+eps = 0.0104274, rmse = 3.15346, psnr = 37.4371
+Total decompression time: 718.833ms
+Total time: 51248ms
+  ✓ Compression successful (ratio: 395.30x)
+
+[25/60] Processing: FSUTOA_1_1800_3600.dat
+oldbits = 207360000, newbits = 1732752, compressionratio = 119.671, bpv = 0.2674
+Total compression time: 48565.1ms
+eps = 0.0183542, rmse = 2.93888, psnr = 36.5185
+Total decompression time: 960.891ms
+Total time: 49526.1ms
+  ✓ Compression successful (ratio: 119.67x)
+
+[26/60] Processing: ICEFRAC_1_1800_3600.dat
+oldbits = 207360000, newbits = 829712, compressionratio = 249.918, bpv = 0.128042
+Total compression time: 43532ms
+eps = 0.0401092, rmse = 0.012705, psnr = 31.8999
+Total decompression time: 823.775ms
+Total time: 44355.8ms
+  ✓ Compression successful (ratio: 249.91x)
+
+[27/60] Processing: LANDFRAC_1_1800_3600.dat
+oldbits = 207360000, newbits = 3021264, compressionratio = 68.6335, bpv = 0.466244
+Total compression time: 51683.2ms
+eps = 0.0427452, rmse = 0.0247785, psnr = 26.0979
+Total decompression time: 1400.78ms
+Total time: 53084ms
+  ✓ Compression successful (ratio: 68.63x)
+
+[28/60] Processing: LHFLX_1_1800_3600.dat
+oldbits = 207360000, newbits = 2119440, compressionratio = 97.8372, bpv = 0.327074
+Total compression time: 52680.8ms
+eps = 0.0296416, rmse = 2.74181, psnr = 40.0052
+Total decompression time: 1282.1ms
+Total time: 53962.9ms
+  ✓ Compression successful (ratio: 97.83x)
+
+[29/60] Processing: LWCF_1_1800_3600.dat
+oldbits = 207360000, newbits = 1378448, compressionratio = 150.43, bpv = 0.212723
+Total compression time: 53645ms
+eps = 0.022013, rmse = 0.563641, psnr = 40.0156
+Total decompression time: 1130.48ms
+Total time: 54775.5ms
+  ✓ Compression successful (ratio: 150.43x)
+
+[30/60] Processing: OCNFRAC_1_1800_3600.dat
+oldbits = 207360000, newbits = 1963536, compressionratio = 105.605, bpv = 0.303015
+Total compression time: 46486ms
+eps = 0.0488615, rmse = 0.0353023, psnr = 23.0233
+Total decompression time: 1274.96ms
+Total time: 47761ms
+  ✓ Compression successful (ratio: 105.60x)
+
+[31/60] Processing: ODV_bcar1_1_1800_3600.dat
+oldbits = 207360000, newbits = 914640, compressionratio = 226.712, bpv = 0.141148
+Total compression time: 48156.6ms
+eps = 0.0178928, rmse = 1.20648e-05, psnr = 55.5272
+Total decompression time: 505.912ms
+Total time: 48662.5ms
+  ✓ Compression successful (ratio: 226.71x)
+
+[32/60] Processing: ODV_bcar2_1_1800_3600.dat
+oldbits = 207360000, newbits = 1069392, compressionratio = 193.905, bpv = 0.16503
+Total compression time: 49606ms
+eps = 0.0201443, rmse = 2.96212e-05, psnr = 50.1075
+Total decompression time: 451.006ms
+Total time: 50057.1ms
+  ✓ Compression successful (ratio: 193.90x)
+
+[33/60] Processing: ODV_dust1_1_1800_3600.dat
+oldbits = 207360000, newbits = 609808, compressionratio = 340.041, bpv = 0.0941062
+Total compression time: 50169.6ms
+eps = 0.0179271, rmse = 0.000322436, psnr = 49.1368
+Total decompression time: 391.198ms
+Total time: 50560.9ms
+  ✓ Compression successful (ratio: 340.04x)
+
+[34/60] Processing: ODV_dust2_1_1800_3600.dat
+oldbits = 207360000, newbits = 576272, compressionratio = 359.83, bpv = 0.0889309
+Total compression time: 49593.5ms
+eps = 0.0196859, rmse = 0.000316822, psnr = 48.7953
+Total decompression time: 367.118ms
+Total time: 49960.7ms
+  ✓ Compression successful (ratio: 359.83x)
+
+[35/60] Processing: ODV_dust3_1_1800_3600.dat
+oldbits = 207360000, newbits = 769040, compressionratio = 269.635, bpv = 0.118679
+Total compression time: 49385.1ms
+eps = 0.0155572, rmse = 8.48962e-05, psnr = 55.054
+Total decompression time: 402.338ms
+Total time: 49787.5ms
+  ✓ Compression successful (ratio: 269.63x)
+
+[36/60] Processing: ODV_dust4_1_1800_3600.dat
+oldbits = 207360000, newbits = 951376, compressionratio = 217.958, bpv = 0.146817
+Total compression time: 50180.9ms
+eps = 0.0120779, rmse = 4.45401e-05, psnr = 61.4669
+Total decompression time: 463.676ms
+Total time: 50644.7ms
+  ✓ Compression successful (ratio: 217.95x)
+
+[37/60] Processing: ODV_ocar1_1_1800_3600.dat
+oldbits = 207360000, newbits = 838224, compressionratio = 247.38, bpv = 0.129356
+Total compression time: 48285.7ms
+eps = 0.021038, rmse = 1.90369e-05, psnr = 54.2951
+Total decompression time: 558.099ms
+Total time: 48843.9ms
+  ✓ Compression successful (ratio: 247.38x)
+
+[38/60] Processing: ODV_ocar2_1_1800_3600.dat
+oldbits = 207360000, newbits = 932368, compressionratio = 222.401, bpv = 0.143884
+Total compression time: 49700.1ms
+eps = 0.0139058, rmse = 5.19278e-05, psnr = 56.2572
+Total decompression time: 763.021ms
+Total time: 50463.1ms
+  ✓ Compression successful (ratio: 222.40x)
+
+[39/60] Processing: ODV_SSLTA_1_1800_3600.dat
+oldbits = 207360000, newbits = 923472, compressionratio = 224.544, bpv = 0.142511
+Total compression time: 49558.6ms
+eps = 0.0217416, rmse = 0.000436414, psnr = 39.075
+Total decompression time: 1002.07ms
+Total time: 50560.7ms
+  ✓ Compression successful (ratio: 224.54x)
+
+[40/60] Processing: ODV_SSLTC_1_1800_3600.dat
+oldbits = 207360000, newbits = 1128528, compressionratio = 183.744, bpv = 0.174156
+Total compression time: 49240.2ms
+eps = 0.0190996, rmse = 0.000243592, psnr = 40.5439
+Total decompression time: 1100.8ms
+Total time: 50341.1ms
+  ✓ Compression successful (ratio: 183.74x)
+
+[41/60] Processing: ODV_sulf_1_1800_3600.dat
+oldbits = 207360000, newbits = 1078224, compressionratio = 192.316, bpv = 0.166393
+Total compression time: 49664.7ms
+eps = 0.0195934, rmse = 0.000476861, psnr = 46.0575
+Total decompression time: 1093.88ms
+Total time: 50758.7ms
+  ✓ Compression successful (ratio: 192.31x)
+
+[42/60] Processing: QREFHT_1_1800_3600.dat
+oldbits = 207360000, newbits = 850512, compressionratio = 243.806, bpv = 0.131252
+Total compression time: 52499.7ms
+eps = 0.0114463, rmse = 0.000104311, psnr = 39.4403
+Total decompression time: 586.163ms
+Total time: 53085.9ms
+  ✓ Compression successful (ratio: 243.80x)
+
+[43/60] Processing: RHREFHT_1_1800_3600.dat
+oldbits = 207360000, newbits = 523536, compressionratio = 396.076, bpv = 0.0807926
+Total compression time: 53120.2ms
+eps = 0.0182093, rmse = 1.54969, psnr = 29.7874
+Total decompression time: 639.548ms
+Total time: 53759.8ms
+  ✓ Compression successful (ratio: 396.07x)
+
+[44/60] Processing: SHFLX_1_1800_3600.dat
+oldbits = 207360000, newbits = 3128848, compressionratio = 66.2736, bpv = 0.482847
+Total compression time: 54826ms
+eps = 0.0509398, rmse = 1.60542, psnr = 42.0106
+Total decompression time: 1234.13ms
+Total time: 56060.2ms
+  ✓ Compression successful (ratio: 66.27x)
+
+[45/60] Processing: SNOWHICE_1_1800_3600.dat
+oldbits = 207360000, newbits = 1437456, compressionratio = 144.255, bpv = 0.22183
+Total compression time: 42257.7ms
+eps = 0.0284909, rmse = 0.00410248, psnr = 38.1175
+Total decompression time: 984.566ms
+Total time: 43242.3ms
+  ✓ Compression successful (ratio: 144.25x)
+
+[46/60] Processing: SOLIN_1_1800_3600.dat
+oldbits = 207360000, newbits = 62032, compressionratio = 3342.79, bpv = 0.00957284
+Total compression time: 61164.1ms
+eps = 0.00125985, rmse = 0.483331, psnr = 55.0779
+Total decompression time: 223.043ms
+Total time: 61387.2ms
+  ✓ Compression successful (ratio: 3342.79x)
+
+[47/60] Processing: SRFRAD_1_1800_3600.dat
+oldbits = 207360000, newbits = 531664, compressionratio = 390.021, bpv = 0.0820469
+Total compression time: 52996.8ms
+eps = 0.0139125, rmse = 6.39222, psnr = 33.4405
+Total decompression time: 736.29ms
+Total time: 53733.2ms
+  ✓ Compression successful (ratio: 390.02x)
+
+[48/60] Processing: SWCF_1_1800_3600.dat
+oldbits = 207360000, newbits = 1122448, compressionratio = 184.739, bpv = 0.173217
+Total compression time: 49764.2ms
+eps = 0.0358148, rmse = 2.13585, psnr = 33.4415
+Total decompression time: 1222.85ms
+Total time: 50987.1ms
+  ✓ Compression successful (ratio: 184.73x)
+
+[49/60] Processing: TAUX_1_1800_3600.dat
+oldbits = 207360000, newbits = 2514576, compressionratio = 82.4632, bpv = 0.388052
+Total compression time: 52975.7ms
+eps = 0.0530904, rmse = 0.0057856, psnr = 47.2273
+Total decompression time: 1147.45ms
+Total time: 54123.2ms
+  ✓ Compression successful (ratio: 82.46x)
+
+[50/60] Processing: TAUY_1_1800_3600.dat
+oldbits = 207360000, newbits = 4093072, compressionratio = 50.6612, bpv = 0.631647
+Total compression time: 54110.1ms
+eps = 0.0379829, rmse = 0.002755, psnr = 52.9092
+Total decompression time: 1488.17ms
+Total time: 55598.3ms
+  ✓ Compression successful (ratio: 50.66x)
+
+[51/60] Processing: TGCLDIWP_1_1800_3600.dat
+oldbits = 207360000, newbits = 1723344, compressionratio = 120.324, bpv = 0.265948
+Total compression time: 53606.1ms
+eps = 0.022904, rmse = 0.60927, psnr = 38.9951
+Total decompression time: 1154.48ms
+Total time: 54760.7ms
+  ✓ Compression successful (ratio: 120.32x)
+
+[52/60] Processing: TGCLDLWP_1_1800_3600.dat
+oldbits = 207360000, newbits = 1712848, compressionratio = 121.062, bpv = 0.264328
+Total compression time: 56208.7ms
+eps = 0.0330019, rmse = 4.91796, psnr = 36.9617
+Total decompression time: 1316.49ms
+Total time: 57525.3ms
+  ✓ Compression successful (ratio: 121.06x)
+
+[53/60] Processing: TMQ_1_1800_3600.dat
+oldbits = 207360000, newbits = 468688, compressionratio = 442.427, bpv = 0.0723284
+Total compression time: 52656ms
+eps = 0.0252902, rmse = 0.565949, psnr = 33.7127
+Total decompression time: 337.471ms
+Total time: 52993.5ms
+  ✓ Compression successful (ratio: 442.42x)
+
+[54/60] Processing: TREFHT_1_1800_3600.dat
+oldbits = 207360000, newbits = 172496, compressionratio = 1202.11, bpv = 0.0266198
+Total compression time: 54295.9ms
+eps = 0.00620797, rmse = 1.71637, psnr = 26.7096
+Total decompression time: 328.004ms
+Total time: 54624ms
+  ✓ Compression successful (ratio: 1202.11x)
+
+[55/60] Processing: TREFMNAV_1_1800_3600.dat
+oldbits = 207360000, newbits = 161872, compressionratio = 1281.01, bpv = 0.0249802
+Total compression time: 53850.6ms
+eps = 0.0090462, rmse = 2.48404, psnr = 23.4494
+Total decompression time: 427.161ms
+Total time: 54277.8ms
+  ✓ Compression successful (ratio: 1281.01x)
+
+[56/60] Processing: TREFMXAV_1_1800_3600.dat
+oldbits = 207360000, newbits = 168976, compressionratio = 1227.16, bpv = 0.0260765
+Total compression time: 51583.8ms
+eps = 0.00599535, rmse = 1.6698, psnr = 27.6386
+Total decompression time: 314.724ms
+Total time: 51898.6ms
+  ✓ Compression successful (ratio: 1227.15x)
+
+[57/60] Processing: TROP_T_1_1800_3600.dat
+oldbits = 207360000, newbits = 104976, compressionratio = 1975.31, bpv = 0.0162
+Total compression time: 60120.3ms
+eps = 0.0041753, rmse = 0.858174, psnr = 25.5585
+Total decompression time: 245.388ms
+Total time: 60365.7ms
+  ✓ Compression successful (ratio: 1975.30x)
+
+[58/60] Processing: TS_1_1800_3600.dat
+oldbits = 207360000, newbits = 178064, compressionratio = 1164.53, bpv = 0.027479
+Total compression time: 53567.3ms
+eps = 0.00903481, rmse = 2.50265, psnr = 24.1285
+Total decompression time: 437.351ms
+Total time: 54004.7ms
+  ✓ Compression successful (ratio: 1164.52x)
+
+[59/60] Processing: TSMN_1_1800_3600.dat
+oldbits = 207360000, newbits = 415632, compressionratio = 498.903, bpv = 0.0641407
+Total compression time: 52760.6ms
+eps = 0.00851506, rmse = 2.31015, psnr = 26.0127
+Total decompression time: 655.242ms
+Total time: 53415.9ms
+  ✓ Compression successful (ratio: 498.90x)
+
+[60/60] Processing: TSMX_1_1800_3600.dat
+oldbits = 207360000, newbits = 239440, compressionratio = 866.021, bpv = 0.0369506
+Total compression time: 54086.4ms
+eps = 0.00719913, rmse = 2.03971, psnr = 27.3438
+Total decompression time: 557.415ms
+Total time: 54643.8ms
+  ✓ Compression successful (ratio: 866.02x)
+
+=== Summary ===
+Total files processed: 60
+Total files skipped: 0
+Total files failed: 0
+

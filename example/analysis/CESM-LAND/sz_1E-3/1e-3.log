@@ -1,0 +1,2653 @@
+Input directory: ../../CESM-LAND-MODELS/4/log_normalized
+Output directory: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3
+Dimensions: 192x288
+Error bound: 1E-3
+SZ config: sz.config
+
+Found 176 .dat file(s) to process
+
+[1/176] Processing: ACTUAL_IMMOB_1_192_288.dat
+compression time = 0.010885
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/ACTUAL_IMMOB_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999577
+Max relative error = 0.001000
+Max pw relative error = 695295.761576
+PSNR = 72.588615, NRMSE= 0.00023473036394621165247
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.797153
+decompression time = 0.004890 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/ACTUAL_IMMOB_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.79x)
+
+[2/176] Processing: AGNPP_1_192_288.dat
+compression time = 0.011460
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/AGNPP_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999403
+Max relative error = 0.001000
+Max pw relative error = 695285.399942
+PSNR = 72.588032, NRMSE= 0.00023474610957561190851
+normError = 0.055201, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.734054
+decompression time = 0.005330 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/AGNPP_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.73x)
+
+[3/176] Processing: ANN_FAREA_BURNED_1_192_288.dat
+compression time = 0.008239
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/ANN_FAREA_BURNED_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 578261.063947
+PSNR = 69.991154, NRMSE= 0.00031654998944454610602
+normError = 0.074437, normErr_norm = 0.000369
+acEff=1.000000
+compressionRatio=28.848833
+decompression time = 0.005033 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/ANN_FAREA_BURNED_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 28.84x)
+
+[4/176] Processing: AR_1_192_288.dat
+compression time = 0.008383
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/AR_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 695289.933157
+PSNR = 72.590854, NRMSE= 0.00023466984213117619341
+normError = 0.055183, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.666371
+decompression time = 0.004862 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/AR_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.66x)
+
+[5/176] Processing: area_192_288.dat
+compression time = 0.008838
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/area_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 0.010761
+PSNR = 66.001563, NRMSE= 0.00050109705723431552989
+normError = 0.117833, normErr_norm = 0.000634
+acEff=0.999999
+compressionRatio=25.309990
+decompression time = 0.005266 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/area_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 25.30x)
+
+[6/176] Processing: areaatm_192_288.dat
+compression time = 0.008855
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/areaatm_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999999
+Max relative error = 0.001000
+Max pw relative error = 0.001252
+PSNR = 66.519660, NRMSE= 0.0004720815145805013738
+normError = 0.111010, normErr_norm = 0.000844
+acEff=0.999999
+compressionRatio=20.087549
+decompression time = 0.004982 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/areaatm_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 20.08x)
+
+[7/176] Processing: areaupsc_192_288.dat
+compression time = 0.008545
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/areaupsc_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 0.010761
+PSNR = 66.001563, NRMSE= 0.00050109705723431552989
+normError = 0.117833, normErr_norm = 0.000634
+acEff=0.999999
+compressionRatio=25.309990
+decompression time = 0.005092 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/areaupsc_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 25.30x)
+
+[8/176] Processing: BCDEP_1_192_288.dat
+compression time = 0.011874
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/BCDEP_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005039 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/BCDEP_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[9/176] Processing: BGNPP_1_192_288.dat
+compression time = 0.008382
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/BGNPP_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999879
+Max relative error = 0.001000
+Max pw relative error = 665381.683456
+PSNR = 72.589025, NRMSE= 0.00023471926183822529625
+normError = 0.055194, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.782570
+decompression time = 0.004940 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/BGNPP_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.78x)
+
+[10/176] Processing: BTRAN_1_192_288.dat
+compression time = 0.008496
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/BTRAN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 78402.336437
+PSNR = 67.208382, NRMSE= 0.00043609480842060139227
+normError = 0.102548, normErr_norm = 0.000554
+acEff=1.000000
+compressionRatio=19.359650
+decompression time = 0.005570 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/BTRAN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 19.35x)
+
+[11/176] Processing: BUILDHEAT_1_192_288.dat
+compression time = 0.008245
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/BUILDHEAT_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 0.024813
+PSNR = 65.389444, NRMSE= 0.00053768484582592565406
+normError = 0.126437, normErr_norm = 0.000682
+acEff=0.999999
+compressionRatio=26.898212
+decompression time = 0.005017 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/BUILDHEAT_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 26.89x)
+
+[12/176] Processing: COL_CTRUNC_1_192_288.dat
+compression time = 0.009578
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/COL_CTRUNC_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999404
+Max relative error = 0.001000
+Max pw relative error = 695059.386798
+PSNR = 72.586383, NRMSE= 0.00023479068764804139364
+normError = 0.055211, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.738899
+decompression time = 0.004837 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/COL_CTRUNC_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.73x)
+
+[13/176] Processing: COL_FIRE_CLOSS_1_192_288.dat
+compression time = 0.008206
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/COL_FIRE_CLOSS_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 695285.399942
+PSNR = 72.588614, NRMSE= 0.00023473036870635830215
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.889814
+decompression time = 0.005130 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/COL_FIRE_CLOSS_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.88x)
+
+[14/176] Processing: COL_FIRE_NLOSS_1_192_288.dat
+compression time = 0.009320
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/COL_FIRE_NLOSS_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 634462.567303
+PSNR = 72.588613, NRMSE= 0.00023473040941387825794
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.004761 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/COL_FIRE_NLOSS_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[15/176] Processing: COL_NTRUNC_1_192_288.dat
+compression time = 0.008628
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/COL_NTRUNC_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 695295.761576
+PSNR = 72.498661, NRMSE= 0.00023717393754833687226
+normError = 0.055772, normErr_norm = 0.000301
+acEff=1.000000
+compressionRatio=32.195633
+decompression time = 0.005409 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/COL_NTRUNC_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.19x)
+
+[16/176] Processing: CPOOL_1_192_288.dat
+compression time = 0.008074
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/CPOOL_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005273 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/CPOOL_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[17/176] Processing: CWDC_1_192_288.dat
+compression time = 0.008079
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/CWDC_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 673487.719332
+PSNR = 67.079550, NRMSE= 0.00044261131989311393222
+normError = 0.104081, normErr_norm = 0.000561
+acEff=1.000000
+compressionRatio=10.602752
+decompression time = 0.005541 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/CWDC_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 10.60x)
+
+[18/176] Processing: CWDC_HR_1_192_288.dat
+compression time = 0.008583
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/CWDC_HR_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005473 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/CWDC_HR_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[19/176] Processing: CWDC_LOSS_1_192_288.dat
+compression time = 0.008821
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/CWDC_LOSS_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999936
+Max relative error = 0.001000
+Max pw relative error = 695295.761576
+PSNR = 72.587955, NRMSE= 0.00023474819809278982112
+normError = 0.055201, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.753443
+decompression time = 0.004899 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/CWDC_LOSS_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.75x)
+
+[20/176] Processing: CWDN_1_192_288.dat
+compression time = 0.008614
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/CWDN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 651374.777910
+PSNR = 67.184011, NRMSE= 0.00043732012738123901422
+normError = 0.102836, normErr_norm = 0.000555
+acEff=1.000000
+compressionRatio=15.389925
+decompression time = 0.005423 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/CWDN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 15.38x)
+
+[21/176] Processing: DEADCROOTC_1_192_288.dat
+compression time = 0.008955
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DEADCROOTC_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 598905.324686
+PSNR = 67.145979, NRMSE= 0.00043923918211416349867
+normError = 0.103288, normErr_norm = 0.000557
+acEff=1.000000
+compressionRatio=10.400828
+decompression time = 0.005340 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DEADCROOTC_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 10.40x)
+
+[22/176] Processing: DEADCROOTN_1_192_288.dat
+compression time = 0.009055
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DEADCROOTN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 528235.094515
+PSNR = 67.703484, NRMSE= 0.00041193225652455257553
+normError = 0.096866, normErr_norm = 0.000523
+acEff=1.000000
+compressionRatio=14.634379
+decompression time = 0.005248 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DEADCROOTN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 14.63x)
+
+[23/176] Processing: DEADSTEMC_1_192_288.dat
+compression time = 0.008038
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DEADSTEMC_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 337222.963818
+PSNR = 68.756814, NRMSE= 0.00036488775443161162917
+normError = 0.085804, normErr_norm = 0.000463
+acEff=1.000000
+compressionRatio=10.193751
+decompression time = 0.005537 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DEADSTEMC_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 10.19x)
+
+[24/176] Processing: DEADSTEMN_1_192_288.dat
+compression time = 0.008088
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DEADSTEMN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 265999.195725
+PSNR = 67.313290, NRMSE= 0.00043085934114656126602
+normError = 0.101317, normErr_norm = 0.000547
+acEff=1.000000
+compressionRatio=12.937006
+decompression time = 0.008955 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DEADSTEMN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 12.93x)
+
+[25/176] Processing: DENIT_1_192_288.dat
+compression time = 0.007934
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DENIT_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999548
+Max relative error = 0.001000
+Max pw relative error = 695326.036976
+PSNR = 72.588612, NRMSE= 0.00023473041959861114356
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.904493
+decompression time = 0.004849 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DENIT_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.90x)
+
+[26/176] Processing: DISPVEGC_1_192_288.dat
+compression time = 0.009489
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DISPVEGC_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 531825.400730
+PSNR = 67.108532, NRMSE= 0.00044113691819785245344
+normError = 0.103734, normErr_norm = 0.000559
+acEff=1.000000
+compressionRatio=9.894605
+decompression time = 0.005317 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DISPVEGC_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 9.89x)
+
+[27/176] Processing: DISPVEGN_1_192_288.dat
+compression time = 0.007686
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DISPVEGN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 318471.021092
+PSNR = 67.974761, NRMSE= 0.00039926565113276667575
+normError = 0.093888, normErr_norm = 0.000507
+acEff=1.000000
+compressionRatio=12.137628
+decompression time = 0.005199 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DISPVEGN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 12.13x)
+
+[28/176] Processing: DSTDEP_1_192_288.dat
+compression time = 0.010193
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DSTDEP_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005170 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DSTDEP_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[29/176] Processing: DSTFLXT_1_192_288.dat
+compression time = 0.008697
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DSTFLXT_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 695223.230137
+PSNR = 72.588613, NRMSE= 0.0002347304086469226129
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.914286
+decompression time = 0.004912 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DSTFLXT_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.91x)
+
+[30/176] Processing: DWT_CLOSS_1_192_288.dat
+compression time = 0.008651
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DWT_CLOSS_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.004717 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DWT_CLOSS_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[31/176] Processing: DWT_CONV_CFLUX_1_192_288.dat
+compression time = 0.008578
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DWT_CONV_CFLUX_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005108 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DWT_CONV_CFLUX_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[32/176] Processing: DWT_CONV_NFLUX_1_192_288.dat
+compression time = 0.008999
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DWT_CONV_NFLUX_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.004981 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DWT_CONV_NFLUX_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[33/176] Processing: DWT_NLOSS_1_192_288.dat
+compression time = 0.007921
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DWT_NLOSS_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005311 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DWT_NLOSS_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[34/176] Processing: DWT_PROD100C_GAIN_1_192_288.dat
+compression time = 0.010455
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DWT_PROD100C_GAIN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005290 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DWT_PROD100C_GAIN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[35/176] Processing: DWT_PROD100N_GAIN_1_192_288.dat
+compression time = 0.008498
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DWT_PROD100N_GAIN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.004894 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DWT_PROD100N_GAIN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[36/176] Processing: DWT_PROD10C_GAIN_1_192_288.dat
+compression time = 0.008768
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DWT_PROD10C_GAIN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.004613 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DWT_PROD10C_GAIN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[37/176] Processing: DWT_PROD10N_GAIN_1_192_288.dat
+compression time = 0.008505
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DWT_PROD10N_GAIN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.004983 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DWT_PROD10N_GAIN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[38/176] Processing: DWT_SEEDC_TO_DEADSTEM_1_192_288.dat
+compression time = 0.008618
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DWT_SEEDC_TO_DEADSTEM_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005365 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DWT_SEEDC_TO_DEADSTEM_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[39/176] Processing: DWT_SEEDC_TO_LEAF_1_192_288.dat
+compression time = 0.008456
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DWT_SEEDC_TO_LEAF_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005116 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DWT_SEEDC_TO_LEAF_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[40/176] Processing: DWT_SEEDN_TO_DEADSTEM_1_192_288.dat
+compression time = 0.008866
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DWT_SEEDN_TO_DEADSTEM_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005173 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DWT_SEEDN_TO_DEADSTEM_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[41/176] Processing: DWT_SEEDN_TO_LEAF_1_192_288.dat
+compression time = 0.009044
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/DWT_SEEDN_TO_LEAF_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005194 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/DWT_SEEDN_TO_LEAF_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[42/176] Processing: EFLX_DYNBAL_1_192_288.dat
+compression time = 0.010130
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/EFLX_DYNBAL_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005436 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/EFLX_DYNBAL_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[43/176] Processing: EFLX_LH_TOT_R_1_192_288.dat
+compression time = 0.011529
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/EFLX_LH_TOT_R_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 0.062021
+PSNR = 67.362772, NRMSE= 0.00042841177407961021336
+normError = 0.100741, normErr_norm = 0.000499
+acEff=0.999999
+compressionRatio=15.166210
+decompression time = 0.005510 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/EFLX_LH_TOT_R_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 15.16x)
+
+[44/176] Processing: EFLX_LH_TOT_U_1_192_288.dat
+compression time = 0.008688
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/EFLX_LH_TOT_U_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 1.042456
+PSNR = 67.337734, NRMSE= 0.00042964850870157975148
+normError = 0.101032, normErr_norm = 0.000448
+acEff=0.999999
+compressionRatio=7.982676
+decompression time = 0.005108 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/EFLX_LH_TOT_U_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 7.98x)
+
+[45/176] Processing: ELAI_1_192_288.dat
+compression time = 0.008426
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/ELAI_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999775
+Max relative error = 0.001000
+Max pw relative error = 368147.119125
+PSNR = 67.628492, NRMSE= 0.00041550416366587715434
+normError = 0.097706, normErr_norm = 0.000527
+acEff=1.000000
+compressionRatio=13.933728
+decompression time = 0.005260 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/ELAI_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 13.93x)
+
+[46/176] Processing: ER_1_192_288.dat
+compression time = 0.010207
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/ER_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 695306.123210
+PSNR = 72.585750, NRMSE= 0.00023480779718838506423
+normError = 0.055215, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.792291
+decompression time = 0.005267 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/ER_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.79x)
+
+[47/176] Processing: ERRH2O_1_192_288.dat
+compression time = 0.008477
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/ERRH2O_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005390 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/ERRH2O_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[48/176] Processing: ERRSEB_1_192_288.dat
+compression time = 0.009013
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/ERRSEB_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005671 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/ERRSEB_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[49/176] Processing: ERRSOI_1_192_288.dat
+compression time = 0.008500
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/ERRSOI_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.004982 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/ERRSOI_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[50/176] Processing: ERRSOL_1_192_288.dat
+compression time = 0.008139
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/ERRSOL_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.006048 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/ERRSOL_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[51/176] Processing: ESAI_1_192_288.dat
+compression time = 0.009145
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/ESAI_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 53161.117836
+PSNR = 67.210854, NRMSE= 0.00043597069254025321407
+normError = 0.102519, normErr_norm = 0.000553
+acEff=1.000000
+compressionRatio=16.176699
+decompression time = 0.005415 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/ESAI_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 16.17x)
+
+[52/176] Processing: FCEV_1_192_288.dat
+compression time = 0.009247
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FCEV_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 0.438418
+PSNR = 66.557721, NRMSE= 0.00047001740041052654951
+normError = 0.110525, normErr_norm = 0.000596
+acEff=1.000000
+compressionRatio=15.271974
+decompression time = 0.005707 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FCEV_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 15.27x)
+
+[53/176] Processing: FCOV_1_192_288.dat
+compression time = 0.009005
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FCOV_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 218878.183975
+PSNR = 67.961242, NRMSE= 0.00039988755018490764435
+normError = 0.094034, normErr_norm = 0.000466
+acEff=1.000000
+compressionRatio=21.176065
+decompression time = 0.004980 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FCOV_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 21.17x)
+
+[54/176] Processing: FCTR_1_192_288.dat
+compression time = 0.008255
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FCTR_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999909
+Max relative error = 0.001000
+Max pw relative error = 657193.240208
+PSNR = 67.061836, NRMSE= 0.00044351486714808467052
+normError = 0.104293, normErr_norm = 0.000563
+acEff=1.000000
+compressionRatio=14.240536
+decompression time = 0.005825 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FCTR_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 14.24x)
+
+[55/176] Processing: FGEV_1_192_288.dat
+compression time = 0.007053
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FGEV_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 0.101759
+PSNR = 65.823703, NRMSE= 0.00051146372994710360797
+normError = 0.120271, normErr_norm = 0.000649
+acEff=0.999999
+compressionRatio=12.550159
+decompression time = 0.004973 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FGEV_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 12.55x)
+
+[56/176] Processing: FGR_1_192_288.dat
+compression time = 0.008928
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FGR_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 0.033005
+PSNR = 65.344559, NRMSE= 0.00054047059579088768851
+normError = 0.127092, normErr_norm = 0.000686
+acEff=0.999999
+compressionRatio=20.062041
+decompression time = 0.005348 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FGR_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 20.06x)
+
+[57/176] Processing: FGR12_1_192_288.dat
+compression time = 0.008805
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FGR12_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 0.037016
+PSNR = 65.572552, NRMSE= 0.00052646848737303492995
+normError = 0.123800, normErr_norm = 0.000668
+acEff=0.999999
+compressionRatio=18.643291
+decompression time = 0.005654 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FGR12_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 18.64x)
+
+[58/176] Processing: FGR_R_1_192_288.dat
+compression time = 0.009017
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FGR_R_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 0.043100
+PSNR = 66.958266, NRMSE= 0.00044883500304673454437
+normError = 0.105544, normErr_norm = 0.000522
+acEff=0.999999
+compressionRatio=20.544678
+decompression time = 0.005533 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FGR_R_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 20.54x)
+
+[59/176] Processing: FGR_U_1_192_288.dat
+compression time = 0.008625
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FGR_U_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 0.024030
+PSNR = 67.398528, NRMSE= 0.00042665183015380215084
+normError = 0.100328, normErr_norm = 0.000445
+acEff=0.999999
+compressionRatio=8.762539
+decompression time = 0.005733 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FGR_U_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 8.76x)
+
+[60/176] Processing: FIRA_1_192_288.dat
+compression time = 0.007983
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FIRA_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 0.057043
+PSNR = 66.628128, NRMSE= 0.0004662229005505645358
+normError = 0.109633, normErr_norm = 0.000591
+acEff=0.999999
+compressionRatio=14.855531
+decompression time = 0.005577 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FIRA_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 14.85x)
+
+[61/176] Processing: FIRA_R_1_192_288.dat
+compression time = 0.008815
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FIRA_R_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 0.068708
+PSNR = 67.337217, NRMSE= 0.00042967406489642081743
+normError = 0.101038, normErr_norm = 0.000500
+acEff=0.999999
+compressionRatio=16.398577
+decompression time = 0.004954 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FIRA_R_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 16.39x)
+
+[62/176] Processing: FIRA_U_1_192_288.dat
+compression time = 0.009168
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FIRA_U_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 0.089725
+PSNR = 67.422045, NRMSE= 0.00042549822671916553377
+normError = 0.100056, normErr_norm = 0.000444
+acEff=0.999999
+compressionRatio=8.356341
+decompression time = 0.006343 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FIRA_U_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 8.35x)
+
+[63/176] Processing: FIRE_1_192_288.dat
+compression time = 0.008875
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FIRE_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 0.210904
+PSNR = 66.744216, NRMSE= 0.00046003320022720904474
+normError = 0.108177, normErr_norm = 0.000583
+acEff=0.999999
+compressionRatio=17.270555
+decompression time = 0.005721 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FIRE_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 17.27x)
+
+[64/176] Processing: FIRESEASONL_1_192_288.dat
+compression time = 0.010342
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FIRESEASONL_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 682288.348970
+PSNR = 67.208356, NRMSE= 0.0004360960732989240256
+normError = 0.102548, normErr_norm = 0.000508
+acEff=0.999999
+compressionRatio=11.481132
+decompression time = 0.005400 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FIRESEASONL_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 11.48x)
+
+[65/176] Processing: FLDS_1_192_288.dat
+compression time = 0.008210
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FLDS_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 1.000318
+PSNR = 66.093929, NRMSE= 0.00049579657951364915301
+normError = 0.116587, normErr_norm = 0.000629
+acEff=0.999999
+compressionRatio=17.744404
+decompression time = 0.005230 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FLDS_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 17.74x)
+
+[66/176] Processing: FLUXFM2A_1_192_288.dat
+compression time = 0.009962
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FLUXFM2A_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.004976 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FLUXFM2A_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[67/176] Processing: FLUXFMLND_1_192_288.dat
+compression time = 0.009250
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FLUXFMLND_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005664 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FLUXFMLND_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[68/176] Processing: FPG_1_192_288.dat
+compression time = 0.008854
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FPG_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 1.615788
+PSNR = 66.820624, NRMSE= 0.00045600415430574182908
+normError = 0.107230, normErr_norm = 0.000531
+acEff=0.999999
+compressionRatio=23.267831
+decompression time = 0.006202 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FPG_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 23.26x)
+
+[69/176] Processing: FPI_1_192_288.dat
+compression time = 0.009076
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FPI_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 31.566017
+PSNR = 67.066932, NRMSE= 0.00044325473118714693024
+normError = 0.104232, normErr_norm = 0.000516
+acEff=0.999999
+compressionRatio=19.460144
+decompression time = 0.006096 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FPI_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 19.46x)
+
+[70/176] Processing: FPSN_1_192_288.dat
+compression time = 0.008566
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FPSN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 528752.447667
+PSNR = 67.372540, NRMSE= 0.00042793024641682594032
+normError = 0.100628, normErr_norm = 0.000543
+acEff=1.000000
+compressionRatio=15.153741
+decompression time = 0.005557 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FPSN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 15.15x)
+
+[71/176] Processing: FROOTC_1_192_288.dat
+compression time = 0.012309
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FROOTC_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 36262.974717
+PSNR = 67.644268, NRMSE= 0.00041475021116591529119
+normError = 0.097529, normErr_norm = 0.000526
+acEff=1.000000
+compressionRatio=11.356164
+decompression time = 0.008101 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FROOTC_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 11.35x)
+
+[72/176] Processing: FROOTC_ALLOC_1_192_288.dat
+compression time = 0.012551
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FROOTC_ALLOC_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999591
+Max relative error = 0.001000
+Max pw relative error = 665298.790383
+PSNR = 72.588938, NRMSE= 0.00023472161084090391835
+normError = 0.055195, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.763146
+decompression time = 0.009672 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FROOTC_ALLOC_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.76x)
+
+[73/176] Processing: FROOTC_LOSS_1_192_288.dat
+compression time = 0.012318
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FROOTC_LOSS_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 695290.904560
+PSNR = 72.589918, NRMSE= 0.00023469513886128855846
+normError = 0.055189, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.870263
+decompression time = 0.005295 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FROOTC_LOSS_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.87x)
+
+[74/176] Processing: FROOTN_1_192_288.dat
+compression time = 0.009867
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FROOTN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009998548
+Max relative error = 0.001000
+Max pw relative error = 167909.919150
+PSNR = 67.216281, NRMSE= 0.00043569838656162519991
+normError = 0.102455, normErr_norm = 0.000553
+acEff=1.000000
+compressionRatio=13.681202
+decompression time = 0.008873 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FROOTN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 13.68x)
+
+[75/176] Processing: FSA_1_192_288.dat
+compression time = 0.008622
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSA_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 14824.888915
+PSNR = 66.240658, NRMSE= 0.00048749156494300556952
+normError = 0.114634, normErr_norm = 0.000618
+acEff=0.999999
+compressionRatio=15.058824
+decompression time = 0.006911 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSA_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 15.05x)
+
+[76/176] Processing: FSA_R_1_192_288.dat
+compression time = 0.008353
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSA_R_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 7922.503545
+PSNR = 67.964073, NRMSE= 0.00039975726721427586778
+normError = 0.094003, normErr_norm = 0.000465
+acEff=1.000000
+compressionRatio=17.343684
+decompression time = 0.004960 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSA_R_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 17.34x)
+
+[77/176] Processing: FSAT_1_192_288.dat
+compression time = 0.007944
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSAT_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999574
+Max relative error = 0.001000
+Max pw relative error = 36478.883929
+PSNR = 68.394162, NRMSE= 0.00038044501030822723379
+normError = 0.089462, normErr_norm = 0.000443
+acEff=1.000000
+compressionRatio=24.902499
+decompression time = 0.005844 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSAT_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 24.90x)
+
+[78/176] Processing: FSA_U_1_192_288.dat
+compression time = 0.007524
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSA_U_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 5.080341
+PSNR = 67.368677, NRMSE= 0.00042812060681468052216
+normError = 0.100673, normErr_norm = 0.000446
+acEff=0.999999
+compressionRatio=8.330534
+decompression time = 0.005478 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSA_U_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 8.33x)
+
+[79/176] Processing: FSDS_1_192_288.dat
+compression time = 0.007962
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSDS_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 1763.062128
+PSNR = 65.924503, NRMSE= 0.00050556247727184323078
+normError = 0.118884, normErr_norm = 0.000641
+acEff=0.999999
+compressionRatio=17.745828
+decompression time = 0.005523 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSDS_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 17.74x)
+
+[80/176] Processing: FSDSND_1_192_288.dat
+compression time = 0.008311
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSDSND_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999909
+Max relative error = 0.001000
+Max pw relative error = 3949.693752
+PSNR = 66.116881, NRMSE= 0.00049448822726297922761
+normError = 0.116279, normErr_norm = 0.000627
+acEff=0.999999
+compressionRatio=16.307896
+decompression time = 0.005111 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSDSND_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 16.30x)
+
+[81/176] Processing: FSDSNDLN_1_192_288.dat
+compression time = 0.009319
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSDSNDLN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 504139.114416
+PSNR = 66.315820, NRMSE= 0.0004832913126445391146
+normError = 0.113646, normErr_norm = 0.000613
+acEff=0.999999
+compressionRatio=15.570855
+decompression time = 0.005609 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSDSNDLN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 15.57x)
+
+[82/176] Processing: FSDSNI_1_192_288.dat
+compression time = 0.008723
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSDSNI_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 3758.564066
+PSNR = 66.482031, NRMSE= 0.00047413112471506063022
+normError = 0.111492, normErr_norm = 0.000602
+acEff=0.999999
+compressionRatio=15.423192
+decompression time = 0.004942 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSDSNI_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 15.42x)
+
+[83/176] Processing: FSDSVD_1_192_288.dat
+compression time = 0.009049
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSDSVD_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 260784.561596
+PSNR = 66.876352, NRMSE= 0.00045308784505941623617
+normError = 0.106544, normErr_norm = 0.000575
+acEff=1.000000
+compressionRatio=16.537121
+decompression time = 0.004899 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSDSVD_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 16.53x)
+
+[84/176] Processing: FSDSVDLN_1_192_288.dat
+compression time = 0.008189
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSDSVDLN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999946
+Max relative error = 0.001000
+Max pw relative error = 58587.834972
+PSNR = 66.040543, NRMSE= 0.0004988532726490008725
+normError = 0.117306, normErr_norm = 0.000633
+acEff=0.999999
+compressionRatio=15.813541
+decompression time = 0.005007 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSDSVDLN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 15.81x)
+
+[85/176] Processing: FSDSVI_1_192_288.dat
+compression time = 0.009249
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSDSVI_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999610
+Max relative error = 0.001000
+Max pw relative error = 8945.412128
+PSNR = 65.913749, NRMSE= 0.00050618879611908414867
+normError = 0.119031, normErr_norm = 0.000642
+acEff=0.999999
+compressionRatio=16.850830
+decompression time = 0.005091 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSDSVI_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 16.85x)
+
+[86/176] Processing: FSH_1_192_288.dat
+compression time = 0.008927
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSH_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999797
+Max relative error = 0.001000
+Max pw relative error = 0.048507
+PSNR = 65.652532, NRMSE= 0.00052164299276060701552
+normError = 0.122665, normErr_norm = 0.000662
+acEff=0.999999
+compressionRatio=16.274299
+decompression time = 0.005139 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSH_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 16.27x)
+
+[87/176] Processing: FSH_G_1_192_288.dat
+compression time = 0.008394
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSH_G_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999909
+Max relative error = 0.001000
+Max pw relative error = 0.144699
+PSNR = 65.253223, NRMSE= 0.0005461838401887395434
+normError = 0.128436, normErr_norm = 0.000693
+acEff=0.999999
+compressionRatio=16.895883
+decompression time = 0.005220 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSH_G_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 16.89x)
+
+[88/176] Processing: FSH_NODYNLNDUSE_1_192_288.dat
+compression time = 0.009497
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSH_NODYNLNDUSE_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999797
+Max relative error = 0.001000
+Max pw relative error = 0.048507
+PSNR = 65.652532, NRMSE= 0.00052164299276060701552
+normError = 0.122665, normErr_norm = 0.000662
+acEff=0.999999
+compressionRatio=16.274299
+decompression time = 0.005204 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSH_NODYNLNDUSE_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 16.27x)
+
+[89/176] Processing: FSH_R_1_192_288.dat
+compression time = 0.008580
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSH_R_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999834
+Max relative error = 0.001000
+Max pw relative error = 0.038592
+PSNR = 66.950442, NRMSE= 0.0004492394539135001431
+normError = 0.105639, normErr_norm = 0.000523
+acEff=0.999999
+compressionRatio=18.309934
+decompression time = 0.005088 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSH_R_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 18.30x)
+
+[90/176] Processing: FSH_U_1_192_288.dat
+compression time = 0.008919
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSH_U_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 0.122451
+PSNR = 67.387110, NRMSE= 0.00042721301671859923318
+normError = 0.100460, normErr_norm = 0.000445
+acEff=0.999999
+compressionRatio=8.397267
+decompression time = 0.006437 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSH_U_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 8.39x)
+
+[91/176] Processing: FSH_V_1_192_288.dat
+compression time = 0.009826
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSH_V_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 0.038081
+PSNR = 66.828902, NRMSE= 0.00045556976520653557489
+normError = 0.107128, normErr_norm = 0.000578
+acEff=1.000000
+compressionRatio=17.518137
+decompression time = 0.006194 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSH_V_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 17.51x)
+
+[92/176] Processing: FSM_1_192_288.dat
+compression time = 0.009131
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSM_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999999
+Max relative error = 0.001000
+Max pw relative error = 649466.213479
+PSNR = 67.864769, NRMSE= 0.00040435381633578253721
+normError = 0.095084, normErr_norm = 0.000513
+acEff=1.000000
+compressionRatio=15.907940
+decompression time = 0.005233 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSM_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 15.90x)
+
+[93/176] Processing: FSM_R_1_192_288.dat
+compression time = 0.008123
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSM_R_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 672978.542157
+PSNR = 70.957424, NRMSE= 0.00028322317424469168213
+normError = 0.066600, normErr_norm = 0.000330
+acEff=1.000000
+compressionRatio=20.552314
+decompression time = 0.005203 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSM_R_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 20.55x)
+
+[94/176] Processing: FSM_U_1_192_288.dat
+compression time = 0.008836
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSM_U_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 673606.068622
+PSNR = 67.374806, NRMSE= 0.00042781865444455844391
+normError = 0.100602, normErr_norm = 0.000446
+acEff=0.999999
+compressionRatio=8.731407
+decompression time = 0.005512 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSM_U_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 8.73x)
+
+[95/176] Processing: FSNO_1_192_288.dat
+compression time = 0.008596
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSNO_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 660988.350598
+PSNR = 70.603583, NRMSE= 0.0002949991936773168049
+normError = 0.069369, normErr_norm = 0.000374
+acEff=1.000000
+compressionRatio=24.440221
+decompression time = 0.006250 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSNO_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 24.44x)
+
+[96/176] Processing: FSR_1_192_288.dat
+compression time = 0.008504
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSR_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 5869.598225
+PSNR = 66.295239, NRMSE= 0.00048443782384300227827
+normError = 0.113916, normErr_norm = 0.000615
+acEff=0.999999
+compressionRatio=14.415955
+decompression time = 0.005945 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSR_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 14.41x)
+
+[97/176] Processing: FSRND_1_192_288.dat
+compression time = 0.008630
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSRND_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999387
+Max relative error = 0.001000
+Max pw relative error = 13764.813281
+PSNR = 65.645169, NRMSE= 0.0005220854236704464222
+normError = 0.122769, normErr_norm = 0.000662
+acEff=0.999999
+compressionRatio=14.180280
+decompression time = 0.005161 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSRND_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 14.18x)
+
+[98/176] Processing: FSRNDLN_1_192_288.dat
+compression time = 0.008728
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSRNDLN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 2087.007133
+PSNR = 65.779612, NRMSE= 0.00051406663527171032532
+normError = 0.120883, normErr_norm = 0.000652
+acEff=0.999999
+compressionRatio=13.534696
+decompression time = 0.006266 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSRNDLN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 13.53x)
+
+[99/176] Processing: FSRNI_1_192_288.dat
+compression time = 0.009464
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSRNI_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 5009.548656
+PSNR = 66.696684, NRMSE= 0.0004625575947853608795
+normError = 0.108771, normErr_norm = 0.000587
+acEff=1.000000
+compressionRatio=14.267174
+decompression time = 0.006589 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSRNI_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 14.26x)
+
+[100/176] Processing: FSRVD_1_192_288.dat
+compression time = 0.009086
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSRVD_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999331
+Max relative error = 0.001000
+Max pw relative error = 651921.920760
+PSNR = 65.842461, NRMSE= 0.0005103603729520215463
+normError = 0.120012, normErr_norm = 0.000648
+acEff=0.999999
+compressionRatio=13.894340
+decompression time = 0.005361 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSRVD_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 13.89x)
+
+[101/176] Processing: FSRVDLN_1_192_288.dat
+compression time = 0.008827
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSRVDLN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 90387.691867
+PSNR = 65.977536, NRMSE= 0.00050248508865067382199
+normError = 0.118160, normErr_norm = 0.000638
+acEff=0.999999
+compressionRatio=13.036129
+decompression time = 0.005594 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSRVDLN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 13.03x)
+
+[102/176] Processing: FSRVI_1_192_288.dat
+compression time = 0.008903
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/FSRVI_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 11888.523702
+PSNR = 65.869964, NRMSE= 0.00050874693221609459861
+normError = 0.119632, normErr_norm = 0.000646
+acEff=0.999999
+compressionRatio=14.209431
+decompression time = 0.005851 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/FSRVI_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 14.20x)
+
+[103/176] Processing: GC_HEAT1_1_192_288.dat
+compression time = 0.007924
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/GC_HEAT1_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 0.010628
+PSNR = 65.958505, NRMSE= 0.00050358725852132316548
+normError = 0.118419, normErr_norm = 0.000637
+acEff=0.999999
+compressionRatio=20.299559
+decompression time = 0.005660 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/GC_HEAT1_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 20.29x)
+
+[104/176] Processing: GC_HEAT2_1_192_288.dat
+compression time = 0.008045
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/GC_HEAT2_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005499 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/GC_HEAT2_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[105/176] Processing: GC_ICE1_1_192_288.dat
+compression time = 0.008912
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/GC_ICE1_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999424
+Max relative error = 0.001000
+Max pw relative error = 137352.830467
+PSNR = 69.857775, NRMSE= 0.00032144837265960353673
+normError = 0.075589, normErr_norm = 0.000407
+acEff=1.000000
+compressionRatio=15.476071
+decompression time = 0.007652 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/GC_ICE1_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 15.47x)
+
+[106/176] Processing: GC_ICE2_1_192_288.dat
+compression time = 0.008485
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/GC_ICE2_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.004927 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/GC_ICE2_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[107/176] Processing: GC_LIQ1_1_192_288.dat
+compression time = 0.008460
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/GC_LIQ1_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 0.008660
+PSNR = 70.648834, NRMSE= 0.00029346634673489051335
+normError = 0.069009, normErr_norm = 0.000369
+acEff=1.000000
+compressionRatio=30.199891
+decompression time = 0.006537 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/GC_LIQ1_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 30.19x)
+
+[108/176] Processing: GC_LIQ2_1_192_288.dat
+compression time = 0.011082
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/GC_LIQ2_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005778 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/GC_LIQ2_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[109/176] Processing: GPP_1_192_288.dat
+compression time = 0.009486
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/GPP_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999665
+Max relative error = 0.001000
+Max pw relative error = 695285.399942
+PSNR = 72.589691, NRMSE= 0.00023470128358656330478
+normError = 0.055190, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.758294
+decompression time = 0.005443 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/GPP_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.75x)
+
+[110/176] Processing: GR_1_192_288.dat
+compression time = 0.012571
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/GR_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 695295.761576
+PSNR = 72.590413, NRMSE= 0.00023468176270484333162
+normError = 0.055186, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.695344
+decompression time = 0.004723 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/GR_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.69x)
+
+[111/176] Processing: GROSS_NMIN_1_192_288.dat
+compression time = 0.008660
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/GROSS_NMIN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999577
+Max relative error = 0.001000
+Max pw relative error = 695295.761576
+PSNR = 72.588615, NRMSE= 0.00023473033954754104146
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.777712
+decompression time = 0.004880 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/GROSS_NMIN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.77x)
+
+[112/176] Processing: H2OCAN_1_192_288.dat
+compression time = 0.008226
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/H2OCAN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999910
+Max relative error = 0.001000
+Max pw relative error = 651955.029419
+PSNR = 69.154671, NRMSE= 0.00034855110893892017176
+normError = 0.081962, normErr_norm = 0.000442
+acEff=1.000000
+compressionRatio=24.521508
+decompression time = 0.006086 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/H2OCAN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 24.52x)
+
+[113/176] Processing: H2OSNO_1_192_288.dat
+compression time = 0.008391
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/H2OSNO_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 504239.573697
+PSNR = 68.401022, NRMSE= 0.00038014464441134466393
+normError = 0.089391, normErr_norm = 0.000482
+acEff=1.000000
+compressionRatio=16.060412
+decompression time = 0.006390 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/H2OSNO_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 16.06x)
+
+[114/176] Processing: H2OSNO_TOP_1_192_288.dat
+compression time = 0.008108
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/H2OSNO_TOP_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 5331.022283
+PSNR = 66.665808, NRMSE= 0.000464204795484587018
+normError = 0.109158, normErr_norm = 0.000589
+acEff=1.000000
+compressionRatio=17.571020
+decompression time = 0.005460 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/H2OSNO_TOP_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 17.57x)
+
+[115/176] Processing: HC_1_192_288.dat
+compression time = 0.008741
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/HC_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999797
+Max relative error = 0.001000
+Max pw relative error = 0.055062
+PSNR = 65.398016, NRMSE= 0.00053715449558905392635
+normError = 0.126312, normErr_norm = 0.000680
+acEff=0.999999
+compressionRatio=12.528832
+decompression time = 0.006202 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/HC_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 12.52x)
+
+[116/176] Processing: HCSOI_1_192_288.dat
+compression time = 0.007801
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/HCSOI_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999424
+Max relative error = 0.001000
+Max pw relative error = 0.023655
+PSNR = 65.974873, NRMSE= 0.00050263921587595647086
+normError = 0.118196, normErr_norm = 0.000636
+acEff=0.999999
+compressionRatio=13.340410
+decompression time = 0.005548 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/HCSOI_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 13.34x)
+
+[117/176] Processing: HEAT_FROM_AC_1_192_288.dat
+compression time = 0.008406
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/HEAT_FROM_AC_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 523.182039
+PSNR = 72.582299, NRMSE= 0.00023490111319831064886
+normError = 0.055237, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.738899
+decompression time = 0.005280 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/HEAT_FROM_AC_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.73x)
+
+[118/176] Processing: HR_1_192_288.dat
+compression time = 0.008312
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/HR_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 695289.933157
+PSNR = 72.587961, NRMSE= 0.00023474802322017633387
+normError = 0.055201, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.787430
+decompression time = 0.005166 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/HR_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.78x)
+
+[119/176] Processing: HTOP_1_192_288.dat
+compression time = 0.008060
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/HTOP_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999946
+Max relative error = 0.001000
+Max pw relative error = 474315.174417
+PSNR = 67.453330, NRMSE= 0.00042396842769260419592
+normError = 0.099697, normErr_norm = 0.000538
+acEff=1.000000
+compressionRatio=12.814832
+decompression time = 0.007249 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/HTOP_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 12.81x)
+
+[120/176] Processing: LAISHA_1_192_288.dat
+compression time = 0.008849
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LAISHA_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 557372.009602
+PSNR = 66.760974, NRMSE= 0.00045914653501374447318
+normError = 0.107969, normErr_norm = 0.000583
+acEff=1.000000
+compressionRatio=14.008740
+decompression time = 0.005376 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LAISHA_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 14.00x)
+
+[121/176] Processing: LAISUN_1_192_288.dat
+compression time = 0.008113
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LAISUN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 241841.550194
+PSNR = 66.897401, NRMSE= 0.00045199115726633412723
+normError = 0.106286, normErr_norm = 0.000574
+acEff=1.000000
+compressionRatio=22.339562
+decompression time = 0.005566 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LAISUN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 22.33x)
+
+[122/176] Processing: landfrac_192_288.dat
+compression time = 0.008401
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/landfrac_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 9546.605953
+PSNR = 67.878267, NRMSE= 0.00040372591644764006715
+normError = 0.094937, normErr_norm = 0.000512
+acEff=1.000000
+compressionRatio=19.723917
+decompression time = 0.005224 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/landfrac_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 19.72x)
+
+[123/176] Processing: latixy_192_288.dat
+compression time = 0.008668
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/latixy_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 0.061112
+PSNR = 66.022509, NRMSE= 0.00049989009513496610732
+normError = 0.117550, normErr_norm = 0.000634
+acEff=0.999999
+compressionRatio=25.758006
+decompression time = 0.005294 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/latixy_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 25.75x)
+
+[124/176] Processing: latixyatm_192_288.dat
+compression time = 0.010087
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/latixyatm_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 0.004616
+PSNR = 66.496377, NRMSE= 0.00047334864097986180734
+normError = 0.111308, normErr_norm = 0.000555
+acEff=0.999996
+compressionRatio=23.245822
+decompression time = 0.005606 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/latixyatm_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 23.24x)
+
+[125/176] Processing: LEAFC_1_192_288.dat
+compression time = 0.008262
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LEAFC_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 49086.800039
+PSNR = 67.086203, NRMSE= 0.00044227242130567525269
+normError = 0.104001, normErr_norm = 0.000561
+acEff=1.000000
+compressionRatio=11.351501
+decompression time = 0.005708 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LEAFC_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 11.35x)
+
+[126/176] Processing: LEAFC_ALLOC_1_192_288.dat
+compression time = 0.008437
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LEAFC_ALLOC_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999563
+Max relative error = 0.001000
+Max pw relative error = 695285.399942
+PSNR = 72.588934, NRMSE= 0.00023472172234764910768
+normError = 0.055195, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.787430
+decompression time = 0.004830 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LEAFC_ALLOC_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.78x)
+
+[127/176] Processing: LEAFC_LOSS_1_192_288.dat
+compression time = 0.008977
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LEAFC_LOSS_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 695290.904560
+PSNR = 72.589913, NRMSE= 0.00023469527182217754784
+normError = 0.055189, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.865379
+decompression time = 0.004794 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LEAFC_LOSS_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.86x)
+
+[128/176] Processing: LEAFN_1_192_288.dat
+compression time = 0.010054
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LEAFN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 56484.808119
+PSNR = 66.786245, NRMSE= 0.00045781259241306807798
+normError = 0.107655, normErr_norm = 0.000581
+acEff=1.000000
+compressionRatio=13.500824
+decompression time = 0.005830 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LEAFN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 13.50x)
+
+[129/176] Processing: LITFALL_1_192_288.dat
+compression time = 0.009431
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LITFALL_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 694850.211310
+PSNR = 72.588005, NRMSE= 0.00023474684591998104077
+normError = 0.055201, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.536628
+decompression time = 0.005650 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LITFALL_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.53x)
+
+[130/176] Processing: LITHR_1_192_288.dat
+compression time = 0.008349
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LITHR_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 695289.933157
+PSNR = 72.589473, NRMSE= 0.00023470717301377603636
+normError = 0.055192, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.550993
+decompression time = 0.005262 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LITHR_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.55x)
+
+[131/176] Processing: LITR1C_1_192_288.dat
+compression time = 0.010055
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LITR1C_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 54680.804263
+PSNR = 67.181605, NRMSE= 0.00043744124907189955434
+normError = 0.102865, normErr_norm = 0.000555
+acEff=1.000000
+compressionRatio=13.388052
+decompression time = 0.005777 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LITR1C_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 13.38x)
+
+[132/176] Processing: LITR1C_TO_SOIL1C_1_192_288.dat
+compression time = 0.008389
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LITR1C_TO_SOIL1C_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999620
+Max relative error = 0.001000
+Max pw relative error = 695289.933157
+PSNR = 72.588615, NRMSE= 0.00023473033907546090281
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.772855
+decompression time = 0.005580 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LITR1C_TO_SOIL1C_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.77x)
+
+[133/176] Processing: LITR1N_1_192_288.dat
+compression time = 0.009388
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LITR1N_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 28562.846238
+PSNR = 70.883552, NRMSE= 0.00028564223156353181834
+normError = 0.067169, normErr_norm = 0.000363
+acEff=1.000000
+compressionRatio=23.428027
+decompression time = 0.005692 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LITR1N_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 23.42x)
+
+[134/176] Processing: LITR2C_1_192_288.dat
+compression time = 0.008567
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LITR2C_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999722
+Max relative error = 0.001000
+Max pw relative error = 570388.245788
+PSNR = 67.869453, NRMSE= 0.00040413582121359183097
+normError = 0.095033, normErr_norm = 0.000513
+acEff=1.000000
+compressionRatio=10.695034
+decompression time = 0.005782 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LITR2C_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 10.69x)
+
+[135/176] Processing: LITR2C_TO_SOIL2C_1_192_288.dat
+compression time = 0.009274
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LITR2C_TO_SOIL2C_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 695290.904560
+PSNR = 72.589286, NRMSE= 0.00023471222549495743531
+normError = 0.055193, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.738899
+decompression time = 0.005318 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LITR2C_TO_SOIL2C_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.73x)
+
+[136/176] Processing: LITR2N_1_192_288.dat
+compression time = 0.008584
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LITR2N_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 359920.710202
+PSNR = 66.623288, NRMSE= 0.00046648276900508519336
+normError = 0.109694, normErr_norm = 0.000592
+acEff=1.000000
+compressionRatio=15.306851
+decompression time = 0.005432 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LITR2N_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 15.30x)
+
+[137/176] Processing: LITR3C_1_192_288.dat
+compression time = 0.008778
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LITR3C_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999983
+Max relative error = 0.001000
+Max pw relative error = 394820.717606
+PSNR = 67.912033, NRMSE= 0.00040215953933501644938
+normError = 0.094568, normErr_norm = 0.000510
+acEff=1.000000
+compressionRatio=11.212247
+decompression time = 0.005430 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LITR3C_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 11.21x)
+
+[138/176] Processing: LITR3C_TO_SOIL3C_1_192_288.dat
+compression time = 0.008635
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LITR3C_TO_SOIL3C_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 694228.513264
+PSNR = 72.590257, NRMSE= 0.00023468597635906512347
+normError = 0.055187, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.709849
+decompression time = 0.005152 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LITR3C_TO_SOIL3C_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.70x)
+
+[139/176] Processing: LITR3N_1_192_288.dat
+compression time = 0.007982
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LITR3N_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 617471.511136
+PSNR = 67.733264, NRMSE= 0.00041052233780243502876
+normError = 0.096535, normErr_norm = 0.000521
+acEff=1.000000
+compressionRatio=14.912621
+decompression time = 0.004847 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LITR3N_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 14.91x)
+
+[140/176] Processing: LITTERC_1_192_288.dat
+compression time = 0.010205
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LITTERC_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 676052.466623
+PSNR = 66.762992, NRMSE= 0.00045903987674147353655
+normError = 0.107944, normErr_norm = 0.000582
+acEff=1.000000
+compressionRatio=10.851928
+decompression time = 0.005264 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LITTERC_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 10.85x)
+
+[141/176] Processing: LITTERC_HR_1_192_288.dat
+compression time = 0.009128
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LITTERC_HR_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 695289.933157
+PSNR = 72.589473, NRMSE= 0.00023470717301377603636
+normError = 0.055192, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.550993
+decompression time = 0.006071 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LITTERC_HR_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.55x)
+
+[142/176] Processing: LITTERC_LOSS_1_192_288.dat
+compression time = 0.007958
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LITTERC_LOSS_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 683470.384760
+PSNR = 72.588997, NRMSE= 0.00023472003832500210985
+normError = 0.055195, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.724368
+decompression time = 0.004973 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LITTERC_LOSS_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.72x)
+
+[143/176] Processing: LIVECROOTC_1_192_288.dat
+compression time = 0.009969
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LIVECROOTC_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009998092
+Max relative error = 0.001000
+Max pw relative error = 54060.845022
+PSNR = 67.906258, NRMSE= 0.00040242699103686541823
+normError = 0.094631, normErr_norm = 0.000511
+acEff=1.000000
+compressionRatio=13.288315
+decompression time = 0.005116 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LIVECROOTC_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 13.28x)
+
+[144/176] Processing: LIVECROOTN_1_192_288.dat
+compression time = 0.008612
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LIVECROOTN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999401
+Max relative error = 0.001000
+Max pw relative error = 369289.651185
+PSNR = 68.861551, NRMSE= 0.00036051425096769290071
+normError = 0.084775, normErr_norm = 0.000458
+acEff=1.000000
+compressionRatio=23.243380
+decompression time = 0.004861 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LIVECROOTN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 23.24x)
+
+[145/176] Processing: LIVESTEMC_1_192_288.dat
+compression time = 0.009010
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LIVESTEMC_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999718
+Max relative error = 0.001000
+Max pw relative error = 6340.794905
+PSNR = 67.246941, NRMSE= 0.00043416314427887508533
+normError = 0.102094, normErr_norm = 0.000551
+acEff=1.000000
+compressionRatio=12.232952
+decompression time = 0.005237 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LIVESTEMC_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 12.23x)
+
+[146/176] Processing: LIVESTEMN_1_192_288.dat
+compression time = 0.008334
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/LIVESTEMN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999884
+Max relative error = 0.001000
+Max pw relative error = 525250.943894
+PSNR = 66.929472, NRMSE= 0.00045032534675950648033
+normError = 0.105894, normErr_norm = 0.000572
+acEff=1.000000
+compressionRatio=18.777825
+decompression time = 0.005191 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/LIVESTEMN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 18.77x)
+
+[147/176] Processing: longxy_192_288.dat
+compression time = 0.008622
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/longxy_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 0.091832
+PSNR = 65.615061, NRMSE= 0.0005238982763446499262
+normError = 0.123195, normErr_norm = 0.000664
+acEff=0.999999
+compressionRatio=19.253482
+decompression time = 0.005210 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/longxy_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 19.25x)
+
+[148/176] Processing: longxyatm_192_288.dat
+compression time = 0.009127
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/longxyatm_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999995
+Max relative error = 0.001000
+Max pw relative error = 0.005691
+PSNR = 66.873714, NRMSE= 0.00045322546547575448322
+normError = 0.106576, normErr_norm = 0.000898
+acEff=0.999999
+compressionRatio=10.817960
+decompression time = 0.005792 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/longxyatm_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 10.81x)
+
+[149/176] Processing: MEAN_FIRE_PROB_1_192_288.dat
+compression time = 0.009330
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/MEAN_FIRE_PROB_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 567735.667459
+PSNR = 68.470017, NRMSE= 0.00037713700171868052733
+normError = 0.088684, normErr_norm = 0.000439
+acEff=1.000000
+compressionRatio=20.329412
+decompression time = 0.006047 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/MEAN_FIRE_PROB_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 20.32x)
+
+[150/176] Processing: MR_1_192_288.dat
+compression time = 0.009987
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/MR_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 695289.933157
+PSNR = 72.590773, NRMSE= 0.00023467204129400061384
+normError = 0.055183, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.503159
+decompression time = 0.006019 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/MR_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.50x)
+
+[151/176] Processing: NBP_1_192_288.dat
+compression time = 0.009629
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/NBP_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 1817.553033
+PSNR = 72.591762, NRMSE= 0.00023464531736154076126
+normError = 0.055177, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.651904
+decompression time = 0.009331 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/NBP_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.65x)
+
+[152/176] Processing: NDEPLOY_1_192_288.dat
+compression time = 0.009808
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/NDEPLOY_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 695290.580759
+PSNR = 72.588615, NRMSE= 0.00023473036479336307591
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.806882
+decompression time = 0.005581 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/NDEPLOY_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.80x)
+
+[153/176] Processing: NDEP_TO_SMINN_1_192_288.dat
+compression time = 0.008968
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/NDEP_TO_SMINN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005173 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/NDEP_TO_SMINN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[154/176] Processing: NEE_1_192_288.dat
+compression time = 0.009808
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/NEE_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 3220.927430
+PSNR = 72.590013, NRMSE= 0.00023469256390508540949
+normError = 0.055188, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.797153
+decompression time = 0.004683 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/NEE_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.79x)
+
+[155/176] Processing: NEP_1_192_288.dat
+compression time = 0.008032
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/NEP_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999973
+Max relative error = 0.001000
+Max pw relative error = 1817.553033
+PSNR = 72.590500, NRMSE= 0.00023467942713050070802
+normError = 0.055185, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.608580
+decompression time = 0.004499 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/NEP_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.60x)
+
+[156/176] Processing: NET_NMIN_1_192_288.dat
+compression time = 0.008821
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/NET_NMIN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999548
+Max relative error = 0.001000
+Max pw relative error = 695326.036976
+PSNR = 72.588614, NRMSE= 0.00023473038899309502949
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.836105
+decompression time = 0.005091 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/NET_NMIN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.83x)
+
+[157/176] Processing: NFIX_TO_SMINN_1_192_288.dat
+compression time = 0.008307
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/NFIX_TO_SMINN_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.004988 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/NFIX_TO_SMINN_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[158/176] Processing: NPP_1_192_288.dat
+compression time = 0.008762
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/NPP_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 195543.782181
+PSNR = 72.587483, NRMSE= 0.00023476094503006614636
+normError = 0.055204, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.792291
+decompression time = 0.005040 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/NPP_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.79x)
+
+[159/176] Processing: OCDEP_1_192_288.dat
+compression time = 0.008704
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/OCDEP_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005488 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/OCDEP_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[160/176] Processing: PBOT_1_192_288.dat
+compression time = 0.008201
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/PBOT_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 0.016160
+PSNR = 66.313978, NRMSE= 0.00048339384467341339237
+normError = 0.113671, normErr_norm = 0.000611
+acEff=0.999999
+compressionRatio=19.136875
+decompression time = 0.005206 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/PBOT_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 19.13x)
+
+[161/176] Processing: PCO2_1_192_288.dat
+compression time = 0.009566
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/PCO2_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999871
+Max relative error = 0.001000
+Max pw relative error = 0.368877
+PSNR = 66.072200, NRMSE= 0.00049703846122050384
+normError = 0.116879, normErr_norm = 0.000631
+acEff=0.999999
+compressionRatio=19.038044
+decompression time = 0.006026 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/PCO2_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 19.03x)
+
+[162/176] Processing: PFT_CTRUNC_1_192_288.dat
+compression time = 0.009063
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/PFT_CTRUNC_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 695295.761576
+PSNR = 72.588982, NRMSE= 0.00023472043933825609881
+normError = 0.055195, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.724368
+decompression time = 0.005018 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/PFT_CTRUNC_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.72x)
+
+[163/176] Processing: PFT_FIRE_CLOSS_1_192_288.dat
+compression time = 0.008579
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/PFT_FIRE_CLOSS_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 695223.230137
+PSNR = 72.588614, NRMSE= 0.00023473037550733889789
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.904493
+decompression time = 0.004964 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/PFT_FIRE_CLOSS_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.90x)
+
+[164/176] Processing: PFT_FIRE_NLOSS_1_192_288.dat
+compression time = 0.008476
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/PFT_FIRE_NLOSS_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 634462.567303
+PSNR = 72.588613, NRMSE= 0.00023473040943960380052
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005559 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/PFT_FIRE_NLOSS_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[165/176] Processing: PFT_NTRUNC_1_192_288.dat
+compression time = 0.010310
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/PFT_NTRUNC_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999275
+Max relative error = 0.001000
+Max pw relative error = 695285.399942
+PSNR = 72.589006, NRMSE= 0.00023471977492699248901
+normError = 0.055195, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.709849
+decompression time = 0.005822 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/PFT_NTRUNC_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.70x)
+
+[166/176] Processing: PLANT_NDEMAND_1_192_288.dat
+compression time = 0.009033
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/PLANT_NDEMAND_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 695290.580759
+PSNR = 72.588617, NRMSE= 0.00023473030002690248937
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.816617
+decompression time = 0.005603 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/PLANT_NDEMAND_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.81x)
+
+[167/176] Processing: POTENTIAL_IMMOB_1_192_288.dat
+compression time = 0.008581
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/POTENTIAL_IMMOB_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999577
+Max relative error = 0.001000
+Max pw relative error = 695295.761576
+PSNR = 72.588615, NRMSE= 0.00023473036350770104226
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.772855
+decompression time = 0.005485 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/POTENTIAL_IMMOB_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.77x)
+
+[168/176] Processing: PROD100C_1_192_288.dat
+compression time = 0.009097
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/PROD100C_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005300 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/PROD100C_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[169/176] Processing: PROD100C_LOSS_1_192_288.dat
+compression time = 0.008374
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/PROD100C_LOSS_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.006534 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/PROD100C_LOSS_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[170/176] Processing: PROD100N_1_192_288.dat
+compression time = 0.008626
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/PROD100N_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.004619 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/PROD100N_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[171/176] Processing: PROD100N_LOSS_1_192_288.dat
+compression time = 0.008888
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/PROD100N_LOSS_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005185 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/PROD100N_LOSS_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[172/176] Processing: PROD10C_1_192_288.dat
+compression time = 0.008775
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/PROD10C_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005097 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/PROD10C_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[173/176] Processing: PROD10C_LOSS_1_192_288.dat
+compression time = 0.008419
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/PROD10C_LOSS_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005064 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/PROD10C_LOSS_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[174/176] Processing: PROD10N_1_192_288.dat
+compression time = 0.008841
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/PROD10N_1_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.007132 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/PROD10N_1_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[175/176] Processing: topo_192_288.dat
+compression time = 0.010178
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/topo_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.006464 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/topo_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+[176/176] Processing: topodnsc_192_288.dat
+compression time = 0.009580
+compressed data file: ../../CESM-LAND-MODELS/4/log_normalized/topodnsc_192_288.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0009999534
+Max relative error = 0.001000
+Max pw relative error = 0.001000
+PSNR = 72.588613, NRMSE= 0.00023473040972589543436
+normError = 0.055197, normErr_norm = 0.000298
+acEff=1.000000
+compressionRatio=32.928986
+decompression time = 0.005326 seconds.
+decompressed data file: ../../CESM-LAND-MODELS/4/log_normalized/sz_1E-3/topodnsc_192_288.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 32.92x)
+
+=== Summary ===
+Total files processed: 176
+Total files skipped: 0
+Total files failed: 0
+
