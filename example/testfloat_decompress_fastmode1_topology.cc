@@ -455,7 +455,7 @@ void rbf_smooth_saddle_points_safe_extrema_aware_targeted(
         } // End of inner for loop (j)
     } // End of outer for loop (i)
     
-    printf("RBF restoration results: restored=%d, failed=%d\n", restored_count, failed_count);
+    // printf("RBF restoration results: restored=%d, failed=%d\n", restored_count, failed_count);
     
     free(w);
     free(orig_decomp);
@@ -826,10 +826,10 @@ int main(int argc, char *argv[])
         }
     }
     
-    printf("False negatives detected:\n");
-    printf("  Maxima: %d\n", false_negative_maxima);
-    printf("  Minima: %d\n", false_negative_minima);
-    printf("  Saddles: %d\n", false_negative_saddles);
+    // printf("False negatives detected:\n");
+    // printf("  Maxima: %d\n", false_negative_maxima);
+    // printf("  Minima: %d\n", false_negative_minima);
+    // printf("  Saddles: %d\n", false_negative_saddles);
     
     // Only apply RBF smoothing to false negative saddles (targeted restoration)
     if(false_negative_saddles > 0){
@@ -840,34 +840,34 @@ int main(int argc, char *argv[])
         estimate_rbf_parameters(data, rows, cols, errBound, false_negative_saddles,
                                &estimated_sigma, &estimated_ksize, &estimated_eps);
         
-        printf("Applying RBF smoothing to restore %d false negative saddles...\n", false_negative_saddles);
-        printf("  Estimated parameters: sigma=%.3f, ksize=%d, eps=%.6f\n", 
-               estimated_sigma, estimated_ksize, estimated_eps);
-        fflush(stdout);
+        // printf("Applying RBF smoothing to restore %d false negative saddles...\n", false_negative_saddles);
+        // printf("  Estimated parameters: sigma=%.3f, ksize=%d, eps=%.6f\n", 
+        //        estimated_sigma, estimated_ksize, estimated_eps);
+        // fflush(stdout);
         
         rbf_smooth_saddle_points_safe_extrema_aware_targeted(
             data, types_orig, locks, false_negative_mask, rows, cols, 
             estimated_sigma, estimated_ksize, estimated_eps, errBound);
-        printf("RBF smoothing completed.\n");
-        fflush(stdout);
+        // printf("RBF smoothing completed.\n");
+        // fflush(stdout);
     } else {
-        printf("No false negative saddles - skipping RBF smoothing\n");
+        // printf("No false negative saddles - skipping RBF smoothing\n");
     }
     
     free(false_negative_mask);
     free(decomp_types);
     
-    printf("Applying stencils to critical points...\n");
-    fflush(stdout);
+    // printf("Applying stencils to critical points...\n");
+    // fflush(stdout);
     apply_stencils_on_critical_points(data, types_orig, sort_positions, sort_position_mapping, rows, cols, errBound, extrema_count);
-    printf("Stencils applied.\n");
-    fflush(stdout);
+    // printf("Stencils applied.\n");
+    // fflush(stdout);
     
-    printf("Restoring extrema from types...\n");
-    fflush(stdout);
+    // printf("Restoring extrema from types...\n");
+    // fflush(stdout);
     restore_extrema_from_types(types_orig, data, orig_decomp, rows, cols, eps, errBound);
-    printf("Extrema restoration completed.\n");
-    fflush(stdout);
+    // printf("Extrema restoration completed.\n");
+    // fflush(stdout);
     
     free(orig_decomp);
     
@@ -884,7 +884,7 @@ int main(int argc, char *argv[])
     cost_end();
     
     free(bytes);
-    printf("timecost=%f\n", totalCost);
+    printf("decompression time=%f\n", totalCost);
     szp_writeFloatData_inBytes(data, nbEle, outputFilePath, &status);
     if (status != SZ_SCES)
     {

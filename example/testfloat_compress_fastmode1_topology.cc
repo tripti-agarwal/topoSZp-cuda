@@ -141,7 +141,7 @@ int main(int argc, char *argv[])
   cost_end();
   //print the quantized bins
   
-  printf("\ntimecost=%f, total fastmode1 topology\n", totalCost);
+  printf("\ncompression time=%f, total fastmode1 topology\n", totalCost);
   printf("compression size = %zu, CR = %f\n", outSize, 1.0f * nbEle * sizeof(float) / outSize);
   
   szp_writeByteData(bytes_topology, outSize, outputFilePath, &status);
