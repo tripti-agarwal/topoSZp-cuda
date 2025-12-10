@@ -189,7 +189,14 @@ for i in "${!dat_files[@]}"; do
                 echo "  ✗ Decompression failed: output file not created"
                 failed_count=$((failed_count + 1))
             fi
+        else
+            echo "  ✗ Decompression failed (exit code: $?)"
+            failed_count=$((failed_count + 1))
         fi
+    else
+        echo "  ✗ Compression failed (exit code: $?)"
+        failed_count=$((failed_count + 1))
+    fi
     echo ""
 done
 
