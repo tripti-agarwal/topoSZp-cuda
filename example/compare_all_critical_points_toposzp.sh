@@ -114,7 +114,12 @@ for i in "${!dat_files[@]}"; do
         # Append to CSV
         echo "$filename,$fn,$fp,$ft,$gt,$decomp_count" >> "$OUTPUT_CSV"
         
-        echo "  ✓ False Negatives: $fn, False Positives: $fp, False Types: $ft, Total: $gt, Decompressed CPs: $decomp_count"
+        # Print in the same format as critical_points.log
+        echo "  False Negatives: $fn"
+        echo "  False Positives: $fp"
+        echo "  False Types: $ft"
+        echo "  Grand Total: $gt"
+        echo "  Total Critical Points (Decompressed): $decomp_count"
         processed_count=$((processed_count + 1))
     else
         echo "  ✗ Failed to compare critical points"
@@ -124,11 +129,29 @@ for i in "${!dat_files[@]}"; do
     echo ""
 done
 
+# Calculate total false cases
+total_false_cases=0
+if [ -f "$OUTPUT_CSV" ] && [ $processed_count -gt 0 ]; then
+    # Sum the grand_total_false column (5th column, skipping header)
+    while IFS=',' read -r filename fn fp ft gt decomp_count; do
+        if [[ "$gt" =~ ^[0-9]+$ ]]; then
+            total_false_cases=$((total_false_cases + gt))
+        fi
+    done < <(tail -n +2 "$OUTPUT_CSV" 2>/dev/null)
+fi
+
 # Print summary
 echo "=== Summary ==="
 echo "Total files processed: $processed_count"
 echo "Total files skipped: $skipped_count"
 echo "Total files failed: $failed_count"
+if [ $processed_count -gt 0 ] && [ $total_false_cases -gt 0 ]; then
+    average_false=$(echo "scale=2; $total_false_cases / $processed_count" | bc 2>/dev/null || echo "N/A")
+    echo "Total false cases across all files: $total_false_cases"
+    if [ "$average_false" != "N/A" ]; then
+        echo "Average false cases per file: $average_false"
+    fi
+fi
 echo "Results saved to: $OUTPUT_CSV"
 echo ""
 
