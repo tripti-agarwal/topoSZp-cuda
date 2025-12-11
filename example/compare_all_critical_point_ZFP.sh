@@ -99,8 +99,9 @@ for i in "${!dat_files[@]}"; do
     # Run comparison
     output=$(./compare_critical_points "$dat_file" "$decompressed_file" "$ROWS" "$COLS" "$ERROR_BOUND" 2>&1)
     
-    # Parse output: should be "false_negatives false_positives false_types grand_total"
-    if read -r false_neg false_pos false_types grand_total <<< "$output"; then
+    # Parse output: should be "false_negatives false_positives false_types grand_total decomp_count"
+    # The executable outputs 5 values, but we only need the first 4
+    if read -r false_neg false_pos false_types grand_total decomp_count <<< "$output"; then
         # Check if all values are numbers
         if [[ "$false_neg" =~ ^[0-9]+$ ]] && [[ "$false_pos" =~ ^[0-9]+$ ]] && [[ "$false_types" =~ ^[0-9]+$ ]] && [[ "$grand_total" =~ ^[0-9]+$ ]]; then
             echo "  False Negatives: $false_neg"
