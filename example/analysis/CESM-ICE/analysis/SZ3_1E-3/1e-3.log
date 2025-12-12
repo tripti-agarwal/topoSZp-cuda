@@ -1,142 +1,1182 @@
-Input directory: ../../../../CESM-ICE-MODELS/4/log_normalized
+Input directory: ../../../../CESM-ICE-MODELS/4/log_normalized/
 Output directory: ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3
 Dimensions: 384x320
 Error bound: 1e-3
 
 Found 130 .dat file(s) to process
 
-[1/130] Skipping: aeroiceint001_1_384_320.dat (output file already exists)
-[2/130] Skipping: aeroiceint002_1_384_320.dat (output file already exists)
-[3/130] Skipping: aeroiceint003_1_384_320.dat (output file already exists)
-[4/130] Skipping: aeroicessl001_1_384_320.dat (output file already exists)
-[5/130] Skipping: aeroicessl002_1_384_320.dat (output file already exists)
-[6/130] Skipping: aeroicessl003_1_384_320.dat (output file already exists)
-[7/130] Skipping: aerosnoint001_1_384_320.dat (output file already exists)
-[8/130] Skipping: aerosnoint002_1_384_320.dat (output file already exists)
-[9/130] Skipping: aerosnoint003_1_384_320.dat (output file already exists)
-[10/130] Skipping: aerosnossl001_1_384_320.dat (output file already exists)
-[11/130] Skipping: aerosnossl002_1_384_320.dat (output file already exists)
-[12/130] Skipping: aerosnossl003_1_384_320.dat (output file already exists)
-[13/130] Skipping: aice_1_384_320.dat (output file already exists)
-[14/130] Skipping: aicen001_1_384_320.dat (output file already exists)
-[15/130] Skipping: aicen002_1_384_320.dat (output file already exists)
-[16/130] Skipping: aicen003_1_384_320.dat (output file already exists)
-[17/130] Skipping: aicen004_1_384_320.dat (output file already exists)
-[18/130] Skipping: aicen005_1_384_320.dat (output file already exists)
-[19/130] Skipping: aisnap_1_384_320.dat (output file already exists)
-[20/130] Skipping: albice_1_384_320.dat (output file already exists)
-[21/130] Skipping: albpnd_1_384_320.dat (output file already exists)
-[22/130] Skipping: albsno_1_384_320.dat (output file already exists)
-[23/130] Skipping: alidr_1_384_320.dat (output file already exists)
-[24/130] Skipping: alvdr_1_384_320.dat (output file already exists)
-[25/130] Skipping: ANGLE_384_320.dat (output file already exists)
-[26/130] Skipping: ANGLET_384_320.dat (output file already exists)
-[27/130] Skipping: apond001_1_384_320.dat (output file already exists)
-[28/130] Skipping: apond002_1_384_320.dat (output file already exists)
-[29/130] Skipping: apond003_1_384_320.dat (output file already exists)
-[30/130] Skipping: apond004_1_384_320.dat (output file already exists)
-[31/130] Skipping: apond005_1_384_320.dat (output file already exists)
-[32/130] Skipping: congel_1_384_320.dat (output file already exists)
-[33/130] Skipping: coszen_1_384_320.dat (output file already exists)
-[34/130] Skipping: daidtd_1_384_320.dat (output file already exists)
-[35/130] Skipping: daidtt_1_384_320.dat (output file already exists)
-[36/130] Skipping: dardg1dt_1_384_320.dat (output file already exists)
-[37/130] Skipping: dardg2dt_1_384_320.dat (output file already exists)
-[38/130] Skipping: divu_1_384_320.dat (output file already exists)
-[39/130] Skipping: dvidtd_1_384_320.dat (output file already exists)
-[40/130] Skipping: dvidtt_1_384_320.dat (output file already exists)
-[41/130] Skipping: dvirdgdt_1_384_320.dat (output file already exists)
-[42/130] Skipping: dxt_384_320.dat (output file already exists)
-[43/130] Skipping: dxu_384_320.dat (output file already exists)
-[44/130] Skipping: dyt_384_320.dat (output file already exists)
-[45/130] Skipping: dyu_384_320.dat (output file already exists)
-[46/130] Skipping: evap_1_384_320.dat (output file already exists)
-[47/130] Skipping: evap_ai_1_384_320.dat (output file already exists)
-[48/130] Skipping: faero_atm001_1_384_320.dat (output file already exists)
-[49/130] Skipping: faero_atm002_1_384_320.dat (output file already exists)
-[50/130] Skipping: faero_atm003_1_384_320.dat (output file already exists)
-[51/130] Skipping: faero_ocn001_1_384_320.dat (output file already exists)
-[52/130] Skipping: faero_ocn002_1_384_320.dat (output file already exists)
-[53/130] Skipping: faero_ocn003_1_384_320.dat (output file already exists)
-[54/130] Skipping: fcondtop_ai_1_384_320.dat (output file already exists)
-[55/130] Skipping: fhocn_1_384_320.dat (output file already exists)
-[56/130] Skipping: fhocn_ai_1_384_320.dat (output file already exists)
-[57/130] Skipping: flat_1_384_320.dat (output file already exists)
-[58/130] Skipping: flat_ai_1_384_320.dat (output file already exists)
-[59/130] Skipping: flwdn_1_384_320.dat (output file already exists)
-[60/130] Skipping: flwup_1_384_320.dat (output file already exists)
-[61/130] Skipping: flwup_ai_1_384_320.dat (output file already exists)
-[62/130] Skipping: frazil_1_384_320.dat (output file already exists)
-[63/130] Skipping: fresh_1_384_320.dat (output file already exists)
-[64/130] Skipping: fresh_ai_1_384_320.dat (output file already exists)
-[65/130] Skipping: fs_1_384_320.dat (output file already exists)
-[66/130] Skipping: fsalt_1_384_320.dat (output file already exists)
-[67/130] Skipping: fsalt_ai_1_384_320.dat (output file already exists)
-[68/130] Skipping: fsens_1_384_320.dat (output file already exists)
-[69/130] Skipping: fsens_ai_1_384_320.dat (output file already exists)
-[70/130] Skipping: fsurf_ai_1_384_320.dat (output file already exists)
-[71/130] Skipping: fswabs_1_384_320.dat (output file already exists)
-[72/130] Skipping: fswabs_ai_1_384_320.dat (output file already exists)
-[73/130] Skipping: fswdn_1_384_320.dat (output file already exists)
-[74/130] Skipping: fswfac_1_384_320.dat (output file already exists)
-[75/130] Skipping: fswthru_1_384_320.dat (output file already exists)
-[76/130] Skipping: fswthru_ai_1_384_320.dat (output file already exists)
-[77/130] Skipping: fswup_1_384_320.dat (output file already exists)
-[78/130] Skipping: FYarea_1_384_320.dat (output file already exists)
-[79/130] Skipping: hi_1_384_320.dat (output file already exists)
-[80/130] Skipping: hisnap_1_384_320.dat (output file already exists)
-[81/130] Skipping: hs_1_384_320.dat (output file already exists)
-[82/130] Skipping: HTE_384_320.dat (output file already exists)
-[83/130] Skipping: HTN_384_320.dat (output file already exists)
-[84/130] Skipping: iage_1_384_320.dat (output file already exists)
-[85/130] Skipping: ice_present_1_384_320.dat (output file already exists)
-[86/130] Skipping: meltb_1_384_320.dat (output file already exists)
-[87/130] Skipping: meltl_1_384_320.dat (output file already exists)
-[88/130] Skipping: melts_1_384_320.dat (output file already exists)
-[89/130] Skipping: meltt_1_384_320.dat (output file already exists)
-[90/130] Skipping: opening_1_384_320.dat (output file already exists)
-[91/130] Skipping: qi_1_384_320.dat (output file already exists)
-[92/130] Skipping: Qref_1_384_320.dat (output file already exists)
-[93/130] Skipping: qs_1_384_320.dat (output file already exists)
-[94/130] Skipping: rain_1_384_320.dat (output file already exists)
-[95/130] Skipping: rain_ai_1_384_320.dat (output file already exists)
-[96/130] Skipping: shear_1_384_320.dat (output file already exists)
-[97/130] Skipping: sig1_1_384_320.dat (output file already exists)
-[98/130] Skipping: sig2_1_384_320.dat (output file already exists)
-[99/130] Skipping: snoice_1_384_320.dat (output file already exists)
-[100/130] Skipping: snow_1_384_320.dat (output file already exists)
-[101/130] Skipping: snow_ai_1_384_320.dat (output file already exists)
-[102/130] Skipping: strairx_1_384_320.dat (output file already exists)
-[103/130] Skipping: strairy_1_384_320.dat (output file already exists)
-[104/130] Skipping: strcorx_1_384_320.dat (output file already exists)
-[105/130] Skipping: strcory_1_384_320.dat (output file already exists)
-[106/130] Skipping: strength_1_384_320.dat (output file already exists)
-[107/130] Skipping: strintx_1_384_320.dat (output file already exists)
-[108/130] Skipping: strinty_1_384_320.dat (output file already exists)
-[109/130] Skipping: strocnx_1_384_320.dat (output file already exists)
-[110/130] Skipping: strocny_1_384_320.dat (output file already exists)
-[111/130] Skipping: Tair_1_384_320.dat (output file already exists)
-[112/130] Skipping: tarea_384_320.dat (output file already exists)
-[113/130] Skipping: TLAT_384_320.dat (output file already exists)
-[114/130] Skipping: TLON_384_320.dat (output file already exists)
-[115/130] Skipping: tmask_384_320.dat (output file already exists)
-[116/130] Skipping: transix_1_384_320.dat (output file already exists)
-[117/130] Skipping: transiy_1_384_320.dat (output file already exists)
-[118/130] Skipping: Tref_1_384_320.dat (output file already exists)
-[119/130] Skipping: trsig_1_384_320.dat (output file already exists)
-[120/130] Skipping: Tsfc_1_384_320.dat (output file already exists)
-[121/130] Skipping: uarea_384_320.dat (output file already exists)
-[122/130] Skipping: ULAT_384_320.dat (output file already exists)
-[123/130] Skipping: ULON_384_320.dat (output file already exists)
-[124/130] Skipping: uvel_1_384_320.dat (output file already exists)
-[125/130] Skipping: vicen001_1_384_320.dat (output file already exists)
-[126/130] Skipping: vicen002_1_384_320.dat (output file already exists)
-[127/130] Skipping: vicen003_1_384_320.dat (output file already exists)
-[128/130] Skipping: vicen004_1_384_320.dat (output file already exists)
-[129/130] Skipping: vicen005_1_384_320.dat (output file already exists)
-[130/130] Skipping: vvel_1_384_320.dat (output file already exists)
+[1/130] Processing: aeroiceint001_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.009589
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/aeroiceint001_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.005483 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/aeroiceint001_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[2/130] Processing: aeroiceint002_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.010411
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/aeroiceint002_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.005735 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/aeroiceint002_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[3/130] Processing: aeroiceint003_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.010200
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/aeroiceint003_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.005791 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/aeroiceint003_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[4/130] Processing: aeroicessl001_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.010614
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/aeroicessl001_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.006065 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/aeroicessl001_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[5/130] Processing: aeroicessl002_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.010079
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/aeroicessl002_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.005915 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/aeroicessl002_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[6/130] Processing: aeroicessl003_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.010218
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/aeroicessl003_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.005936 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/aeroicessl003_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[7/130] Processing: aerosnoint001_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.009891
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/aerosnoint001_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.005997 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/aerosnoint001_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[8/130] Processing: aerosnoint002_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.010195
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/aerosnoint002_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.006069 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/aerosnoint002_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[9/130] Processing: aerosnoint003_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.010133
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/aerosnoint003_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.005813 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/aerosnoint003_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[10/130] Processing: aerosnossl001_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.010921
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/aerosnossl001_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.005718 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/aerosnossl001_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[11/130] Processing: aerosnossl002_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.010355
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/aerosnossl002_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.006014 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/aerosnossl002_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[12/130] Processing: aerosnossl003_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.009956
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/aerosnossl003_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.005400 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/aerosnossl003_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[13/130] Processing: aice_1_384_320.dat
+compression ratio = 35.51 
+compression time = 0.010644
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/aice_1_384_320.dat.sz.tmp
+compression ratio = 35.509319
+decompression time = 0.006185 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/aice_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[14/130] Processing: aicen001_1_384_320.dat
+compression ratio = 33.25 
+compression time = 0.010811
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/aicen001_1_384_320.dat.sz.tmp
+compression ratio = 33.249002
+decompression time = 0.006195 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/aicen001_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[15/130] Processing: aicen002_1_384_320.dat
+compression ratio = 34.65 
+compression time = 0.010255
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/aicen002_1_384_320.dat.sz.tmp
+compression ratio = 34.650687
+decompression time = 0.006353 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/aicen002_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[16/130] Processing: aicen003_1_384_320.dat
+compression ratio = 36.75 
+compression time = 0.010188
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/aicen003_1_384_320.dat.sz.tmp
+compression ratio = 36.754655
+decompression time = 0.006155 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/aicen003_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[17/130] Processing: aicen004_1_384_320.dat
+compression ratio = 37.82 
+compression time = 0.010541
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/aicen004_1_384_320.dat.sz.tmp
+compression ratio = 37.815048
+decompression time = 0.006023 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/aicen004_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[18/130] Processing: aicen005_1_384_320.dat
+compression ratio = 38.66 
+compression time = 0.010242
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/aicen005_1_384_320.dat.sz.tmp
+compression ratio = 38.662786
+decompression time = 0.006141 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/aicen005_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[19/130] Processing: aisnap_1_384_320.dat
+compression ratio = 51.67 
+compression time = 0.010489
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/aisnap_1_384_320.dat.sz.tmp
+compression ratio = 51.673675
+decompression time = 0.005694 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/aisnap_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[20/130] Processing: albice_1_384_320.dat
+compression ratio = 64.06 
+compression time = 0.009652
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/albice_1_384_320.dat.sz.tmp
+compression ratio = 64.058387
+decompression time = 0.005405 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/albice_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[21/130] Processing: albpnd_1_384_320.dat
+compression ratio = 70.36 
+compression time = 0.009670
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/albpnd_1_384_320.dat.sz.tmp
+compression ratio = 70.357859
+decompression time = 0.005461 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/albpnd_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[22/130] Processing: albsno_1_384_320.dat
+compression ratio = 50.55 
+compression time = 0.009964
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/albsno_1_384_320.dat.sz.tmp
+compression ratio = 50.547100
+decompression time = 0.006000 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/albsno_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[23/130] Processing: alidr_1_384_320.dat
+compression ratio = 49.67 
+compression time = 0.010092
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/alidr_1_384_320.dat.sz.tmp
+compression ratio = 49.668553
+decompression time = 0.006235 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/alidr_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[24/130] Processing: alvdr_1_384_320.dat
+compression ratio = 50.02 
+compression time = 0.010015
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/alvdr_1_384_320.dat.sz.tmp
+compression ratio = 50.017299
+decompression time = 0.006070 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/alvdr_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[25/130] Processing: ANGLE_384_320.dat
+compression ratio = 57.07 
+compression time = 0.009446
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/ANGLE_384_320.dat.sz.tmp
+compression ratio = 57.067224
+decompression time = 0.005925 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/ANGLE_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[26/130] Processing: ANGLET_384_320.dat
+compression ratio = 57.39 
+compression time = 0.010295
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/ANGLET_384_320.dat.sz.tmp
+compression ratio = 57.393741
+decompression time = 0.005845 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/ANGLET_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[27/130] Processing: apond001_1_384_320.dat
+compression ratio = 42.15 
+compression time = 0.010526
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/apond001_1_384_320.dat.sz.tmp
+compression ratio = 42.154374
+decompression time = 0.006000 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/apond001_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[28/130] Processing: apond002_1_384_320.dat
+compression ratio = 26.27 
+compression time = 0.010917
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/apond002_1_384_320.dat.sz.tmp
+compression ratio = 26.269040
+decompression time = 0.005778 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/apond002_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[29/130] Processing: apond003_1_384_320.dat
+compression ratio = 27.86 
+compression time = 0.011693
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/apond003_1_384_320.dat.sz.tmp
+compression ratio = 27.859208
+decompression time = 0.005777 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/apond003_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[30/130] Processing: apond004_1_384_320.dat
+compression ratio = 30.63 
+compression time = 0.011410
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/apond004_1_384_320.dat.sz.tmp
+compression ratio = 30.631933
+decompression time = 0.005520 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/apond004_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[31/130] Processing: apond005_1_384_320.dat
+compression ratio = 33.45 
+compression time = 0.011158
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/apond005_1_384_320.dat.sz.tmp
+compression ratio = 33.450388
+decompression time = 0.005599 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/apond005_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[32/130] Processing: congel_1_384_320.dat
+compression ratio = 58.58 
+compression time = 0.009346
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/congel_1_384_320.dat.sz.tmp
+compression ratio = 58.584029
+decompression time = 0.006023 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/congel_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[33/130] Processing: coszen_1_384_320.dat
+compression ratio = 60.44 
+compression time = 0.010472
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/coszen_1_384_320.dat.sz.tmp
+compression ratio = 60.435264
+decompression time = 0.005295 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/coszen_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[34/130] Processing: daidtd_1_384_320.dat
+compression ratio = 55.53 
+compression time = 0.009909
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/daidtd_1_384_320.dat.sz.tmp
+compression ratio = 55.532708
+decompression time = 0.005681 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/daidtd_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[35/130] Processing: daidtt_1_384_320.dat
+compression ratio = 46.86 
+compression time = 0.009599
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/daidtt_1_384_320.dat.sz.tmp
+compression ratio = 46.864989
+decompression time = 0.005785 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/daidtt_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[36/130] Processing: dardg1dt_1_384_320.dat
+compression ratio = 45.34 
+compression time = 0.010094
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/dardg1dt_1_384_320.dat.sz.tmp
+compression ratio = 45.338991
+decompression time = 0.005928 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/dardg1dt_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[37/130] Processing: dardg2dt_1_384_320.dat
+compression ratio = 59.34 
+compression time = 0.009422
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/dardg2dt_1_384_320.dat.sz.tmp
+compression ratio = 59.340819
+decompression time = 0.005800 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/dardg2dt_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[38/130] Processing: divu_1_384_320.dat
+compression ratio = 56.73 
+compression time = 0.009972
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/divu_1_384_320.dat.sz.tmp
+compression ratio = 56.731302
+decompression time = 0.005994 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/divu_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[39/130] Processing: dvidtd_1_384_320.dat
+compression ratio = 51.97 
+compression time = 0.010148
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/dvidtd_1_384_320.dat.sz.tmp
+compression ratio = 51.974199
+decompression time = 0.005685 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/dvidtd_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[40/130] Processing: dvidtt_1_384_320.dat
+compression ratio = 50.91 
+compression time = 0.010136
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/dvidtt_1_384_320.dat.sz.tmp
+compression ratio = 50.913611
+decompression time = 0.005941 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/dvidtt_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[41/130] Processing: dvirdgdt_1_384_320.dat
+compression ratio = 51.14 
+compression time = 0.009992
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/dvirdgdt_1_384_320.dat.sz.tmp
+compression ratio = 51.141400
+decompression time = 0.005934 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/dvirdgdt_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[42/130] Processing: dxt_384_320.dat
+compression ratio = 96.02 
+compression time = 0.009754
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/dxt_384_320.dat.sz.tmp
+compression ratio = 96.018754
+decompression time = 0.006028 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/dxt_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[43/130] Processing: dxu_384_320.dat
+compression ratio = 96.74 
+compression time = 0.009841
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/dxu_384_320.dat.sz.tmp
+compression ratio = 96.736863
+decompression time = 0.006005 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/dxu_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[44/130] Processing: dyt_384_320.dat
+compression ratio = 34.62 
+compression time = 0.012547
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/dyt_384_320.dat.sz.tmp
+compression ratio = 34.616522
+decompression time = 0.007182 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/dyt_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[45/130] Processing: dyu_384_320.dat
+compression ratio = 34.56 
+compression time = 0.010543
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/dyu_384_320.dat.sz.tmp
+compression ratio = 34.560540
+decompression time = 0.006185 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/dyu_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[46/130] Processing: evap_1_384_320.dat
+compression ratio = 69.80 
+compression time = 0.009926
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/evap_1_384_320.dat.sz.tmp
+compression ratio = 69.798353
+decompression time = 0.005496 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/evap_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[47/130] Processing: evap_ai_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.010288
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/evap_ai_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.005823 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/evap_ai_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[48/130] Processing: faero_atm001_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.009289
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/faero_atm001_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.005398 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/faero_atm001_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[49/130] Processing: faero_atm002_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.009383
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/faero_atm002_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.005776 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/faero_atm002_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[50/130] Processing: faero_atm003_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.009153
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/faero_atm003_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.005643 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/faero_atm003_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[51/130] Processing: faero_ocn001_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.010200
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/faero_ocn001_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.005854 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/faero_ocn001_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[52/130] Processing: faero_ocn002_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.009930
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/faero_ocn002_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.006164 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/faero_ocn002_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[53/130] Processing: faero_ocn003_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.009729
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/faero_ocn003_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.005868 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/faero_ocn003_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[54/130] Processing: fcondtop_ai_1_384_320.dat
+compression ratio = 53.48 
+compression time = 0.009889
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/fcondtop_ai_1_384_320.dat.sz.tmp
+compression ratio = 53.484222
+decompression time = 0.005668 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/fcondtop_ai_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[55/130] Processing: fhocn_1_384_320.dat
+compression ratio = 55.57 
+compression time = 0.009144
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/fhocn_1_384_320.dat.sz.tmp
+compression ratio = 55.570379
+decompression time = 0.005958 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/fhocn_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[56/130] Processing: fhocn_ai_1_384_320.dat
+compression ratio = 52.86 
+compression time = 0.011437
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/fhocn_ai_1_384_320.dat.sz.tmp
+compression ratio = 52.857296
+decompression time = 0.005993 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/fhocn_ai_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[57/130] Processing: flat_1_384_320.dat
+compression ratio = 47.73 
+compression time = 0.010935
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/flat_1_384_320.dat.sz.tmp
+compression ratio = 47.734292
+decompression time = 0.005943 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/flat_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[58/130] Processing: flat_ai_1_384_320.dat
+compression ratio = 48.85 
+compression time = 0.009958
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/flat_ai_1_384_320.dat.sz.tmp
+compression ratio = 48.849135
+decompression time = 0.005535 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/flat_ai_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[59/130] Processing: flwdn_1_384_320.dat
+compression ratio = 25.39 
+compression time = 0.011117
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/flwdn_1_384_320.dat.sz.tmp
+compression ratio = 25.389741
+decompression time = 0.005567 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/flwdn_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[60/130] Processing: flwup_1_384_320.dat
+compression ratio = 44.70 
+compression time = 0.010527
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/flwup_1_384_320.dat.sz.tmp
+compression ratio = 44.695826
+decompression time = 0.005432 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/flwup_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[61/130] Processing: flwup_ai_1_384_320.dat
+compression ratio = 39.44 
+compression time = 0.011091
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/flwup_ai_1_384_320.dat.sz.tmp
+compression ratio = 39.441502
+decompression time = 0.005868 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/flwup_ai_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[62/130] Processing: frazil_1_384_320.dat
+compression ratio = 60.03 
+compression time = 0.009194
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/frazil_1_384_320.dat.sz.tmp
+compression ratio = 60.029311
+decompression time = 0.005557 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/frazil_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[63/130] Processing: fresh_1_384_320.dat
+compression ratio = 41.21 
+compression time = 0.010475
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/fresh_1_384_320.dat.sz.tmp
+compression ratio = 41.207243
+decompression time = 0.005409 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/fresh_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[64/130] Processing: fresh_ai_1_384_320.dat
+compression ratio = 50.58 
+compression time = 0.009870
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/fresh_ai_1_384_320.dat.sz.tmp
+compression ratio = 50.578308
+decompression time = 0.005775 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/fresh_ai_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[65/130] Processing: fs_1_384_320.dat
+compression ratio = 52.38 
+compression time = 0.010088
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/fs_1_384_320.dat.sz.tmp
+compression ratio = 52.378517
+decompression time = 0.006105 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/fs_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[66/130] Processing: fsalt_1_384_320.dat
+compression ratio = 56.58 
+compression time = 0.009909
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/fsalt_1_384_320.dat.sz.tmp
+compression ratio = 56.581098
+decompression time = 0.005502 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/fsalt_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[67/130] Processing: fsalt_ai_1_384_320.dat
+compression ratio = 69.63 
+compression time = 0.009732
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/fsalt_ai_1_384_320.dat.sz.tmp
+compression ratio = 69.630259
+decompression time = 0.005900 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/fsalt_ai_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[68/130] Processing: fsens_1_384_320.dat
+compression ratio = 46.27 
+compression time = 0.009966
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/fsens_1_384_320.dat.sz.tmp
+compression ratio = 46.273771
+decompression time = 0.005754 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/fsens_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[69/130] Processing: fsens_ai_1_384_320.dat
+compression ratio = 52.22 
+compression time = 0.009376
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/fsens_ai_1_384_320.dat.sz.tmp
+compression ratio = 52.217146
+decompression time = 0.005680 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/fsens_ai_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[70/130] Processing: fsurf_ai_1_384_320.dat
+compression ratio = 50.96 
+compression time = 0.009645
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/fsurf_ai_1_384_320.dat.sz.tmp
+compression ratio = 50.955837
+decompression time = 0.005815 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/fsurf_ai_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[71/130] Processing: fswabs_1_384_320.dat
+compression ratio = 46.95 
+compression time = 0.010393
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/fswabs_1_384_320.dat.sz.tmp
+compression ratio = 46.954528
+decompression time = 0.006091 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/fswabs_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[72/130] Processing: fswabs_ai_1_384_320.dat
+compression ratio = 44.30 
+compression time = 0.009939
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/fswabs_ai_1_384_320.dat.sz.tmp
+compression ratio = 44.297044
+decompression time = 0.005531 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/fswabs_ai_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[73/130] Processing: fswdn_1_384_320.dat
+compression ratio = 21.05 
+compression time = 0.011304
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/fswdn_1_384_320.dat.sz.tmp
+compression ratio = 21.052812
+decompression time = 0.006318 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/fswdn_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[74/130] Processing: fswfac_1_384_320.dat
+compression ratio = 34.49 
+compression time = 0.010570
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/fswfac_1_384_320.dat.sz.tmp
+compression ratio = 34.485372
+decompression time = 0.005883 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/fswfac_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[75/130] Processing: fswthru_1_384_320.dat
+compression ratio = 40.59 
+compression time = 0.010155
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/fswthru_1_384_320.dat.sz.tmp
+compression ratio = 40.591296
+decompression time = 0.006097 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/fswthru_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[76/130] Processing: fswthru_ai_1_384_320.dat
+compression ratio = 45.96 
+compression time = 0.009920
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/fswthru_ai_1_384_320.dat.sz.tmp
+compression ratio = 45.962222
+decompression time = 0.006164 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/fswthru_ai_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[77/130] Processing: fswup_1_384_320.dat
+compression ratio = 21.04 
+compression time = 0.010998
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/fswup_1_384_320.dat.sz.tmp
+compression ratio = 21.043798
+decompression time = 0.006371 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/fswup_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[78/130] Processing: FYarea_1_384_320.dat
+compression ratio = 55.48 
+compression time = 0.010519
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/FYarea_1_384_320.dat.sz.tmp
+compression ratio = 55.482560
+decompression time = 0.006018 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/FYarea_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[79/130] Processing: hi_1_384_320.dat
+compression ratio = 47.52 
+compression time = 0.009260
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/hi_1_384_320.dat.sz.tmp
+compression ratio = 47.517401
+decompression time = 0.006010 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/hi_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[80/130] Processing: hisnap_1_384_320.dat
+compression ratio = 46.53 
+compression time = 0.009680
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/hisnap_1_384_320.dat.sz.tmp
+compression ratio = 46.527830
+decompression time = 0.005832 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/hisnap_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[81/130] Processing: hs_1_384_320.dat
+compression ratio = 59.46 
+compression time = 0.009089
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/hs_1_384_320.dat.sz.tmp
+compression ratio = 59.455667
+decompression time = 0.005424 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/hs_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[82/130] Processing: HTE_384_320.dat
+compression ratio = 34.44 
+compression time = 0.009385
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/HTE_384_320.dat.sz.tmp
+compression ratio = 34.439462
+decompression time = 0.005813 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/HTE_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[83/130] Processing: HTN_384_320.dat
+compression ratio = 96.49 
+compression time = 0.009869
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/HTN_384_320.dat.sz.tmp
+compression ratio = 96.489988
+decompression time = 0.005832 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/HTN_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[84/130] Processing: iage_1_384_320.dat
+compression ratio = 50.18 
+compression time = 0.009315
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/iage_1_384_320.dat.sz.tmp
+compression ratio = 50.180704
+decompression time = 0.006590 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/iage_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[85/130] Processing: ice_present_1_384_320.dat
+compression ratio = 57.85 
+compression time = 0.010881
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/ice_present_1_384_320.dat.sz.tmp
+compression ratio = 57.846299
+decompression time = 0.005631 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/ice_present_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[86/130] Processing: meltb_1_384_320.dat
+compression ratio = 52.09 
+compression time = 0.009740
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/meltb_1_384_320.dat.sz.tmp
+compression ratio = 52.089869
+decompression time = 0.005524 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/meltb_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[87/130] Processing: meltl_1_384_320.dat
+compression ratio = 71.13 
+compression time = 0.009413
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/meltl_1_384_320.dat.sz.tmp
+compression ratio = 71.131693
+decompression time = 0.005667 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/meltl_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[88/130] Processing: melts_1_384_320.dat
+compression ratio = 57.72 
+compression time = 0.009783
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/melts_1_384_320.dat.sz.tmp
+compression ratio = 57.724016
+decompression time = 0.005951 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/melts_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[89/130] Processing: meltt_1_384_320.dat
+compression ratio = 76.33 
+compression time = 0.009157
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/meltt_1_384_320.dat.sz.tmp
+compression ratio = 76.334835
+decompression time = 0.005632 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/meltt_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[90/130] Processing: opening_1_384_320.dat
+compression ratio = 31.19 
+compression time = 0.009901
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/opening_1_384_320.dat.sz.tmp
+compression ratio = 31.187817
+decompression time = 0.005686 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/opening_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[91/130] Processing: qi_1_384_320.dat
+compression ratio = 71.12 
+compression time = 0.009727
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/qi_1_384_320.dat.sz.tmp
+compression ratio = 71.121401
+decompression time = 0.005973 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/qi_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[92/130] Processing: Qref_1_384_320.dat
+compression ratio = 26.69 
+compression time = 0.013750
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/Qref_1_384_320.dat.sz.tmp
+compression ratio = 26.694183
+decompression time = 0.007005 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/Qref_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[93/130] Processing: qs_1_384_320.dat
+compression ratio = 68.30 
+compression time = 0.009250
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/qs_1_384_320.dat.sz.tmp
+compression ratio = 68.295123
+decompression time = 0.005410 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/qs_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[94/130] Processing: rain_1_384_320.dat
+compression ratio = 22.48 
+compression time = 0.013127
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/rain_1_384_320.dat.sz.tmp
+compression ratio = 22.483875
+decompression time = 0.007588 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/rain_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[95/130] Processing: rain_ai_1_384_320.dat
+compression ratio = 75.60 
+compression time = 0.009521
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/rain_ai_1_384_320.dat.sz.tmp
+compression ratio = 75.595201
+decompression time = 0.005495 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/rain_ai_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[96/130] Processing: shear_1_384_320.dat
+compression ratio = 30.06 
+compression time = 0.009980
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/shear_1_384_320.dat.sz.tmp
+compression ratio = 30.060547
+decompression time = 0.005870 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/shear_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[97/130] Processing: sig1_1_384_320.dat
+compression ratio = 36.98 
+compression time = 0.004043
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/sig1_1_384_320.dat.sz.tmp
+compression ratio = 36.978634
+decompression time = 0.002038 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/sig1_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[98/130] Processing: sig2_1_384_320.dat
+compression ratio = 35.44 
+compression time = 0.003927
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/sig2_1_384_320.dat.sz.tmp
+compression ratio = 35.437635
+decompression time = 0.001565 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/sig2_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[99/130] Processing: snoice_1_384_320.dat
+compression ratio = 73.28 
+compression time = 0.010212
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/snoice_1_384_320.dat.sz.tmp
+compression ratio = 73.284628
+decompression time = 0.005911 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/snoice_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[100/130] Processing: snow_1_384_320.dat
+compression ratio = 59.14 
+compression time = 0.011569
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/snow_1_384_320.dat.sz.tmp
+compression ratio = 59.140898
+decompression time = 0.005776 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/snow_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[101/130] Processing: snow_ai_1_384_320.dat
+compression ratio = 66.48 
+compression time = 0.009349
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/snow_ai_1_384_320.dat.sz.tmp
+compression ratio = 66.475521
+decompression time = 0.005651 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/snow_ai_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[102/130] Processing: strairx_1_384_320.dat
+compression ratio = 75.95 
+compression time = 0.010283
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/strairx_1_384_320.dat.sz.tmp
+compression ratio = 75.945612
+decompression time = 0.005741 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/strairx_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[103/130] Processing: strairy_1_384_320.dat
+compression ratio = 68.88 
+compression time = 0.009756
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/strairy_1_384_320.dat.sz.tmp
+compression ratio = 68.878924
+decompression time = 0.005553 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/strairy_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[104/130] Processing: strcorx_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.009202
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/strcorx_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.005903 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/strcorx_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[105/130] Processing: strcory_1_384_320.dat
+compression ratio = 77.56 
+compression time = 0.009946
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/strcory_1_384_320.dat.sz.tmp
+compression ratio = 77.563516
+decompression time = 0.005772 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/strcory_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[106/130] Processing: strength_1_384_320.dat
+compression ratio = 27.68 
+compression time = 0.010380
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/strength_1_384_320.dat.sz.tmp
+compression ratio = 27.677234
+decompression time = 0.006271 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/strength_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[107/130] Processing: strintx_1_384_320.dat
+compression ratio = 71.48 
+compression time = 0.009806
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/strintx_1_384_320.dat.sz.tmp
+compression ratio = 71.483421
+decompression time = 0.005654 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/strintx_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[108/130] Processing: strinty_1_384_320.dat
+compression ratio = 66.53 
+compression time = 0.009485
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/strinty_1_384_320.dat.sz.tmp
+compression ratio = 66.529507
+decompression time = 0.005367 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/strinty_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[109/130] Processing: strocnx_1_384_320.dat
+compression ratio = 68.33 
+compression time = 0.009828
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/strocnx_1_384_320.dat.sz.tmp
+compression ratio = 68.333102
+decompression time = 0.005697 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/strocnx_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[110/130] Processing: strocny_1_384_320.dat
+compression ratio = 69.66 
+compression time = 0.009742
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/strocny_1_384_320.dat.sz.tmp
+compression ratio = 69.659864
+decompression time = 0.005479 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/strocny_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[111/130] Processing: Tair_1_384_320.dat
+compression ratio = 35.50 
+compression time = 0.010826
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/Tair_1_384_320.dat.sz.tmp
+compression ratio = 35.501625
+decompression time = 0.005938 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/Tair_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[112/130] Processing: tarea_384_320.dat
+compression ratio = 111.63 
+compression time = 0.009498
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/tarea_384_320.dat.sz.tmp
+compression ratio = 111.632978
+decompression time = 0.005542 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/tarea_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[113/130] Processing: TLAT_384_320.dat
+compression ratio = 107.46 
+compression time = 0.008967
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/TLAT_384_320.dat.sz.tmp
+compression ratio = 107.459554
+decompression time = 0.005806 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/TLAT_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[114/130] Processing: TLON_384_320.dat
+compression ratio = 11.34 
+compression time = 0.011376
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/TLON_384_320.dat.sz.tmp
+compression ratio = 11.342595
+decompression time = 0.006971 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/TLON_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[115/130] Processing: tmask_384_320.dat
+compression ratio = 77.58 
+compression time = 0.009919
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/tmask_384_320.dat.sz.tmp
+compression ratio = 77.575758
+decompression time = 0.005946 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/tmask_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[116/130] Processing: transix_1_384_320.dat
+compression ratio = 55.92 
+compression time = 0.009829
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/transix_1_384_320.dat.sz.tmp
+compression ratio = 55.924451
+decompression time = 0.006112 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/transix_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[117/130] Processing: transiy_1_384_320.dat
+compression ratio = 52.94 
+compression time = 0.010050
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/transiy_1_384_320.dat.sz.tmp
+compression ratio = 52.942697
+decompression time = 0.006074 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/transiy_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[118/130] Processing: Tref_1_384_320.dat
+compression ratio = 33.96 
+compression time = 0.010735
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/Tref_1_384_320.dat.sz.tmp
+compression ratio = 33.961169
+decompression time = 0.005517 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/Tref_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[119/130] Processing: trsig_1_384_320.dat
+compression ratio = 64.27 
+compression time = 0.009437
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/trsig_1_384_320.dat.sz.tmp
+compression ratio = 64.267782
+decompression time = 0.005721 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/trsig_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[120/130] Processing: Tsfc_1_384_320.dat
+compression ratio = 51.24 
+compression time = 0.010721
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/Tsfc_1_384_320.dat.sz.tmp
+compression ratio = 51.237361
+decompression time = 0.005335 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/Tsfc_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[121/130] Processing: uarea_384_320.dat
+compression ratio = 110.13 
+compression time = 0.009563
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/uarea_384_320.dat.sz.tmp
+compression ratio = 110.132198
+decompression time = 0.005905 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/uarea_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[122/130] Processing: ULAT_384_320.dat
+compression ratio = 107.41 
+compression time = 0.009562
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/ULAT_384_320.dat.sz.tmp
+compression ratio = 107.412587
+decompression time = 0.005503 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/ULAT_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[123/130] Processing: ULON_384_320.dat
+compression ratio = 11.20 
+compression time = 0.011593
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/ULON_384_320.dat.sz.tmp
+compression ratio = 11.202224
+decompression time = 0.007306 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/ULON_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[124/130] Processing: uvel_1_384_320.dat
+compression ratio = 57.82 
+compression time = 0.010643
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/uvel_1_384_320.dat.sz.tmp
+compression ratio = 57.819080
+decompression time = 0.005877 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/uvel_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[125/130] Processing: vicen001_1_384_320.dat
+compression ratio = 61.93 
+compression time = 0.010024
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/vicen001_1_384_320.dat.sz.tmp
+compression ratio = 61.927680
+decompression time = 0.005966 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/vicen001_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[126/130] Processing: vicen002_1_384_320.dat
+compression ratio = 60.37 
+compression time = 0.010046
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/vicen002_1_384_320.dat.sz.tmp
+compression ratio = 60.368460
+decompression time = 0.005665 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/vicen002_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[127/130] Processing: vicen003_1_384_320.dat
+compression ratio = 61.19 
+compression time = 0.009339
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/vicen003_1_384_320.dat.sz.tmp
+compression ratio = 61.187601
+decompression time = 0.005401 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/vicen003_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[128/130] Processing: vicen004_1_384_320.dat
+compression ratio = 58.31 
+compression time = 0.010032
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/vicen004_1_384_320.dat.sz.tmp
+compression ratio = 58.312967
+decompression time = 0.006438 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/vicen004_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[129/130] Processing: vicen005_1_384_320.dat
+compression ratio = 52.69 
+compression time = 0.010070
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/vicen005_1_384_320.dat.sz.tmp
+compression ratio = 52.687319
+decompression time = 0.006042 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/vicen005_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
+[130/130] Processing: vvel_1_384_320.dat
+compression ratio = 51.81 
+compression time = 0.009906
+compressed data file = ../../../../CESM-ICE-MODELS/4/log_normalized/vvel_1_384_320.dat.sz.tmp
+compression ratio = 51.809845
+decompression time = 0.006101 seconds.
+decompressed file = ../../../../CESM-ICE-MODELS/4/log_normalized/SZ3_1e-3/vvel_1_384_320.dat.SZ3.out
+  ✓ Compression successful (ratio: 1.00x)
+
 === Summary ===
-Total files processed: 0
-Total files skipped: 130
+Total files processed: 130
+Total files skipped: 0
 Total files failed: 0
 
