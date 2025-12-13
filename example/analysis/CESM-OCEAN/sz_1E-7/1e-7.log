@@ -1,0 +1,823 @@
+Input directory: ../../CESM-OCEAN-MODELS/4/log_normalized
+Output directory: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7
+Dimensions: 384x320
+Error bound: 1E-7
+SZ config: sz.config
+
+Found 54 .dat file(s) to process
+
+[1/54] Processing: ADVS_1_384_320.dat
+compression time = 0.014353
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/ADVS_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000999
+Max relative error = 0.000000
+Max pw relative error = 0.503451
+PSNR = 151.630240, NRMSE= 2.6211267373928367036E-08
+normError = 0.000009, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=24.928742
+decompression time = 0.006462 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/ADVS_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 24.92x)
+
+[2/54] Processing: ADVS_ISOP_1_384_320.dat
+compression time = 0.014013
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/ADVS_ISOP_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000001000
+Max relative error = 0.000000
+Max pw relative error = 1.890373
+PSNR = 148.616040, NRMSE= 3.7084975419254891573E-08
+normError = 0.000013, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=25.447580
+decompression time = 0.005793 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/ADVS_ISOP_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 25.44x)
+
+[3/54] Processing: ADVS_SUBM_1_384_320.dat
+compression time = 0.013300
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/ADVS_SUBM_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000999
+Max relative error = 0.000000
+Max pw relative error = 2.565699
+PSNR = 147.640229, NRMSE= 4.1494310883817212896E-08
+normError = 0.000015, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=31.336946
+decompression time = 0.006672 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/ADVS_SUBM_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 31.33x)
+
+[4/54] Processing: ADVT_1_384_320.dat
+compression time = 0.016253
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/ADVT_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000999
+Max relative error = 0.000000
+Max pw relative error = 0.000133
+PSNR = 146.282638, NRMSE= 4.8514113779960160058E-08
+normError = 0.000017, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=2.771875
+decompression time = 0.009249 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/ADVT_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.77x)
+
+[5/54] Processing: ADVT_ISOP_1_384_320.dat
+compression time = 0.015356
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/ADVT_ISOP_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000999
+Max relative error = 0.000000
+Max pw relative error = 0.000429
+PSNR = 146.304605, NRMSE= 4.8391574884253299471E-08
+normError = 0.000017, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=3.129086
+decompression time = 0.009034 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/ADVT_ISOP_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 3.12x)
+
+[6/54] Processing: ADVT_SUBM_1_384_320.dat
+compression time = 0.015488
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/ADVT_SUBM_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000001000
+Max relative error = 0.000000
+Max pw relative error = 0.000352
+PSNR = 146.724858, NRMSE= 4.61059627440590101E-08
+normError = 0.000016, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=7.084462
+decompression time = 0.007932 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/ADVT_SUBM_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 7.08x)
+
+[7/54] Processing: BSF_1_384_320.dat
+compression time = 0.023138
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/BSF_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000987
+Max relative error = 0.000000
+Max pw relative error = 0.000005
+PSNR = 146.253030, NRMSE= 4.8679769921619702944E-08
+normError = 0.000017, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.775844
+decompression time = 0.013559 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/BSF_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.77x)
+
+[8/54] Processing: DIA_DEPTH_1_384_320.dat
+compression time = 0.025110
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/DIA_DEPTH_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.687738
+decompression time = 0.001941 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/DIA_DEPTH_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.68x)
+
+[9/54] Processing: dTEMP_NEG_2D_1_384_320.dat
+compression time = 0.021332
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/dTEMP_NEG_2D_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000997
+Max relative error = 0.000000
+Max pw relative error = 0.000015
+PSNR = 146.239056, NRMSE= 4.8758146286165388604E-08
+normError = 0.000017, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.888587
+decompression time = 0.012081 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/dTEMP_NEG_2D_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.88x)
+
+[10/54] Processing: dTEMP_POS_2D_1_384_320.dat
+compression time = 0.023951
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/dTEMP_POS_2D_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.571933
+decompression time = 0.001765 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/dTEMP_POS_2D_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.57x)
+
+[11/54] Processing: EVAP_F_1_384_320.dat
+compression time = 0.014012
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/EVAP_F_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000001000
+Max relative error = 0.000000
+Max pw relative error = 1.048157
+PSNR = 146.547226, NRMSE= 4.705856766959118059E-08
+normError = 0.000016, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=12.433472
+decompression time = 0.006816 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/EVAP_F_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 12.43x)
+
+[12/54] Processing: FW_1_384_320.dat
+compression time = 0.015090
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/FW_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000997
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = 157.060701, NRMSE= 1.4027004520766041963E-08
+normError = 0.000005, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=43.842655
+decompression time = 0.006440 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/FW_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 43.84x)
+
+[13/54] Processing: HBLT_1_384_320.dat
+compression time = 0.027370
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/HBLT_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.686817
+decompression time = 0.001884 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/HBLT_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.68x)
+
+[14/54] Processing: HDIFS_1_384_320.dat
+compression time = 0.013565
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/HDIFS_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000001000
+Max relative error = 0.000000
+Max pw relative error = 0.868855
+PSNR = 149.287738, NRMSE= 3.4325201189806708828E-08
+normError = 0.000012, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=22.665314
+decompression time = 0.006738 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/HDIFS_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 22.66x)
+
+[15/54] Processing: HDIFT_1_384_320.dat
+compression time = 0.016093
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/HDIFT_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000999
+Max relative error = 0.000000
+Max pw relative error = 0.000161
+PSNR = 146.262144, NRMSE= 4.8628713631134032281E-08
+normError = 0.000017, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=3.020983
+decompression time = 0.009903 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/HDIFT_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 3.02x)
+
+[16/54] Processing: HLS_SUBM_1_384_320.dat
+compression time = 0.020927
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/HLS_SUBM_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=3.793646
+decompression time = 0.001700 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/HLS_SUBM_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 3.79x)
+
+[17/54] Processing: HMXL_1_384_320.dat
+compression time = 0.024662
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/HMXL_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.687408
+decompression time = 0.001792 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/HMXL_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.68x)
+
+[18/54] Processing: IFRAC_1_384_320.dat
+compression time = 0.015688
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/IFRAC_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000001000
+Max relative error = 0.000000
+Max pw relative error = 71.078057
+PSNR = 149.828259, NRMSE= 3.2254258857476196807E-08
+normError = 0.000011, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=5.969323
+decompression time = 0.007380 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/IFRAC_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 5.96x)
+
+[19/54] Processing: INT_DEPTH_1_384_320.dat
+compression time = 0.025465
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/INT_DEPTH_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.740997
+decompression time = 0.002003 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/INT_DEPTH_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.74x)
+
+[20/54] Processing: IOFF_F_1_384_320.dat
+compression time = 0.013341
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/IOFF_F_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000998
+Max relative error = 0.000000
+Max pw relative error = 70.999716
+PSNR = 152.636988, NRMSE= 2.3342672536103498046E-08
+normError = 0.000008, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=36.697029
+decompression time = 0.006265 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/IOFF_F_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 36.69x)
+
+[21/54] Processing: LWDN_F_1_384_320.dat
+compression time = 0.020191
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/LWDN_F_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000997
+Max relative error = 0.000000
+Max pw relative error = 0.000685
+PSNR = 146.313642, NRMSE= 4.8341253502824929952E-08
+normError = 0.000017, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.901512
+decompression time = 0.011721 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/LWDN_F_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.90x)
+
+[22/54] Processing: LWUP_F_1_384_320.dat
+compression time = 0.021209
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/LWUP_F_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000997
+Max relative error = 0.000000
+Max pw relative error = 0.000018
+PSNR = 146.400117, NRMSE= 4.7862363555313108081E-08
+normError = 0.000017, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.658037
+decompression time = 0.013632 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/LWUP_F_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.65x)
+
+[23/54] Processing: MELT_F_1_384_320.dat
+compression time = 0.010962
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/MELT_F_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000001000
+Max relative error = 0.000000
+Max pw relative error = 4.812912
+PSNR = 148.268696, NRMSE= 3.859803567534015682E-08
+normError = 0.000014, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=22.988635
+decompression time = 0.007783 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/MELT_F_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 22.98x)
+
+[24/54] Processing: MELTH_F_1_384_320.dat
+compression time = 0.019195
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/MELTH_F_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000969
+Max relative error = 0.000000
+Max pw relative error = 0.000003
+PSNR = 147.321853, NRMSE= 4.3043477035794024375E-08
+normError = 0.000015, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=5.334433
+decompression time = 0.007476 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/MELTH_F_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 5.33x)
+
+[25/54] Processing: PREC_F_1_384_320.dat
+compression time = 0.013421
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/PREC_F_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000001000
+Max relative error = 0.000000
+Max pw relative error = 71.402868
+PSNR = 146.412852, NRMSE= 4.7792241769845597022E-08
+normError = 0.000017, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=10.666898
+decompression time = 0.006724 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/PREC_F_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 10.66x)
+
+[26/54] Processing: QFLUX_1_384_320.dat
+compression time = 0.019681
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/QFLUX_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000999
+Max relative error = 0.000000
+Max pw relative error = 1.000000
+PSNR = 153.416062, NRMSE= 2.1340121444597803538E-08
+normError = 0.000007, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=6.853987
+decompression time = 0.009106 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/QFLUX_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 6.85x)
+
+[27/54] Processing: QSW_HBL_1_384_320.dat
+compression time = 0.024679
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/QSW_HBL_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000999
+Max relative error = 0.000000
+Max pw relative error = 10.099548
+PSNR = 146.480460, NRMSE= 4.7421687597466708823E-08
+normError = 0.000017, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.646705
+decompression time = 0.018059 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/QSW_HBL_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.64x)
+
+[28/54] Processing: QSW_HTP_1_384_320.dat
+compression time = 0.023013
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/QSW_HTP_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000999
+Max relative error = 0.000000
+Max pw relative error = 1.000000
+PSNR = 146.510677, NRMSE= 4.7256999352679869838E-08
+normError = 0.000017, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.596938
+decompression time = 0.015442 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/QSW_HTP_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.59x)
+
+[29/54] Processing: RESID_S_1_384_320.dat
+compression time = 0.012347
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/RESID_S_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000997
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = 157.060701, NRMSE= 1.4027004520766041963E-08
+normError = 0.000005, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=43.842655
+decompression time = 0.007345 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/RESID_S_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 43.84x)
+
+[30/54] Processing: RESID_T_1_384_320.dat
+compression time = 0.012364
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/RESID_T_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000997
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = 157.060701, NRMSE= 1.4027004520766041963E-08
+normError = 0.000005, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=43.842655
+decompression time = 0.005943 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/RESID_T_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 43.84x)
+
+[31/54] Processing: RHO_VINT_1_384_320.dat
+compression time = 0.026956
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/RHO_VINT_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=2.115120
+decompression time = 0.002227 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/RHO_VINT_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.11x)
+
+[32/54] Processing: ROFF_F_1_384_320.dat
+compression time = 0.013944
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/ROFF_F_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000001000
+Max relative error = 0.000000
+Max pw relative error = 60.666585
+PSNR = 147.300092, NRMSE= 4.3151450278634444259E-08
+normError = 0.000015, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=17.022927
+decompression time = 0.005957 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/ROFF_F_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 17.02x)
+
+[33/54] Processing: SALT_F_1_384_320.dat
+compression time = 0.012662
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/SALT_F_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000997
+Max relative error = 0.000000
+Max pw relative error = 23.798143
+PSNR = 153.995419, NRMSE= 1.9963148846294247522E-08
+normError = 0.000007, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=40.401118
+decompression time = 0.005573 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/SALT_F_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 40.40x)
+
+[34/54] Processing: SENH_F_1_384_320.dat
+compression time = 0.018025
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/SENH_F_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000969
+Max relative error = 0.000000
+Max pw relative error = 0.000002
+PSNR = 146.268669, NRMSE= 4.8592200183433614055E-08
+normError = 0.000017, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=2.282700
+decompression time = 0.010291 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/SENH_F_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.28x)
+
+[35/54] Processing: SFWF_1_384_320.dat
+compression time = 0.012590
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/SFWF_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000001000
+Max relative error = 0.000000
+Max pw relative error = 0.434519
+PSNR = 146.282616, NRMSE= 4.8514235256201664118E-08
+normError = 0.000017, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=9.193992
+decompression time = 0.006764 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/SFWF_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 9.19x)
+
+[36/54] Processing: SFWF_WRST_1_384_320.dat
+compression time = 0.013653
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/SFWF_WRST_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000997
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = 157.060701, NRMSE= 1.4027004520766041963E-08
+normError = 0.000005, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=43.842655
+decompression time = 0.005521 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/SFWF_WRST_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 43.84x)
+
+[37/54] Processing: SHF_1_384_320.dat
+compression time = 0.019717
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/SHF_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000969
+Max relative error = 0.000000
+Max pw relative error = 0.000002
+PSNR = 146.284420, NRMSE= 4.8504162451287845861E-08
+normError = 0.000017, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=2.078687
+decompression time = 0.010467 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/SHF_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.07x)
+
+[38/54] Processing: SHF_QSW_1_384_320.dat
+compression time = 0.020958
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/SHF_QSW_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000001000
+Max relative error = 0.000000
+Max pw relative error = 67.057519
+PSNR = 146.494495, NRMSE= 4.7345124301605097346E-08
+normError = 0.000017, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.718121
+decompression time = 0.012905 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/SHF_QSW_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.71x)
+
+[39/54] Processing: SNOW_F_1_384_320.dat
+compression time = 0.013276
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/SNOW_F_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000001000
+Max relative error = 0.000000
+Max pw relative error = 71.402909
+PSNR = 151.264386, NRMSE= 2.7338879937155841972E-08
+normError = 0.000010, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=29.771048
+decompression time = 0.007055 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/SNOW_F_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 29.77x)
+
+[40/54] Processing: SSH_1_384_320.dat
+compression time = 0.021681
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/SSH_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000997
+Max relative error = 0.000000
+Max pw relative error = 0.000025
+PSNR = 146.335481, NRMSE= 4.8219861396625668713E-08
+normError = 0.000017, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.690327
+decompression time = 0.012377 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/SSH_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.69x)
+
+[41/54] Processing: SSH2_1_384_320.dat
+compression time = 0.027509
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/SSH2_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.633152
+decompression time = 0.001746 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/SSH2_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.63x)
+
+[42/54] Processing: SU_1_384_320.dat
+compression time = 0.023089
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/SU_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000894
+Max relative error = 0.000000
+Max pw relative error = 0.000001
+PSNR = 146.517761, NRMSE= 4.7218471666930781076E-08
+normError = 0.000017, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.681704
+decompression time = 0.014630 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/SU_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.68x)
+
+[43/54] Processing: SV_1_384_320.dat
+compression time = 0.021709
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/SV_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000894
+Max relative error = 0.000000
+Max pw relative error = 0.000001
+PSNR = 146.512344, NRMSE= 4.7247929606881095174E-08
+normError = 0.000017, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.637210
+decompression time = 0.014417 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/SV_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.63x)
+
+[44/54] Processing: TAUX_1_384_320.dat
+compression time = 0.015529
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/TAUX_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000987
+Max relative error = 0.000000
+Max pw relative error = 0.000008
+PSNR = 146.146868, NRMSE= 4.9278399371945565225E-08
+normError = 0.000017, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=2.160157
+decompression time = 0.010806 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/TAUX_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.16x)
+
+[45/54] Processing: TAUX2_1_384_320.dat
+compression time = 0.027237
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/TAUX2_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.499474
+decompression time = 0.001895 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/TAUX2_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.49x)
+
+[46/54] Processing: TAUY_1_384_320.dat
+compression time = 0.018425
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/TAUY_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000997
+Max relative error = 0.000000
+Max pw relative error = 0.000011
+PSNR = 146.145759, NRMSE= 4.9284689954945392466E-08
+normError = 0.000017, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=2.039891
+decompression time = 0.012088 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/TAUY_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.03x)
+
+[47/54] Processing: TAUY2_1_384_320.dat
+compression time = 0.025710
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/TAUY2_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.494241
+decompression time = 0.001859 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/TAUY2_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.49x)
+
+[48/54] Processing: TBLT_1_384_320.dat
+compression time = 0.030551
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/TBLT_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.662816
+decompression time = 0.001762 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/TBLT_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.66x)
+
+[49/54] Processing: TFW_S_1_384_320.dat
+compression time = 0.011280
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/TFW_S_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000997
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = 157.060701, NRMSE= 1.4027004520766041963E-08
+normError = 0.000005, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=43.842655
+decompression time = 0.006477 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/TFW_S_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 43.84x)
+
+[50/54] Processing: TFW_T_1_384_320.dat
+compression time = 0.012634
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/TFW_T_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000997
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = 157.060701, NRMSE= 1.4027004520766041963E-08
+normError = 0.000005, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=43.842655
+decompression time = 0.006021 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/TFW_T_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 43.84x)
+
+[51/54] Processing: TLT_1_384_320.dat
+compression time = 0.030052
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/TLT_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.695820
+decompression time = 0.001878 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/TLT_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.69x)
+
+[52/54] Processing: TMXL_1_384_320.dat
+compression time = 0.027912
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/TMXL_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.828646
+decompression time = 0.002109 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/TMXL_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.82x)
+
+[53/54] Processing: XBLT_1_384_320.dat
+compression time = 0.026753
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/XBLT_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.728854
+decompression time = 0.001901 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/XBLT_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.72x)
+
+[54/54] Processing: XMXL_1_384_320.dat
+compression time = 0.027830
+compressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/XMXL_1_384_320.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.717100
+decompression time = 0.001893 seconds.
+decompressed data file: ../../CESM-OCEAN-MODELS/4/log_normalized/sz_1E-7/XMXL_1_384_320.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.71x)
+
+=== Summary ===
+Total files processed: 54
+Total files skipped: 0
+Total files failed: 0
+

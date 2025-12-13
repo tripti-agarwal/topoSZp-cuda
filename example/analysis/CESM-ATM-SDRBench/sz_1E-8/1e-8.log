@@ -1,0 +1,913 @@
+Input directory: ../../SDRBENCH-CESM-ATM-cleared-1800x3600
+Output directory: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8
+Dimensions: 1800x3600
+Error bound: 1E-8
+SZ config: sz.config
+
+Found 60 .dat file(s) to process
+
+[1/60] Processing: AEROD_v_1_1800_3600.dat
+compression time = 0.258952
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/AEROD_v_1_1800_3600.dat.sz
+Min=0, Max=0.57155454158782958984, range=0.57155454158782958984
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 0.000003
+PSNR = 161.899234, NRMSE= 8.035970117641491383E-09
+normError = 0.000012, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.795411
+decompression time = 0.508016 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/AEROD_v_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.79x)
+
+[2/60] Processing: CLDHGH_1_1800_3600.dat
+compression time = 0.254586
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/CLDHGH_1_1800_3600.dat.sz
+Min=3.374915706899628276E-07, Max=0.92075449228286743164, range=0.9207541346549987793
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 0.008246
+PSNR = 171.685435, NRMSE= 2.6045233098749903426E-09
+normError = 0.000006, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.213430
+decompression time = 0.286170 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/CLDHGH_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.21x)
+
+[3/60] Processing: CLDLOW_1_1800_3600.dat
+compression time = 0.261675
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/CLDLOW_1_1800_3600.dat.sz
+Min=-1.2620235048717439418E-16, Max=0.9765370488166809082, range=0.9765370488166809082
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 38283975436481.085938
+PSNR = 178.478075, NRMSE= 1.1915060624554800431E-09
+normError = 0.000003, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.229138
+decompression time = 0.248312 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/CLDLOW_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.22x)
+
+[4/60] Processing: CLDMED_1_1800_3600.dat
+compression time = 0.265148
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/CLDMED_1_1800_3600.dat.sz
+Min=-8.7300302704795394065E-18, Max=0.83042794466018676758, range=0.83042794466018676758
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 1478130175227317.750000
+PSNR = 171.477124, NRMSE= 2.6677418174575648205E-09
+normError = 0.000006, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.214994
+decompression time = 0.291291 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/CLDMED_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.21x)
+
+[5/60] Processing: CLDTOT_1_1800_3600.dat
+compression time = 0.241568
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/CLDTOT_1_1800_3600.dat.sz
+Min=0.0089103020727634429932, Max=0.98004901409149169922, range=0.97113871574401855469
+Max absolute error = 0.0000000093
+Max relative error = 0.000000
+Max pw relative error = 0.000001
+PSNR = 190.917007, NRMSE= 2.8454415404391640256E-10
+normError = 0.000001, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.188822
+decompression time = 0.237392 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/CLDTOT_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.18x)
+
+[6/60] Processing: FLDS_1_1800_3600.dat
+compression time = 0.241796
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/FLDS_1_1800_3600.dat.sz
+Min=111.13311767578125, Max=436.666412353515625, range=325.533294677734375
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.221205
+decompression time = 0.092741 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/FLDS_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.22x)
+
+[7/60] Processing: FLDSC_1_1800_3600.dat
+compression time = 0.225860
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/FLDSC_1_1800_3600.dat.sz
+Min=92.84610748291015625, Max=418.2393798828125, range=325.393280029296875
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.218638
+decompression time = 0.094032 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/FLDSC_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.21x)
+
+[8/60] Processing: FLNS_1_1800_3600.dat
+compression time = 0.154378
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/FLNS_1_1800_3600.dat.sz
+Min=2.3647515773773193359, Max=177.68426513671875, range=175.31951904296875
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.179045
+decompression time = 0.094388 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/FLNS_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.17x)
+
+[9/60] Processing: FLNSC_1_1800_3600.dat
+compression time = 0.208140
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/FLNSC_1_1800_3600.dat.sz
+Min=33.335693359375, Max=179.8714752197265625, range=146.5357818603515625
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.206919
+decompression time = 0.092827 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/FLNSC_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.20x)
+
+[10/60] Processing: FLNT_1_1800_3600.dat
+compression time = 0.223894
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/FLNT_1_1800_3600.dat.sz
+Min=140.1259002685546875, Max=320.225982666015625, range=180.1000823974609375
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.234547
+decompression time = 0.089853 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/FLNT_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.23x)
+
+[11/60] Processing: FLNTC_1_1800_3600.dat
+compression time = 0.311886
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/FLNTC_1_1800_3600.dat.sz
+Min=148.67449951171875, Max=324.029327392578125, range=175.354827880859375
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.260033
+decompression time = 0.093321 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/FLNTC_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.26x)
+
+[12/60] Processing: FLUT_1_1800_3600.dat
+compression time = 0.247976
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/FLUT_1_1800_3600.dat.sz
+Min=140.81109619140625, Max=321.594085693359375, range=180.782989501953125
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.235212
+decompression time = 0.091687 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/FLUT_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.23x)
+
+[13/60] Processing: FLUTC_1_1800_3600.dat
+compression time = 0.303565
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/FLUTC_1_1800_3600.dat.sz
+Min=149.345123291015625, Max=325.3800048828125, range=176.034881591796875
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.260281
+decompression time = 0.094656 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/FLUTC_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.26x)
+
+[14/60] Processing: FREQSH_1_1800_3600.dat
+compression time = 0.227668
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/FREQSH_1_1800_3600.dat.sz
+Min=0.0055586360394954681396, Max=1, range=0.99444139003753662109
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.158476
+decompression time = 0.093274 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/FREQSH_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.15x)
+
+[15/60] Processing: FREQZM_1_1800_3600.dat
+compression time = 0.263762
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/FREQZM_1_1800_3600.dat.sz
+Min=-1.2376302794798001768E-16, Max=0.94867545366287231445, range=0.94867545366287231445
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 117451056891.176926
+PSNR = 172.311431, NRMSE= 2.423418755881478225E-09
+normError = 0.000006, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.628515
+decompression time = 0.239133 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/FREQZM_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.62x)
+
+[16/60] Processing: FSDS_1_1800_3600.dat
+compression time = 0.164838
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/FSDS_1_1800_3600.dat.sz
+Min=0, Max=458.06646728515625, range=458.06646728515625
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 2.000672
+PSNR = 237.250619, NRMSE= 1.3723632065438763637E-12
+normError = 0.000002, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.337940
+decompression time = 0.094396 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/FSDS_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.33x)
+
+[17/60] Processing: FSDSC_1_1800_3600.dat
+compression time = 0.331178
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/FSDSC_1_1800_3600.dat.sz
+Min=0, Max=478.47100830078125, range=478.47100830078125
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 1.824546
+PSNR = 237.680346, NRMSE= 1.3061188573209481121E-12
+normError = 0.000002, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.427747
+decompression time = 0.102040 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/FSDSC_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.42x)
+
+[18/60] Processing: FSDTOA_1_1800_3600.dat
+compression time = 0.232404
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/FSDTOA_1_1800_3600.dat.sz
+Min=0, Max=548.49273681640625, range=548.49273681640625
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 0.678685
+PSNR = 240.251208, NRMSE= 9.7149283373833533309E-13
+normError = 0.000001, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=4.015126
+decompression time = 0.159497 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/FSDTOA_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 4.01x)
+
+[19/60] Processing: FSNS_1_1800_3600.dat
+compression time = 0.163963
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/FSNS_1_1800_3600.dat.sz
+Min=0, Max=374.014617919921875, range=374.014617919921875
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 10.197694
+PSNR = 234.970791, NRMSE= 1.7842695252812145067E-12
+normError = 0.000002, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.330654
+decompression time = 0.088146 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/FSNS_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.33x)
+
+[20/60] Processing: FSNSC_1_1800_3600.dat
+compression time = 0.250979
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/FSNSC_1_1800_3600.dat.sz
+Min=0, Max=378.979705810546875, range=378.979705810546875
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 9.602225
+PSNR = 235.223673, NRMSE= 1.7330709761493654043E-12
+normError = 0.000002, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.386801
+decompression time = 0.094216 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/FSNSC_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.38x)
+
+[21/60] Processing: FSNT_1_1800_3600.dat
+compression time = 0.173752
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/FSNT_1_1800_3600.dat.sz
+Min=0, Max=458.6556396484375, range=458.6556396484375
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 4.171279
+PSNR = 237.999103, NRMSE= 1.2590554266181868896E-12
+normError = 0.000001, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.353887
+decompression time = 0.093093 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/FSNT_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.35x)
+
+[22/60] Processing: FSNTC_1_1800_3600.dat
+compression time = 0.271706
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/FSNTC_1_1800_3600.dat.sz
+Min=0, Max=465.281341552734375, range=465.281341552734375
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 1.271215
+PSNR = 238.183402, NRMSE= 1.2326219756403435964E-12
+normError = 0.000001, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.436563
+decompression time = 0.096766 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/FSNTC_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.43x)
+
+[23/60] Processing: FSNTOA_1_1800_3600.dat
+compression time = 0.170082
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/FSNTOA_1_1800_3600.dat.sz
+Min=0, Max=462.84429931640625, range=462.84429931640625
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 0.943260
+PSNR = 238.101448, NRMSE= 1.2443072004345258673E-12
+normError = 0.000001, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.354404
+decompression time = 0.091156 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/FSNTOA_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.35x)
+
+[24/60] Processing: FSNTOAC_1_1800_3600.dat
+compression time = 0.280061
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/FSNTOAC_1_1800_3600.dat.sz
+Min=0, Max=469.5364990234375, range=469.5364990234375
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 0.943222
+PSNR = 238.303643, NRMSE= 1.2156760256426901074E-12
+normError = 0.000001, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.436698
+decompression time = 0.099341 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/FSNTOAC_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.43x)
+
+[25/60] Processing: FSUTOA_1_1800_3600.dat
+compression time = 0.180843
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/FSUTOA_1_1800_3600.dat.sz
+Min=0, Max=393.674560546875, range=393.674560546875
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 1.475985
+PSNR = 236.535997, NRMSE= 1.4900476055554773964E-12
+normError = 0.000001, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.323471
+decompression time = 0.095185 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/FSUTOA_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.32x)
+
+[26/60] Processing: ICEFRAC_1_1800_3600.dat
+compression time = 0.186047
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/ICEFRAC_1_1800_3600.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 25035.755169
+PSNR = 177.009888, NRMSE= 1.4109304199217983618E-09
+normError = 0.000004, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=5.653005
+decompression time = 0.140744 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/ICEFRAC_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 5.65x)
+
+[27/60] Processing: LANDFRAC_1_1800_3600.dat
+compression time = 0.158494
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/LANDFRAC_1_1800_3600.dat.sz
+Min=-2.1914590571359658655E-14, Max=1, range=1
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 3496386430.591875
+PSNR = 183.232058, NRMSE= 6.8928224284284189313E-10
+normError = 0.000002, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=12.451858
+decompression time = 0.077673 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/LANDFRAC_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 12.45x)
+
+[28/60] Processing: LHFLX_1_1800_3600.dat
+compression time = 0.175624
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/LHFLX_1_1800_3600.dat.sz
+Min=-5.2279806137084960938, Max=543.463134765625, range=548.69110107421875
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.124703
+decompression time = 0.095102 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/LHFLX_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.12x)
+
+[29/60] Processing: LWCF_1_1800_3600.dat
+compression time = 0.168692
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/LWCF_1_1800_3600.dat.sz
+Min=-0.33079123497009277344, Max=112.6002197265625, range=112.93100738525390625
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.136381
+decompression time = 0.095092 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/LWCF_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.13x)
+
+[30/60] Processing: OCNFRAC_1_1800_3600.dat
+compression time = 0.203087
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/OCNFRAC_1_1800_3600.dat.sz
+Min=-2.189816829657829228E-14, Max=1, range=1
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 2663095882.717422
+PSNR = 175.280892, NRMSE= 1.7216917567357160286E-09
+normError = 0.000004, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=4.778266
+decompression time = 0.159077 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/OCNFRAC_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 4.77x)
+
+[31/60] Processing: ODV_bcar1_1_1800_3600.dat
+compression time = 0.182212
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/ODV_bcar1_1_1800_3600.dat.sz
+Min=0, Max=0.014418269507586956024, range=0.014418269507586956024
+Max absolute error = 0.0000000100
+Max relative error = 0.000001
+Max pw relative error = 0.662690
+PSNR = 128.562528, NRMSE= 3.7314152788787713919E-07
+normError = 0.000014, normErr_norm = 0.000008
+acEff=1.000000
+compressionRatio=5.019656
+decompression time = 0.165677 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/ODV_bcar1_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 5.01x)
+
+[32/60] Processing: ODV_bcar2_1_1800_3600.dat
+compression time = 0.193805
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/ODV_bcar2_1_1800_3600.dat.sz
+Min=0, Max=0.018967432901263237, range=0.018967432901263237
+Max absolute error = 0.0000000100
+Max relative error = 0.000001
+Max pw relative error = 0.000192
+PSNR = 130.939353, NRMSE= 2.8381302965188955387E-07
+normError = 0.000014, normErr_norm = 0.000004
+acEff=1.000000
+compressionRatio=4.230319
+decompression time = 0.184748 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/ODV_bcar2_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 4.23x)
+
+[33/60] Processing: ODV_dust1_1_1800_3600.dat
+compression time = 0.246619
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/ODV_dust1_1_1800_3600.dat.sz
+Min=0, Max=0.18463411927223205566, range=0.18463411927223205566
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 0.000119
+PSNR = 150.863748, NRMSE= 2.8629424097025292083E-08
+normError = 0.000013, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=2.786545
+decompression time = 0.337552 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/ODV_dust1_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.78x)
+
+[34/60] Processing: ODV_dust2_1_1800_3600.dat
+compression time = 0.241857
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/ODV_dust2_1_1800_3600.dat.sz
+Min=0, Max=0.17442569136619567871, range=0.17442569136619567871
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 0.000229
+PSNR = 150.333721, NRMSE= 3.0430840407724469052E-08
+normError = 0.000014, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=2.833188
+decompression time = 0.315230 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/ODV_dust2_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.83x)
+
+[35/60] Processing: ODV_dust3_1_1800_3600.dat
+compression time = 0.225438
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/ODV_dust3_1_1800_3600.dat.sz
+Min=0, Max=0.096076495945453643799, range=0.096076495945453643799
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 0.001061
+PSNR = 145.047347, NRMSE= 5.5928431783697909533E-08
+normError = 0.000014, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=3.233179
+decompression time = 0.273869 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/ODV_dust3_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 3.23x)
+
+[36/60] Processing: ODV_dust4_1_1800_3600.dat
+compression time = 0.230767
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/ODV_dust4_1_1800_3600.dat.sz
+Min=0, Max=0.10546880215406417847, range=0.10546880215406417847
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 0.005225
+PSNR = 145.843308, NRMSE= 5.1031060328588678695E-08
+normError = 0.000014, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=3.506296
+decompression time = 0.235981 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/ODV_dust4_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 3.50x)
+
+[37/60] Processing: ODV_ocar1_1_1800_3600.dat
+compression time = 0.196150
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/ODV_ocar1_1_1800_3600.dat.sz
+Min=0, Max=0.019741568714380264282, range=0.019741568714380264282
+Max absolute error = 0.0000000100
+Max relative error = 0.000001
+Max pw relative error = 0.433574
+PSNR = 131.282430, NRMSE= 2.7282145732067007235E-07
+normError = 0.000014, normErr_norm = 0.000006
+acEff=1.000000
+compressionRatio=4.811906
+decompression time = 0.175659 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/ODV_ocar1_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 4.81x)
+
+[38/60] Processing: ODV_ocar2_1_1800_3600.dat
+compression time = 0.195529
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/ODV_ocar2_1_1800_3600.dat.sz
+Min=0, Max=0.067497961223125457764, range=0.067497961223125457764
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 0.000159
+PSNR = 141.967065, NRMSE= 7.973458389646948429E-08
+normError = 0.000014, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=3.244544
+decompression time = 0.276621 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/ODV_ocar2_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 3.24x)
+
+[39/60] Processing: ODV_SSLTA_1_1800_3600.dat
+compression time = 0.240093
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/ODV_SSLTA_1_1800_3600.dat.sz
+Min=0, Max=0.078465133905410766602, range=0.078465133905410766602
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 0.000081
+PSNR = 143.494015, NRMSE= 6.6880456668595491477E-08
+normError = 0.000013, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=2.254016
+decompression time = 0.492949 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/ODV_SSLTA_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.25x)
+
+[40/60] Processing: ODV_SSLTC_1_1800_3600.dat
+compression time = 0.229819
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/ODV_SSLTC_1_1800_3600.dat.sz
+Min=0, Max=0.051866430789232254028, range=0.051866430789232254028
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 0.000137
+PSNR = 139.766611, NRMSE= 1.0272341637338101667E-07
+normError = 0.000014, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=2.372696
+decompression time = 0.466405 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/ODV_SSLTC_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.37x)
+
+[41/60] Processing: ODV_sulf_1_1800_3600.dat
+compression time = 0.253129
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/ODV_sulf_1_1800_3600.dat.sz
+Min=0, Max=0.19155621528625488281, range=0.19155621528625488281
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 0.000014
+PSNR = 151.357800, NRMSE= 2.70464327426208087E-08
+normError = 0.000013, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=2.171626
+decompression time = 0.581562 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/ODV_sulf_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.17x)
+
+[42/60] Processing: QREFHT_1_1800_3600.dat
+compression time = 0.192908
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/QREFHT_1_1800_3600.dat.sz
+Min=9.6609612228348851204E-05, Max=0.019656945019960403442, range=0.019560335204005241394
+Max absolute error = 0.0000000100
+Max relative error = 0.000001
+Max pw relative error = 0.000099
+PSNR = 130.718062, NRMSE= 2.9113664940673793439E-07
+normError = 0.000014, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.617141
+decompression time = 0.314019 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/QREFHT_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.61x)
+
+[43/60] Processing: RHREFHT_1_1800_3600.dat
+compression time = 0.263609
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/RHREFHT_1_1800_3600.dat.sz
+Min=19.985654830932617188, Max=115.62657928466796875, range=95.64092254638671875
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.236372
+decompression time = 0.096161 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/RHREFHT_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.23x)
+
+[44/60] Processing: SHFLX_1_1800_3600.dat
+compression time = 0.171042
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/SHFLX_1_1800_3600.dat.sz
+Min=-78.49718475341796875, Max=326.216217041015625, range=404.713409423828125
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.113841
+decompression time = 0.094803 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/SHFLX_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.11x)
+
+[45/60] Processing: SNOWHICE_1_1800_3600.dat
+compression time = 0.186959
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/SNOWHICE_1_1800_3600.dat.sz
+Min=0, Max=0.66062295436859130859, range=0.66062295436859130859
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 136230768.887708
+PSNR = 173.576232, NRMSE= 2.0950211301187111066E-09
+normError = 0.000004, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=5.340356
+decompression time = 0.155828 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/SNOWHICE_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 5.34x)
+
+[46/60] Processing: SOLIN_1_1800_3600.dat
+compression time = 0.238960
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/SOLIN_1_1800_3600.dat.sz
+Min=0, Max=548.49273681640625, range=548.49273681640625
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 0.678685
+PSNR = 240.251208, NRMSE= 9.7149283373833533309E-13
+normError = 0.000001, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=4.015126
+decompression time = 0.153758 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/SOLIN_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 4.01x)
+
+[47/60] Processing: SRFRAD_1_1800_3600.dat
+compression time = 0.234542
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/SRFRAD_1_1800_3600.dat.sz
+Min=112.9439239501953125, Max=713.7137451171875, range=600.76983642578125
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.217738
+decompression time = 0.092227 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/SRFRAD_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.21x)
+
+[48/60] Processing: SWCF_1_1800_3600.dat
+compression time = 0.164777
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/SWCF_1_1800_3600.dat.sz
+Min=-200.759490966796875, Max=9.9914715974591672421E-05, range=200.7595977783203125
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 17902042196708.617188
+PSNR = 229.282652, NRMSE= 3.4345306213734813267E-12
+normError = 0.000002, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.279889
+decompression time = 0.096346 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/SWCF_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.27x)
+
+[49/60] Processing: TAUX_1_1800_3600.dat
+compression time = 0.268710
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/TAUX_1_1800_3600.dat.sz
+Min=-1.4790518283843994141, Max=1.1800894737243652344, range=2.6591413021087646484
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 0.499205
+PSNR = 176.508845, NRMSE= 1.4947127708576409544E-09
+normError = 0.000010, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.361563
+decompression time = 0.451557 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/TAUX_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.36x)
+
+[50/60] Processing: TAUY_1_1800_3600.dat
+compression time = 0.269540
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/TAUY_1_1800_3600.dat.sz
+Min=-1.1452076435089111328, Max=1.2904068231582641602, range=2.4356145858764648438
+Max absolute error = 0.0000000100
+Max relative error = 0.000000
+Max pw relative error = 0.737322
+PSNR = 175.244463, NRMSE= 1.728927798559865801E-09
+normError = 0.000011, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.370430
+decompression time = 0.446976 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/TAUY_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.37x)
+
+[51/60] Processing: TGCLDIWP_1_1800_3600.dat
+compression time = 0.172009
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/TGCLDIWP_1_1800_3600.dat.sz
+Min=1.4108197943230038618E-09, Max=108.541107177734375, range=108.541107177734375
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.130776
+decompression time = 0.094020 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/TGCLDIWP_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.13x)
+
+[52/60] Processing: TGCLDLWP_1_1800_3600.dat
+compression time = 0.168427
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/TGCLDLWP_1_1800_3600.dat.sz
+Min=0.00016882304043974727392, Max=693.2628173828125, range=693.26263427734375
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.132061
+decompression time = 0.094553 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/TGCLDLWP_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.13x)
+
+[53/60] Processing: TMQ_1_1800_3600.dat
+compression time = 0.174854
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/TMQ_1_1800_3600.dat.sz
+Min=0.43145361542701721191, Max=55.315334320068359375, range=54.883880615234375
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.162461
+decompression time = 0.092116 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/TMQ_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.16x)
+
+[54/60] Processing: TREFHT_1_1800_3600.dat
+compression time = 0.418883
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/TREFHT_1_1800_3600.dat.sz
+Min=231.5278472900390625, Max=305.8504638671875, range=74.3226165771484375
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.339665
+decompression time = 0.100465 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/TREFHT_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.33x)
+
+[55/60] Processing: TREFMNAV_1_1800_3600.dat
+compression time = 0.378195
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/TREFMNAV_1_1800_3600.dat.sz
+Min=227.771759033203125, Max=301.67401123046875, range=73.902252197265625
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.329843
+decompression time = 0.101717 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/TREFMNAV_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.32x)
+
+[56/60] Processing: TREFMXAV_1_1800_3600.dat
+compression time = 0.413205
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/TREFMXAV_1_1800_3600.dat.sz
+Min=233.2447509765625, Max=313.71270751953125, range=80.46795654296875
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.341923
+decompression time = 0.099990 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/TREFMXAV_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.34x)
+
+[57/60] Processing: TROP_T_1_1800_3600.dat
+compression time = 0.421714
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/TROP_T_1_1800_3600.dat.sz
+Min=185.6568450927734375, Max=218.2051239013671875, range=32.54827880859375
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.379082
+decompression time = 0.097676 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/TROP_T_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.37x)
+
+[58/60] Processing: TS_1_1800_3600.dat
+compression time = 0.395097
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/TS_1_1800_3600.dat.sz
+Min=228.4328460693359375, Max=308.9439697265625, range=80.5111236572265625
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.333912
+decompression time = 0.099995 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/TS_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.33x)
+
+[59/60] Processing: TSMN_1_1800_3600.dat
+compression time = 0.385319
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/TSMN_1_1800_3600.dat.sz
+Min=211.0350189208984375, Max=303.356781005859375, range=92.3217620849609375
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.317041
+decompression time = 0.098268 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/TSMN_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.31x)
+
+[60/60] Processing: TSMX_1_1800_3600.dat
+compression time = 0.404357
+compressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/TSMX_1_1800_3600.dat.sz
+Min=241.6193389892578125, Max=336.633941650390625, range=95.0146026611328125
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1.355588
+decompression time = 0.096943 seconds.
+decompressed data file: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/sz_1E-8/TSMX_1_1800_3600.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.35x)
+
+=== Summary ===
+Total files processed: 60
+Total files skipped: 0
+Total files failed: 0
+

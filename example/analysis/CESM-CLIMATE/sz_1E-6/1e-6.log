@@ -1,0 +1,1363 @@
+Input directory: ../../CESM-CLIMATE-65G/4/log_normalized
+Output directory: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6
+Dimensions: 768x1152
+Error bound: 1E-6
+SZ config: sz.config
+
+Found 90 .dat file(s) to process
+
+[1/90] Processing: AEROD_v_1_768_1152.dat
+compression time = 0.041895
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/AEROD_v_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009999
+Max relative error = 0.000001
+Max pw relative error = 0.100647
+PSNR = 124.794436, NRMSE= 5.7580866085457262783E-07
+normError = 0.000542, normErr_norm = 0.000004
+acEff=1.000000
+compressionRatio=2.211577
+decompression time = 0.057906 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/AEROD_v_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.21x)
+
+[2/90] Processing: cb_ozone_c_1_768_1152.dat
+compression time = 0.024690
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/cb_ozone_c_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009998
+Max relative error = 0.000001
+Max pw relative error = 0.002183
+PSNR = 124.862969, NRMSE= 5.7128332053248598223E-07
+normError = 0.000537, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=3.467493
+decompression time = 0.032126 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/cb_ozone_c_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 3.46x)
+
+[3/90] Processing: cb_sulf_c_1_768_1152.dat
+compression time = 0.031672
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/cb_sulf_c_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000131
+PSNR = 126.108664, NRMSE= 4.9495624885423211997E-07
+normError = 0.000466, normErr_norm = 0.000003
+acEff=1.000000
+compressionRatio=14.075657
+decompression time = 0.017582 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/cb_sulf_c_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 14.07x)
+
+[4/90] Processing: CLDHGH_1_768_1152.dat
+compression time = 0.085146
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/CLDHGH_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009998
+Max relative error = 0.000001
+Max pw relative error = 2.290914
+PSNR = 124.862579, NRMSE= 5.7130895042350863986E-07
+normError = 0.000537, normErr_norm = 0.000002
+acEff=1.000000
+compressionRatio=1.572017
+decompression time = 0.107062 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/CLDHGH_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.57x)
+
+[5/90] Processing: CLDLOW_1_768_1152.dat
+compression time = 0.086443
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/CLDLOW_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009999
+Max relative error = 0.000001
+Max pw relative error = 5.198181
+PSNR = 125.068613, NRMSE= 5.5791670620552515746E-07
+normError = 0.000525, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=1.557752
+decompression time = 0.099773 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/CLDLOW_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.55x)
+
+[6/90] Processing: CLDMED_1_768_1152.dat
+compression time = 0.075703
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/CLDMED_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009998
+Max relative error = 0.000001
+Max pw relative error = 5.584440
+PSNR = 124.830413, NRMSE= 5.7342858967258686629E-07
+normError = 0.000539, normErr_norm = 0.000002
+acEff=1.000000
+compressionRatio=1.674410
+decompression time = 0.099818 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/CLDMED_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.67x)
+
+[7/90] Processing: CLDTOT_1_768_1152.dat
+compression time = 0.076272
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/CLDTOT_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009993
+Max relative error = 0.000001
+Max pw relative error = 0.004766
+PSNR = 125.020318, NRMSE= 5.6102744768053977251E-07
+normError = 0.000528, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=1.563439
+decompression time = 0.105327 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/CLDTOT_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.56x)
+
+[8/90] Processing: FLDS_1_768_1152.dat
+compression time = 0.042291
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/FLDS_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000032
+PSNR = 125.009709, NRMSE= 5.6171307172800887157E-07
+normError = 0.000528, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.436479
+decompression time = 0.059573 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/FLDS_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.43x)
+
+[9/90] Processing: FLDSC_1_768_1152.dat
+compression time = 0.038895
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/FLDSC_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000760
+PSNR = 125.002859, NRMSE= 5.6215626235052811327E-07
+normError = 0.000529, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.505612
+decompression time = 0.047380 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/FLDSC_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.50x)
+
+[10/90] Processing: FLNS_1_768_1152.dat
+compression time = 0.065296
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/FLNS_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009835
+Max relative error = 0.000001
+Max pw relative error = 0.000005
+PSNR = 125.013146, NRMSE= 5.6149086993261690113E-07
+normError = 0.000528, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=1.848456
+decompression time = 0.082245 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/FLNS_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.84x)
+
+[11/90] Processing: FLNSC_1_768_1152.dat
+compression time = 0.063886
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/FLNSC_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000010
+PSNR = 125.022037, NRMSE= 5.6091639784771192591E-07
+normError = 0.000528, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=1.878705
+decompression time = 0.075431 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/FLNSC_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.87x)
+
+[12/90] Processing: FLNT_1_768_1152.dat
+compression time = 0.033231
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/FLNT_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000071
+PSNR = 125.001217, NRMSE= 5.6226256654099406471E-07
+normError = 0.000529, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.325467
+decompression time = 0.057129 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/FLNT_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.32x)
+
+[13/90] Processing: FLNTC_1_768_1152.dat
+compression time = 0.027735
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/FLNTC_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000264
+PSNR = 125.026134, NRMSE= 5.6065187028777180882E-07
+normError = 0.000527, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.698135
+decompression time = 0.043447 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/FLNTC_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.69x)
+
+[14/90] Processing: FLUT_1_768_1152.dat
+compression time = 0.032093
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/FLUT_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000065
+PSNR = 125.004798, NRMSE= 5.6203075969647237554E-07
+normError = 0.000529, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.326607
+decompression time = 0.056988 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/FLUT_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.32x)
+
+[15/90] Processing: FLUTC_1_768_1152.dat
+compression time = 0.029359
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/FLUTC_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000209
+PSNR = 125.022182, NRMSE= 5.6090707964690908181E-07
+normError = 0.000528, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.696153
+decompression time = 0.039787 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/FLUTC_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.69x)
+
+[16/90] Processing: FREQSH_1_768_1152.dat
+compression time = 0.086446
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/FREQSH_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000365
+PSNR = 125.126703, NRMSE= 5.5419786314324058022E-07
+normError = 0.000521, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=1.508048
+decompression time = 0.107012 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/FREQSH_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.50x)
+
+[17/90] Processing: FREQZM_1_768_1152.dat
+compression time = 0.076208
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/FREQZM_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000010000
+Max relative error = 0.000001
+Max pw relative error = 0.001903
+PSNR = 125.736925, NRMSE= 5.1659919495956476313E-07
+normError = 0.000486, normErr_norm = 0.000002
+acEff=1.000000
+compressionRatio=1.837653
+decompression time = 0.086454 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/FREQZM_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.83x)
+
+[18/90] Processing: FSDS_1_768_1152.dat
+compression time = 0.048237
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/FSDS_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009998
+Max relative error = 0.000001
+Max pw relative error = 0.001667
+PSNR = 125.005575, NRMSE= 5.619805017823800585E-07
+normError = 0.000529, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.124012
+decompression time = 0.067201 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/FSDS_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.12x)
+
+[19/90] Processing: FSDSC_1_768_1152.dat
+compression time = 0.025812
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/FSDSC_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009998
+Max relative error = 0.000001
+Max pw relative error = 0.009116
+PSNR = 125.014166, NRMSE= 5.6142493812375561616E-07
+normError = 0.000528, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=3.094326
+decompression time = 0.031260 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/FSDSC_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 3.09x)
+
+[20/90] Processing: FSDTOA_1_768_1152.dat
+compression time = 0.022937
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/FSDTOA_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009999
+Max relative error = 0.000001
+Max pw relative error = 0.959223
+PSNR = 125.036210, NRMSE= 5.6000187070359960968E-07
+normError = 0.000527, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=7.743640
+decompression time = 0.017151 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/FSDTOA_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 7.74x)
+
+[21/90] Processing: FSNS_1_768_1152.dat
+compression time = 0.068635
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/FSNS_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009998
+Max relative error = 0.000001
+Max pw relative error = 0.003318
+PSNR = 124.962598, NRMSE= 5.6476799567369710459E-07
+normError = 0.000531, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=1.918835
+decompression time = 0.077887 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/FSNS_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.91x)
+
+[22/90] Processing: FSNSC_1_768_1152.dat
+compression time = 0.056283
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/FSNSC_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009998
+Max relative error = 0.000001
+Max pw relative error = 0.018912
+PSNR = 124.990442, NRMSE= 5.6296047247374078741E-07
+normError = 0.000530, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.331716
+decompression time = 0.061199 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/FSNSC_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.33x)
+
+[23/90] Processing: FSNT_1_768_1152.dat
+compression time = 0.052787
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/FSNT_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009995
+Max relative error = 0.000001
+Max pw relative error = 0.001524
+PSNR = 124.987411, NRMSE= 5.6315693155055765744E-07
+normError = 0.000530, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.202301
+decompression time = 0.068427 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/FSNT_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.20x)
+
+[24/90] Processing: FSNTC_1_768_1152.dat
+compression time = 0.045998
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/FSNTC_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009998
+Max relative error = 0.000001
+Max pw relative error = 0.061478
+PSNR = 125.012008, NRMSE= 5.6156445067070954263E-07
+normError = 0.000528, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.674264
+decompression time = 0.051681 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/FSNTC_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.67x)
+
+[25/90] Processing: FSNTOA_1_768_1152.dat
+compression time = 0.047964
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/FSNTOA_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009993
+Max relative error = 0.000001
+Max pw relative error = 0.002603
+PSNR = 124.979830, NRMSE= 5.6364870724608410422E-07
+normError = 0.000530, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.206356
+decompression time = 0.073697 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/FSNTOA_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.20x)
+
+[26/90] Processing: FSNTOAC_1_768_1152.dat
+compression time = 0.040776
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/FSNTOAC_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009993
+Max relative error = 0.000001
+Max pw relative error = 0.008501
+PSNR = 125.014322, NRMSE= 5.6141488193578338527E-07
+normError = 0.000528, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.681435
+decompression time = 0.059690 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/FSNTOAC_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.68x)
+
+[27/90] Processing: FSUTOA_1_768_1152.dat
+compression time = 0.061493
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/FSUTOA_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009998
+Max relative error = 0.000001
+Max pw relative error = 0.001203
+PSNR = 125.001249, NRMSE= 5.6226048011415611361E-07
+normError = 0.000529, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=1.874137
+decompression time = 0.080334 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/FSUTOA_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.87x)
+
+[28/90] Processing: ICEFRAC_1_768_1152.dat
+compression time = 0.039140
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/ICEFRAC_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000010000
+Max relative error = 0.000001
+Max pw relative error = 5.790677
+PSNR = 131.658293, NRMSE= 2.6126746800321246159E-07
+normError = 0.000246, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=7.732135
+decompression time = 0.022315 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/ICEFRAC_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 7.73x)
+
+[29/90] Processing: LANDFRAC_1_768_1152.dat
+compression time = 0.034776
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/LANDFRAC_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000010000
+Max relative error = 0.000001
+Max pw relative error = 0.000525
+PSNR = 128.874097, NRMSE= 3.5999390372226293568E-07
+normError = 0.000339, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=16.641637
+decompression time = 0.014559 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/LANDFRAC_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 16.64x)
+
+[30/90] Processing: LHFLX_1_768_1152.dat
+compression time = 0.080712
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/LHFLX_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000073
+PSNR = 125.008111, NRMSE= 5.6181643467856293043E-07
+normError = 0.000528, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=1.733245
+decompression time = 0.097888 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/LHFLX_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.73x)
+
+[31/90] Processing: LWCF_1_768_1152.dat
+compression time = 0.050464
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/LWCF_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.002748
+PSNR = 125.003940, NRMSE= 5.6208632262731770758E-07
+normError = 0.000529, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=1.923065
+decompression time = 0.091429 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/LWCF_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.92x)
+
+[32/90] Processing: MSKtem_1_768_1152.dat
+compression time = 0.070892
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/MSKtem_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.003058
+PSNR = 125.456283, NRMSE= 5.3356318625966762248E-07
+normError = 0.000502, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.317781
+decompression time = 0.058522 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/MSKtem_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.31x)
+
+[33/90] Processing: OCNFRAC_1_768_1152.dat
+compression time = 0.050507
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/OCNFRAC_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000010000
+Max relative error = 0.000001
+Max pw relative error = 3.642929
+PSNR = 127.218236, NRMSE= 4.3560034235425366912E-07
+normError = 0.000410, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=5.588418
+decompression time = 0.030922 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/OCNFRAC_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 5.58x)
+
+[34/90] Processing: ODV_bcar1_1_768_1152.dat
+compression time = 0.036817
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/ODV_bcar1_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000010000
+Max relative error = 0.000001
+Max pw relative error = 0.075659
+PSNR = 124.908847, NRMSE= 5.6827380313678912119E-07
+normError = 0.000535, normErr_norm = 0.000013
+acEff=1.000000
+compressionRatio=3.043467
+decompression time = 0.042593 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/ODV_bcar1_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 3.04x)
+
+[35/90] Processing: ODV_bcar2_1_768_1152.dat
+compression time = 0.038208
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/ODV_bcar2_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009999
+Max relative error = 0.000001
+Max pw relative error = 0.209235
+PSNR = 124.796981, NRMSE= 5.7564000888367624185E-07
+normError = 0.000541, normErr_norm = 0.000006
+acEff=1.000000
+compressionRatio=2.731584
+decompression time = 0.042882 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/ODV_bcar2_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.73x)
+
+[36/90] Processing: ODV_dust1_1_768_1152.dat
+compression time = 0.036070
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/ODV_dust1_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000010000
+Max relative error = 0.000001
+Max pw relative error = 1.000270
+PSNR = 124.821578, NRMSE= 5.7401215605835038109E-07
+normError = 0.000540, normErr_norm = 0.000008
+acEff=1.000000
+compressionRatio=3.431470
+decompression time = 0.032780 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/ODV_dust1_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 3.43x)
+
+[37/90] Processing: ODV_dust2_1_768_1152.dat
+compression time = 0.033390
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/ODV_dust2_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000010000
+Max relative error = 0.000001
+Max pw relative error = 1.000037
+PSNR = 124.822492, NRMSE= 5.7395176957756316522E-07
+normError = 0.000540, normErr_norm = 0.000008
+acEff=1.000000
+compressionRatio=3.462421
+decompression time = 0.032071 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/ODV_dust2_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 3.46x)
+
+[38/90] Processing: ODV_dust3_1_768_1152.dat
+compression time = 0.034205
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/ODV_dust3_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000010000
+Max relative error = 0.000001
+Max pw relative error = 1.000056
+PSNR = 124.816509, NRMSE= 5.7434723119013916874E-07
+normError = 0.000540, normErr_norm = 0.000010
+acEff=1.000000
+compressionRatio=3.609911
+decompression time = 0.031538 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/ODV_dust3_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 3.60x)
+
+[39/90] Processing: ODV_dust4_1_768_1152.dat
+compression time = 0.039562
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/ODV_dust4_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000010000
+Max relative error = 0.000001
+Max pw relative error = 1.000150
+PSNR = 124.782992, NRMSE= 5.765678190773694289E-07
+normError = 0.000542, normErr_norm = 0.000012
+acEff=1.000000
+compressionRatio=3.654665
+decompression time = 0.030552 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/ODV_dust4_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 3.65x)
+
+[40/90] Processing: ODV_ocar1_1_768_1152.dat
+compression time = 0.043222
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/ODV_ocar1_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000010000
+Max relative error = 0.000001
+Max pw relative error = 0.637412
+PSNR = 124.795719, NRMSE= 5.7572364924214255086E-07
+normError = 0.000542, normErr_norm = 0.000024
+acEff=1.000000
+compressionRatio=3.859962
+decompression time = 0.038144 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/ODV_ocar1_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 3.85x)
+
+[41/90] Processing: ODV_ocar2_1_768_1152.dat
+compression time = 0.040773
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/ODV_ocar2_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000010000
+Max relative error = 0.000001
+Max pw relative error = 1.001243
+PSNR = 124.807255, NRMSE= 5.749595261336647993E-07
+normError = 0.000541, normErr_norm = 0.000012
+acEff=1.000000
+compressionRatio=2.878208
+decompression time = 0.043973 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/ODV_ocar2_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.87x)
+
+[42/90] Processing: ODV_SSLTA_1_768_1152.dat
+compression time = 0.044903
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/ODV_SSLTA_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009999
+Max relative error = 0.000001
+Max pw relative error = 0.056109
+PSNR = 124.835812, NRMSE= 5.7307226984342485925E-07
+normError = 0.000539, normErr_norm = 0.000002
+acEff=1.000000
+compressionRatio=2.012472
+decompression time = 0.089429 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/ODV_SSLTA_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.01x)
+
+[43/90] Processing: ODV_SSLTC_1_768_1152.dat
+compression time = 0.045086
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/ODV_SSLTC_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009998
+Max relative error = 0.000001
+Max pw relative error = 0.326824
+PSNR = 124.839248, NRMSE= 5.7284563027150632725E-07
+normError = 0.000539, normErr_norm = 0.000002
+acEff=1.000000
+compressionRatio=2.000121
+decompression time = 0.083340 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/ODV_SSLTC_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.00x)
+
+[44/90] Processing: ODV_sulf_1_768_1152.dat
+compression time = 0.043017
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/ODV_sulf_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000010000
+Max relative error = 0.000001
+Max pw relative error = 0.117382
+PSNR = 124.823148, NRMSE= 5.7390842867580798696E-07
+normError = 0.000540, normErr_norm = 0.000004
+acEff=1.000000
+compressionRatio=2.198344
+decompression time = 0.064347 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/ODV_sulf_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.19x)
+
+[45/90] Processing: ODV_VOLC_MMR_1_768_1152.dat
+compression time = 0.027674
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/ODV_VOLC_MMR_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009998
+Max relative error = 0.000001
+Max pw relative error = 0.000766
+PSNR = 127.677731, NRMSE= 4.1315543161338862103E-07
+normError = 0.000389, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=8.907373
+decompression time = 0.021624 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/ODV_VOLC_MMR_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 8.90x)
+
+[46/90] Processing: PBLH_1_768_1152.dat
+compression time = 0.059075
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/PBLH_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000033
+PSNR = 125.013343, NRMSE= 5.6147815291690171956E-07
+normError = 0.000528, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=1.836671
+decompression time = 0.092124 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/PBLH_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.83x)
+
+[47/90] Processing: PCONVB_1_768_1152.dat
+compression time = 0.043234
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/PCONVB_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009537
+Max relative error = 0.000001
+Max pw relative error = 0.000002
+PSNR = 125.028602, NRMSE= 5.6049260159434832523E-07
+normError = 0.000527, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.808708
+decompression time = 0.045170 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/PCONVB_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.80x)
+
+[48/90] Processing: PCONVT_1_768_1152.dat
+compression time = 0.042993
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/PCONVT_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009537
+Max relative error = 0.000001
+Max pw relative error = 0.000001
+PSNR = 125.030513, NRMSE= 5.6036929319725455528E-07
+normError = 0.000527, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.487540
+decompression time = 0.052523 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/PCONVT_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.48x)
+
+[49/90] Processing: PHIS_1_768_1152.dat
+compression time = 0.064660
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/PHIS_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009537
+Max relative error = 0.000001
+Max pw relative error = 0.000002
+PSNR = 126.183173, NRMSE= 4.9072857957383425701E-07
+normError = 0.000462, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.371524
+decompression time = 0.062335 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/PHIS_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.37x)
+
+[50/90] Processing: PRECC_1_768_1152.dat
+compression time = 0.027001
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/PRECC_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009998
+Max relative error = 0.000001
+Max pw relative error = 0.000002
+PSNR = 134.941162, NRMSE= 1.7903663825872166172E-07
+normError = 0.000168, normErr_norm = 0.000002
+acEff=1.000000
+compressionRatio=52.586169
+decompression time = 0.013180 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/PRECC_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 52.58x)
+
+[51/90] Processing: PRECCDZM_1_768_1152.dat
+compression time = 0.022301
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/PRECCDZM_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000037
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = 222.662812, NRMSE= 7.3596883060854954123E-12
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=393.960147
+decompression time = 0.010158 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/PRECCDZM_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 393.96x)
+
+[52/90] Processing: PRECL_1_768_1152.dat
+compression time = 0.028732
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/PRECL_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000010000
+Max relative error = 0.000001
+Max pw relative error = 0.000007
+PSNR = 131.846486, NRMSE= 2.5566759174244746864E-07
+normError = 0.000240, normErr_norm = 0.000008
+acEff=1.000000
+compressionRatio=24.041739
+decompression time = 0.014821 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/PRECL_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 24.04x)
+
+[53/90] Processing: PRECSC_1_768_1152.dat
+compression time = 0.015655
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/PRECSC_1_768_1152.dat.sz
+Min=-NAN, Max=-NAN, range=-NAN
+Max absolute error = nan
+Max relative error = nan
+Max pw relative error = 0.000000
+PSNR = -nan, NRMSE= -NAN
+normError = -nan, normErr_norm = -nan
+acEff=-nan
+compressionRatio=9337.583113
+decompression time = 0.008762 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/PRECSC_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 9337.58x)
+
+[54/90] Processing: PRECSH_1_768_1152.dat
+compression time = 0.023399
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/PRECSH_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+normError = 0.000000, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=15123.692308
+decompression time = 0.010886 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/PRECSH_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 15123.69x)
+
+[55/90] Processing: PRECSL_1_768_1152.dat
+compression time = 0.020729
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/PRECSL_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009930
+Max relative error = 0.000001
+Max pw relative error = 0.000000
+PSNR = 167.226428, NRMSE= 4.3518968476789982695E-09
+normError = 0.000004, normErr_norm = 0.000000
+acEff=1.000000
+compressionRatio=1961.720621
+decompression time = 0.009583 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/PRECSL_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1961.72x)
+
+[56/90] Processing: PRECT_1_768_1152.dat
+compression time = 0.030419
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/PRECT_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000010000
+Max relative error = 0.000001
+Max pw relative error = 0.000009
+PSNR = 130.708277, NRMSE= 2.9146483529742572635E-07
+normError = 0.000274, normErr_norm = 0.000007
+acEff=1.000000
+compressionRatio=25.492490
+decompression time = 0.013468 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/PRECT_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 25.49x)
+
+[57/90] Processing: PS_1_768_1152.dat
+compression time = 0.042240
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/PS_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009537
+Max relative error = 0.000001
+Max pw relative error = 0.000001
+PSNR = 125.026914, NRMSE= 5.6060157863190646802E-07
+normError = 0.000527, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.937339
+decompression time = 0.042948 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/PS_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.93x)
+
+[58/90] Processing: PSL_1_768_1152.dat
+compression time = 0.037324
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/PSL_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009835
+Max relative error = 0.000001
+Max pw relative error = 0.000004
+PSNR = 125.002656, NRMSE= 5.6216942615311596845E-07
+normError = 0.000529, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.839148
+decompression time = 0.042042 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/PSL_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.83x)
+
+[59/90] Processing: QFLX_1_768_1152.dat
+compression time = 0.038445
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/QFLX_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009998
+Max relative error = 0.000001
+Max pw relative error = 0.001429
+PSNR = 124.931086, NRMSE= 5.6682068089753799583E-07
+normError = 0.000533, normErr_norm = 0.000003
+acEff=1.000000
+compressionRatio=4.954006
+decompression time = 0.029829 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/QFLX_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 4.95x)
+
+[60/90] Processing: QREFHT_1_768_1152.dat
+compression time = 0.053238
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/QREFHT_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009999
+Max relative error = 0.000001
+Max pw relative error = 0.138344
+PSNR = 124.895168, NRMSE= 5.6916946899831460296E-07
+normError = 0.000535, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=1.970528
+decompression time = 0.066282 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/QREFHT_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.97x)
+
+[61/90] Processing: RHREFHT_1_768_1152.dat
+compression time = 0.056294
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/RHREFHT_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009835
+Max relative error = 0.000001
+Max pw relative error = 0.000006
+PSNR = 125.027748, NRMSE= 5.605477634578320134E-07
+normError = 0.000527, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.013224
+decompression time = 0.077877 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/RHREFHT_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.01x)
+
+[62/90] Processing: SFCLDICE_1_768_1152.dat
+compression time = 0.016788
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/SFCLDICE_1_768_1152.dat.sz
+Min=-NAN, Max=-NAN, range=-NAN
+Max absolute error = nan
+Max relative error = nan
+Max pw relative error = 0.000000
+PSNR = -nan, NRMSE= -NAN
+normError = -nan, normErr_norm = -nan
+acEff=-nan
+compressionRatio=9337.583113
+decompression time = 0.008293 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/SFCLDICE_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 9337.58x)
+
+[63/90] Processing: SFCLDLIQ_1_768_1152.dat
+compression time = 0.015671
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/SFCLDLIQ_1_768_1152.dat.sz
+Min=-NAN, Max=-NAN, range=-NAN
+Max absolute error = nan
+Max relative error = nan
+Max pw relative error = 0.000000
+PSNR = -nan, NRMSE= -NAN
+normError = -nan, normErr_norm = -nan
+acEff=-nan
+compressionRatio=9337.583113
+decompression time = 0.008047 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/SFCLDLIQ_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 9337.58x)
+
+[64/90] Processing: SHFLX_1_768_1152.dat
+compression time = 0.054443
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/SHFLX_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009835
+Max relative error = 0.000001
+Max pw relative error = 0.000003
+PSNR = 125.013743, NRMSE= 5.6145227875746921182E-07
+normError = 0.000528, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.095216
+decompression time = 0.080376 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/SHFLX_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.09x)
+
+[65/90] Processing: SNOWHICE_1_768_1152.dat
+compression time = 0.035385
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/SNOWHICE_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000010000
+Max relative error = 0.000001
+Max pw relative error = 3.218403
+PSNR = 131.687958, NRMSE= 2.6037668566251999998E-07
+normError = 0.000245, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=10.242638
+decompression time = 0.020450 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/SNOWHICE_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 10.24x)
+
+[66/90] Processing: SNOWHLND_1_768_1152.dat
+compression time = 0.037249
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/SNOWHLND_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000010000
+Max relative error = 0.000001
+Max pw relative error = 5.783448
+PSNR = 129.516809, NRMSE= 3.3431784786592068729E-07
+normError = 0.000314, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=8.480331
+decompression time = 0.021865 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/SNOWHLND_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 8.48x)
+
+[67/90] Processing: SOLIN_1_768_1152.dat
+compression time = 0.022356
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/SOLIN_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009999
+Max relative error = 0.000001
+Max pw relative error = 0.959223
+PSNR = 125.036210, NRMSE= 5.6000187070359960968E-07
+normError = 0.000527, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=7.743640
+decompression time = 0.017424 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/SOLIN_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 7.74x)
+
+[68/90] Processing: SRFRAD_1_768_1152.dat
+compression time = 0.043073
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/SRFRAD_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000020
+PSNR = 125.002286, NRMSE= 5.6219334077979512731E-07
+normError = 0.000529, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.398712
+decompression time = 0.060207 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/SRFRAD_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.39x)
+
+[69/90] Processing: SWCF_1_768_1152.dat
+compression time = 0.048762
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/SWCF_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009537
+Max relative error = 0.000001
+Max pw relative error = 0.000002
+PSNR = 125.012560, NRMSE= 5.6152874760324271086E-07
+normError = 0.000528, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.209937
+decompression time = 0.071978 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/SWCF_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.20x)
+
+[70/90] Processing: TAUX_1_768_1152.dat
+compression time = 0.045763
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/TAUX_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009537
+Max relative error = 0.000001
+Max pw relative error = 0.000002
+PSNR = 125.009481, NRMSE= 5.6172786851447355494E-07
+normError = 0.000528, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.359963
+decompression time = 0.059834 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/TAUX_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.35x)
+
+[71/90] Processing: TAUY_1_768_1152.dat
+compression time = 0.048796
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/TAUY_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009835
+Max relative error = 0.000001
+Max pw relative error = 0.000009
+PSNR = 125.015176, NRMSE= 5.6135964243327108084E-07
+normError = 0.000528, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.225167
+decompression time = 0.062551 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/TAUY_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.22x)
+
+[72/90] Processing: TGCLDIWP_1_768_1152.dat
+compression time = 0.066962
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/TGCLDIWP_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009993
+Max relative error = 0.000001
+Max pw relative error = 33.129397
+PSNR = 124.976952, NRMSE= 5.6383547853010588829E-07
+normError = 0.000530, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=1.688470
+decompression time = 0.094893 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/TGCLDIWP_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.68x)
+
+[73/90] Processing: TGCLDLWP_1_768_1152.dat
+compression time = 0.063014
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/TGCLDLWP_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009995
+Max relative error = 0.000001
+Max pw relative error = 51.238945
+PSNR = 125.021205, NRMSE= 5.6097014427401464836E-07
+normError = 0.000528, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=1.659653
+decompression time = 0.104429 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/TGCLDLWP_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 1.65x)
+
+[74/90] Processing: TH2d_1_768_1152.dat
+compression time = 0.022605
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/TH2d_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000014
+PSNR = 142.111779, NRMSE= 7.8417147881930900439E-08
+normError = 0.000074, normErr_norm = 0.000003
+acEff=1.000000
+compressionRatio=43.091640
+decompression time = 0.009892 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/TH2d_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 43.09x)
+
+[75/90] Processing: TMQ_1_768_1152.dat
+compression time = 0.046900
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/TMQ_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009998
+Max relative error = 0.000001
+Max pw relative error = 0.055027
+PSNR = 124.952747, NRMSE= 5.6540888408421472236E-07
+normError = 0.000532, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.006217
+decompression time = 0.062996 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/TMQ_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.00x)
+
+[76/90] Processing: TREFHT_1_768_1152.dat
+compression time = 0.040236
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/TREFHT_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000083
+PSNR = 124.998314, NRMSE= 5.6245050573129705475E-07
+normError = 0.000529, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.625456
+decompression time = 0.053263 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/TREFHT_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.62x)
+
+[77/90] Processing: TREFMNAV_1_768_1152.dat
+compression time = 0.032818
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/TREFMNAV_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000221
+PSNR = 124.998808, NRMSE= 5.6241847649804045086E-07
+normError = 0.000529, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.553669
+decompression time = 0.051360 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/TREFMNAV_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.55x)
+
+[78/90] Processing: TREFMXAV_1_768_1152.dat
+compression time = 0.043784
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/TREFMXAV_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000261
+PSNR = 125.001621, NRMSE= 5.6223635811733879366E-07
+normError = 0.000529, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.580353
+decompression time = 0.048406 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/TREFMXAV_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.58x)
+
+[79/90] Processing: TROP_P_1_768_1152.dat
+compression time = 0.028914
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/TROP_P_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009835
+Max relative error = 0.000001
+Max pw relative error = 0.000002
+PSNR = 125.037727, NRMSE= 5.5990412393876857914E-07
+normError = 0.000527, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.665877
+decompression time = 0.042644 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/TROP_P_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.66x)
+
+[80/90] Processing: TROP_T_1_768_1152.dat
+compression time = 0.033496
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/TROP_T_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000764
+PSNR = 124.960798, NRMSE= 5.6488509563966225447E-07
+normError = 0.000531, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.464039
+decompression time = 0.044495 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/TROP_T_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.46x)
+
+[81/90] Processing: TROP_Z_1_768_1152.dat
+compression time = 0.031373
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/TROP_Z_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009835
+Max relative error = 0.000001
+Max pw relative error = 0.000003
+PSNR = 125.032613, NRMSE= 5.6023387491484016342E-07
+normError = 0.000527, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.757140
+decompression time = 0.041426 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/TROP_Z_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.75x)
+
+[82/90] Processing: TS_1_768_1152.dat
+compression time = 0.042032
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/TS_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000477
+PSNR = 125.001174, NRMSE= 5.6226532036773626569E-07
+normError = 0.000529, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.589778
+decompression time = 0.060433 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/TS_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.58x)
+
+[83/90] Processing: TSMN_1_768_1152.dat
+compression time = 0.045583
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/TSMN_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000564
+PSNR = 125.002742, NRMSE= 5.6216380745447731973E-07
+normError = 0.000529, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.320123
+decompression time = 0.056475 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/TSMN_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.32x)
+
+[84/90] Processing: TSMX_1_768_1152.dat
+compression time = 0.044626
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/TSMX_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009835
+Max relative error = 0.000001
+Max pw relative error = 0.000010
+PSNR = 125.016835, NRMSE= 5.6125245818831961337E-07
+normError = 0.000528, normErr_norm = 0.000001
+acEff=1.000000
+compressionRatio=2.361112
+decompression time = 0.055382 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/TSMX_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 2.36x)
+
+[85/90] Processing: U2d_1_768_1152.dat
+compression time = 0.024704
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/U2d_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000161
+PSNR = 140.152282, NRMSE= 9.8262065418406450485E-08
+normError = 0.000092, normErr_norm = 0.000002
+acEff=1.000000
+compressionRatio=39.683158
+decompression time = 0.012001 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/U2d_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 39.68x)
+
+[86/90] Processing: UV2d_1_768_1152.dat
+compression time = 0.022571
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/UV2d_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000015
+PSNR = 136.182916, NRMSE= 1.5518659928696928306E-07
+normError = 0.000146, normErr_norm = 0.000002
+acEff=1.000000
+compressionRatio=52.442008
+decompression time = 0.010683 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/UV2d_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 52.44x)
+
+[87/90] Processing: UW2d_1_768_1152.dat
+compression time = 0.022966
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/UW2d_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009999
+Max relative error = 0.000001
+Max pw relative error = 0.007573
+PSNR = 138.052564, NRMSE= 1.2513297654007408862E-07
+normError = 0.000118, normErr_norm = 0.000005
+acEff=1.000000
+compressionRatio=63.157083
+decompression time = 0.012538 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/UW2d_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 63.15x)
+
+[88/90] Processing: V2d_1_768_1152.dat
+compression time = 0.023267
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/V2d_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009991
+Max relative error = 0.000001
+Max pw relative error = 0.000316
+PSNR = 137.476698, NRMSE= 1.3371037089370691411E-07
+normError = 0.000126, normErr_norm = 0.000004
+acEff=1.000000
+compressionRatio=42.373428
+decompression time = 0.012295 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/V2d_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 42.37x)
+
+[89/90] Processing: VTH2d_1_768_1152.dat
+compression time = 0.022441
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/VTH2d_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000009984
+Max relative error = 0.000001
+Max pw relative error = 0.000015
+PSNR = 134.431757, NRMSE= 1.8985068130690698767E-07
+normError = 0.000179, normErr_norm = 0.000003
+acEff=1.000000
+compressionRatio=57.152565
+decompression time = 0.010506 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/VTH2d_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 57.15x)
+
+[90/90] Processing: W2d_1_768_1152.dat
+compression time = 0.023173
+compressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/W2d_1_768_1152.dat.sz
+Min=0, Max=1, range=1
+Max absolute error = 0.0000010000
+Max relative error = 0.000001
+Max pw relative error = 0.006996
+PSNR = 136.733595, NRMSE= 1.4565328080841583897E-07
+normError = 0.000137, normErr_norm = 0.000005
+acEff=1.000000
+compressionRatio=115.977715
+decompression time = 0.011192 seconds.
+decompressed data file: ../../CESM-CLIMATE-65G/4/log_normalized/sz_1E-6/W2d_1_768_1152.dat.sz.out
+  ✓ Compression and decompression successful (ratio: 115.97x)
+
+=== Summary ===
+Total files processed: 90
+Total files skipped: 0
+Total files failed: 0
+
