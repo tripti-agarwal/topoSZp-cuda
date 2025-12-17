@@ -2134,7 +2134,7 @@ szp_float_openmp_threadblock_randomaccess(float *oriData, size_t *outSize, float
 #pragma omp single
         {
             offsets_perthread_arr[0] = 0;
-            for (i = 1; i < nbThreads; i++)
+            for (size_t i = 1; i < nbThreads; i++)
             {
                 offsets_perthread_arr[i] = offsets_perthread_arr[i - 1] + outSize_perthread_arr[i - 1].size;
             }
