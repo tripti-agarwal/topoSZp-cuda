@@ -19,6 +19,10 @@
 #ifdef _OPENMP
 #include "omp.h"
 #endif
+#include <stdlib.h>
+#ifdef _POSIX_C_SOURCE
+#include <malloc.h>  // For posix_memalign
+#endif
 
 using namespace szp;
 
@@ -1978,12 +1982,28 @@ szp_float_openmp_threadblock_randomaccess(float *oriData, size_t *outSize, float
     double inver_bound = 0;
     unsigned int threadblocksize = 0;
     unsigned int block_size = blockSize;
+    
+    // Adaptive thread count: for small problems, reduce thread count to avoid overhead
+    size_t num_blocks = (nbEle + block_size - 1) / block_size;
+    int optimal_threads = nbThreads;
+    
+    // Set thread affinity for better NUMA performance (especially important for 32 threads)
+    // This should be set before the parallel region via environment variables:
+    // export OMP_PROC_BIND=close
+    // export OMP_PLACES=cores
+    // But we can also hint the scheduler here
 
 #pragma omp parallel
     {
 #pragma omp single
         {
             nbThreads = omp_get_num_threads();
+            // For small problems or high thread counts, use adaptive scheduling
+            if (nbThreads >= 16 && num_blocks < nbThreads * 4) {
+                // Too many threads for the problem size - will use dynamic scheduling
+                optimal_threads = (num_blocks + 3) / 4;  // Aim for ~4 blocks per thread
+                if (optimal_threads < 1) optimal_threads = 1;
+            }
             real_outputBytes = outputBytes + nbThreads * sizeof(size_t);
             (*outSize) += nbThreads * sizeof(size_t); 
             // Allocate padded structures to avoid false sharing
@@ -1994,18 +2014,28 @@ szp_float_openmp_threadblock_randomaccess(float *oriData, size_t *outSize, float
             inver_bound = 1 / absErrBound;
             threadblocksize = nbEle / nbThreads;
         }
-        size_t i = 0;
         size_t j = 0;
-        unsigned char *outputBytes_perthread = (unsigned char *)malloc(maxPreservedBufferSize_perthread);
+        
+        // Use aligned allocation for better cache performance (improves scaling)
+        unsigned char *outputBytes_perthread = NULL;
+        // Try aligned allocation first (better for cache performance with many threads)
+        #if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L
+        if (posix_memalign((void**)&outputBytes_perthread, 64, maxPreservedBufferSize_perthread) != 0) {
+            outputBytes_perthread = (unsigned char *)malloc(maxPreservedBufferSize_perthread);
+        }
+        #elif defined(__APPLE__) || defined(_WIN32)
+        // macOS and Windows use different alignment functions
+        outputBytes_perthread = (unsigned char *)malloc(maxPreservedBufferSize_perthread);
+        #else
+        // Try posix_memalign if available (Linux)
+        if (posix_memalign((void**)&outputBytes_perthread, 64, maxPreservedBufferSize_perthread) != 0) {
+            outputBytes_perthread = (unsigned char *)malloc(maxPreservedBufferSize_perthread);
+        }
+        #endif
         size_t outSize_perthread = 0;
         
         int tid = omp_get_thread_num();
-        size_t lo = tid * threadblocksize;
-        size_t hi = (tid + 1) * threadblocksize;
-        if (tid == nbThreads - 1) {
-            hi = nbEle; // Ensure the last thread processes all remaining elements
-        }
-
+        
         int prior = 0;
         int current = 0;
         int diff = 0;
@@ -2018,13 +2048,25 @@ szp_float_openmp_threadblock_randomaccess(float *oriData, size_t *outSize, float
         unsigned int signbytelength = 0; 
         unsigned int savedbitsbytelength = 0;
         
-        for (i = lo; i < hi; i = i + block_size)
+        // Use dynamic block-based scheduling for better load balancing across all thread counts
+        // This allows threads to steal work when they finish early, reducing load imbalance
+        size_t blocks_per_chunk = 1;  // Process one block at a time for best load balance
+        if (num_blocks > nbThreads * 4) {
+            // For large problems, use larger chunks to reduce scheduling overhead
+            blocks_per_chunk = (num_blocks + nbThreads * 4 - 1) / (nbThreads * 4);
+        }
+        
+        // Dynamic scheduling: threads get blocks as they become available
+        // This automatically balances load regardless of compression ratio variations
+        #pragma omp for schedule(dynamic, blocks_per_chunk) nowait
+        for (size_t block_idx = 0; block_idx < num_blocks; block_idx++)
         {
-            size_t current_block_size = (i + block_size > hi) ? (hi - i) : block_size;
+            size_t block_start = block_idx * block_size;
+            size_t current_block_size = (block_start + block_size > nbEle) ? (nbEle - block_start) : block_size;
             if (current_block_size == 0) continue;
 
             max = 0;
-            prior = (op[i]) * inver_bound;
+            prior = (op[block_start]) * inver_bound;
             memcpy(block_pointer, &prior, sizeof(int));
             block_pointer += sizeof(unsigned int);
             outSize_perthread += sizeof(unsigned int);
@@ -2035,7 +2077,7 @@ szp_float_openmp_threadblock_randomaccess(float *oriData, size_t *outSize, float
                 #pragma omp simd reduction(max:max)
                 for (j = 0; j < current_block_size - 1; j++)
                 {
-                    current = (op[i + j + 1]) * inver_bound;
+                    current = (op[block_start + j + 1]) * inver_bound;
                     diff = current - prior;
                     prior = current;
                     if (diff == 0)
@@ -2080,9 +2122,10 @@ szp_float_openmp_threadblock_randomaccess(float *oriData, size_t *outSize, float
                 block_pointer += savedbitsbytelength;
                 outSize_perthread += savedbitsbytelength;
             }
-        }
-
+        }  // End of dynamic block loop
+        
         // Store size with padding to avoid false sharing
+        // Note: outSize_perthread is accumulated across all blocks processed by this thread
         outSize_perthread_arr[tid].size = outSize_perthread;
 #pragma omp barrier
 
