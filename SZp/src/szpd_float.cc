@@ -17,6 +17,9 @@
 #ifdef _OPENMP
 #include "omp.h"
 #endif
+#ifdef _POSIX_C_SOURCE
+#include <malloc.h>  // For posix_memalign
+#endif
 
 using namespace szp;
 
@@ -656,11 +659,25 @@ void szp_float_decompress_openmp_threadblock_randomaccess_topology_preserved(
     unsigned int remainder       = 0;
     unsigned int num_remainder_in_tb = 0;
 
+    // Adaptive thread limiting for better scaling with high thread counts
+    size_t num_blocks_estimate = (nbEle + block_size - 1) / block_size;
+    int optimal_threads = 0;  // Will be set in parallel region
+
 #pragma omp parallel
     {
 #pragma omp single
         {
             nbThreads        = omp_get_num_threads();
+            if (nbThreads == 0) nbThreads = 1;
+            
+            // For high thread counts with small problems, limit effective parallelism
+            if (nbThreads >= 16 && num_blocks_estimate < nbThreads * 8) {
+                optimal_threads = (num_blocks_estimate + 7) / 8;
+                if (optimal_threads < 1) optimal_threads = 1;
+            } else {
+                optimal_threads = nbThreads;
+            }
+            
             rcp              = cmpBytes + nbThreads * sizeof(size_t);
             threadblocksize  = (unsigned int)(nbEle / nbThreads);
             remainder        = (unsigned int)(nbEle % nbThreads);
@@ -668,8 +685,34 @@ void szp_float_decompress_openmp_threadblock_randomaccess_topology_preserved(
         }
 
         const int tid = omp_get_thread_num();
-        const size_t lo = (size_t)tid * (size_t)threadblocksize;
-        const size_t hi = (size_t)(tid + 1) * (size_t)threadblocksize;
+        
+        // Use block-based distribution for better cache locality and load balancing
+        size_t num_blocks = (nbEle + block_size - 1) / block_size;
+        size_t blocks_per_thread;
+        size_t start_block, end_block;
+        
+        if (nbThreads >= 16 && num_blocks < nbThreads * 8) {
+            // High thread count, small problem: use larger chunks per thread
+            blocks_per_thread = (num_blocks + optimal_threads - 1) / optimal_threads;
+            size_t effective_tid = tid % optimal_threads;
+            start_block = effective_tid * blocks_per_thread;
+            end_block = (effective_tid + 1) * blocks_per_thread;
+            if (end_block > num_blocks) end_block = num_blocks;
+            // Skip threads beyond optimal_threads
+            if (tid >= optimal_threads) {
+                start_block = end_block;
+            }
+        } else {
+            // Normal case: static block distribution
+            blocks_per_thread = (num_blocks + nbThreads - 1) / nbThreads;
+            start_block = tid * blocks_per_thread;
+            end_block = (tid + 1) * blocks_per_thread;
+            if (end_block > num_blocks) end_block = num_blocks;
+        }
+        
+        size_t lo = start_block * block_size;
+        size_t hi = end_block * block_size;
+        if (hi > nbEle) hi = nbEle;
 
         float *dst = *newData + lo;
         unsigned char *block_pointer = rcp + offsets[tid];
@@ -677,162 +720,81 @@ void szp_float_decompress_openmp_threadblock_randomaccess_topology_preserved(
         int prior = 0, current = 0, diff = 0;
         unsigned int bit_count = 0;
 
-        unsigned char *temp_sign_arr    = (unsigned char *)malloc(new_block_size);
-        unsigned int  *temp_predict_arr = (unsigned int  *)malloc(new_block_size * sizeof(unsigned int));
-        unsigned char *temp_type_arr    = (unsigned char *)malloc(block_size);
+        // Use cache-aligned allocation for temp arrays
+        unsigned char *temp_sign_arr = NULL;
+        unsigned int  *temp_predict_arr = NULL;
+        unsigned char *temp_type_arr = NULL;
+        
+        #if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L
+        if (posix_memalign((void**)&temp_sign_arr, 64, new_block_size) != 0) {
+            temp_sign_arr = (unsigned char *)malloc(new_block_size);
+        }
+        if (posix_memalign((void**)&temp_predict_arr, 64, new_block_size * sizeof(unsigned int)) != 0) {
+            temp_predict_arr = (unsigned int *)malloc(new_block_size * sizeof(unsigned int));
+        }
+        if (posix_memalign((void**)&temp_type_arr, 64, block_size) != 0) {
+            temp_type_arr = (unsigned char *)malloc(block_size);
+        }
+        #else
+        temp_sign_arr = (unsigned char *)malloc(new_block_size);
+        temp_predict_arr = (unsigned int *)malloc(new_block_size * sizeof(unsigned int));
+        temp_type_arr = (unsigned char *)malloc(block_size);
+        #endif
 
-        if (threadblocksize > num_remainder_in_tb) {
-            for (size_t i = lo; i + num_remainder_in_tb < hi; i += block_size) {
+        // Process blocks assigned to this thread using block-based distribution
+        for (size_t block_idx = start_block; block_idx < end_block; block_idx++) {
+            size_t i = block_idx * block_size;
+            if (i >= nbEle) break;
+            
+            size_t current_block_size = (i + block_size > nbEle) ? (nbEle - i) : block_size;
+            if (current_block_size == 0) continue;
+            
+            unsigned int actual_new_block_size = (current_block_size > 1) ? (current_block_size - 1) : 0;
                 memcpy(&prior, block_pointer, sizeof(int));
                 block_pointer += sizeof(int);
                 float ori = (float)prior * scale;
                 *dst++ = ori;
 
-                bit_count = *block_pointer++;
-                if (bit_count == 0) {
-                    for (unsigned int j = 0; j < new_block_size; j++) *dst++ = ori;
-                } else {
-                    const unsigned int signbytes = (new_block_size + 7) / 8;
-                    convertByteArray2IntArray_fast_1b_args(new_block_size, block_pointer, signbytes, temp_sign_arr);
-                    block_pointer += signbytes;
-
-                    const unsigned int savedbitsbytelength =
-                        Jiajun_extract_fixed_length_bits(block_pointer, new_block_size, temp_predict_arr, bit_count);
-                    block_pointer += savedbitsbytelength;
-
-                    for (unsigned int j = 0; j < new_block_size; j++) {
-                        diff    = temp_sign_arr[j] ? -(int)temp_predict_arr[j] : (int)temp_predict_arr[j];
-                        current = prior + diff;
-                        prior   = current;
-                        *dst++  = (float)current * scale;
-                    }
+            bit_count = *block_pointer++;
+            if (bit_count == 0) {
+                // Vectorized memset-like operation
+                #pragma omp simd
+                for (unsigned int j = 0; j < actual_new_block_size; j++) {
+                    dst[j] = ori;
                 }
+                dst += actual_new_block_size;
+            } else {
+                const unsigned int signbytes = (actual_new_block_size + 7) / 8;
+                convertByteArray2IntArray_fast_1b_args(actual_new_block_size, block_pointer, signbytes, temp_sign_arr);
+                block_pointer += signbytes;
 
-                const unsigned int typebytelength = (2 * block_size + 7) / 8;
-                memset(temp_type_arr, 0, block_size);
-                // Safety check: ensure we don't read past the buffer
-                // If block_pointer is near the end, limit typebytelength
-                unsigned int safe_typebytelength = typebytelength;
-                // Note: We can't check exact buffer size, but we can at least ensure
-                // we don't read way past the end by limiting to a reasonable value
-                if (typebytelength > 64) safe_typebytelength = 64; // Cap at reasonable max
-                convertByteArray2IntArray_fast_2b(block_size, block_pointer, safe_typebytelength, &temp_type_arr);
-                for (unsigned int j = 0; j < block_size; j++) (*FN)[i + j] = temp_type_arr[j];
-                block_pointer += typebytelength;
-            }
-        }
+                const unsigned int savedbitsbytelength =
+                    Jiajun_extract_fixed_length_bits(block_pointer, actual_new_block_size, temp_predict_arr, bit_count);
+                block_pointer += savedbitsbytelength;
 
-        if (num_remainder_in_tb > 0) {
-            for (size_t i = hi - num_remainder_in_tb; i < hi; i += block_size) {
-                memcpy(&prior, block_pointer, sizeof(int));
-                block_pointer += sizeof(int);
-                float ori = (float)prior * scale;
-                *dst++ = ori;
-
-                bit_count = *block_pointer++;
-                const unsigned int L = num_remainder_in_tb - 1;
-                if (bit_count == 0) {
-                    for (unsigned int j = 0; j < L; j++) *dst++ = ori;
-                } else {
-                    const unsigned int signbytes = (L + 7) / 8;
-                    convertByteArray2IntArray_fast_1b_args(L, block_pointer, signbytes, temp_sign_arr);
-                    block_pointer += signbytes;
-
-                    const unsigned int savedbitsbytelength =
-                        Jiajun_extract_fixed_length_bits(block_pointer, L, temp_predict_arr, bit_count);
-                    block_pointer += savedbitsbytelength;
-
-                    for (unsigned int j = 0; j < L; j++) {
-                        diff    = temp_sign_arr[j] ? -(int)temp_predict_arr[j] : (int)temp_predict_arr[j];
-                        current = prior + diff;
-                        prior   = current;
-                        *dst++  = (float)current * scale;
-                    }
+                // Add vectorization hint for inner loop
+                #pragma omp simd
+                for (unsigned int j = 0; j < actual_new_block_size; j++) {
+                    diff    = temp_sign_arr[j] ? -(int)temp_predict_arr[j] : (int)temp_predict_arr[j];
+                    current = prior + diff;
+                    prior   = current;
+                    dst[j]  = (float)current * scale;
                 }
-
-                const unsigned int actual_size = num_remainder_in_tb;
-                const unsigned int actual_typebytelength = (2 * actual_size + 7) / 8;
-                memset(temp_type_arr, 0, actual_size);
-                convertByteArray2IntArray_fast_2b(actual_size, block_pointer, actual_typebytelength, &temp_type_arr);
-                for (unsigned int j = 0; j < actual_size; j++) (*FN)[i + j] = temp_type_arr[j];
-                block_pointer += actual_typebytelength;
-            }
-        }
-
-        if (tid == (int)nbThreads - 1 && remainder != 0) {
-            const unsigned int num_remainder_in_rm = remainder % block_size;
-
-            if (remainder > num_remainder_in_rm) {
-                for (size_t i = hi; i + num_remainder_in_rm < nbEle; i += block_size) {
-                    memcpy(&prior, block_pointer, sizeof(int));
-                    block_pointer += sizeof(int);
-                    float ori = (float)prior * scale;
-                    *dst++ = ori;
-
-                    bit_count = *block_pointer++;
-                    if (bit_count == 0) {
-                        for (unsigned int j = 0; j < new_block_size; j++) *dst++ = ori;
-                    } else {
-                        const unsigned int signbytes = (new_block_size + 7) / 8;
-                        convertByteArray2IntArray_fast_1b_args(new_block_size, block_pointer, signbytes, temp_sign_arr);
-                        block_pointer += signbytes;
-
-                        const unsigned int savedbitsbytelength =
-                            Jiajun_extract_fixed_length_bits(block_pointer, new_block_size, temp_predict_arr, bit_count);
-                        block_pointer += savedbitsbytelength;
-
-                        for (unsigned int j = 0; j < new_block_size; j++) {
-                            diff    = temp_sign_arr[j] ? -(int)temp_predict_arr[j] : (int)temp_predict_arr[j];
-                            current = prior + diff;
-                            prior   = current;
-                            *dst++  = (float)current * scale;
-                        }
-                    }
-
-                    const unsigned int typebytelength = (2 * block_size + 7) / 8;
-                    memset(temp_type_arr, 0, block_size);
-                    convertByteArray2IntArray_fast_2b(block_size, block_pointer, typebytelength, &temp_type_arr);
-                    for (unsigned int j = 0; j < block_size; j++) (*FN)[i + j] = temp_type_arr[j];
-                    block_pointer += typebytelength;
-                }
+                dst += actual_new_block_size;
             }
 
-            if (num_remainder_in_rm > 0) {
-                for (size_t i = nbEle - num_remainder_in_rm; i < nbEle; i += block_size) {
-                    memcpy(&prior, block_pointer, sizeof(int));
-                    block_pointer += sizeof(int);
-                    float ori = (float)prior * scale;
-                    *dst++ = ori;
-
-                    bit_count = *block_pointer++;
-                    const unsigned int L = num_remainder_in_rm - 1;
-                    if (bit_count == 0) {
-                        for (unsigned int j = 0; j < L; j++) *dst++ = ori;
-                    } else {
-                        const unsigned int signbytes = (L + 7) / 8;
-                        convertByteArray2IntArray_fast_1b_args(L, block_pointer, signbytes, temp_sign_arr);
-                        block_pointer += signbytes;
-
-                        const unsigned int savedbitsbytelength =
-                            Jiajun_extract_fixed_length_bits(block_pointer, L, temp_predict_arr, bit_count);
-                        block_pointer += savedbitsbytelength;
-
-                        for (unsigned int j = 0; j < L; j++) {
-                            diff    = temp_sign_arr[j] ? -(int)temp_predict_arr[j] : (int)temp_predict_arr[j];
-                            current = prior + diff;
-                            prior   = current;
-                            *dst++  = (float)current * scale;
-                        }
-                    }
-
-                    const unsigned int actual_size = num_remainder_in_rm;
-                    const unsigned int actual_typebytelength = (2 * actual_size + 7) / 8;
-                    memset(temp_type_arr, 0, actual_size);
-                    convertByteArray2IntArray_fast_2b(actual_size, block_pointer, actual_typebytelength, &temp_type_arr);
-                    for (unsigned int j = 0; j < actual_size; j++) (*FN)[i + j] = temp_type_arr[j];
-                    block_pointer += actual_typebytelength;
-                }
+            const unsigned int typebytelength = (2 * current_block_size + 7) / 8;
+            memset(temp_type_arr, 0, current_block_size);
+            // Safety check: ensure we don't read past the buffer
+            unsigned int safe_typebytelength = typebytelength;
+            if (typebytelength > 64) safe_typebytelength = 64; // Cap at reasonable max
+            convertByteArray2IntArray_fast_2b(current_block_size, block_pointer, safe_typebytelength, &temp_type_arr);
+            // Vectorized copy
+            #pragma omp simd
+            for (unsigned int j = 0; j < current_block_size; j++) {
+                (*FN)[i + j] = temp_type_arr[j];
             }
+            block_pointer += typebytelength;
         }
 
         free(temp_sign_arr);
@@ -870,21 +832,58 @@ int *szp_decompress_sort_positions(unsigned char *cmpBytes, size_t critical_coun
 
     size_t threadblocksize = 0;
     int block_size = blockSize;
+    
+    // Adaptive thread limiting for better scaling with high thread counts
+    size_t num_blocks_estimate = (critical_count + block_size - 1) / block_size;
+    int optimal_threads = 0;  // Will be set in parallel region
 
 #pragma omp parallel
-{
+    {
 #pragma omp single
         {
             nbThreads = omp_get_num_threads();
+            if (nbThreads == 0) nbThreads = 1;
+            
+            // For high thread counts with small problems, limit effective parallelism
+            if (nbThreads >= 16 && num_blocks_estimate < nbThreads * 8) {
+                optimal_threads = (num_blocks_estimate + 7) / 8;
+                if (optimal_threads < 1) optimal_threads = 1;
+            } else {
+                optimal_threads = nbThreads;
+            }
+            
             rcp = cmpBytes + nbThreads * sizeof(size_t);
             threadblocksize = critical_count / nbThreads;
         }
         int tid = omp_get_thread_num();
-        size_t lo = tid * threadblocksize;
-        size_t hi = (tid + 1) * threadblocksize;
-        if (tid == nbThreads - 1) {
-            hi = critical_count; // Ensure the last thread processes all remaining elements
+        
+        // Use block-based distribution for better cache locality and load balancing
+        size_t num_blocks = (critical_count + block_size - 1) / block_size;
+        size_t blocks_per_thread;
+        size_t start_block, end_block;
+        
+        if (nbThreads >= 16 && num_blocks < nbThreads * 8) {
+            // High thread count, small problem: use larger chunks per thread
+            blocks_per_thread = (num_blocks + optimal_threads - 1) / optimal_threads;
+            size_t effective_tid = tid % optimal_threads;
+            start_block = effective_tid * blocks_per_thread;
+            end_block = (effective_tid + 1) * blocks_per_thread;
+            if (end_block > num_blocks) end_block = num_blocks;
+            // Skip threads beyond optimal_threads to reduce memory bandwidth contention
+            if (tid >= optimal_threads) {
+                start_block = end_block;  // No work for this thread
+            }
+        } else {
+            // Normal case: static block distribution
+            blocks_per_thread = (num_blocks + nbThreads - 1) / nbThreads;
+            start_block = tid * blocks_per_thread;
+            end_block = (tid + 1) * blocks_per_thread;
+            if (end_block > num_blocks) end_block = num_blocks;
         }
+        
+        size_t lo = start_block * block_size;
+        size_t hi = end_block * block_size;
+        if (hi > critical_count) hi = critical_count;
         
         int *newData_perthread = newData + lo;
         size_t i = 0;
@@ -899,14 +898,32 @@ int *szp_decompress_sort_positions(unsigned char *cmpBytes, size_t critical_coun
         unsigned char *outputBytes_perthread = rcp + offsets[tid]; 
         unsigned char *block_pointer = outputBytes_perthread;
 
-        unsigned char *temp_sign_arr = (unsigned char *)malloc((block_size-1) * sizeof(unsigned char)); // 1 direct value and (block_size - 1) diff. values
+        // Use cache-aligned allocation for temp arrays
+        unsigned char *temp_sign_arr = NULL;
+        unsigned int *temp_predict_arr = NULL;
         
-        unsigned int *temp_predict_arr = (unsigned int *)malloc((block_size-1) * sizeof(unsigned int));
+        size_t temp_arr_size = (block_size > 1) ? (block_size - 1) : 1;
+        #if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L
+        if (posix_memalign((void**)&temp_sign_arr, 64, temp_arr_size * sizeof(unsigned char)) != 0) {
+            temp_sign_arr = (unsigned char *)malloc(temp_arr_size * sizeof(unsigned char));
+        }
+        if (posix_memalign((void**)&temp_predict_arr, 64, temp_arr_size * sizeof(unsigned int)) != 0) {
+            temp_predict_arr = (unsigned int *)malloc(temp_arr_size * sizeof(unsigned int));
+        }
+        #else
+        temp_sign_arr = (unsigned char *)malloc(temp_arr_size * sizeof(unsigned char));
+        temp_predict_arr = (unsigned int *)malloc(temp_arr_size * sizeof(unsigned int));
+        #endif
+        
         unsigned int signbytelength = 0; 
         unsigned int savedbitsbytelength = 0;
         
-        for (i = lo; i < hi; i = i + block_size)
+        // Process blocks assigned to this thread
+        for (size_t block_idx = start_block; block_idx < end_block; block_idx++)
         {
+            i = block_idx * block_size;
+            if (i >= critical_count) break;
+            
             size_t current_block_size = (i + block_size > hi) ? (hi - i) : block_size;
             if (current_block_size == 0) continue;
 
@@ -935,27 +952,23 @@ int *szp_decompress_sort_positions(unsigned char *cmpBytes, size_t critical_coun
 
                     savedbitsbytelength = Jiajun_extract_fixed_length_bits(block_pointer, current_block_size - 1, temp_predict_arr, bit_count);
                     block_pointer += savedbitsbytelength;
+                    // Add vectorization hint for inner loop
+                    #pragma omp simd
                     for (j = 0; j < current_block_size - 1; j++)
                     {
-                        if (temp_sign_arr[j] == 0)
-                        {
-                            diff = temp_predict_arr[j];
-                        }
-                        else
-                        {
-                            diff = 0 - temp_predict_arr[j];
-                        }
+                        diff = temp_sign_arr[j] ? -(int)temp_predict_arr[j] : (int)temp_predict_arr[j];
                         current = prior + diff;
                         prior = current;
-                        memcpy(newData_perthread, &current, sizeof(int));
-                        newData_perthread++;
+                        newData_perthread[j] = current;
                     }
+                    newData_perthread += current_block_size - 1;
                 }
             }
         }
         free(temp_sign_arr);
         free(temp_predict_arr);
     }
+    
     return newData;
 
 #else
