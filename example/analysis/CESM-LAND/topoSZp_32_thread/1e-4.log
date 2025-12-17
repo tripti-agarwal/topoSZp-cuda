@@ -2,80 +2,80 @@ Input directory: ../../CESM-LAND-MODELS/4/log_normalized/
 Output directory: ../../CESM-LAND-MODELS/4/log_normalized/topoSZp_32_thread/
 Dimensions: 192x288 (55296 elements)
 Error bound: 1E-4
-Block size: 16
+Block size: 8
 
 Found 176 .dat file(s) to process
 
 [1/176] Processing: ACTUAL_IMMOB_1_192_288.dat
 
-compression time=0.002709, total fastmode1 topology
-compression size = 61316, CR = 3.607280
+compression time=0.002739, total fastmode1 topology
+compression size = 65526, CR = 3.375515
 done
-decompression time=0.004238
+decompression time=0.004167
 done
 Min=0, Max=1, range=1
-Max absolute error = 0.0000011921
-Max relative error = 0.000001
-Max pw relative error = 0.000001
-PSNR = 138.840327, NRMSE= 1.1428352573338245074E-07
+Max absolute error = 0.0000016689
+Max relative error = 0.000002
+Max pw relative error = 0.000002
+PSNR = 138.810011, NRMSE= 1.1468310623259233168E-07
 acEff=1.000000
-compressionRatio = 3.607280
-  ✓ Compression and decompression successful (ratio: 3.60x)
+compressionRatio = 3.375515
+  ✓ Compression and decompression successful (ratio: 3.37x)
 
 [2/176] Processing: AGNPP_1_192_288.dat
 
-compression time=0.002783, total fastmode1 topology
-compression size = 62282, CR = 3.551331
+compression time=0.002728, total fastmode1 topology
+compression size = 66585, CR = 3.321829
 done
-decompression time=0.004529
+decompression time=0.004440
 done
 Min=0, Max=1, range=1
-Max absolute error = 0.0000406504
-Max relative error = 0.000041
-Max pw relative error = 0.000041
-PSNR = 129.799053, NRMSE= 3.2362892481597262754E-07
+Max absolute error = 0.0000219345
+Max relative error = 0.000022
+Max pw relative error = 0.000022
+PSNR = 133.325292, NRMSE= 2.1564302301546377572E-07
 acEff=1.000000
-compressionRatio = 3.551331
-  ✓ Compression and decompression successful (ratio: 3.55x)
+compressionRatio = 3.321829
+  ✓ Compression and decompression successful (ratio: 3.32x)
 
 [3/176] Processing: ANN_FAREA_BURNED_1_192_288.dat
 
-compression time=0.006961, total fastmode1 topology
-compression size = 63954, CR = 3.458486
+compression time=0.002976, total fastmode1 topology
+compression size = 69708, CR = 3.173007
 done
-decompression time=0.004592
+decompression time=0.004813
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0001193744
 Max relative error = 0.000119
 Max pw relative error = 0.000119
-PSNR = 93.437057, NRMSE= 2.1288602089757178038E-05
+PSNR = 93.434785, NRMSE= 2.1294172366948896391E-05
 acEff=1.000000
-compressionRatio = 3.458486
-  ✓ Compression and decompression successful (ratio: 3.45x)
+compressionRatio = 3.173007
+  ✓ Compression and decompression successful (ratio: 3.17x)
 
 [4/176] Processing: AR_1_192_288.dat
 
-compression time=0.002839, total fastmode1 topology
-compression size = 63719, CR = 3.471241
+compression time=0.003156, total fastmode1 topology
+compression size = 68245, CR = 3.241029
 done
-decompression time=0.004388
+decompression time=0.005001
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000989301
 Max relative error = 0.000099
 Max pw relative error = 0.000099
-PSNR = 122.553056, NRMSE= 7.4532755242597824736E-07
+PSNR = 121.212424, NRMSE= 8.6971868248987241785E-07
 acEff=1.000000
-compressionRatio = 3.471241
-  ✓ Compression and decompression successful (ratio: 3.47x)
+compressionRatio = 3.241029
+  ✓ Compression and decompression successful (ratio: 3.24x)
 
 [5/176] Processing: area_192_288.dat
 
-compression time=0.002261, total fastmode1 topology
-compression size = 60563, CR = 3.652131
+compression time=0.002780, total fastmode1 topology
+compression size = 64629, CR = 3.422364
 done
-decompression time=0.003919
+decompression time=0.003748
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000979677
@@ -83,15 +83,15 @@ Max relative error = 0.000098
 Max pw relative error = 0.000098
 PSNR = 89.973655, NRMSE= 3.171883659740940063E-05
 acEff=1.000000
-compressionRatio = 3.652131
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422365
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [6/176] Processing: areaatm_192_288.dat
 
-compression time=0.002594, total fastmode1 topology
-compression size = 60525, CR = 3.654424
+compression time=0.002539, total fastmode1 topology
+compression size = 64608, CR = 3.423477
 done
-decompression time=0.003573
+decompression time=0.003465
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000997186
@@ -99,15 +99,15 @@ Max relative error = 0.000100
 Max pw relative error = 0.000100
 PSNR = 88.684830, NRMSE= 3.6792431109524729679E-05
 acEff=1.000000
-compressionRatio = 3.654424
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.423477
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [7/176] Processing: areaupsc_192_288.dat
 
-compression time=0.002703, total fastmode1 topology
-compression size = 60563, CR = 3.652131
+compression time=0.002610, total fastmode1 topology
+compression size = 64629, CR = 3.422364
 done
-decompression time=0.003586
+decompression time=0.003574
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000979677
@@ -115,15 +115,15 @@ Max relative error = 0.000098
 Max pw relative error = 0.000098
 PSNR = 89.973655, NRMSE= 3.171883659740940063E-05
 acEff=1.000000
-compressionRatio = 3.652131
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422365
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [8/176] Processing: BCDEP_1_192_288.dat
 
-compression time=0.002737, total fastmode1 topology
-compression size = 60558, CR = 3.652432
+compression time=0.002629, total fastmode1 topology
+compression size = 64624, CR = 3.422629
 done
-decompression time=0.003272
+decompression time=0.003680
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000000000
@@ -131,127 +131,127 @@ Max relative error = 0.000000
 Max pw relative error = 0.000000
 PSNR = inf, NRMSE= 0
 acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [9/176] Processing: BGNPP_1_192_288.dat
 
-compression time=0.002595, total fastmode1 topology
-compression size = 62310, CR = 3.549735
+compression time=0.002844, total fastmode1 topology
+compression size = 66624, CR = 3.319885
 done
-decompression time=0.004338
+decompression time=0.004047
 done
 Min=0, Max=1, range=1
-Max absolute error = 0.0000331402
-Max relative error = 0.000033
-Max pw relative error = 0.000033
-PSNR = 128.455650, NRMSE= 3.7776131773651645788E-07
+Max absolute error = 0.0000295639
+Max relative error = 0.000030
+Max pw relative error = 0.000030
+PSNR = 132.829425, NRMSE= 2.2831201481584539039E-07
 acEff=1.000000
-compressionRatio = 3.549735
-  ✓ Compression and decompression successful (ratio: 3.54x)
+compressionRatio = 3.319885
+  ✓ Compression and decompression successful (ratio: 3.31x)
 
 [10/176] Processing: BTRAN_1_192_288.dat
 
-compression time=0.002486, total fastmode1 topology
-compression size = 68195, CR = 3.243405
+compression time=0.002963, total fastmode1 topology
+compression size = 73238, CR = 3.020072
 done
-decompression time=0.004375
+decompression time=0.004648
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0001783790
 Max relative error = 0.000178
 Max pw relative error = 0.000178
-PSNR = 91.236504, NRMSE= 2.7426779350651164606E-05
+PSNR = 91.236728, NRMSE= 2.7426070099129759453E-05
 acEff=1.000000
-compressionRatio = 3.243405
-  ✓ Compression and decompression successful (ratio: 3.24x)
+compressionRatio = 3.020072
+  ✓ Compression and decompression successful (ratio: 3.02x)
 
 [11/176] Processing: BUILDHEAT_1_192_288.dat
 
-compression time=0.002455, total fastmode1 topology
-compression size = 63815, CR = 3.466019
+compression time=0.002654, total fastmode1 topology
+compression size = 67928, CR = 3.256154
 done
-decompression time=0.004126
+decompression time=0.005389
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0001007654
 Max relative error = 0.000101
 Max pw relative error = 0.000101
-PSNR = 89.167372, NRMSE= 3.4804179430061433327E-05
+PSNR = 89.167377, NRMSE= 3.4804159438901962232E-05
 acEff=1.000000
-compressionRatio = 3.466019
-  ✓ Compression and decompression successful (ratio: 3.46x)
+compressionRatio = 3.256154
+  ✓ Compression and decompression successful (ratio: 3.25x)
 
 [12/176] Processing: COL_CTRUNC_1_192_288.dat
 
-compression time=0.002620, total fastmode1 topology
-compression size = 61645, CR = 3.588028
+compression time=0.002754, total fastmode1 topology
+compression size = 65836, CR = 3.359621
 done
-decompression time=0.003949
+decompression time=0.004258
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000999986
 Max relative error = 0.000100
 Max pw relative error = 0.000100
-PSNR = 112.893701, NRMSE= 2.266287144876023248E-06
+PSNR = 112.762943, NRMSE= 2.3006621437449780244E-06
 acEff=1.000000
-compressionRatio = 3.588028
-  ✓ Compression and decompression successful (ratio: 3.58x)
+compressionRatio = 3.359621
+  ✓ Compression and decompression successful (ratio: 3.35x)
 
 [13/176] Processing: COL_FIRE_CLOSS_1_192_288.dat
 
-compression time=0.002581, total fastmode1 topology
-compression size = 61070, CR = 3.621811
+compression time=0.002413, total fastmode1 topology
+compression size = 65266, CR = 3.388962
 done
-decompression time=0.004071
+decompression time=0.004233
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000999871
 Max relative error = 0.000100
 Max pw relative error = 0.000100
-PSNR = 127.237510, NRMSE= 4.3463478300408074751E-07
+PSNR = 127.215675, NRMSE= 4.3572877462736241458E-07
 acEff=1.000000
-compressionRatio = 3.621811
-  ✓ Compression and decompression successful (ratio: 3.62x)
+compressionRatio = 3.388962
+  ✓ Compression and decompression successful (ratio: 3.38x)
 
 [14/176] Processing: COL_FIRE_NLOSS_1_192_288.dat
 
-compression time=0.002770, total fastmode1 topology
-compression size = 60724, CR = 3.642448
+compression time=0.002513, total fastmode1 topology
+compression size = 64788, CR = 3.413965
 done
-decompression time=0.005085
+decompression time=0.004380
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000010000
 Max relative error = 0.000001
 Max pw relative error = 0.000001
-PSNR = 151.858168, NRMSE= 2.5532397639163727308E-08
+PSNR = 151.866737, NRMSE= 2.5507221503954486638E-08
 acEff=1.000000
-compressionRatio = 3.642448
-  ✓ Compression and decompression successful (ratio: 3.64x)
+compressionRatio = 3.413966
+  ✓ Compression and decompression successful (ratio: 3.41x)
 
 [15/176] Processing: COL_NTRUNC_1_192_288.dat
 
-compression time=0.002664, total fastmode1 topology
-compression size = 61601, CR = 3.590591
+compression time=0.002623, total fastmode1 topology
+compression size = 65634, CR = 3.369961
 done
-decompression time=0.003960
+decompression time=0.004265
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0001106160
 Max relative error = 0.000111
 Max pw relative error = 0.000111
-PSNR = 106.019008, NRMSE= 5.0009163071711665324E-06
+PSNR = 106.018686, NRMSE= 5.0011018176377526942E-06
 acEff=1.000000
-compressionRatio = 3.590591
-  ✓ Compression and decompression successful (ratio: 3.59x)
+compressionRatio = 3.369961
+  ✓ Compression and decompression successful (ratio: 3.36x)
 
 [16/176] Processing: CPOOL_1_192_288.dat
 
-compression time=0.002581, total fastmode1 topology
-compression size = 60558, CR = 3.652432
+compression time=0.002318, total fastmode1 topology
+compression size = 64624, CR = 3.422629
 done
-decompression time=0.003517
+decompression time=0.003460
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000000000
@@ -259,31 +259,31 @@ Max relative error = 0.000000
 Max pw relative error = 0.000000
 PSNR = inf, NRMSE= 0
 acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [17/176] Processing: CWDC_1_192_288.dat
 
-compression time=0.004442, total fastmode1 topology
-compression size = 70315, CR = 3.145616
+compression time=0.004742, total fastmode1 topology
+compression size = 76048, CR = 2.908479
 done
-decompression time=0.004188
+decompression time=0.004351
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0001869053
 Max relative error = 0.000187
 Max pw relative error = 0.000187
-PSNR = 91.774839, NRMSE= 2.5778523976546951531E-05
+PSNR = 91.774859, NRMSE= 2.577846529736575092E-05
 acEff=1.000000
-compressionRatio = 3.145616
-  ✓ Compression and decompression successful (ratio: 3.14x)
+compressionRatio = 2.908479
+  ✓ Compression and decompression successful (ratio: 2.90x)
 
 [18/176] Processing: CWDC_HR_1_192_288.dat
 
-compression time=0.002276, total fastmode1 topology
-compression size = 60558, CR = 3.652432
+compression time=0.002628, total fastmode1 topology
+compression size = 64624, CR = 3.422629
 done
-decompression time=0.003501
+decompression time=0.003512
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000000000
@@ -291,159 +291,159 @@ Max relative error = 0.000000
 Max pw relative error = 0.000000
 PSNR = inf, NRMSE= 0
 acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [19/176] Processing: CWDC_LOSS_1_192_288.dat
 
-compression time=0.002887, total fastmode1 topology
-compression size = 62137, CR = 3.559618
+compression time=0.002885, total fastmode1 topology
+compression size = 66447, CR = 3.328728
 done
-decompression time=0.004137
+decompression time=0.004428
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000999770
 Max relative error = 0.000100
 Max pw relative error = 0.000100
-PSNR = 126.588847, NRMSE= 4.6833612140718449509E-07
+PSNR = 126.748246, NRMSE= 4.5981985002160646969E-07
 acEff=1.000000
-compressionRatio = 3.559618
-  ✓ Compression and decompression successful (ratio: 3.55x)
+compressionRatio = 3.328728
+  ✓ Compression and decompression successful (ratio: 3.32x)
 
 [20/176] Processing: CWDN_1_192_288.dat
 
-compression time=0.003562, total fastmode1 topology
-compression size = 68918, CR = 3.209379
+compression time=0.003541, total fastmode1 topology
+compression size = 74367, CR = 2.974222
 done
-decompression time=0.004421
+decompression time=0.004619
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0001778319
 Max relative error = 0.000178
 Max pw relative error = 0.000178
-PSNR = 91.931156, NRMSE= 2.5318747709686718092E-05
+PSNR = 91.931126, NRMSE= 2.5318834492147204929E-05
 acEff=1.000000
-compressionRatio = 3.209379
-  ✓ Compression and decompression successful (ratio: 3.20x)
+compressionRatio = 2.974222
+  ✓ Compression and decompression successful (ratio: 2.97x)
 
 [21/176] Processing: DEADCROOTC_1_192_288.dat
 
-compression time=0.004362, total fastmode1 topology
-compression size = 70293, CR = 3.146601
+compression time=0.004672, total fastmode1 topology
+compression size = 76025, CR = 2.909359
 done
-decompression time=0.004255
+decompression time=0.004623
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0001450256
 Max relative error = 0.000145
 Max pw relative error = 0.000145
-PSNR = 91.847900, NRMSE= 2.5562599351824095008E-05
+PSNR = 91.847885, NRMSE= 2.5562642774152927774E-05
 acEff=1.000000
-compressionRatio = 3.146601
-  ✓ Compression and decompression successful (ratio: 3.14x)
+compressionRatio = 2.909359
+  ✓ Compression and decompression successful (ratio: 2.90x)
 
 [22/176] Processing: DEADCROOTN_1_192_288.dat
 
-compression time=0.003565, total fastmode1 topology
-compression size = 68970, CR = 3.206959
+compression time=0.003614, total fastmode1 topology
+compression size = 74401, CR = 2.972863
 done
-decompression time=0.004818
+decompression time=0.004422
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0001450647
 Max relative error = 0.000145
 Max pw relative error = 0.000145
-PSNR = 91.876743, NRMSE= 2.5477853638959602146E-05
+PSNR = 91.876757, NRMSE= 2.5477812722448659399E-05
 acEff=1.000000
-compressionRatio = 3.206960
-  ✓ Compression and decompression successful (ratio: 3.20x)
+compressionRatio = 2.972863
+  ✓ Compression and decompression successful (ratio: 2.97x)
 
 [23/176] Processing: DEADSTEMC_1_192_288.dat
 
-compression time=0.004613, total fastmode1 topology
-compression size = 70510, CR = 3.136917
+compression time=0.004354, total fastmode1 topology
+compression size = 76192, CR = 2.902982
 done
-decompression time=0.004268
+decompression time=0.004288
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0001286641
 Max relative error = 0.000129
 Max pw relative error = 0.000129
-PSNR = 91.785321, NRMSE= 2.5747433322902502306E-05
+PSNR = 91.785333, NRMSE= 2.5747398787538990897E-05
 acEff=1.000000
-compressionRatio = 3.136917
-  ✓ Compression and decompression successful (ratio: 3.13x)
+compressionRatio = 2.902982
+  ✓ Compression and decompression successful (ratio: 2.90x)
 
 [24/176] Processing: DEADSTEMN_1_192_288.dat
 
-compression time=0.003880, total fastmode1 topology
-compression size = 69363, CR = 3.188789
+compression time=0.003855, total fastmode1 topology
+compression size = 74945, CR = 2.951284
 done
-decompression time=0.004434
+decompression time=0.004338
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0001809348
 Max relative error = 0.000181
 Max pw relative error = 0.000181
-PSNR = 91.824489, NRMSE= 2.563159030822082524E-05
+PSNR = 91.824489, NRMSE= 2.5631588820297559334E-05
 acEff=1.000000
-compressionRatio = 3.188789
-  ✓ Compression and decompression successful (ratio: 3.18x)
+compressionRatio = 2.951284
+  ✓ Compression and decompression successful (ratio: 2.95x)
 
 [25/176] Processing: DENIT_1_192_288.dat
 
-compression time=0.002532, total fastmode1 topology
-compression size = 60789, CR = 3.638553
+compression time=0.002403, total fastmode1 topology
+compression size = 64854, CR = 3.410491
 done
-decompression time=0.003917
+decompression time=0.004375
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000010000
 Max relative error = 0.000001
 Max pw relative error = 0.000001
-PSNR = 145.026714, NRMSE= 5.6061443720941896033E-08
+PSNR = 145.027425, NRMSE= 5.6056859347766762191E-08
 acEff=1.000000
-compressionRatio = 3.638553
-  ✓ Compression and decompression successful (ratio: 3.63x)
+compressionRatio = 3.410491
+  ✓ Compression and decompression successful (ratio: 3.41x)
 
 [26/176] Processing: DISPVEGC_1_192_288.dat
 
-compression time=0.004614, total fastmode1 topology
-compression size = 70761, CR = 3.125790
+compression time=0.004907, total fastmode1 topology
+compression size = 76700, CR = 2.883755
 done
-decompression time=0.004367
+decompression time=0.004465
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0001822412
 Max relative error = 0.000182
 Max pw relative error = 0.000182
-PSNR = 91.383103, NRMSE= 2.6967759231619022249E-05
+PSNR = 91.383109, NRMSE= 2.6967739608349409406E-05
 acEff=1.000000
-compressionRatio = 3.125790
-  ✓ Compression and decompression successful (ratio: 3.12x)
+compressionRatio = 2.883755
+  ✓ Compression and decompression successful (ratio: 2.88x)
 
 [27/176] Processing: DISPVEGN_1_192_288.dat
 
-compression time=0.003983, total fastmode1 topology
-compression size = 69837, CR = 3.167146
+compression time=0.003784, total fastmode1 topology
+compression size = 75778, CR = 2.918842
 done
-decompression time=0.004364
+decompression time=0.004200
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0001570918
 Max relative error = 0.000157
 Max pw relative error = 0.000157
-PSNR = 91.444432, NRMSE= 2.677801623002523131E-05
+PSNR = 91.444444, NRMSE= 2.6777978603635268449E-05
 acEff=1.000000
-compressionRatio = 3.167146
-  ✓ Compression and decompression successful (ratio: 3.16x)
+compressionRatio = 2.918842
+  ✓ Compression and decompression successful (ratio: 2.91x)
 
 [28/176] Processing: DSTDEP_1_192_288.dat
 
-compression time=0.002819, total fastmode1 topology
-compression size = 60558, CR = 3.652432
+compression time=0.002415, total fastmode1 topology
+compression size = 64624, CR = 3.422629
 done
-decompression time=0.003736
+decompression time=0.003495
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000000000
@@ -451,31 +451,31 @@ Max relative error = 0.000000
 Max pw relative error = 0.000000
 PSNR = inf, NRMSE= 0
 acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [29/176] Processing: DSTFLXT_1_192_288.dat
 
-compression time=0.002492, total fastmode1 topology
-compression size = 60774, CR = 3.639451
+compression time=0.002777, total fastmode1 topology
+compression size = 64836, CR = 3.411438
 done
-decompression time=0.003569
+decompression time=0.003299
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000010014
 Max relative error = 0.000001
 Max pw relative error = 0.000001
-PSNR = 149.058582, NRMSE= 3.5242841600860733501E-08
+PSNR = 149.135643, NRMSE= 3.4931550468159550462E-08
 acEff=1.000000
-compressionRatio = 3.639451
-  ✓ Compression and decompression successful (ratio: 3.63x)
+compressionRatio = 3.411438
+  ✓ Compression and decompression successful (ratio: 3.41x)
 
 [30/176] Processing: DWT_CLOSS_1_192_288.dat
 
-compression time=0.002483, total fastmode1 topology
-compression size = 60558, CR = 3.652432
+compression time=0.002225, total fastmode1 topology
+compression size = 64624, CR = 3.422629
 done
-decompression time=0.003732
+decompression time=0.003776
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000000000
@@ -483,15 +483,15 @@ Max relative error = 0.000000
 Max pw relative error = 0.000000
 PSNR = inf, NRMSE= 0
 acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [31/176] Processing: DWT_CONV_CFLUX_1_192_288.dat
 
-compression time=0.002543, total fastmode1 topology
-compression size = 60558, CR = 3.652432
+compression time=0.002405, total fastmode1 topology
+compression size = 64624, CR = 3.422629
 done
-decompression time=0.003596
+decompression time=0.003925
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000000000
@@ -499,15 +499,15 @@ Max relative error = 0.000000
 Max pw relative error = 0.000000
 PSNR = inf, NRMSE= 0
 acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [32/176] Processing: DWT_CONV_NFLUX_1_192_288.dat
 
-compression time=0.002381, total fastmode1 topology
-compression size = 60558, CR = 3.652432
+compression time=0.002998, total fastmode1 topology
+compression size = 64624, CR = 3.422629
 done
-decompression time=0.003461
+decompression time=0.003690
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000000000
@@ -515,15 +515,15 @@ Max relative error = 0.000000
 Max pw relative error = 0.000000
 PSNR = inf, NRMSE= 0
 acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [33/176] Processing: DWT_NLOSS_1_192_288.dat
 
-compression time=0.002963, total fastmode1 topology
-compression size = 60558, CR = 3.652432
+compression time=0.002274, total fastmode1 topology
+compression size = 64624, CR = 3.422629
 done
-decompression time=0.003447
+decompression time=0.003541
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000000000
@@ -531,15 +531,15 @@ Max relative error = 0.000000
 Max pw relative error = 0.000000
 PSNR = inf, NRMSE= 0
 acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [34/176] Processing: DWT_PROD100C_GAIN_1_192_288.dat
 
-compression time=0.002425, total fastmode1 topology
-compression size = 60558, CR = 3.652432
+compression time=0.002299, total fastmode1 topology
+compression size = 64624, CR = 3.422629
 done
-decompression time=0.003694
+decompression time=0.003563
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000000000
@@ -547,15 +547,15 @@ Max relative error = 0.000000
 Max pw relative error = 0.000000
 PSNR = inf, NRMSE= 0
 acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [35/176] Processing: DWT_PROD100N_GAIN_1_192_288.dat
 
-compression time=0.002698, total fastmode1 topology
-compression size = 60558, CR = 3.652432
+compression time=0.002637, total fastmode1 topology
+compression size = 64624, CR = 3.422629
 done
-decompression time=0.003385
+decompression time=0.003579
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000000000
@@ -563,15 +563,15 @@ Max relative error = 0.000000
 Max pw relative error = 0.000000
 PSNR = inf, NRMSE= 0
 acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [36/176] Processing: DWT_PROD10C_GAIN_1_192_288.dat
 
-compression time=0.002640, total fastmode1 topology
-compression size = 60558, CR = 3.652432
+compression time=0.002537, total fastmode1 topology
+compression size = 64624, CR = 3.422629
 done
-decompression time=0.003596
+decompression time=0.003573
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000000000
@@ -579,15 +579,15 @@ Max relative error = 0.000000
 Max pw relative error = 0.000000
 PSNR = inf, NRMSE= 0
 acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [37/176] Processing: DWT_PROD10N_GAIN_1_192_288.dat
 
-compression time=0.002657, total fastmode1 topology
-compression size = 60558, CR = 3.652432
+compression time=0.002423, total fastmode1 topology
+compression size = 64624, CR = 3.422629
 done
-decompression time=0.003510
+decompression time=0.003516
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000000000
@@ -595,15 +595,15 @@ Max relative error = 0.000000
 Max pw relative error = 0.000000
 PSNR = inf, NRMSE= 0
 acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [38/176] Processing: DWT_SEEDC_TO_DEADSTEM_1_192_288.dat
 
-compression time=0.002505, total fastmode1 topology
-compression size = 60558, CR = 3.652432
+compression time=0.002642, total fastmode1 topology
+compression size = 64624, CR = 3.422629
 done
-decompression time=0.003383
+decompression time=0.003555
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000000000
@@ -611,15 +611,15 @@ Max relative error = 0.000000
 Max pw relative error = 0.000000
 PSNR = inf, NRMSE= 0
 acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [39/176] Processing: DWT_SEEDC_TO_LEAF_1_192_288.dat
 
-compression time=0.002436, total fastmode1 topology
-compression size = 60558, CR = 3.652432
+compression time=0.002461, total fastmode1 topology
+compression size = 64624, CR = 3.422629
 done
-decompression time=0.003522
+decompression time=0.003518
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000000000
@@ -627,2109 +627,13 @@ Max relative error = 0.000000
 Max pw relative error = 0.000000
 PSNR = inf, NRMSE= 0
 acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [40/176] Processing: DWT_SEEDN_TO_DEADSTEM_1_192_288.dat
 
-compression time=0.002644, total fastmode1 topology
-compression size = 60558, CR = 3.652432
-done
-decompression time=0.003341
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000000000
-Max relative error = 0.000000
-Max pw relative error = 0.000000
-PSNR = inf, NRMSE= 0
-acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
-
-[41/176] Processing: DWT_SEEDN_TO_LEAF_1_192_288.dat
-
-compression time=0.002579, total fastmode1 topology
-compression size = 60558, CR = 3.652432
-done
-decompression time=0.003967
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000000000
-Max relative error = 0.000000
-Max pw relative error = 0.000000
-PSNR = inf, NRMSE= 0
-acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
-
-[42/176] Processing: EFLX_DYNBAL_1_192_288.dat
-
-compression time=0.002865, total fastmode1 topology
-compression size = 60558, CR = 3.652432
-done
-decompression time=0.003830
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000000000
-Max relative error = 0.000000
-Max pw relative error = 0.000000
-PSNR = inf, NRMSE= 0
-acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
-
-[43/176] Processing: EFLX_LH_TOT_R_1_192_288.dat
-
-compression time=0.003388, total fastmode1 topology
-compression size = 66968, CR = 3.302831
-done
-decompression time=0.004634
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001572035
-Max relative error = 0.000157
-Max pw relative error = 0.000157
-PSNR = 90.546315, NRMSE= 2.9695063016294154397E-05
-acEff=1.000000
-compressionRatio = 3.302831
-  ✓ Compression and decompression successful (ratio: 3.30x)
-
-[44/176] Processing: EFLX_LH_TOT_U_1_192_288.dat
-
-compression time=0.003494, total fastmode1 topology
-compression size = 58208, CR = 3.799890
-done
-decompression time=0.004287
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001304001
-Max relative error = 0.000130
-Max pw relative error = 0.000130
-PSNR = 95.799608, NRMSE= 1.6218832004956110557E-05
-acEff=1.000000
-compressionRatio = 3.799890
-  ✓ Compression and decompression successful (ratio: 3.79x)
-
-[45/176] Processing: ELAI_1_192_288.dat
-
-compression time=0.003183, total fastmode1 topology
-compression size = 69032, CR = 3.204079
-done
-decompression time=0.004338
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001725461
-Max relative error = 0.000173
-Max pw relative error = 0.000173
-PSNR = 91.689633, NRMSE= 2.6032647931476955694E-05
-acEff=1.000000
-compressionRatio = 3.204079
-  ✓ Compression and decompression successful (ratio: 3.20x)
-
-[46/176] Processing: ER_1_192_288.dat
-
-compression time=0.002729, total fastmode1 topology
-compression size = 63866, CR = 3.463251
-done
-decompression time=0.004337
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000587702
-Max relative error = 0.000059
-Max pw relative error = 0.000059
-PSNR = 123.212631, NRMSE= 6.9082563898454986314E-07
-acEff=1.000000
-compressionRatio = 3.463251
-  ✓ Compression and decompression successful (ratio: 3.46x)
-
-[47/176] Processing: ERRH2O_1_192_288.dat
-
-compression time=0.002536, total fastmode1 topology
-compression size = 60558, CR = 3.652432
-done
-decompression time=0.003529
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000000000
-Max relative error = 0.000000
-Max pw relative error = 0.000000
-PSNR = inf, NRMSE= 0
-acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
-
-[48/176] Processing: ERRSEB_1_192_288.dat
-
-compression time=0.002598, total fastmode1 topology
-compression size = 60558, CR = 3.652432
-done
-decompression time=0.004014
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000000000
-Max relative error = 0.000000
-Max pw relative error = 0.000000
-PSNR = inf, NRMSE= 0
-acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
-
-[49/176] Processing: ERRSOI_1_192_288.dat
-
-compression time=0.002703, total fastmode1 topology
-compression size = 60558, CR = 3.652432
-done
-decompression time=0.003521
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000000000
-Max relative error = 0.000000
-Max pw relative error = 0.000000
-PSNR = inf, NRMSE= 0
-acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
-
-[50/176] Processing: ERRSOL_1_192_288.dat
-
-compression time=0.003305, total fastmode1 topology
-compression size = 60558, CR = 3.652432
-done
-decompression time=0.003410
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000000000
-Max relative error = 0.000000
-Max pw relative error = 0.000000
-PSNR = inf, NRMSE= 0
-acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
-
-[51/176] Processing: ESAI_1_192_288.dat
-
-compression time=0.003637, total fastmode1 topology
-compression size = 69792, CR = 3.169188
-done
-decompression time=0.004471
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001709717
-Max relative error = 0.000171
-Max pw relative error = 0.000171
-PSNR = 91.164373, NRMSE= 2.7655488657197570008E-05
-acEff=1.000000
-compressionRatio = 3.169188
-  ✓ Compression and decompression successful (ratio: 3.16x)
-
-[52/176] Processing: FCEV_1_192_288.dat
-
-compression time=0.003419, total fastmode1 topology
-compression size = 68598, CR = 3.224350
-done
-decompression time=0.004526
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001596641
-Max relative error = 0.000160
-Max pw relative error = 0.000160
-PSNR = 91.259177, NRMSE= 2.7355279805040914198E-05
-acEff=1.000000
-compressionRatio = 3.224351
-  ✓ Compression and decompression successful (ratio: 3.22x)
-
-[53/176] Processing: FCOV_1_192_288.dat
-
-compression time=0.002986, total fastmode1 topology
-compression size = 68576, CR = 3.225385
-done
-decompression time=0.004680
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001729288
-Max relative error = 0.000173
-Max pw relative error = 0.000173
-PSNR = 90.997097, NRMSE= 2.8193251622908713011E-05
-acEff=1.000000
-compressionRatio = 3.225385
-  ✓ Compression and decompression successful (ratio: 3.22x)
-
-[54/176] Processing: FCTR_1_192_288.dat
-
-compression time=0.003653, total fastmode1 topology
-compression size = 67832, CR = 3.260762
-done
-decompression time=0.004463
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001747496
-Max relative error = 0.000175
-Max pw relative error = 0.000175
-PSNR = 92.263775, NRMSE= 2.4367514527581591373E-05
-acEff=1.000000
-compressionRatio = 3.260762
-  ✓ Compression and decompression successful (ratio: 3.26x)
-
-[55/176] Processing: FGEV_1_192_288.dat
-
-compression time=0.003509, total fastmode1 topology
-compression size = 74257, CR = 2.978628
-done
-decompression time=0.004927
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001726933
-Max relative error = 0.000173
-Max pw relative error = 0.000173
-PSNR = 88.949611, NRMSE= 3.5687773934251489593E-05
-acEff=1.000000
-compressionRatio = 2.978628
-  ✓ Compression and decompression successful (ratio: 2.97x)
-
-[56/176] Processing: FGR_1_192_288.dat
-
-compression time=0.002698, total fastmode1 topology
-compression size = 71983, CR = 3.072726
-done
-decompression time=0.004909
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001617558
-Max relative error = 0.000162
-Max pw relative error = 0.000162
-PSNR = 89.044341, NRMSE= 3.530067150803331235E-05
-acEff=1.000000
-compressionRatio = 3.072726
-  ✓ Compression and decompression successful (ratio: 3.07x)
-
-[57/176] Processing: FGR12_1_192_288.dat
-
-compression time=0.003064, total fastmode1 topology
-compression size = 72362, CR = 3.056632
-done
-decompression time=0.005062
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001938678
-Max relative error = 0.000194
-Max pw relative error = 0.000194
-PSNR = 89.033382, NRMSE= 3.5345238022197080071E-05
-acEff=1.000000
-compressionRatio = 3.056632
-  ✓ Compression and decompression successful (ratio: 3.05x)
-
-[58/176] Processing: FGR_R_1_192_288.dat
-
-compression time=0.002965, total fastmode1 topology
-compression size = 66438, CR = 3.329179
-done
-decompression time=0.004684
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001621991
-Max relative error = 0.000162
-Max pw relative error = 0.000162
-PSNR = 90.582058, NRMSE= 2.9573118123156295808E-05
-acEff=1.000000
-compressionRatio = 3.329179
-  ✓ Compression and decompression successful (ratio: 3.32x)
-
-[59/176] Processing: FGR_U_1_192_288.dat
-
-compression time=0.002771, total fastmode1 topology
-compression size = 58288, CR = 3.794675
-done
-decompression time=0.004335
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001295991
-Max relative error = 0.000130
-Max pw relative error = 0.000130
-PSNR = 95.764494, NRMSE= 1.6284533014969318471E-05
-acEff=1.000000
-compressionRatio = 3.794675
-  ✓ Compression and decompression successful (ratio: 3.79x)
-
-[60/176] Processing: FIRA_1_192_288.dat
-
-compression time=0.003294, total fastmode1 topology
-compression size = 72253, CR = 3.061243
-done
-decompression time=0.004593
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001757368
-Max relative error = 0.000176
-Max pw relative error = 0.000176
-PSNR = 88.964005, NRMSE= 3.5628681610824204466E-05
-acEff=1.000000
-compressionRatio = 3.061243
-  ✓ Compression and decompression successful (ratio: 3.06x)
-
-[61/176] Processing: FIRA_R_1_192_288.dat
-
-compression time=0.003851, total fastmode1 topology
-compression size = 66461, CR = 3.328027
-done
-decompression time=0.004252
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001724958
-Max relative error = 0.000172
-Max pw relative error = 0.000172
-PSNR = 90.497101, NRMSE= 2.9863790576306136306E-05
-acEff=1.000000
-compressionRatio = 3.328027
-  ✓ Compression and decompression successful (ratio: 3.32x)
-
-[62/176] Processing: FIRA_U_1_192_288.dat
-
-compression time=0.003161, total fastmode1 topology
-compression size = 58083, CR = 3.808068
-done
-decompression time=0.004119
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001276620
-Max relative error = 0.000128
-Max pw relative error = 0.000128
-PSNR = 95.746802, NRMSE= 1.6317735845209753275E-05
-acEff=1.000000
-compressionRatio = 3.808068
-  ✓ Compression and decompression successful (ratio: 3.80x)
-
-[63/176] Processing: FIRE_1_192_288.dat
-
-compression time=0.003278, total fastmode1 topology
-compression size = 70052, CR = 3.157426
-done
-decompression time=0.004618
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001775958
-Max relative error = 0.000178
-Max pw relative error = 0.000178
-PSNR = 88.910166, NRMSE= 3.5850210543638618853E-05
-acEff=1.000000
-compressionRatio = 3.157426
-  ✓ Compression and decompression successful (ratio: 3.15x)
-
-[64/176] Processing: FIRESEASONL_1_192_288.dat
-
-compression time=0.003913, total fastmode1 topology
-compression size = 68103, CR = 3.247787
-done
-decompression time=0.004368
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001871251
-Max relative error = 0.000187
-Max pw relative error = 0.000187
-PSNR = 92.348761, NRMSE= 2.4130256406550394877E-05
-acEff=1.000000
-compressionRatio = 3.247786
-  ✓ Compression and decompression successful (ratio: 3.24x)
-
-[65/176] Processing: FLDS_1_192_288.dat
-
-compression time=0.003277, total fastmode1 topology
-compression size = 69777, CR = 3.169870
-done
-decompression time=0.004441
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001805760
-Max relative error = 0.000181
-Max pw relative error = 0.000181
-PSNR = 89.024857, NRMSE= 3.5379942794550750008E-05
-acEff=1.000000
-compressionRatio = 3.169870
-  ✓ Compression and decompression successful (ratio: 3.16x)
-
-[66/176] Processing: FLUXFM2A_1_192_288.dat
-
-compression time=0.002470, total fastmode1 topology
-compression size = 60558, CR = 3.652432
-done
-decompression time=0.003786
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000000000
-Max relative error = 0.000000
-Max pw relative error = 0.000000
-PSNR = inf, NRMSE= 0
-acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
-
-[67/176] Processing: FLUXFMLND_1_192_288.dat
-
-compression time=0.002893, total fastmode1 topology
-compression size = 60558, CR = 3.652432
-done
-decompression time=0.003428
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000000000
-Max relative error = 0.000000
-Max pw relative error = 0.000000
-PSNR = inf, NRMSE= 0
-acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
-
-[68/176] Processing: FPG_1_192_288.dat
-
-compression time=0.002341, total fastmode1 topology
-compression size = 63324, CR = 3.492894
-done
-decompression time=0.004497
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001647002
-Max relative error = 0.000165
-Max pw relative error = 0.000165
-PSNR = 88.964369, NRMSE= 3.5627187911010708922E-05
-acEff=1.000000
-compressionRatio = 3.492894
-  ✓ Compression and decompression successful (ratio: 3.49x)
-
-[69/176] Processing: FPI_1_192_288.dat
-
-compression time=0.003446, total fastmode1 topology
-compression size = 67014, CR = 3.300564
-done
-decompression time=0.005107
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001870878
-Max relative error = 0.000187
-Max pw relative error = 0.000187
-PSNR = 90.559508, NRMSE= 2.9649994878322096279E-05
-acEff=1.000000
-compressionRatio = 3.300564
-  ✓ Compression and decompression successful (ratio: 3.30x)
-
-[70/176] Processing: FPSN_1_192_288.dat
-
-compression time=0.003788, total fastmode1 topology
-compression size = 67100, CR = 3.296334
-done
-decompression time=0.004703
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001807101
-Max relative error = 0.000181
-Max pw relative error = 0.000181
-PSNR = 92.165675, NRMSE= 2.4644285347608134917E-05
-acEff=1.000000
-compressionRatio = 3.296334
-  ✓ Compression and decompression successful (ratio: 3.29x)
-
-[71/176] Processing: FROOTC_1_192_288.dat
-
-compression time=0.004082, total fastmode1 topology
-compression size = 70135, CR = 3.153689
-done
-decompression time=0.004481
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001732036
-Max relative error = 0.000173
-Max pw relative error = 0.000173
-PSNR = 91.588978, NRMSE= 2.6336078096860765355E-05
-acEff=1.000000
-compressionRatio = 3.153689
-  ✓ Compression and decompression successful (ratio: 3.15x)
-
-[72/176] Processing: FROOTC_ALLOC_1_192_288.dat
-
-compression time=0.002521, total fastmode1 topology
-compression size = 62264, CR = 3.552358
-done
-decompression time=0.004225
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000135899
-Max relative error = 0.000014
-Max pw relative error = 0.000014
-PSNR = 133.679621, NRMSE= 2.0702316567204994613E-07
-acEff=1.000000
-compressionRatio = 3.552358
-  ✓ Compression and decompression successful (ratio: 3.55x)
-
-[73/176] Processing: FROOTC_LOSS_1_192_288.dat
-
-compression time=0.002818, total fastmode1 topology
-compression size = 63012, CR = 3.510189
-done
-decompression time=0.004454
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000314713
-Max relative error = 0.000031
-Max pw relative error = 0.000031
-PSNR = 130.560468, NRMSE= 2.9646718090852388129E-07
-acEff=1.000000
-compressionRatio = 3.510189
-  ✓ Compression and decompression successful (ratio: 3.51x)
-
-[74/176] Processing: FROOTN_1_192_288.dat
-
-compression time=0.003238, total fastmode1 topology
-compression size = 69194, CR = 3.196578
-done
-decompression time=0.004068
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001831278
-Max relative error = 0.000183
-Max pw relative error = 0.000183
-PSNR = 91.689956, NRMSE= 2.603167949545815926E-05
-acEff=1.000000
-compressionRatio = 3.196578
-  ✓ Compression and decompression successful (ratio: 3.19x)
-
-[75/176] Processing: FSA_1_192_288.dat
-
-compression time=0.003334, total fastmode1 topology
-compression size = 71606, CR = 3.088903
-done
-decompression time=0.004567
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001742691
-Max relative error = 0.000174
-Max pw relative error = 0.000174
-PSNR = 89.441747, NRMSE= 3.3721948963655124572E-05
-acEff=1.000000
-compressionRatio = 3.088903
-  ✓ Compression and decompression successful (ratio: 3.08x)
-
-[76/176] Processing: FSA_R_1_192_288.dat
-
-compression time=0.003324, total fastmode1 topology
-compression size = 65056, CR = 3.399902
-done
-decompression time=0.004295
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001719296
-Max relative error = 0.000172
-Max pw relative error = 0.000172
-PSNR = 91.116938, NRMSE= 2.780693309811973414E-05
-acEff=1.000000
-compressionRatio = 3.399902
-  ✓ Compression and decompression successful (ratio: 3.39x)
-
-[77/176] Processing: FSAT_1_192_288.dat
-
-compression time=0.002802, total fastmode1 topology
-compression size = 67440, CR = 3.279715
-done
-decompression time=0.004766
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001673838
-Max relative error = 0.000167
-Max pw relative error = 0.000167
-PSNR = 90.997094, NRMSE= 2.8193260086272745637E-05
-acEff=1.000000
-compressionRatio = 3.279715
-  ✓ Compression and decompression successful (ratio: 3.27x)
-
-[78/176] Processing: FSA_U_1_192_288.dat
-
-compression time=0.003010, total fastmode1 topology
-compression size = 57950, CR = 3.816808
-done
-decompression time=0.004294
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000999942
-Max relative error = 0.000100
-Max pw relative error = 0.000100
-PSNR = 95.747049, NRMSE= 1.631727117662842399E-05
-acEff=1.000000
-compressionRatio = 3.816808
-  ✓ Compression and decompression successful (ratio: 3.81x)
-
-[79/176] Processing: FSDS_1_192_288.dat
-
-compression time=0.003342, total fastmode1 topology
-compression size = 67703, CR = 3.266975
-done
-decompression time=0.004905
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001764894
-Max relative error = 0.000176
-Max pw relative error = 0.000176
-PSNR = 89.444471, NRMSE= 3.3711374505990959749E-05
-acEff=1.000000
-compressionRatio = 3.266975
-  ✓ Compression and decompression successful (ratio: 3.26x)
-
-[80/176] Processing: FSDSND_1_192_288.dat
-
-compression time=0.003801, total fastmode1 topology
-compression size = 69072, CR = 3.202224
-done
-decompression time=0.004935
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001960099
-Max relative error = 0.000196
-Max pw relative error = 0.000196
-PSNR = 89.376723, NRMSE= 3.3975341994940409297E-05
-acEff=1.000000
-compressionRatio = 3.202224
-  ✓ Compression and decompression successful (ratio: 3.20x)
-
-[81/176] Processing: FSDSNDLN_1_192_288.dat
-
-compression time=0.005768, total fastmode1 topology
-compression size = 70052, CR = 3.157426
-done
-decompression time=0.004662
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001768768
-Max relative error = 0.000177
-Max pw relative error = 0.000177
-PSNR = 89.444187, NRMSE= 3.371247510767929836E-05
-acEff=1.000000
-compressionRatio = 3.157426
-  ✓ Compression and decompression successful (ratio: 3.15x)
-
-[82/176] Processing: FSDSNI_1_192_288.dat
-
-compression time=0.003464, total fastmode1 topology
-compression size = 70867, CR = 3.121114
-done
-decompression time=0.004703
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001950786
-Max relative error = 0.000195
-Max pw relative error = 0.000195
-PSNR = 89.417119, NRMSE= 3.3817697182514625833E-05
-acEff=1.000000
-compressionRatio = 3.121114
-  ✓ Compression and decompression successful (ratio: 3.12x)
-
-[83/176] Processing: FSDSVD_1_192_288.dat
-
-compression time=0.002996, total fastmode1 topology
-compression size = 68713, CR = 3.218954
-done
-decompression time=0.004372
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001993701
-Max relative error = 0.000199
-Max pw relative error = 0.000199
-PSNR = 89.496242, NRMSE= 3.3511040953128581779E-05
-acEff=1.000000
-compressionRatio = 3.218954
-  ✓ Compression and decompression successful (ratio: 3.21x)
-
-[84/176] Processing: FSDSVDLN_1_192_288.dat
-
-compression time=0.003229, total fastmode1 topology
-compression size = 69639, CR = 3.176151
-done
-decompression time=0.004394
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001722947
-Max relative error = 0.000172
-Max pw relative error = 0.000172
-PSNR = 89.493330, NRMSE= 3.3522276867173713853E-05
-acEff=1.000000
-compressionRatio = 3.176151
-  ✓ Compression and decompression successful (ratio: 3.17x)
-
-[85/176] Processing: FSDSVI_1_192_288.dat
-
-compression time=0.003547, total fastmode1 topology
-compression size = 69783, CR = 3.169597
-done
-decompression time=0.004681
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001919381
-Max relative error = 0.000192
-Max pw relative error = 0.000192
-PSNR = 89.315697, NRMSE= 3.4214890269836889893E-05
-acEff=1.000000
-compressionRatio = 3.169597
-  ✓ Compression and decompression successful (ratio: 3.16x)
-
-[86/176] Processing: FSH_1_192_288.dat
-
-compression time=0.003008, total fastmode1 topology
-compression size = 72517, CR = 3.050099
-done
-decompression time=0.005032
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001916401
-Max relative error = 0.000192
-Max pw relative error = 0.000192
-PSNR = 88.976926, NRMSE= 3.557572010200632821E-05
-acEff=1.000000
-compressionRatio = 3.050099
-  ✓ Compression and decompression successful (ratio: 3.05x)
-
-[87/176] Processing: FSH_G_1_192_288.dat
-
-compression time=0.003018, total fastmode1 topology
-compression size = 73634, CR = 3.003830
-done
-decompression time=0.004832
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001732334
-Max relative error = 0.000173
-Max pw relative error = 0.000173
-PSNR = 88.892622, NRMSE= 3.5922692514437578628E-05
-acEff=1.000000
-compressionRatio = 3.003830
-  ✓ Compression and decompression successful (ratio: 3.00x)
-
-[88/176] Processing: FSH_NODYNLNDUSE_1_192_288.dat
-
-compression time=0.003162, total fastmode1 topology
-compression size = 72523, CR = 3.049846
-done
-decompression time=0.004578
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001916401
-Max relative error = 0.000192
-Max pw relative error = 0.000192
-PSNR = 88.976947, NRMSE= 3.5575634723599902838E-05
-acEff=1.000000
-compressionRatio = 3.049846
-  ✓ Compression and decompression successful (ratio: 3.04x)
-
-[89/176] Processing: FSH_R_1_192_288.dat
-
-compression time=0.003856, total fastmode1 topology
-compression size = 66310, CR = 3.335605
-done
-decompression time=0.004339
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001657456
-Max relative error = 0.000166
-Max pw relative error = 0.000166
-PSNR = 90.617402, NRMSE= 2.9453026161769413636E-05
-acEff=1.000000
-compressionRatio = 3.335605
-  ✓ Compression and decompression successful (ratio: 3.33x)
-
-[90/176] Processing: FSH_U_1_192_288.dat
-
-compression time=0.002818, total fastmode1 topology
-compression size = 58152, CR = 3.803549
-done
-decompression time=0.004266
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001040399
-Max relative error = 0.000104
-Max pw relative error = 0.000104
-PSNR = 95.723989, NRMSE= 1.6360649995866422262E-05
-acEff=1.000000
-compressionRatio = 3.803549
-  ✓ Compression and decompression successful (ratio: 3.80x)
-
-[91/176] Processing: FSH_V_1_192_288.dat
-
-compression time=0.003171, total fastmode1 topology
-compression size = 68355, CR = 3.235813
-done
-decompression time=0.004555
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001854636
-Max relative error = 0.000185
-Max pw relative error = 0.000185
-PSNR = 91.081238, NRMSE= 2.7921459527868667513E-05
-acEff=1.000000
-compressionRatio = 3.235813
-  ✓ Compression and decompression successful (ratio: 3.23x)
-
-[92/176] Processing: FSM_1_192_288.dat
-
-compression time=0.003686, total fastmode1 topology
-compression size = 70319, CR = 3.145437
-done
-decompression time=0.004499
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001791179
-Max relative error = 0.000179
-Max pw relative error = 0.000179
-PSNR = 93.607460, NRMSE= 2.0875024549075580792E-05
-acEff=1.000000
-compressionRatio = 3.145437
-  ✓ Compression and decompression successful (ratio: 3.14x)
-
-[93/176] Processing: FSM_R_1_192_288.dat
-
-compression time=0.003191, total fastmode1 topology
-compression size = 65083, CR = 3.398491
-done
-decompression time=0.004418
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001705440
-Max relative error = 0.000171
-Max pw relative error = 0.000171
-PSNR = 95.378999, NRMSE= 1.7023547269034159979E-05
-acEff=1.000000
-compressionRatio = 3.398491
-  ✓ Compression and decompression successful (ratio: 3.39x)
-
-[94/176] Processing: FSM_U_1_192_288.dat
-
-compression time=0.002618, total fastmode1 topology
-compression size = 58299, CR = 3.793959
-done
-decompression time=0.004033
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000999966
-Max relative error = 0.000100
-Max pw relative error = 0.000100
-PSNR = 101.182615, NRMSE= 8.7270858963169363611E-06
-acEff=1.000000
-compressionRatio = 3.793959
-  ✓ Compression and decompression successful (ratio: 3.79x)
-
-[95/176] Processing: FSNO_1_192_288.dat
-
-compression time=0.002876, total fastmode1 topology
-compression size = 64636, CR = 3.421994
-done
-decompression time=0.004178
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001494056
-Max relative error = 0.000149
-Max pw relative error = 0.000149
-PSNR = 90.618851, NRMSE= 2.9448110931917684079E-05
-acEff=1.000000
-compressionRatio = 3.421994
-  ✓ Compression and decompression successful (ratio: 3.42x)
-
-[96/176] Processing: FSR_1_192_288.dat
-
-compression time=0.004088, total fastmode1 topology
-compression size = 72120, CR = 3.066889
-done
-decompression time=0.004717
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001864471
-Max relative error = 0.000186
-Max pw relative error = 0.000186
-PSNR = 89.363336, NRMSE= 3.4027747550622977721E-05
-acEff=1.000000
-compressionRatio = 3.066889
-  ✓ Compression and decompression successful (ratio: 3.06x)
-
-[97/176] Processing: FSRND_1_192_288.dat
-
-compression time=0.003188, total fastmode1 topology
-compression size = 71952, CR = 3.074049
-done
-decompression time=0.004558
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001872219
-Max relative error = 0.000187
-Max pw relative error = 0.000187
-PSNR = 89.499618, NRMSE= 3.3498016133142141551E-05
-acEff=1.000000
-compressionRatio = 3.074049
-  ✓ Compression and decompression successful (ratio: 3.07x)
-
-[98/176] Processing: FSRNDLN_1_192_288.dat
-
-compression time=0.003504, total fastmode1 topology
-compression size = 72888, CR = 3.034574
-done
-decompression time=0.004666
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001957864
-Max relative error = 0.000196
-Max pw relative error = 0.000196
-PSNR = 89.407985, NRMSE= 3.3853281354366158637E-05
-acEff=1.000000
-compressionRatio = 3.034574
-  ✓ Compression and decompression successful (ratio: 3.03x)
-
-[99/176] Processing: FSRNI_1_192_288.dat
-
-compression time=0.003318, total fastmode1 topology
-compression size = 72618, CR = 3.045856
-done
-decompression time=0.004855
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001843646
-Max relative error = 0.000184
-Max pw relative error = 0.000184
-PSNR = 89.393786, NRMSE= 3.390866616392471057E-05
-acEff=1.000000
-compressionRatio = 3.045856
-  ✓ Compression and decompression successful (ratio: 3.04x)
-
-[100/176] Processing: FSRVD_1_192_288.dat
-
-compression time=0.003631, total fastmode1 topology
-compression size = 71140, CR = 3.109137
-done
-decompression time=0.004478
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001765788
-Max relative error = 0.000177
-Max pw relative error = 0.000177
-PSNR = 89.451975, NRMSE= 3.3682261124383109838E-05
-acEff=1.000000
-compressionRatio = 3.109137
-  ✓ Compression and decompression successful (ratio: 3.10x)
-
-[101/176] Processing: FSRVDLN_1_192_288.dat
-
-compression time=0.003721, total fastmode1 topology
-compression size = 71822, CR = 3.079613
-done
-decompression time=0.004505
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001791455
-Max relative error = 0.000179
-Max pw relative error = 0.000179
-PSNR = 89.446367, NRMSE= 3.370401740502092751E-05
-acEff=1.000000
-compressionRatio = 3.079613
-  ✓ Compression and decompression successful (ratio: 3.07x)
-
-[102/176] Processing: FSRVI_1_192_288.dat
-
-compression time=0.004638, total fastmode1 topology
-compression size = 72153, CR = 3.065486
-done
-decompression time=0.004487
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001889020
-Max relative error = 0.000189
-Max pw relative error = 0.000189
-PSNR = 89.462420, NRMSE= 3.3641782602725563047E-05
-acEff=1.000000
-compressionRatio = 3.065486
-  ✓ Compression and decompression successful (ratio: 3.06x)
-
-[103/176] Processing: GC_HEAT1_1_192_288.dat
-
-compression time=0.003417, total fastmode1 topology
-compression size = 72129, CR = 3.066506
-done
-decompression time=0.004840
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001842901
-Max relative error = 0.000184
-Max pw relative error = 0.000184
-PSNR = 88.947655, NRMSE= 3.5695811141480009491E-05
-acEff=1.000000
-compressionRatio = 3.066506
-  ✓ Compression and decompression successful (ratio: 3.06x)
-
-[104/176] Processing: GC_HEAT2_1_192_288.dat
-
-compression time=0.002622, total fastmode1 topology
-compression size = 60558, CR = 3.652432
-done
-decompression time=0.003531
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000000000
-Max relative error = 0.000000
-Max pw relative error = 0.000000
-PSNR = inf, NRMSE= 0
-acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
-
-[105/176] Processing: GC_ICE1_1_192_288.dat
-
-compression time=0.003793, total fastmode1 topology
-compression size = 68215, CR = 3.242454
-done
-decompression time=0.004419
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001862645
-Max relative error = 0.000186
-Max pw relative error = 0.000186
-PSNR = 92.967197, NRMSE= 2.2471918782705683999E-05
-acEff=1.000000
-compressionRatio = 3.242454
-  ✓ Compression and decompression successful (ratio: 3.24x)
-
-[106/176] Processing: GC_ICE2_1_192_288.dat
-
-compression time=0.002823, total fastmode1 topology
-compression size = 60558, CR = 3.652432
-done
-decompression time=0.003601
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000000000
-Max relative error = 0.000000
-Max pw relative error = 0.000000
-PSNR = inf, NRMSE= 0
-acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
-
-[107/176] Processing: GC_LIQ1_1_192_288.dat
-
-compression time=0.003242, total fastmode1 topology
-compression size = 67413, CR = 3.281029
-done
-decompression time=0.004757
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001506805
-Max relative error = 0.000151
-Max pw relative error = 0.000151
-PSNR = 90.694663, NRMSE= 2.9192203191589870389E-05
-acEff=1.000000
-compressionRatio = 3.281029
-  ✓ Compression and decompression successful (ratio: 3.28x)
-
-[108/176] Processing: GC_LIQ2_1_192_288.dat
-
-compression time=0.002554, total fastmode1 topology
-compression size = 60558, CR = 3.652432
-done
-decompression time=0.003439
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000000000
-Max relative error = 0.000000
-Max pw relative error = 0.000000
-PSNR = inf, NRMSE= 0
-acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
-
-[109/176] Processing: GPP_1_192_288.dat
-
-compression time=0.002984, total fastmode1 topology
-compression size = 63144, CR = 3.502851
-done
-decompression time=0.004907
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000737906
-Max relative error = 0.000074
-Max pw relative error = 0.000074
-PSNR = 122.323882, NRMSE= 7.6525453659957252657E-07
-acEff=1.000000
-compressionRatio = 3.502851
-  ✓ Compression and decompression successful (ratio: 3.50x)
-
-[110/176] Processing: GR_1_192_288.dat
-
-compression time=0.002776, total fastmode1 topology
-compression size = 62145, CR = 3.559160
-done
-decompression time=0.004138
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000998389
-Max relative error = 0.000100
-Max pw relative error = 0.000100
-PSNR = 126.642574, NRMSE= 4.6544813704209260805E-07
-acEff=1.000000
-compressionRatio = 3.559160
-  ✓ Compression and decompression successful (ratio: 3.55x)
-
-[111/176] Processing: GROSS_NMIN_1_192_288.dat
-
-compression time=0.002602, total fastmode1 topology
-compression size = 61309, CR = 3.607692
-done
-decompression time=0.004007
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000025034
-Max relative error = 0.000003
-Max pw relative error = 0.000003
-PSNR = 138.974813, NRMSE= 1.125276817064788223E-07
-acEff=1.000000
-compressionRatio = 3.607692
-  ✓ Compression and decompression successful (ratio: 3.60x)
-
-[112/176] Processing: H2OCAN_1_192_288.dat
-
-compression time=0.002780, total fastmode1 topology
-compression size = 68121, CR = 3.246928
-done
-decompression time=0.004471
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001698930
-Max relative error = 0.000170
-Max pw relative error = 0.000170
-PSNR = 92.092503, NRMSE= 2.4852774108809854955E-05
-acEff=1.000000
-compressionRatio = 3.246928
-  ✓ Compression and decompression successful (ratio: 3.24x)
-
-[113/176] Processing: H2OSNO_1_192_288.dat
-
-compression time=0.003368, total fastmode1 topology
-compression size = 68934, CR = 3.208634
-done
-decompression time=0.004211
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001770630
-Max relative error = 0.000177
-Max pw relative error = 0.000177
-PSNR = 91.909675, NRMSE= 2.5381440895629761801E-05
-acEff=1.000000
-compressionRatio = 3.208634
-  ✓ Compression and decompression successful (ratio: 3.20x)
-
-[114/176] Processing: H2OSNO_TOP_1_192_288.dat
-
-compression time=0.003114, total fastmode1 topology
-compression size = 72192, CR = 3.063830
-done
-decompression time=0.004350
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001740707
-Max relative error = 0.000174
-Max pw relative error = 0.000174
-PSNR = 91.009752, NRMSE= 2.8152203828893858112E-05
-acEff=1.000000
-compressionRatio = 3.063830
-  ✓ Compression and decompression successful (ratio: 3.06x)
-
-[115/176] Processing: HC_1_192_288.dat
-
-compression time=0.003285, total fastmode1 topology
-compression size = 74100, CR = 2.984939
-done
-decompression time=0.004634
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001953319
-Max relative error = 0.000195
-Max pw relative error = 0.000195
-PSNR = 88.986480, NRMSE= 3.5536608406749161445E-05
-acEff=1.000000
-compressionRatio = 2.984939
-  ✓ Compression and decompression successful (ratio: 2.98x)
-
-[116/176] Processing: HCSOI_1_192_288.dat
-
-compression time=0.003258, total fastmode1 topology
-compression size = 73727, CR = 3.000041
-done
-decompression time=0.004793
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001922399
-Max relative error = 0.000192
-Max pw relative error = 0.000192
-PSNR = 88.904025, NRMSE= 3.5875563195409360475E-05
-acEff=1.000000
-compressionRatio = 3.000041
-  ✓ Compression and decompression successful (ratio: 3.00x)
-
-[117/176] Processing: HEAT_FROM_AC_1_192_288.dat
-
-compression time=0.002567, total fastmode1 topology
-compression size = 60803, CR = 3.637715
-done
-decompression time=0.003974
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000927262
-Max relative error = 0.000093
-Max pw relative error = 0.000093
-PSNR = 114.405558, NRMSE= 1.9042418517543645796E-06
-acEff=1.000000
-compressionRatio = 3.637715
-  ✓ Compression and decompression successful (ratio: 3.63x)
-
-[118/176] Processing: HR_1_192_288.dat
-
-compression time=0.002585, total fastmode1 topology
-compression size = 63562, CR = 3.479815
-done
-decompression time=0.004311
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000499487
-Max relative error = 0.000050
-Max pw relative error = 0.000050
-PSNR = 126.746353, NRMSE= 4.5992004010679872271E-07
-acEff=1.000000
-compressionRatio = 3.479815
-  ✓ Compression and decompression successful (ratio: 3.47x)
-
-[119/176] Processing: HTOP_1_192_288.dat
-
-compression time=0.003356, total fastmode1 topology
-compression size = 70310, CR = 3.145840
-done
-decompression time=0.004365
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001479164
-Max relative error = 0.000148
-Max pw relative error = 0.000148
-PSNR = 91.007990, NRMSE= 2.8157915702564970768E-05
-acEff=1.000000
-compressionRatio = 3.145840
-  ✓ Compression and decompression successful (ratio: 3.14x)
-
-[120/176] Processing: LAISHA_1_192_288.dat
-
-compression time=0.003370, total fastmode1 topology
-compression size = 69086, CR = 3.201575
-done
-decompression time=0.004344
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001853360
-Max relative error = 0.000185
-Max pw relative error = 0.000185
-PSNR = 91.694213, NRMSE= 2.6018925746999380333E-05
-acEff=1.000000
-compressionRatio = 3.201575
-  ✓ Compression and decompression successful (ratio: 3.20x)
-
-[121/176] Processing: LAISUN_1_192_288.dat
-
-compression time=0.002616, total fastmode1 topology
-compression size = 66215, CR = 3.340391
-done
-decompression time=0.004511
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001840936
-Max relative error = 0.000184
-Max pw relative error = 0.000184
-PSNR = 92.214119, NRMSE= 2.4507218739717935877E-05
-acEff=1.000000
-compressionRatio = 3.340391
-  ✓ Compression and decompression successful (ratio: 3.34x)
-
-[122/176] Processing: landfrac_192_288.dat
-
-compression time=0.002435, total fastmode1 topology
-compression size = 63760, CR = 3.469009
-done
-decompression time=0.004605
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000999682
-Max relative error = 0.000100
-Max pw relative error = 0.000100
-PSNR = 89.298043, NRMSE= 3.4284502799052053376E-05
-acEff=1.000000
-compressionRatio = 3.469009
-  ✓ Compression and decompression successful (ratio: 3.46x)
-
-[123/176] Processing: latixy_192_288.dat
-
-compression time=0.002569, total fastmode1 topology
-compression size = 60563, CR = 3.652131
-done
-decompression time=0.003569
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000995509
-Max relative error = 0.000100
-Max pw relative error = 0.000100
-PSNR = 89.264382, NRMSE= 3.4417623363488898864E-05
-acEff=1.000000
-compressionRatio = 3.652131
-  ✓ Compression and decompression successful (ratio: 3.65x)
-
-[124/176] Processing: latixyatm_192_288.dat
-
-compression time=0.002395, total fastmode1 topology
-compression size = 51990, CR = 4.254356
-done
-decompression time=0.003582
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000997633
-Max relative error = 0.000100
-Max pw relative error = 0.000100
-PSNR = 84.953201, NRMSE= 5.6537936829747916596E-05
-acEff=1.000000
-compressionRatio = 4.254357
-  ✓ Compression and decompression successful (ratio: 4.25x)
-
-[125/176] Processing: LEAFC_1_192_288.dat
-
-compression time=0.004079, total fastmode1 topology
-compression size = 69983, CR = 3.160539
-done
-decompression time=0.004411
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001855344
-Max relative error = 0.000186
-Max pw relative error = 0.000186
-PSNR = 91.631011, NRMSE= 2.6208941053319840977E-05
-acEff=1.000000
-compressionRatio = 3.160539
-  ✓ Compression and decompression successful (ratio: 3.16x)
-
-[126/176] Processing: LEAFC_ALLOC_1_192_288.dat
-
-compression time=0.002556, total fastmode1 topology
-compression size = 62171, CR = 3.557672
-done
-decompression time=0.004168
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000102520
-Max relative error = 0.000010
-Max pw relative error = 0.000010
-PSNR = 136.066004, NRMSE= 1.5728952004678751269E-07
-acEff=1.000000
-compressionRatio = 3.557672
-  ✓ Compression and decompression successful (ratio: 3.55x)
-
-[127/176] Processing: LEAFC_LOSS_1_192_288.dat
-
-compression time=0.002970, total fastmode1 topology
-compression size = 62893, CR = 3.516830
-done
-decompression time=0.004468
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000998677
-Max relative error = 0.000100
-Max pw relative error = 0.000100
-PSNR = 126.420199, NRMSE= 4.7751831496323806131E-07
-acEff=1.000000
-compressionRatio = 3.516830
-  ✓ Compression and decompression successful (ratio: 3.51x)
-
-[128/176] Processing: LEAFN_1_192_288.dat
-
-compression time=0.003355, total fastmode1 topology
-compression size = 69223, CR = 3.195239
-done
-decompression time=0.004355
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001808461
-Max relative error = 0.000181
-Max pw relative error = 0.000181
-PSNR = 91.655157, NRMSE= 2.6136181721879652004E-05
-acEff=1.000000
-compressionRatio = 3.195239
-  ✓ Compression and decompression successful (ratio: 3.19x)
-
-[129/176] Processing: LITFALL_1_192_288.dat
-
-compression time=0.003145, total fastmode1 topology
-compression size = 63702, CR = 3.472167
-done
-decompression time=0.004227
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000523329
-Max relative error = 0.000052
-Max pw relative error = 0.000052
-PSNR = 126.989658, NRMSE= 4.4721575618956471709E-07
-acEff=1.000000
-compressionRatio = 3.472167
-  ✓ Compression and decompression successful (ratio: 3.47x)
-
-[130/176] Processing: LITHR_1_192_288.dat
-
-compression time=0.002753, total fastmode1 topology
-compression size = 63198, CR = 3.499858
-done
-decompression time=0.004605
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000218153
-Max relative error = 0.000022
-Max pw relative error = 0.000022
-PSNR = 132.000168, NRMSE= 2.5118378515432238397E-07
-acEff=1.000000
-compressionRatio = 3.499858
-  ✓ Compression and decompression successful (ratio: 3.49x)
-
-[131/176] Processing: LITR1C_1_192_288.dat
-
-compression time=0.003526, total fastmode1 topology
-compression size = 71254, CR = 3.104162
-done
-decompression time=0.005108
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001880080
-Max relative error = 0.000188
-Max pw relative error = 0.000188
-PSNR = 91.345086, NRMSE= 2.7086051462548531825E-05
-acEff=1.000000
-compressionRatio = 3.104163
-  ✓ Compression and decompression successful (ratio: 3.10x)
-
-[132/176] Processing: LITR1C_TO_SOIL1C_1_192_288.dat
-
-compression time=0.002952, total fastmode1 topology
-compression size = 62329, CR = 3.548653
-done
-decompression time=0.004098
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000999784
-Max relative error = 0.000100
-Max pw relative error = 0.000100
-PSNR = 122.424677, NRMSE= 7.564255179066446857E-07
-acEff=1.000000
-compressionRatio = 3.548653
-  ✓ Compression and decompression successful (ratio: 3.54x)
-
-[133/176] Processing: LITR1N_1_192_288.dat
-
-compression time=0.002731, total fastmode1 topology
-compression size = 69356, CR = 3.189111
-done
-decompression time=0.004668
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001956273
-Max relative error = 0.000196
-Max pw relative error = 0.000196
-PSNR = 92.516238, NRMSE= 2.3669446995165721386E-05
-acEff=1.000000
-compressionRatio = 3.189111
-  ✓ Compression and decompression successful (ratio: 3.18x)
-
-[134/176] Processing: LITR2C_1_192_288.dat
-
-compression time=0.003822, total fastmode1 topology
-compression size = 71032, CR = 3.113864
-done
-decompression time=0.004782
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001802649
-Max relative error = 0.000180
-Max pw relative error = 0.000180
-PSNR = 91.339789, NRMSE= 2.7102574055166350428E-05
-acEff=1.000000
-compressionRatio = 3.113864
-  ✓ Compression and decompression successful (ratio: 3.11x)
-
-[135/176] Processing: LITR2C_TO_SOIL2C_1_192_288.dat
-
-compression time=0.002556, total fastmode1 topology
-compression size = 62832, CR = 3.520244
-done
-decompression time=0.004328
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000999310
-Max relative error = 0.000100
-Max pw relative error = 0.000100
-PSNR = 126.681277, NRMSE= 4.6337880390245490504E-07
-acEff=1.000000
-compressionRatio = 3.520244
-  ✓ Compression and decompression successful (ratio: 3.52x)
-
-[136/176] Processing: LITR2N_1_192_288.dat
-
-compression time=0.003171, total fastmode1 topology
-compression size = 70441, CR = 3.139989
-done
-decompression time=0.004381
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001822356
-Max relative error = 0.000182
-Max pw relative error = 0.000182
-PSNR = 91.416838, NRMSE= 2.6863223442113597127E-05
-acEff=1.000000
-compressionRatio = 3.139989
-  ✓ Compression and decompression successful (ratio: 3.13x)
-
-[137/176] Processing: LITR3C_1_192_288.dat
-
-compression time=0.004010, total fastmode1 topology
-compression size = 70834, CR = 3.122568
-done
-decompression time=0.004210
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001554042
-Max relative error = 0.000155
-Max pw relative error = 0.000155
-PSNR = 91.246381, NRMSE= 2.739560717339890804E-05
-acEff=1.000000
-compressionRatio = 3.122568
-  ✓ Compression and decompression successful (ratio: 3.12x)
-
-[138/176] Processing: LITR3C_TO_SOIL3C_1_192_288.dat
-
-compression time=0.003208, total fastmode1 topology
-compression size = 62373, CR = 3.546150
-done
-decompression time=0.004142
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000118017
-Max relative error = 0.000012
-Max pw relative error = 0.000012
-PSNR = 134.852474, NRMSE= 1.8087407546735896809E-07
-acEff=1.000000
-compressionRatio = 3.546150
-  ✓ Compression and decompression successful (ratio: 3.54x)
-
-[139/176] Processing: LITR3N_1_192_288.dat
-
-compression time=0.003235, total fastmode1 topology
-compression size = 70017, CR = 3.159004
-done
-decompression time=0.004432
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001897169
-Max relative error = 0.000190
-Max pw relative error = 0.000190
-PSNR = 91.274393, NRMSE= 2.7307400426804637379E-05
-acEff=1.000000
-compressionRatio = 3.159004
-  ✓ Compression and decompression successful (ratio: 3.15x)
-
-[140/176] Processing: LITTERC_1_192_288.dat
-
-compression time=0.004514, total fastmode1 topology
-compression size = 70976, CR = 3.116321
-done
-decompression time=0.004525
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001475662
-Max relative error = 0.000148
-Max pw relative error = 0.000148
-PSNR = 91.279764, NRMSE= 2.7290519608278043475E-05
-acEff=1.000000
-compressionRatio = 3.116321
-  ✓ Compression and decompression successful (ratio: 3.11x)
-
-[141/176] Processing: LITTERC_HR_1_192_288.dat
-
-compression time=0.002752, total fastmode1 topology
-compression size = 63177, CR = 3.501021
-done
-decompression time=0.004327
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000194311
-Max relative error = 0.000019
-Max pw relative error = 0.000019
-PSNR = 132.702329, NRMSE= 2.3167733583601841022E-07
-acEff=1.000000
-compressionRatio = 3.501021
-  ✓ Compression and decompression successful (ratio: 3.50x)
-
-[142/176] Processing: LITTERC_LOSS_1_192_288.dat
-
-compression time=0.002821, total fastmode1 topology
-compression size = 63777, CR = 3.468084
-done
-decompression time=0.004245
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000529289
-Max relative error = 0.000053
-Max pw relative error = 0.000053
-PSNR = 127.585041, NRMSE= 4.1758793378223322145E-07
-acEff=1.000000
-compressionRatio = 3.468084
-  ✓ Compression and decompression successful (ratio: 3.46x)
-
-[143/176] Processing: LIVECROOTC_1_192_288.dat
-
-compression time=0.003768, total fastmode1 topology
-compression size = 69283, CR = 3.192472
-done
-decompression time=0.004215
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001734180
-Max relative error = 0.000173
-Max pw relative error = 0.000173
-PSNR = 91.917752, NRMSE= 2.53578491052107048E-05
-acEff=1.000000
-compressionRatio = 3.192471
-  ✓ Compression and decompression successful (ratio: 3.19x)
-
-[144/176] Processing: LIVECROOTN_1_192_288.dat
-
-compression time=0.002735, total fastmode1 topology
-compression size = 67009, CR = 3.300810
-done
-decompression time=0.004452
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001740777
-Max relative error = 0.000174
-Max pw relative error = 0.000174
-PSNR = 92.462291, NRMSE= 2.3816912203065735782E-05
-acEff=1.000000
-compressionRatio = 3.300810
-  ✓ Compression and decompression successful (ratio: 3.30x)
-
-[145/176] Processing: LIVESTEMC_1_192_288.dat
-
-compression time=0.004092, total fastmode1 topology
-compression size = 69613, CR = 3.177338
-done
-decompression time=0.004765
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001559965
-Max relative error = 0.000156
-Max pw relative error = 0.000156
-PSNR = 91.825882, NRMSE= 2.5627479950884757428E-05
-acEff=1.000000
-compressionRatio = 3.177338
-  ✓ Compression and decompression successful (ratio: 3.17x)
-
-[146/176] Processing: LIVESTEMN_1_192_288.dat
-
-compression time=0.002757, total fastmode1 topology
-compression size = 67858, CR = 3.259512
-done
-decompression time=0.004345
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001744137
-Max relative error = 0.000174
-Max pw relative error = 0.000174
-PSNR = 92.115584, NRMSE= 2.4786819130473909157E-05
-acEff=1.000000
-compressionRatio = 3.259513
-  ✓ Compression and decompression successful (ratio: 3.25x)
-
-[147/176] Processing: longxy_192_288.dat
-
-compression time=0.002700, total fastmode1 topology
-compression size = 65987, CR = 3.351933
-done
-decompression time=0.003613
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000999272
-Max relative error = 0.000100
-Max pw relative error = 0.000100
-PSNR = 89.063680, NRMSE= 3.5222160918379915001E-05
-acEff=1.000000
-compressionRatio = 3.351933
-  ✓ Compression and decompression successful (ratio: 3.35x)
-
-[148/176] Processing: longxyatm_192_288.dat
-
-compression time=0.002373, total fastmode1 topology
-compression size = 70555, CR = 3.134916
-done
-decompression time=0.003547
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000981092
-Max relative error = 0.000098
-Max pw relative error = 0.000098
-PSNR = 88.882570, NRMSE= 3.5964291616159493555E-05
-acEff=1.000000
-compressionRatio = 3.134916
-  ✓ Compression and decompression successful (ratio: 3.13x)
-
-[149/176] Processing: MEAN_FIRE_PROB_1_192_288.dat
-
-compression time=0.002709, total fastmode1 topology
-compression size = 66101, CR = 3.346152
-done
-decompression time=0.004462
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001920017
-Max relative error = 0.000192
-Max pw relative error = 0.000192
-PSNR = 92.609658, NRMSE= 2.3416236660883656904E-05
-acEff=1.000000
-compressionRatio = 3.346152
-  ✓ Compression and decompression successful (ratio: 3.34x)
-
-[150/176] Processing: MR_1_192_288.dat
-
-compression time=0.003117, total fastmode1 topology
-compression size = 63745, CR = 3.469825
-done
-decompression time=0.004256
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000990279
-Max relative error = 0.000099
-Max pw relative error = 0.000099
-PSNR = 121.681340, NRMSE= 8.2401097915990593293E-07
-acEff=1.000000
-compressionRatio = 3.469825
-  ✓ Compression and decompression successful (ratio: 3.46x)
-
-[151/176] Processing: NBP_1_192_288.dat
-
-compression time=0.002998, total fastmode1 topology
-compression size = 64010, CR = 3.455460
-done
-decompression time=0.004436
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000991343
-Max relative error = 0.000099
-Max pw relative error = 0.000099
-PSNR = 119.193856, NRMSE= 1.0972540913664134022E-06
-acEff=1.000000
-compressionRatio = 3.455460
-  ✓ Compression and decompression successful (ratio: 3.45x)
-
-[152/176] Processing: NDEPLOY_1_192_288.dat
-
-compression time=0.002652, total fastmode1 topology
-compression size = 60963, CR = 3.628168
-done
-decompression time=0.003934
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000010729
-Max relative error = 0.000001
-Max pw relative error = 0.000001
-PSNR = 141.042486, NRMSE= 8.8690214226978536245E-08
-acEff=1.000000
-compressionRatio = 3.628168
-  ✓ Compression and decompression successful (ratio: 3.62x)
-
-[153/176] Processing: NDEP_TO_SMINN_1_192_288.dat
-
-compression time=0.002512, total fastmode1 topology
-compression size = 60558, CR = 3.652432
-done
-decompression time=0.003480
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000000000
-Max relative error = 0.000000
-Max pw relative error = 0.000000
-PSNR = inf, NRMSE= 0
-acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
-
-[154/176] Processing: NEE_1_192_288.dat
-
-compression time=0.002953, total fastmode1 topology
-compression size = 63995, CR = 3.456270
-done
-decompression time=0.004334
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000994449
-Max relative error = 0.000099
-Max pw relative error = 0.000099
-PSNR = 120.608178, NRMSE= 9.3237600371697849752E-07
-acEff=1.000000
-compressionRatio = 3.456270
-  ✓ Compression and decompression successful (ratio: 3.45x)
-
-[155/176] Processing: NEP_1_192_288.dat
-
-compression time=0.002941, total fastmode1 topology
-compression size = 63963, CR = 3.457999
-done
-decompression time=0.004527
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000991343
-Max relative error = 0.000099
-Max pw relative error = 0.000099
-PSNR = 119.671558, NRMSE= 1.0385373192186851099E-06
-acEff=1.000000
-compressionRatio = 3.457999
-  ✓ Compression and decompression successful (ratio: 3.45x)
-
-[156/176] Processing: NET_NMIN_1_192_288.dat
-
-compression time=0.002501, total fastmode1 topology
-compression size = 61119, CR = 3.618907
-done
-decompression time=0.004247
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000010729
-Max relative error = 0.000001
-Max pw relative error = 0.000001
-PSNR = 140.154043, NRMSE= 9.8242153681725136653E-08
-acEff=1.000000
-compressionRatio = 3.618907
-  ✓ Compression and decompression successful (ratio: 3.61x)
-
-[157/176] Processing: NFIX_TO_SMINN_1_192_288.dat
-
-compression time=0.002616, total fastmode1 topology
-compression size = 60558, CR = 3.652432
-done
-decompression time=0.003813
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000000000
-Max relative error = 0.000000
-Max pw relative error = 0.000000
-PSNR = inf, NRMSE= 0
-acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
-
-[158/176] Processing: NPP_1_192_288.dat
-
-compression time=0.002947, total fastmode1 topology
-compression size = 63379, CR = 3.489863
-done
-decompression time=0.004366
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000997526
-Max relative error = 0.000100
-Max pw relative error = 0.000100
-PSNR = 121.495748, NRMSE= 8.418071106835946485E-07
-acEff=1.000000
-compressionRatio = 3.489863
-  ✓ Compression and decompression successful (ratio: 3.48x)
-
-[159/176] Processing: OCDEP_1_192_288.dat
-
-compression time=0.002539, total fastmode1 topology
-compression size = 60558, CR = 3.652432
-done
-decompression time=0.003883
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000000000
-Max relative error = 0.000000
-Max pw relative error = 0.000000
-PSNR = inf, NRMSE= 0
-acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
-
-[160/176] Processing: PBOT_1_192_288.dat
-
-compression time=0.002628, total fastmode1 topology
-compression size = 68023, CR = 3.251606
-done
-decompression time=0.005121
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001720488
-Max relative error = 0.000172
-Max pw relative error = 0.000172
-PSNR = 88.951229, NRMSE= 3.5681123991109323925E-05
-acEff=1.000000
-compressionRatio = 3.251606
-  ✓ Compression and decompression successful (ratio: 3.25x)
-
-[161/176] Processing: PCO2_1_192_288.dat
-
-compression time=0.002505, total fastmode1 topology
-compression size = 67944, CR = 3.255387
-done
-decompression time=0.004404
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0001517311
-Max relative error = 0.000152
-Max pw relative error = 0.000152
-PSNR = 89.037900, NRMSE= 3.5326857806288674906E-05
-acEff=1.000000
-compressionRatio = 3.255387
-  ✓ Compression and decompression successful (ratio: 3.25x)
-
-[162/176] Processing: PFT_CTRUNC_1_192_288.dat
-
-compression time=0.002847, total fastmode1 topology
-compression size = 63348, CR = 3.491570
-done
-decompression time=0.004844
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000999971
-Max relative error = 0.000100
-Max pw relative error = 0.000100
-PSNR = 119.509354, NRMSE= 1.0581136524851400821E-06
-acEff=1.000000
-compressionRatio = 3.491570
-  ✓ Compression and decompression successful (ratio: 3.49x)
-
-[163/176] Processing: PFT_FIRE_CLOSS_1_192_288.dat
-
-compression time=0.002360, total fastmode1 topology
-compression size = 61054, CR = 3.622760
-done
-decompression time=0.004002
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000999885
-Max relative error = 0.000100
-Max pw relative error = 0.000100
-PSNR = 127.242705, NRMSE= 4.3437492951545404256E-07
-acEff=1.000000
-compressionRatio = 3.622760
-  ✓ Compression and decompression successful (ratio: 3.62x)
-
-[164/176] Processing: PFT_FIRE_NLOSS_1_192_288.dat
-
-compression time=0.002345, total fastmode1 topology
-compression size = 60718, CR = 3.642808
-done
-decompression time=0.004012
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000010000
-Max relative error = 0.000001
-Max pw relative error = 0.000001
-PSNR = 152.944871, NRMSE= 2.25297535094958876E-08
-acEff=1.000000
-compressionRatio = 3.642808
-  ✓ Compression and decompression successful (ratio: 3.64x)
-
-[165/176] Processing: PFT_NTRUNC_1_192_288.dat
-
-compression time=0.003283, total fastmode1 topology
-compression size = 63318, CR = 3.493225
-done
-decompression time=0.004195
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000999971
-Max relative error = 0.000100
-Max pw relative error = 0.000100
-PSNR = 120.082927, NRMSE= 9.9049806614495746745E-07
-acEff=1.000000
-compressionRatio = 3.493225
-  ✓ Compression and decompression successful (ratio: 3.49x)
-
-[166/176] Processing: PLANT_NDEMAND_1_192_288.dat
-
-compression time=0.002344, total fastmode1 topology
-compression size = 61410, CR = 3.601759
-done
-decompression time=0.004063
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000999784
-Max relative error = 0.000100
-Max pw relative error = 0.000100
-PSNR = 127.109565, NRMSE= 4.4108443092856410923E-07
-acEff=1.000000
-compressionRatio = 3.601759
-  ✓ Compression and decompression successful (ratio: 3.60x)
-
-[167/176] Processing: POTENTIAL_IMMOB_1_192_288.dat
-
-compression time=0.002678, total fastmode1 topology
-compression size = 61943, CR = 3.570767
-done
-decompression time=0.004354
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000999986
-Max relative error = 0.000100
-Max pw relative error = 0.000100
-PSNR = 121.288708, NRMSE= 8.6211383832433408476E-07
-acEff=1.000000
-compressionRatio = 3.570767
-  ✓ Compression and decompression successful (ratio: 3.57x)
-
-[168/176] Processing: PROD100C_1_192_288.dat
-
-compression time=0.002586, total fastmode1 topology
-compression size = 60558, CR = 3.652432
-done
-decompression time=0.003546
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000000000
-Max relative error = 0.000000
-Max pw relative error = 0.000000
-PSNR = inf, NRMSE= 0
-acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
-
-[169/176] Processing: PROD100C_LOSS_1_192_288.dat
-
-compression time=0.002318, total fastmode1 topology
-compression size = 60558, CR = 3.652432
-done
-decompression time=0.003466
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000000000
-Max relative error = 0.000000
-Max pw relative error = 0.000000
-PSNR = inf, NRMSE= 0
-acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
-
-[170/176] Processing: PROD100N_1_192_288.dat
-
-compression time=0.002415, total fastmode1 topology
-compression size = 60558, CR = 3.652432
-done
-decompression time=0.003539
-done
-Min=0, Max=1, range=1
-Max absolute error = 0.0000000000
-Max relative error = 0.000000
-Max pw relative error = 0.000000
-PSNR = inf, NRMSE= 0
-acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
-
-[171/176] Processing: PROD100N_LOSS_1_192_288.dat
-
-compression time=0.002477, total fastmode1 topology
-compression size = 60558, CR = 3.652432
+compression time=0.002479, total fastmode1 topology
+compression size = 64624, CR = 3.422629
 done
 decompression time=0.003535
 done
@@ -2739,15 +643,2111 @@ Max relative error = 0.000000
 Max pw relative error = 0.000000
 PSNR = inf, NRMSE= 0
 acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
+
+[41/176] Processing: DWT_SEEDN_TO_LEAF_1_192_288.dat
+
+compression time=0.002415, total fastmode1 topology
+compression size = 64624, CR = 3.422629
+done
+decompression time=0.003488
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+acEff=1.000000
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
+
+[42/176] Processing: EFLX_DYNBAL_1_192_288.dat
+
+compression time=0.002418, total fastmode1 topology
+compression size = 64624, CR = 3.422629
+done
+decompression time=0.003654
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+acEff=1.000000
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
+
+[43/176] Processing: EFLX_LH_TOT_R_1_192_288.dat
+
+compression time=0.003532, total fastmode1 topology
+compression size = 73968, CR = 2.990266
+done
+decompression time=0.004278
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001572035
+Max relative error = 0.000157
+Max pw relative error = 0.000157
+PSNR = 90.546324, NRMSE= 2.969503099576320312E-05
+acEff=1.000000
+compressionRatio = 2.990266
+  ✓ Compression and decompression successful (ratio: 2.99x)
+
+[44/176] Processing: EFLX_LH_TOT_U_1_192_288.dat
+
+compression time=0.003515, total fastmode1 topology
+compression size = 67276, CR = 3.287710
+done
+decompression time=0.004293
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001304001
+Max relative error = 0.000130
+Max pw relative error = 0.000130
+PSNR = 95.799605, NRMSE= 1.621883932705974767E-05
+acEff=1.000000
+compressionRatio = 3.287710
+  ✓ Compression and decompression successful (ratio: 3.28x)
+
+[45/176] Processing: ELAI_1_192_288.dat
+
+compression time=0.003654, total fastmode1 topology
+compression size = 74862, CR = 2.954556
+done
+decompression time=0.004354
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001725461
+Max relative error = 0.000173
+Max pw relative error = 0.000173
+PSNR = 91.689625, NRMSE= 2.6032671657887884292E-05
+acEff=1.000000
+compressionRatio = 2.954556
+  ✓ Compression and decompression successful (ratio: 2.95x)
+
+[46/176] Processing: ER_1_192_288.dat
+
+compression time=0.002709, total fastmode1 topology
+compression size = 68366, CR = 3.235292
+done
+decompression time=0.004278
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000872612
+Max relative error = 0.000087
+Max pw relative error = 0.000087
+PSNR = 122.622743, NRMSE= 7.3937178461238268766E-07
+acEff=1.000000
+compressionRatio = 3.235292
+  ✓ Compression and decompression successful (ratio: 3.23x)
+
+[47/176] Processing: ERRH2O_1_192_288.dat
+
+compression time=0.002683, total fastmode1 topology
+compression size = 64624, CR = 3.422629
+done
+decompression time=0.003717
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+acEff=1.000000
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
+
+[48/176] Processing: ERRSEB_1_192_288.dat
+
+compression time=0.002664, total fastmode1 topology
+compression size = 64624, CR = 3.422629
+done
+decompression time=0.003594
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+acEff=1.000000
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
+
+[49/176] Processing: ERRSOI_1_192_288.dat
+
+compression time=0.002262, total fastmode1 topology
+compression size = 64624, CR = 3.422629
+done
+decompression time=0.003479
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+acEff=1.000000
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
+
+[50/176] Processing: ERRSOL_1_192_288.dat
+
+compression time=0.002611, total fastmode1 topology
+compression size = 64624, CR = 3.422629
+done
+decompression time=0.003433
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+acEff=1.000000
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
+
+[51/176] Processing: ESAI_1_192_288.dat
+
+compression time=0.002701, total fastmode1 topology
+compression size = 75301, CR = 2.937331
+done
+decompression time=0.004809
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001709717
+Max relative error = 0.000171
+Max pw relative error = 0.000171
+PSNR = 91.164382, NRMSE= 2.7655460978299632258E-05
+acEff=1.000000
+compressionRatio = 2.937332
+  ✓ Compression and decompression successful (ratio: 2.93x)
+
+[52/176] Processing: FCEV_1_192_288.dat
+
+compression time=0.003425, total fastmode1 topology
+compression size = 74075, CR = 2.985947
+done
+decompression time=0.004690
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001596641
+Max relative error = 0.000160
+Max pw relative error = 0.000160
+PSNR = 91.259256, NRMSE= 2.7355029109598339273E-05
+acEff=1.000000
+compressionRatio = 2.985947
+  ✓ Compression and decompression successful (ratio: 2.98x)
+
+[53/176] Processing: FCOV_1_192_288.dat
+
+compression time=0.002912, total fastmode1 topology
+compression size = 75119, CR = 2.944448
+done
+decompression time=0.004840
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001729288
+Max relative error = 0.000173
+Max pw relative error = 0.000173
+PSNR = 90.996907, NRMSE= 2.819386842680992442E-05
+acEff=1.000000
+compressionRatio = 2.944448
+  ✓ Compression and decompression successful (ratio: 2.94x)
+
+[54/176] Processing: FCTR_1_192_288.dat
+
+compression time=0.003933, total fastmode1 topology
+compression size = 73199, CR = 3.021681
+done
+decompression time=0.004347
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001747496
+Max relative error = 0.000175
+Max pw relative error = 0.000175
+PSNR = 92.263812, NRMSE= 2.4367410285395869933E-05
+acEff=1.000000
+compressionRatio = 3.021681
+  ✓ Compression and decompression successful (ratio: 3.02x)
+
+[55/176] Processing: FGEV_1_192_288.dat
+
+compression time=0.003151, total fastmode1 topology
+compression size = 80578, CR = 2.744968
+done
+decompression time=0.004733
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001726933
+Max relative error = 0.000173
+Max pw relative error = 0.000173
+PSNR = 88.949607, NRMSE= 3.5687790913992860126E-05
+acEff=1.000000
+compressionRatio = 2.744968
+  ✓ Compression and decompression successful (ratio: 2.74x)
+
+[56/176] Processing: FGR_1_192_288.dat
+
+compression time=0.004152, total fastmode1 topology
+compression size = 77511, CR = 2.853582
+done
+decompression time=0.004952
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001617558
+Max relative error = 0.000162
+Max pw relative error = 0.000162
+PSNR = 89.044313, NRMSE= 3.5300785145648038495E-05
+acEff=1.000000
+compressionRatio = 2.853582
+  ✓ Compression and decompression successful (ratio: 2.85x)
+
+[57/176] Processing: FGR12_1_192_288.dat
+
+compression time=0.003151, total fastmode1 topology
+compression size = 77998, CR = 2.835765
+done
+decompression time=0.004626
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001938678
+Max relative error = 0.000194
+Max pw relative error = 0.000194
+PSNR = 89.033418, NRMSE= 3.5345090830047504757E-05
+acEff=1.000000
+compressionRatio = 2.835765
+  ✓ Compression and decompression successful (ratio: 2.83x)
+
+[58/176] Processing: FGR_R_1_192_288.dat
+
+compression time=0.002794, total fastmode1 topology
+compression size = 72869, CR = 3.035365
+done
+decompression time=0.005020
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001621991
+Max relative error = 0.000162
+Max pw relative error = 0.000162
+PSNR = 90.582073, NRMSE= 2.9573064442234093862E-05
+acEff=1.000000
+compressionRatio = 3.035365
+  ✓ Compression and decompression successful (ratio: 3.03x)
+
+[59/176] Processing: FGR_U_1_192_288.dat
+
+compression time=0.002447, total fastmode1 topology
+compression size = 67037, CR = 3.299432
+done
+decompression time=0.004695
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001295991
+Max relative error = 0.000130
+Max pw relative error = 0.000130
+PSNR = 95.764591, NRMSE= 1.6284350031469231688E-05
+acEff=1.000000
+compressionRatio = 3.299432
+  ✓ Compression and decompression successful (ratio: 3.29x)
+
+[60/176] Processing: FIRA_1_192_288.dat
+
+compression time=0.003610, total fastmode1 topology
+compression size = 78265, CR = 2.826091
+done
+decompression time=0.005007
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001757368
+Max relative error = 0.000176
+Max pw relative error = 0.000176
+PSNR = 88.964014, NRMSE= 3.562864637413067049E-05
+acEff=1.000000
+compressionRatio = 2.826091
+  ✓ Compression and decompression successful (ratio: 2.82x)
+
+[61/176] Processing: FIRA_R_1_192_288.dat
+
+compression time=0.003284, total fastmode1 topology
+compression size = 73465, CR = 3.010740
+done
+decompression time=0.004801
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001724958
+Max relative error = 0.000172
+Max pw relative error = 0.000172
+PSNR = 90.497095, NRMSE= 2.9863813953399190066E-05
+acEff=1.000000
+compressionRatio = 3.010740
+  ✓ Compression and decompression successful (ratio: 3.01x)
+
+[62/176] Processing: FIRA_U_1_192_288.dat
+
+compression time=0.003420, total fastmode1 topology
+compression size = 67063, CR = 3.298152
+done
+decompression time=0.004370
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001276620
+Max relative error = 0.000128
+Max pw relative error = 0.000128
+PSNR = 95.746799, NRMSE= 1.6317741660455322973E-05
+acEff=1.000000
+compressionRatio = 3.298152
+  ✓ Compression and decompression successful (ratio: 3.29x)
+
+[63/176] Processing: FIRE_1_192_288.dat
+
+compression time=0.003257, total fastmode1 topology
+compression size = 75291, CR = 2.937722
+done
+decompression time=0.004370
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001775958
+Max relative error = 0.000178
+Max pw relative error = 0.000178
+PSNR = 88.910171, NRMSE= 3.5850187497628145336E-05
+acEff=1.000000
+compressionRatio = 2.937722
+  ✓ Compression and decompression successful (ratio: 2.93x)
+
+[64/176] Processing: FIRESEASONL_1_192_288.dat
+
+compression time=0.003834, total fastmode1 topology
+compression size = 74684, CR = 2.961598
+done
+decompression time=0.004460
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001871251
+Max relative error = 0.000187
+Max pw relative error = 0.000187
+PSNR = 92.348772, NRMSE= 2.4130225958899385668E-05
+acEff=1.000000
+compressionRatio = 2.961598
+  ✓ Compression and decompression successful (ratio: 2.96x)
+
+[65/176] Processing: FLDS_1_192_288.dat
+
+compression time=0.003380, total fastmode1 topology
+compression size = 75087, CR = 2.945703
+done
+decompression time=0.004425
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001805760
+Max relative error = 0.000181
+Max pw relative error = 0.000181
+PSNR = 89.024856, NRMSE= 3.5379949659810832978E-05
+acEff=1.000000
+compressionRatio = 2.945703
+  ✓ Compression and decompression successful (ratio: 2.94x)
+
+[66/176] Processing: FLUXFM2A_1_192_288.dat
+
+compression time=0.002698, total fastmode1 topology
+compression size = 64624, CR = 3.422629
+done
+decompression time=0.003743
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+acEff=1.000000
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
+
+[67/176] Processing: FLUXFMLND_1_192_288.dat
+
+compression time=0.002695, total fastmode1 topology
+compression size = 64624, CR = 3.422629
+done
+decompression time=0.003767
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+acEff=1.000000
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
+
+[68/176] Processing: FPG_1_192_288.dat
+
+compression time=0.003039, total fastmode1 topology
+compression size = 69336, CR = 3.190031
+done
+decompression time=0.004345
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001647002
+Max relative error = 0.000165
+Max pw relative error = 0.000165
+PSNR = 88.964389, NRMSE= 3.562710438411986069E-05
+acEff=1.000000
+compressionRatio = 3.190031
+  ✓ Compression and decompression successful (ratio: 3.19x)
+
+[69/176] Processing: FPI_1_192_288.dat
+
+compression time=0.002814, total fastmode1 topology
+compression size = 73050, CR = 3.027844
+done
+decompression time=0.004445
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001870878
+Max relative error = 0.000187
+Max pw relative error = 0.000187
+PSNR = 90.559547, NRMSE= 2.9649858575710798551E-05
+acEff=1.000000
+compressionRatio = 3.027844
+  ✓ Compression and decompression successful (ratio: 3.02x)
+
+[70/176] Processing: FPSN_1_192_288.dat
+
+compression time=0.003055, total fastmode1 topology
+compression size = 72609, CR = 3.046234
+done
+decompression time=0.004404
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001807101
+Max relative error = 0.000181
+Max pw relative error = 0.000181
+PSNR = 92.165707, NRMSE= 2.464419569446094107E-05
+acEff=1.000000
+compressionRatio = 3.046234
+  ✓ Compression and decompression successful (ratio: 3.04x)
+
+[71/176] Processing: FROOTC_1_192_288.dat
+
+compression time=0.003781, total fastmode1 topology
+compression size = 75998, CR = 2.910392
+done
+decompression time=0.004444
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001732036
+Max relative error = 0.000173
+Max pw relative error = 0.000173
+PSNR = 91.588973, NRMSE= 2.6336093625827536151E-05
+acEff=1.000000
+compressionRatio = 2.910392
+  ✓ Compression and decompression successful (ratio: 2.91x)
+
+[72/176] Processing: FROOTC_ALLOC_1_192_288.dat
+
+compression time=0.002489, total fastmode1 topology
+compression size = 66605, CR = 3.320832
+done
+decompression time=0.004318
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000296831
+Max relative error = 0.000030
+Max pw relative error = 0.000030
+PSNR = 132.383883, NRMSE= 2.403288129063790539E-07
+acEff=1.000000
+compressionRatio = 3.320832
+  ✓ Compression and decompression successful (ratio: 3.32x)
+
+[73/176] Processing: FROOTC_LOSS_1_192_288.dat
+
+compression time=0.002715, total fastmode1 topology
+compression size = 67425, CR = 3.280445
+done
+decompression time=0.004397
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000314713
+Max relative error = 0.000031
+Max pw relative error = 0.000031
+PSNR = 130.458001, NRMSE= 2.9998527009105479368E-07
+acEff=1.000000
+compressionRatio = 3.280445
+  ✓ Compression and decompression successful (ratio: 3.28x)
+
+[74/176] Processing: FROOTN_1_192_288.dat
+
+compression time=0.003282, total fastmode1 topology
+compression size = 75062, CR = 2.946684
+done
+decompression time=0.004621
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001831278
+Max relative error = 0.000183
+Max pw relative error = 0.000183
+PSNR = 91.689956, NRMSE= 2.6031679836825342397E-05
+acEff=1.000000
+compressionRatio = 2.946684
+  ✓ Compression and decompression successful (ratio: 2.94x)
+
+[75/176] Processing: FSA_1_192_288.dat
+
+compression time=0.003497, total fastmode1 topology
+compression size = 77193, CR = 2.865338
+done
+decompression time=0.004478
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001742691
+Max relative error = 0.000174
+Max pw relative error = 0.000174
+PSNR = 89.441738, NRMSE= 3.3721982038009679344E-05
+acEff=1.000000
+compressionRatio = 2.865338
+  ✓ Compression and decompression successful (ratio: 2.86x)
+
+[76/176] Processing: FSA_R_1_192_288.dat
+
+compression time=0.003432, total fastmode1 topology
+compression size = 71446, CR = 3.095821
+done
+decompression time=0.004624
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001719296
+Max relative error = 0.000172
+Max pw relative error = 0.000172
+PSNR = 91.116931, NRMSE= 2.7806957008406621358E-05
+acEff=1.000000
+compressionRatio = 3.095821
+  ✓ Compression and decompression successful (ratio: 3.09x)
+
+[77/176] Processing: FSAT_1_192_288.dat
+
+compression time=0.002927, total fastmode1 topology
+compression size = 73938, CR = 2.991479
+done
+decompression time=0.004647
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001673838
+Max relative error = 0.000167
+Max pw relative error = 0.000167
+PSNR = 90.996820, NRMSE= 2.8194148008331100579E-05
+acEff=1.000000
+compressionRatio = 2.991479
+  ✓ Compression and decompression successful (ratio: 2.99x)
+
+[78/176] Processing: FSA_U_1_192_288.dat
+
+compression time=0.002789, total fastmode1 topology
+compression size = 66859, CR = 3.308216
+done
+decompression time=0.004126
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000999942
+Max relative error = 0.000100
+Max pw relative error = 0.000100
+PSNR = 95.747042, NRMSE= 1.6317285364182086129E-05
+acEff=1.000000
+compressionRatio = 3.308216
+  ✓ Compression and decompression successful (ratio: 3.30x)
+
+[79/176] Processing: FSDS_1_192_288.dat
+
+compression time=0.003075, total fastmode1 topology
+compression size = 73061, CR = 3.027388
+done
+decompression time=0.004245
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001764894
+Max relative error = 0.000176
+Max pw relative error = 0.000176
+PSNR = 89.444476, NRMSE= 3.3711355916700452449E-05
+acEff=1.000000
+compressionRatio = 3.027388
+  ✓ Compression and decompression successful (ratio: 3.02x)
+
+[80/176] Processing: FSDSND_1_192_288.dat
+
+compression time=0.003608, total fastmode1 topology
+compression size = 74585, CR = 2.965529
+done
+decompression time=0.004301
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001960099
+Max relative error = 0.000196
+Max pw relative error = 0.000196
+PSNR = 89.376717, NRMSE= 3.3975367601667603946E-05
+acEff=1.000000
+compressionRatio = 2.965529
+  ✓ Compression and decompression successful (ratio: 2.96x)
+
+[81/176] Processing: FSDSNDLN_1_192_288.dat
+
+compression time=0.003220, total fastmode1 topology
+compression size = 75792, CR = 2.918303
+done
+decompression time=0.004542
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001768768
+Max relative error = 0.000177
+Max pw relative error = 0.000177
+PSNR = 89.444189, NRMSE= 3.371246975623291408E-05
+acEff=1.000000
+compressionRatio = 2.918303
+  ✓ Compression and decompression successful (ratio: 2.91x)
+
+[82/176] Processing: FSDSNI_1_192_288.dat
+
+compression time=0.003597, total fastmode1 topology
+compression size = 76744, CR = 2.882102
+done
+decompression time=0.005218
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001950786
+Max relative error = 0.000195
+Max pw relative error = 0.000195
+PSNR = 89.417117, NRMSE= 3.3817705789849122943E-05
+acEff=1.000000
+compressionRatio = 2.882102
+  ✓ Compression and decompression successful (ratio: 2.88x)
+
+[83/176] Processing: FSDSVD_1_192_288.dat
+
+compression time=0.003644, total fastmode1 topology
+compression size = 74142, CR = 2.983248
+done
+decompression time=0.004744
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001993701
+Max relative error = 0.000199
+Max pw relative error = 0.000199
+PSNR = 89.496245, NRMSE= 3.3511027718874353797E-05
+acEff=1.000000
+compressionRatio = 2.983248
+  ✓ Compression and decompression successful (ratio: 2.98x)
+
+[84/176] Processing: FSDSVDLN_1_192_288.dat
+
+compression time=0.003405, total fastmode1 topology
+compression size = 75364, CR = 2.934876
+done
+decompression time=0.004407
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001722947
+Max relative error = 0.000172
+Max pw relative error = 0.000172
+PSNR = 89.493324, NRMSE= 3.3522298376363176479E-05
+acEff=1.000000
+compressionRatio = 2.934876
+  ✓ Compression and decompression successful (ratio: 2.93x)
+
+[85/176] Processing: FSDSVI_1_192_288.dat
+
+compression time=0.003242, total fastmode1 topology
+compression size = 75280, CR = 2.938151
+done
+decompression time=0.005437
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001919381
+Max relative error = 0.000192
+Max pw relative error = 0.000192
+PSNR = 89.315695, NRMSE= 3.4214898004043746665E-05
+acEff=1.000000
+compressionRatio = 2.938151
+  ✓ Compression and decompression successful (ratio: 2.93x)
+
+[86/176] Processing: FSH_1_192_288.dat
+
+compression time=0.003222, total fastmode1 topology
+compression size = 78591, CR = 2.814368
+done
+decompression time=0.005042
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001916401
+Max relative error = 0.000192
+Max pw relative error = 0.000192
+PSNR = 88.976957, NRMSE= 3.5575592796541127068E-05
+acEff=1.000000
+compressionRatio = 2.814368
+  ✓ Compression and decompression successful (ratio: 2.81x)
+
+[87/176] Processing: FSH_G_1_192_288.dat
+
+compression time=0.003137, total fastmode1 topology
+compression size = 79353, CR = 2.787343
+done
+decompression time=0.004659
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001732334
+Max relative error = 0.000173
+Max pw relative error = 0.000173
+PSNR = 88.892878, NRMSE= 3.5921636429483085767E-05
+acEff=1.000000
+compressionRatio = 2.787343
+  ✓ Compression and decompression successful (ratio: 2.78x)
+
+[88/176] Processing: FSH_NODYNLNDUSE_1_192_288.dat
+
+compression time=0.003203, total fastmode1 topology
+compression size = 78590, CR = 2.814404
+done
+decompression time=0.004867
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001916401
+Max relative error = 0.000192
+Max pw relative error = 0.000192
+PSNR = 88.976969, NRMSE= 3.5575544027330384227E-05
+acEff=1.000000
+compressionRatio = 2.814404
+  ✓ Compression and decompression successful (ratio: 2.81x)
+
+[89/176] Processing: FSH_R_1_192_288.dat
+
+compression time=0.002949, total fastmode1 topology
+compression size = 73104, CR = 3.025607
+done
+decompression time=0.004538
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001657456
+Max relative error = 0.000166
+Max pw relative error = 0.000166
+PSNR = 90.617391, NRMSE= 2.9453062933188869942E-05
+acEff=1.000000
+compressionRatio = 3.025607
+  ✓ Compression and decompression successful (ratio: 3.02x)
+
+[90/176] Processing: FSH_U_1_192_288.dat
+
+compression time=0.003153, total fastmode1 topology
+compression size = 67118, CR = 3.295450
+done
+decompression time=0.004138
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001040399
+Max relative error = 0.000104
+Max pw relative error = 0.000104
+PSNR = 95.723996, NRMSE= 1.6360637583099695106E-05
+acEff=1.000000
+compressionRatio = 3.295450
+  ✓ Compression and decompression successful (ratio: 3.29x)
+
+[91/176] Processing: FSH_V_1_192_288.dat
+
+compression time=0.002836, total fastmode1 topology
+compression size = 73904, CR = 2.992856
+done
+decompression time=0.004608
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001854636
+Max relative error = 0.000185
+Max pw relative error = 0.000185
+PSNR = 91.081286, NRMSE= 2.7921303416108196095E-05
+acEff=1.000000
+compressionRatio = 2.992856
+  ✓ Compression and decompression successful (ratio: 2.99x)
+
+[92/176] Processing: FSM_1_192_288.dat
+
+compression time=0.003080, total fastmode1 topology
+compression size = 74441, CR = 2.971266
+done
+decompression time=0.004346
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001791179
+Max relative error = 0.000179
+Max pw relative error = 0.000179
+PSNR = 93.608193, NRMSE= 2.0873264210233852343E-05
+acEff=1.000000
+compressionRatio = 2.971266
+  ✓ Compression and decompression successful (ratio: 2.97x)
+
+[93/176] Processing: FSM_R_1_192_288.dat
+
+compression time=0.003160, total fastmode1 topology
+compression size = 70486, CR = 3.137985
+done
+decompression time=0.004456
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001705440
+Max relative error = 0.000171
+Max pw relative error = 0.000171
+PSNR = 95.378365, NRMSE= 1.7024789510574679131E-05
+acEff=1.000000
+compressionRatio = 3.137985
+  ✓ Compression and decompression successful (ratio: 3.13x)
+
+[94/176] Processing: FSM_U_1_192_288.dat
+
+compression time=0.002749, total fastmode1 topology
+compression size = 66882, CR = 3.307078
+done
+decompression time=0.004217
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000999966
+Max relative error = 0.000100
+Max pw relative error = 0.000100
+PSNR = 101.185356, NRMSE= 8.7243321085086471565E-06
+acEff=1.000000
+compressionRatio = 3.307078
+  ✓ Compression and decompression successful (ratio: 3.30x)
+
+[95/176] Processing: FSNO_1_192_288.dat
+
+compression time=0.004860, total fastmode1 topology
+compression size = 68607, CR = 3.223927
+done
+decompression time=0.004263
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001494056
+Max relative error = 0.000149
+Max pw relative error = 0.000149
+PSNR = 90.618793, NRMSE= 2.9448307533783405399E-05
+acEff=1.000000
+compressionRatio = 3.223928
+  ✓ Compression and decompression successful (ratio: 3.22x)
+
+[96/176] Processing: FSR_1_192_288.dat
+
+compression time=0.003467, total fastmode1 topology
+compression size = 78116, CR = 2.831481
+done
+decompression time=0.004917
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001864471
+Max relative error = 0.000186
+Max pw relative error = 0.000186
+PSNR = 89.363336, NRMSE= 3.4027748138048119345E-05
+acEff=1.000000
+compressionRatio = 2.831481
+  ✓ Compression and decompression successful (ratio: 2.83x)
+
+[97/176] Processing: FSRND_1_192_288.dat
+
+compression time=0.003616, total fastmode1 topology
+compression size = 77960, CR = 2.837147
+done
+decompression time=0.004674
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001872219
+Max relative error = 0.000187
+Max pw relative error = 0.000187
+PSNR = 89.499598, NRMSE= 3.3498094672922425316E-05
+acEff=1.000000
+compressionRatio = 2.837147
+  ✓ Compression and decompression successful (ratio: 2.83x)
+
+[98/176] Processing: FSRNDLN_1_192_288.dat
+
+compression time=0.003559, total fastmode1 topology
+compression size = 79033, CR = 2.798628
+done
+decompression time=0.004581
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001957864
+Max relative error = 0.000196
+Max pw relative error = 0.000196
+PSNR = 89.408007, NRMSE= 3.3853195651799255345E-05
+acEff=1.000000
+compressionRatio = 2.798628
+  ✓ Compression and decompression successful (ratio: 2.79x)
+
+[99/176] Processing: FSRNI_1_192_288.dat
+
+compression time=0.003220, total fastmode1 topology
+compression size = 78614, CR = 2.813545
+done
+decompression time=0.005045
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001843646
+Max relative error = 0.000184
+Max pw relative error = 0.000184
+PSNR = 89.393785, NRMSE= 3.3908670920540439036E-05
+acEff=1.000000
+compressionRatio = 2.813545
+  ✓ Compression and decompression successful (ratio: 2.81x)
+
+[100/176] Processing: FSRVD_1_192_288.dat
+
+compression time=0.003566, total fastmode1 topology
+compression size = 77026, CR = 2.871550
+done
+decompression time=0.004749
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001765788
+Max relative error = 0.000177
+Max pw relative error = 0.000177
+PSNR = 89.451971, NRMSE= 3.3682278211262513354E-05
+acEff=1.000000
+compressionRatio = 2.871550
+  ✓ Compression and decompression successful (ratio: 2.87x)
+
+[101/176] Processing: FSRVDLN_1_192_288.dat
+
+compression time=0.003983, total fastmode1 topology
+compression size = 77861, CR = 2.840755
+done
+decompression time=0.005022
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001791455
+Max relative error = 0.000179
+Max pw relative error = 0.000179
+PSNR = 89.446366, NRMSE= 3.3704018109098138811E-05
+acEff=1.000000
+compressionRatio = 2.840755
+  ✓ Compression and decompression successful (ratio: 2.84x)
+
+[102/176] Processing: FSRVI_1_192_288.dat
+
+compression time=0.003547, total fastmode1 topology
+compression size = 78074, CR = 2.833004
+done
+decompression time=0.004553
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001889020
+Max relative error = 0.000189
+Max pw relative error = 0.000189
+PSNR = 89.462420, NRMSE= 3.3641780940396807226E-05
+acEff=1.000000
+compressionRatio = 2.833005
+  ✓ Compression and decompression successful (ratio: 2.83x)
+
+[103/176] Processing: GC_HEAT1_1_192_288.dat
+
+compression time=0.002800, total fastmode1 topology
+compression size = 77701, CR = 2.846604
+done
+decompression time=0.004770
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001842901
+Max relative error = 0.000184
+Max pw relative error = 0.000184
+PSNR = 88.947692, NRMSE= 3.5695659269358197339E-05
+acEff=1.000000
+compressionRatio = 2.846604
+  ✓ Compression and decompression successful (ratio: 2.84x)
+
+[104/176] Processing: GC_HEAT2_1_192_288.dat
+
+compression time=0.002651, total fastmode1 topology
+compression size = 64624, CR = 3.422629
+done
+decompression time=0.003595
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+acEff=1.000000
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
+
+[105/176] Processing: GC_ICE1_1_192_288.dat
+
+compression time=0.004084, total fastmode1 topology
+compression size = 72753, CR = 3.040205
+done
+decompression time=0.004314
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001862645
+Max relative error = 0.000186
+Max pw relative error = 0.000186
+PSNR = 92.967512, NRMSE= 2.2471104588058739201E-05
+acEff=1.000000
+compressionRatio = 3.040205
+  ✓ Compression and decompression successful (ratio: 3.04x)
+
+[106/176] Processing: GC_ICE2_1_192_288.dat
+
+compression time=0.002864, total fastmode1 topology
+compression size = 64624, CR = 3.422629
+done
+decompression time=0.003545
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+acEff=1.000000
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
+
+[107/176] Processing: GC_LIQ1_1_192_288.dat
+
+compression time=0.003164, total fastmode1 topology
+compression size = 71956, CR = 3.073879
+done
+decompression time=0.004696
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001600981
+Max relative error = 0.000160
+Max pw relative error = 0.000160
+PSNR = 90.686899, NRMSE= 2.9218307141180040046E-05
+acEff=1.000000
+compressionRatio = 3.073878
+  ✓ Compression and decompression successful (ratio: 3.07x)
+
+[108/176] Processing: GC_LIQ2_1_192_288.dat
+
+compression time=0.002564, total fastmode1 topology
+compression size = 64624, CR = 3.422629
+done
+decompression time=0.003761
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+acEff=1.000000
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
+
+[109/176] Processing: GPP_1_192_288.dat
+
+compression time=0.002828, total fastmode1 topology
+compression size = 67553, CR = 3.274229
+done
+decompression time=0.004425
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000746250
+Max relative error = 0.000075
+Max pw relative error = 0.000075
+PSNR = 123.902557, NRMSE= 6.3807562299790757504E-07
+acEff=1.000000
+compressionRatio = 3.274229
+  ✓ Compression and decompression successful (ratio: 3.27x)
+
+[110/176] Processing: GR_1_192_288.dat
+
+compression time=0.002587, total fastmode1 topology
+compression size = 66472, CR = 3.327476
+done
+decompression time=0.004305
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000998389
+Max relative error = 0.000100
+Max pw relative error = 0.000100
+PSNR = 126.387823, NRMSE= 4.7930158267950277915E-07
+acEff=1.000000
+compressionRatio = 3.327476
+  ✓ Compression and decompression successful (ratio: 3.32x)
+
+[111/176] Processing: GROSS_NMIN_1_192_288.dat
+
+compression time=0.002783, total fastmode1 topology
+compression size = 65521, CR = 3.375773
+done
+decompression time=0.004291
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000021458
+Max relative error = 0.000002
+Max pw relative error = 0.000002
+PSNR = 139.050568, NRMSE= 1.1155051993673431173E-07
+acEff=1.000000
+compressionRatio = 3.375773
+  ✓ Compression and decompression successful (ratio: 3.37x)
+
+[112/176] Processing: H2OCAN_1_192_288.dat
+
+compression time=0.002881, total fastmode1 topology
+compression size = 73091, CR = 3.026145
+done
+decompression time=0.004607
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001698930
+Max relative error = 0.000170
+Max pw relative error = 0.000170
+PSNR = 92.092141, NRMSE= 2.4853807448967314881E-05
+acEff=1.000000
+compressionRatio = 3.026145
+  ✓ Compression and decompression successful (ratio: 3.02x)
+
+[113/176] Processing: H2OSNO_1_192_288.dat
+
+compression time=0.003521, total fastmode1 topology
+compression size = 73107, CR = 3.025483
+done
+decompression time=0.004416
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001770630
+Max relative error = 0.000177
+Max pw relative error = 0.000177
+PSNR = 91.910216, NRMSE= 2.5379857705375472005E-05
+acEff=1.000000
+compressionRatio = 3.025483
+  ✓ Compression and decompression successful (ratio: 3.02x)
+
+[114/176] Processing: H2OSNO_TOP_1_192_288.dat
+
+compression time=0.003673, total fastmode1 topology
+compression size = 76897, CR = 2.876367
+done
+decompression time=0.004495
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001740707
+Max relative error = 0.000174
+Max pw relative error = 0.000174
+PSNR = 91.009746, NRMSE= 2.8152223918220236346E-05
+acEff=1.000000
+compressionRatio = 2.876367
+  ✓ Compression and decompression successful (ratio: 2.87x)
+
+[115/176] Processing: HC_1_192_288.dat
+
+compression time=0.003529, total fastmode1 topology
+compression size = 80595, CR = 2.744389
+done
+decompression time=0.004848
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001953319
+Max relative error = 0.000195
+Max pw relative error = 0.000195
+PSNR = 88.986556, NRMSE= 3.5536300760230231138E-05
+acEff=1.000000
+compressionRatio = 2.744389
+  ✓ Compression and decompression successful (ratio: 2.74x)
+
+[116/176] Processing: HCSOI_1_192_288.dat
+
+compression time=0.003191, total fastmode1 topology
+compression size = 80237, CR = 2.756634
+done
+decompression time=0.004756
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001922399
+Max relative error = 0.000192
+Max pw relative error = 0.000192
+PSNR = 88.904011, NRMSE= 3.5875624293213151568E-05
+acEff=1.000000
+compressionRatio = 2.756633
+  ✓ Compression and decompression successful (ratio: 2.75x)
+
+[117/176] Processing: HEAT_FROM_AC_1_192_288.dat
+
+compression time=0.002669, total fastmode1 topology
+compression size = 64856, CR = 3.410386
+done
+decompression time=0.004019
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000927262
+Max relative error = 0.000093
+Max pw relative error = 0.000093
+PSNR = 114.404706, NRMSE= 1.9044286804666554283E-06
+acEff=1.000000
+compressionRatio = 3.410386
+  ✓ Compression and decompression successful (ratio: 3.41x)
+
+[118/176] Processing: HR_1_192_288.dat
+
+compression time=0.003036, total fastmode1 topology
+compression size = 68111, CR = 3.247405
+done
+decompression time=0.004483
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000430346
+Max relative error = 0.000043
+Max pw relative error = 0.000043
+PSNR = 128.467945, NRMSE= 3.772269645258712951E-07
+acEff=1.000000
+compressionRatio = 3.247405
+  ✓ Compression and decompression successful (ratio: 3.24x)
+
+[119/176] Processing: HTOP_1_192_288.dat
+
+compression time=0.003375, total fastmode1 topology
+compression size = 76104, CR = 2.906339
+done
+decompression time=0.004512
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001479164
+Max relative error = 0.000148
+Max pw relative error = 0.000148
+PSNR = 91.007956, NRMSE= 2.8158026859216338711E-05
+acEff=1.000000
+compressionRatio = 2.906339
+  ✓ Compression and decompression successful (ratio: 2.90x)
+
+[120/176] Processing: LAISHA_1_192_288.dat
+
+compression time=0.003721, total fastmode1 topology
+compression size = 74945, CR = 2.951284
+done
+decompression time=0.004865
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001853360
+Max relative error = 0.000185
+Max pw relative error = 0.000185
+PSNR = 91.694209, NRMSE= 2.6018937872896980132E-05
+acEff=1.000000
+compressionRatio = 2.951284
+  ✓ Compression and decompression successful (ratio: 2.95x)
+
+[121/176] Processing: LAISUN_1_192_288.dat
+
+compression time=0.003415, total fastmode1 topology
+compression size = 71300, CR = 3.102160
+done
+decompression time=0.004109
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001840936
+Max relative error = 0.000184
+Max pw relative error = 0.000184
+PSNR = 92.214311, NRMSE= 2.4506678315205195144E-05
+acEff=1.000000
+compressionRatio = 3.102160
+  ✓ Compression and decompression successful (ratio: 3.10x)
+
+[122/176] Processing: landfrac_192_288.dat
+
+compression time=0.003254, total fastmode1 topology
+compression size = 68362, CR = 3.235482
+done
+decompression time=0.004584
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000999682
+Max relative error = 0.000100
+Max pw relative error = 0.000100
+PSNR = 89.298050, NRMSE= 3.4284474751102958262E-05
+acEff=1.000000
+compressionRatio = 3.235482
+  ✓ Compression and decompression successful (ratio: 3.23x)
+
+[123/176] Processing: latixy_192_288.dat
+
+compression time=0.002772, total fastmode1 topology
+compression size = 64629, CR = 3.422364
+done
+decompression time=0.003627
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000995509
+Max relative error = 0.000100
+Max pw relative error = 0.000100
+PSNR = 89.264382, NRMSE= 3.4417623363488898864E-05
+acEff=1.000000
+compressionRatio = 3.422365
+  ✓ Compression and decompression successful (ratio: 3.42x)
+
+[124/176] Processing: latixyatm_192_288.dat
+
+compression time=0.002535, total fastmode1 topology
+compression size = 59837, CR = 3.696442
+done
+decompression time=0.004918
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000997633
+Max relative error = 0.000100
+Max pw relative error = 0.000100
+PSNR = 84.953201, NRMSE= 5.6537936829747916596E-05
+acEff=1.000000
+compressionRatio = 3.696442
+  ✓ Compression and decompression successful (ratio: 3.69x)
+
+[125/176] Processing: LEAFC_1_192_288.dat
+
+compression time=0.003849, total fastmode1 topology
+compression size = 75692, CR = 2.922158
+done
+decompression time=0.004390
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001855344
+Max relative error = 0.000186
+Max pw relative error = 0.000186
+PSNR = 91.631012, NRMSE= 2.6208935851808588282E-05
+acEff=1.000000
+compressionRatio = 2.922158
+  ✓ Compression and decompression successful (ratio: 2.92x)
+
+[126/176] Processing: LEAFC_ALLOC_1_192_288.dat
+
+compression time=0.002755, total fastmode1 topology
+compression size = 66503, CR = 3.325925
+done
+decompression time=0.004343
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000119209
+Max relative error = 0.000012
+Max pw relative error = 0.000012
+PSNR = 136.010019, NRMSE= 1.5830660506947301948E-07
+acEff=1.000000
+compressionRatio = 3.325925
+  ✓ Compression and decompression successful (ratio: 3.32x)
+
+[127/176] Processing: LEAFC_LOSS_1_192_288.dat
+
+compression time=0.002791, total fastmode1 topology
+compression size = 67322, CR = 3.285464
+done
+decompression time=0.004149
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000998677
+Max relative error = 0.000100
+Max pw relative error = 0.000100
+PSNR = 126.406808, NRMSE= 4.7825506830408143849E-07
+acEff=1.000000
+compressionRatio = 3.285464
+  ✓ Compression and decompression successful (ratio: 3.28x)
+
+[128/176] Processing: LEAFN_1_192_288.dat
+
+compression time=0.003681, total fastmode1 topology
+compression size = 75082, CR = 2.945899
+done
+decompression time=0.004794
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001808461
+Max relative error = 0.000181
+Max pw relative error = 0.000181
+PSNR = 91.655165, NRMSE= 2.6136158772147727314E-05
+acEff=1.000000
+compressionRatio = 2.945899
+  ✓ Compression and decompression successful (ratio: 2.94x)
+
+[129/176] Processing: LITFALL_1_192_288.dat
+
+compression time=0.002948, total fastmode1 topology
+compression size = 68201, CR = 3.243120
+done
+decompression time=0.004405
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000425577
+Max relative error = 0.000043
+Max pw relative error = 0.000043
+PSNR = 128.645567, NRMSE= 3.6959120801125236026E-07
+acEff=1.000000
+compressionRatio = 3.243120
+  ✓ Compression and decompression successful (ratio: 3.24x)
+
+[130/176] Processing: LITHR_1_192_288.dat
+
+compression time=0.002964, total fastmode1 topology
+compression size = 67778, CR = 3.263360
+done
+decompression time=0.004208
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000282526
+Max relative error = 0.000028
+Max pw relative error = 0.000028
+PSNR = 130.536944, NRMSE= 2.9727115978507580571E-07
+acEff=1.000000
+compressionRatio = 3.263360
+  ✓ Compression and decompression successful (ratio: 3.26x)
+
+[131/176] Processing: LITR1C_1_192_288.dat
+
+compression time=0.003719, total fastmode1 topology
+compression size = 76523, CR = 2.890425
+done
+decompression time=0.004540
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001880080
+Max relative error = 0.000188
+Max pw relative error = 0.000188
+PSNR = 91.345046, NRMSE= 2.7086177330248793581E-05
+acEff=1.000000
+compressionRatio = 2.890425
+  ✓ Compression and decompression successful (ratio: 2.89x)
+
+[132/176] Processing: LITR1C_TO_SOIL1C_1_192_288.dat
+
+compression time=0.002969, total fastmode1 topology
+compression size = 66788, CR = 3.311733
+done
+decompression time=0.004190
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000999784
+Max relative error = 0.000100
+Max pw relative error = 0.000100
+PSNR = 122.430083, NRMSE= 7.5595481678801999252E-07
+acEff=1.000000
+compressionRatio = 3.311733
+  ✓ Compression and decompression successful (ratio: 3.31x)
+
+[133/176] Processing: LITR1N_1_192_288.dat
+
+compression time=0.003146, total fastmode1 topology
+compression size = 73694, CR = 3.001384
+done
+decompression time=0.004591
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001956273
+Max relative error = 0.000196
+Max pw relative error = 0.000196
+PSNR = 92.516259, NRMSE= 2.3669390098473204475E-05
+acEff=1.000000
+compressionRatio = 3.001384
+  ✓ Compression and decompression successful (ratio: 3.00x)
+
+[134/176] Processing: LITR2C_1_192_288.dat
+
+compression time=0.004161, total fastmode1 topology
+compression size = 76966, CR = 2.873788
+done
+decompression time=0.004358
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001802649
+Max relative error = 0.000180
+Max pw relative error = 0.000180
+PSNR = 91.339782, NRMSE= 2.710259535781503831E-05
+acEff=1.000000
+compressionRatio = 2.873788
+  ✓ Compression and decompression successful (ratio: 2.87x)
+
+[135/176] Processing: LITR2C_TO_SOIL2C_1_192_288.dat
+
+compression time=0.002786, total fastmode1 topology
+compression size = 67297, CR = 3.286685
+done
+decompression time=0.004246
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000999310
+Max relative error = 0.000100
+Max pw relative error = 0.000100
+PSNR = 126.327029, NRMSE= 4.8266803901349657048E-07
+acEff=1.000000
+compressionRatio = 3.286684
+  ✓ Compression and decompression successful (ratio: 3.28x)
+
+[136/176] Processing: LITR2N_1_192_288.dat
+
+compression time=0.003260, total fastmode1 topology
+compression size = 75948, CR = 2.912308
+done
+decompression time=0.004465
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001822356
+Max relative error = 0.000182
+Max pw relative error = 0.000182
+PSNR = 91.416834, NRMSE= 2.6863235841612955851E-05
+acEff=1.000000
+compressionRatio = 2.912308
+  ✓ Compression and decompression successful (ratio: 2.91x)
+
+[137/176] Processing: LITR3C_1_192_288.dat
+
+compression time=0.003872, total fastmode1 topology
+compression size = 76817, CR = 2.879363
+done
+decompression time=0.004503
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001554042
+Max relative error = 0.000155
+Max pw relative error = 0.000155
+PSNR = 91.246389, NRMSE= 2.7395582653093678016E-05
+acEff=1.000000
+compressionRatio = 2.879363
+  ✓ Compression and decompression successful (ratio: 2.87x)
+
+[138/176] Processing: LITR3C_TO_SOIL3C_1_192_288.dat
+
+compression time=0.002817, total fastmode1 topology
+compression size = 66834, CR = 3.309453
+done
+decompression time=0.004718
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000020266
+Max relative error = 0.000002
+Max pw relative error = 0.000002
+PSNR = 135.504756, NRMSE= 1.6778849762816762389E-07
+acEff=1.000000
+compressionRatio = 3.309453
+  ✓ Compression and decompression successful (ratio: 3.30x)
+
+[139/176] Processing: LITR3N_1_192_288.dat
+
+compression time=0.003016, total fastmode1 topology
+compression size = 75810, CR = 2.917610
+done
+decompression time=0.005090
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001897169
+Max relative error = 0.000190
+Max pw relative error = 0.000190
+PSNR = 91.274390, NRMSE= 2.7307410521416825765E-05
+acEff=1.000000
+compressionRatio = 2.917610
+  ✓ Compression and decompression successful (ratio: 2.91x)
+
+[140/176] Processing: LITTERC_1_192_288.dat
+
+compression time=0.004533, total fastmode1 topology
+compression size = 76968, CR = 2.873714
+done
+decompression time=0.005215
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001475662
+Max relative error = 0.000148
+Max pw relative error = 0.000148
+PSNR = 91.279778, NRMSE= 2.7290474128577383418E-05
+acEff=1.000000
+compressionRatio = 2.873714
+  ✓ Compression and decompression successful (ratio: 2.87x)
+
+[141/176] Processing: LITTERC_HR_1_192_288.dat
+
+compression time=0.002770, total fastmode1 topology
+compression size = 67773, CR = 3.263601
+done
+decompression time=0.004420
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000274181
+Max relative error = 0.000027
+Max pw relative error = 0.000027
+PSNR = 130.497091, NRMSE= 2.9863827615276781742E-07
+acEff=1.000000
+compressionRatio = 3.263601
+  ✓ Compression and decompression successful (ratio: 3.26x)
+
+[142/176] Processing: LITTERC_LOSS_1_192_288.dat
+
+compression time=0.003058, total fastmode1 topology
+compression size = 68323, CR = 3.237329
+done
+decompression time=0.004370
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000433922
+Max relative error = 0.000043
+Max pw relative error = 0.000043
+PSNR = 128.900984, NRMSE= 3.5888128318583843654E-07
+acEff=1.000000
+compressionRatio = 3.237329
+  ✓ Compression and decompression successful (ratio: 3.23x)
+
+[143/176] Processing: LIVECROOTC_1_192_288.dat
+
+compression time=0.003879, total fastmode1 topology
+compression size = 74846, CR = 2.955188
+done
+decompression time=0.005049
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001734180
+Max relative error = 0.000173
+Max pw relative error = 0.000173
+PSNR = 91.917780, NRMSE= 2.5357765649045488137E-05
+acEff=1.000000
+compressionRatio = 2.955188
+  ✓ Compression and decompression successful (ratio: 2.95x)
+
+[144/176] Processing: LIVECROOTN_1_192_288.dat
+
+compression time=0.003975, total fastmode1 topology
+compression size = 71944, CR = 3.074391
+done
+decompression time=0.004480
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001740777
+Max relative error = 0.000174
+Max pw relative error = 0.000174
+PSNR = 92.462719, NRMSE= 2.3815738565784581762E-05
+acEff=1.000000
+compressionRatio = 3.074391
+  ✓ Compression and decompression successful (ratio: 3.07x)
+
+[145/176] Processing: LIVESTEMC_1_192_288.dat
+
+compression time=0.003795, total fastmode1 topology
+compression size = 75268, CR = 2.938619
+done
+decompression time=0.004450
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001559965
+Max relative error = 0.000156
+Max pw relative error = 0.000156
+PSNR = 91.825894, NRMSE= 2.5627444367696733044E-05
+acEff=1.000000
+compressionRatio = 2.938619
+  ✓ Compression and decompression successful (ratio: 2.93x)
+
+[146/176] Processing: LIVESTEMN_1_192_288.dat
+
+compression time=0.002987, total fastmode1 topology
+compression size = 73020, CR = 3.029088
+done
+decompression time=0.004337
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001744137
+Max relative error = 0.000174
+Max pw relative error = 0.000174
+PSNR = 92.115786, NRMSE= 2.4786243561565911081E-05
+acEff=1.000000
+compressionRatio = 3.029088
+  ✓ Compression and decompression successful (ratio: 3.02x)
+
+[147/176] Processing: longxy_192_288.dat
+
+compression time=0.002379, total fastmode1 topology
+compression size = 70732, CR = 3.127071
+done
+decompression time=0.003631
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000999272
+Max relative error = 0.000100
+Max pw relative error = 0.000100
+PSNR = 89.063680, NRMSE= 3.5222160918379915001E-05
+acEff=1.000000
+compressionRatio = 3.127071
+  ✓ Compression and decompression successful (ratio: 3.12x)
+
+[148/176] Processing: longxyatm_192_288.dat
+
+compression time=0.002671, total fastmode1 topology
+compression size = 76649, CR = 2.885674
+done
+decompression time=0.003967
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000981092
+Max relative error = 0.000098
+Max pw relative error = 0.000098
+PSNR = 88.882570, NRMSE= 3.5964291616159493555E-05
+acEff=1.000000
+compressionRatio = 2.885674
+  ✓ Compression and decompression successful (ratio: 2.88x)
+
+[149/176] Processing: MEAN_FIRE_PROB_1_192_288.dat
+
+compression time=0.002646, total fastmode1 topology
+compression size = 72349, CR = 3.057181
+done
+decompression time=0.005037
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001920017
+Max relative error = 0.000192
+Max pw relative error = 0.000192
+PSNR = 92.609669, NRMSE= 2.3416206712658093085E-05
+acEff=1.000000
+compressionRatio = 3.057181
+  ✓ Compression and decompression successful (ratio: 3.05x)
+
+[150/176] Processing: MR_1_192_288.dat
+
+compression time=0.003150, total fastmode1 topology
+compression size = 68270, CR = 3.239842
+done
+decompression time=0.004557
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000990279
+Max relative error = 0.000099
+Max pw relative error = 0.000099
+PSNR = 123.927768, NRMSE= 6.3622630601519531498E-07
+acEff=1.000000
+compressionRatio = 3.239842
+  ✓ Compression and decompression successful (ratio: 3.23x)
+
+[151/176] Processing: NBP_1_192_288.dat
+
+compression time=0.002774, total fastmode1 topology
+compression size = 68662, CR = 3.221345
+done
+decompression time=0.004656
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000991343
+Max relative error = 0.000099
+Max pw relative error = 0.000099
+PSNR = 119.388820, NRMSE= 1.0728993364497305077E-06
+acEff=1.000000
+compressionRatio = 3.221345
+  ✓ Compression and decompression successful (ratio: 3.22x)
+
+[152/176] Processing: NDEPLOY_1_192_288.dat
+
+compression time=0.002823, total fastmode1 topology
+compression size = 65176, CR = 3.393642
+done
+decompression time=0.004127
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000010115
+Max relative error = 0.000001
+Max pw relative error = 0.000001
+PSNR = 141.043763, NRMSE= 8.8677173697590923827E-08
+acEff=1.000000
+compressionRatio = 3.393642
+  ✓ Compression and decompression successful (ratio: 3.39x)
+
+[153/176] Processing: NDEP_TO_SMINN_1_192_288.dat
+
+compression time=0.002968, total fastmode1 topology
+compression size = 64624, CR = 3.422629
+done
+decompression time=0.003471
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+acEff=1.000000
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
+
+[154/176] Processing: NEE_1_192_288.dat
+
+compression time=0.002666, total fastmode1 topology
+compression size = 68637, CR = 3.222518
+done
+decompression time=0.004483
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000994449
+Max relative error = 0.000099
+Max pw relative error = 0.000099
+PSNR = 121.155674, NRMSE= 8.7541963460695541689E-07
+acEff=1.000000
+compressionRatio = 3.222518
+  ✓ Compression and decompression successful (ratio: 3.22x)
+
+[155/176] Processing: NEP_1_192_288.dat
+
+compression time=0.002803, total fastmode1 topology
+compression size = 68612, CR = 3.223693
+done
+decompression time=0.004481
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000991343
+Max relative error = 0.000099
+Max pw relative error = 0.000099
+PSNR = 119.134786, NRMSE= 1.1047415878109882717E-06
+acEff=1.000000
+compressionRatio = 3.223693
+  ✓ Compression and decompression successful (ratio: 3.22x)
+
+[156/176] Processing: NET_NMIN_1_192_288.dat
+
+compression time=0.002397, total fastmode1 topology
+compression size = 65322, CR = 3.386057
+done
+decompression time=0.004040
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000010101
+Max relative error = 0.000001
+Max pw relative error = 0.000001
+PSNR = 140.170263, NRMSE= 9.8058866555511373172E-08
+acEff=1.000000
+compressionRatio = 3.386057
+  ✓ Compression and decompression successful (ratio: 3.38x)
+
+[157/176] Processing: NFIX_TO_SMINN_1_192_288.dat
+
+compression time=0.002526, total fastmode1 topology
+compression size = 64624, CR = 3.422629
+done
+decompression time=0.003639
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+acEff=1.000000
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
+
+[158/176] Processing: NPP_1_192_288.dat
+
+compression time=0.002758, total fastmode1 topology
+compression size = 67939, CR = 3.255626
+done
+decompression time=0.004361
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000997526
+Max relative error = 0.000100
+Max pw relative error = 0.000100
+PSNR = 121.860650, NRMSE= 8.0717459684256213879E-07
+acEff=1.000000
+compressionRatio = 3.255626
+  ✓ Compression and decompression successful (ratio: 3.25x)
+
+[159/176] Processing: OCDEP_1_192_288.dat
+
+compression time=0.002551, total fastmode1 topology
+compression size = 64624, CR = 3.422629
+done
+decompression time=0.003781
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+acEff=1.000000
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
+
+[160/176] Processing: PBOT_1_192_288.dat
+
+compression time=0.002472, total fastmode1 topology
+compression size = 72861, CR = 3.035698
+done
+decompression time=0.004152
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001720488
+Max relative error = 0.000172
+Max pw relative error = 0.000172
+PSNR = 88.951228, NRMSE= 3.5681131466891903711E-05
+acEff=1.000000
+compressionRatio = 3.035698
+  ✓ Compression and decompression successful (ratio: 3.03x)
+
+[161/176] Processing: PCO2_1_192_288.dat
+
+compression time=0.002891, total fastmode1 topology
+compression size = 72825, CR = 3.037199
+done
+decompression time=0.004385
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0001517311
+Max relative error = 0.000152
+Max pw relative error = 0.000152
+PSNR = 89.037897, NRMSE= 3.5326869407554250277E-05
+acEff=1.000000
+compressionRatio = 3.037199
+  ✓ Compression and decompression successful (ratio: 3.03x)
+
+[162/176] Processing: PFT_CTRUNC_1_192_288.dat
+
+compression time=0.002864, total fastmode1 topology
+compression size = 67853, CR = 3.259753
+done
+decompression time=0.004332
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000999971
+Max relative error = 0.000100
+Max pw relative error = 0.000100
+PSNR = 119.942673, NRMSE= 1.0066218456639941758E-06
+acEff=1.000000
+compressionRatio = 3.259753
+  ✓ Compression and decompression successful (ratio: 3.25x)
+
+[163/176] Processing: PFT_FIRE_CLOSS_1_192_288.dat
+
+compression time=0.002634, total fastmode1 topology
+compression size = 65256, CR = 3.389482
+done
+decompression time=0.004010
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000999885
+Max relative error = 0.000100
+Max pw relative error = 0.000100
+PSNR = 127.200621, NRMSE= 4.3648464383030474394E-07
+acEff=1.000000
+compressionRatio = 3.389481
+  ✓ Compression and decompression successful (ratio: 3.38x)
+
+[164/176] Processing: PFT_FIRE_NLOSS_1_192_288.dat
+
+compression time=0.002726, total fastmode1 topology
+compression size = 64783, CR = 3.414229
+done
+decompression time=0.003570
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000010000
+Max relative error = 0.000001
+Max pw relative error = 0.000001
+PSNR = 152.940476, NRMSE= 2.2541157586505455316E-08
+acEff=1.000000
+compressionRatio = 3.414229
+  ✓ Compression and decompression successful (ratio: 3.41x)
+
+[165/176] Processing: PFT_NTRUNC_1_192_288.dat
+
+compression time=0.002870, total fastmode1 topology
+compression size = 67825, CR = 3.261098
+done
+decompression time=0.004388
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000999971
+Max relative error = 0.000100
+Max pw relative error = 0.000100
+PSNR = 119.792456, NRMSE= 1.0241821412293701569E-06
+acEff=1.000000
+compressionRatio = 3.261098
+  ✓ Compression and decompression successful (ratio: 3.26x)
+
+[166/176] Processing: PLANT_NDEMAND_1_192_288.dat
+
+compression time=0.003870, total fastmode1 topology
+compression size = 65621, CR = 3.370628
+done
+decompression time=0.004338
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000999784
+Max relative error = 0.000100
+Max pw relative error = 0.000100
+PSNR = 127.116076, NRMSE= 4.4075394684972608183E-07
+acEff=1.000000
+compressionRatio = 3.370628
+  ✓ Compression and decompression successful (ratio: 3.37x)
+
+[167/176] Processing: POTENTIAL_IMMOB_1_192_288.dat
+
+compression time=0.002750, total fastmode1 topology
+compression size = 66252, CR = 3.338526
+done
+decompression time=0.004387
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000999986
+Max relative error = 0.000100
+Max pw relative error = 0.000100
+PSNR = 121.277169, NRMSE= 8.6325986701390167297E-07
+acEff=1.000000
+compressionRatio = 3.338526
+  ✓ Compression and decompression successful (ratio: 3.33x)
+
+[168/176] Processing: PROD100C_1_192_288.dat
+
+compression time=0.002633, total fastmode1 topology
+compression size = 64624, CR = 3.422629
+done
+decompression time=0.003721
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+acEff=1.000000
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
+
+[169/176] Processing: PROD100C_LOSS_1_192_288.dat
+
+compression time=0.002586, total fastmode1 topology
+compression size = 64624, CR = 3.422629
+done
+decompression time=0.003562
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+acEff=1.000000
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
+
+[170/176] Processing: PROD100N_1_192_288.dat
+
+compression time=0.002414, total fastmode1 topology
+compression size = 64624, CR = 3.422629
+done
+decompression time=0.003967
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+acEff=1.000000
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
+
+[171/176] Processing: PROD100N_LOSS_1_192_288.dat
+
+compression time=0.002595, total fastmode1 topology
+compression size = 64624, CR = 3.422629
+done
+decompression time=0.003574
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0000000000
+Max relative error = 0.000000
+Max pw relative error = 0.000000
+PSNR = inf, NRMSE= 0
+acEff=1.000000
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [172/176] Processing: PROD10C_1_192_288.dat
 
-compression time=0.002641, total fastmode1 topology
-compression size = 60558, CR = 3.652432
+compression time=0.002474, total fastmode1 topology
+compression size = 64624, CR = 3.422629
 done
-decompression time=0.003510
+decompression time=0.003632
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000000000
@@ -2755,15 +2755,15 @@ Max relative error = 0.000000
 Max pw relative error = 0.000000
 PSNR = inf, NRMSE= 0
 acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [173/176] Processing: PROD10C_LOSS_1_192_288.dat
 
-compression time=0.002484, total fastmode1 topology
-compression size = 60558, CR = 3.652432
+compression time=0.002595, total fastmode1 topology
+compression size = 64624, CR = 3.422629
 done
-decompression time=0.003955
+decompression time=0.003536
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000000000
@@ -2771,15 +2771,15 @@ Max relative error = 0.000000
 Max pw relative error = 0.000000
 PSNR = inf, NRMSE= 0
 acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [174/176] Processing: PROD10N_1_192_288.dat
 
-compression time=0.002574, total fastmode1 topology
-compression size = 60558, CR = 3.652432
+compression time=0.002429, total fastmode1 topology
+compression size = 64624, CR = 3.422629
 done
-decompression time=0.003629
+decompression time=0.003599
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000000000
@@ -2787,15 +2787,15 @@ Max relative error = 0.000000
 Max pw relative error = 0.000000
 PSNR = inf, NRMSE= 0
 acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [175/176] Processing: topo_192_288.dat
 
-compression time=0.002623, total fastmode1 topology
-compression size = 60558, CR = 3.652432
+compression time=0.002442, total fastmode1 topology
+compression size = 64624, CR = 3.422629
 done
-decompression time=0.003484
+decompression time=0.003480
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000000000
@@ -2803,15 +2803,15 @@ Max relative error = 0.000000
 Max pw relative error = 0.000000
 PSNR = inf, NRMSE= 0
 acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 [176/176] Processing: topodnsc_192_288.dat
 
-compression time=0.002619, total fastmode1 topology
-compression size = 60558, CR = 3.652432
+compression time=0.002472, total fastmode1 topology
+compression size = 64624, CR = 3.422629
 done
-decompression time=0.003499
+decompression time=0.003413
 done
 Min=0, Max=1, range=1
 Max absolute error = 0.0000000000
@@ -2819,8 +2819,8 @@ Max relative error = 0.000000
 Max pw relative error = 0.000000
 PSNR = inf, NRMSE= 0
 acEff=1.000000
-compressionRatio = 3.652432
-  ✓ Compression and decompression successful (ratio: 3.65x)
+compressionRatio = 3.422629
+  ✓ Compression and decompression successful (ratio: 3.42x)
 
 === Summary ===
 Total files processed: 176
