@@ -247,8 +247,8 @@ void szp_sort_critical_points_by_original_data(CriticalPoint *critical_points, s
         bin_to_indices[bin_offsets[hash_idx] + pos] = i;
     }
     
-    // Optimization 4: Use guided scheduling for better load balancing with lower overhead
-    #pragma omp parallel for schedule(guided)
+    // Optimization 4: Use static scheduling for lower overhead
+    #pragma omp parallel for schedule(static)
     for (int bin_idx = 0; bin_idx < num_unique_bins; bin_idx++) {
         int current_bin = unique_bins[bin_idx];
         int hash_idx = current_bin - min_bin;
@@ -611,7 +611,12 @@ szp_compress_sort_positions(CriticalPoint *critical_points, size_t critical_coun
     
     size_t maxPreservedBufferSize_perthread = 0;
     unsigned char *real_outputBytes; 
-    size_t *outSize_perthread_arr;
+    // Use padded structure to avoid false sharing (64-byte cache line alignment)
+    struct PaddedSize {
+        size_t size;
+        char padding[64 - sizeof(size_t)];  // Pad to 64-byte cache line boundary
+    };
+    struct PaddedSize *outSize_perthread_arr;
     size_t *offsets_perthread_arr;
     
     (*outSize) = sizeof(size_t); // Start with header size
@@ -649,7 +654,8 @@ szp_compress_sort_positions(CriticalPoint *critical_points, size_t critical_coun
             
             real_outputBytes = outputBytes + nbThreads * sizeof(size_t);
             (*outSize) += nbThreads * sizeof(size_t); 
-            outSize_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
+            // Allocate padded structures to avoid false sharing
+            outSize_perthread_arr = (struct PaddedSize *)malloc(nbThreads * sizeof(struct PaddedSize));
             offsets_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
             if (!outSize_perthread_arr || !offsets_perthread_arr) {
                 // Set error flag - threads will see NULL and skip processing
@@ -828,7 +834,7 @@ szp_compress_sort_positions(CriticalPoint *critical_points, size_t critical_coun
         }
         } // End of if (outputBytes_perthread && temp_sign_arr && temp_predict_arr)
 
-        outSize_perthread_arr[tid] = outSize_perthread;
+        outSize_perthread_arr[tid].size = outSize_perthread;
 #pragma omp barrier
 
         // Sequential prefix sum for offsets (small overhead, done once)
@@ -837,9 +843,9 @@ szp_compress_sort_positions(CriticalPoint *critical_points, size_t critical_coun
             offsets_perthread_arr[0] = 0;
             for (size_t k = 1; k < nbThreads; k++)
             {
-                offsets_perthread_arr[k] = offsets_perthread_arr[k - 1] + outSize_perthread_arr[k - 1];
+                offsets_perthread_arr[k] = offsets_perthread_arr[k - 1] + outSize_perthread_arr[k - 1].size;
             }
-            (*outSize) += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1];
+            (*outSize) += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1].size;
             memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
         }
 #pragma omp barrier
@@ -1022,7 +1028,12 @@ szp_float_openmp_threadblock_randomaccess_topology_preserved(float *oriData, siz
     unsigned char *outputBytes = (unsigned char *)malloc(maxPreservedBufferSize);
     if (!outputBytes) return NULL;
     unsigned char *real_outputBytes = NULL;
-    size_t *outSize_perthread_arr = NULL;
+    // Use padded structure to avoid false sharing (64-byte cache line alignment)
+    struct PaddedSize {
+        size_t size;
+        char padding[64 - sizeof(size_t)];  // Pad to 64-byte cache line boundary
+    };
+    struct PaddedSize *outSize_perthread_arr = NULL;
     size_t *offsets_perthread_arr = NULL;
 
     *outSize = 0;
@@ -1073,7 +1084,8 @@ szp_float_openmp_threadblock_randomaccess_topology_preserved(float *oriData, siz
             if (nbThreads == 0) nbThreads = 1; // Safety check
             real_outputBytes = outputBytes + nbThreads * sizeof(size_t);
             *outSize += nbThreads * sizeof(size_t);
-            outSize_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
+            // Allocate padded structures to avoid false sharing
+            outSize_perthread_arr = (struct PaddedSize *)malloc(nbThreads * sizeof(struct PaddedSize));
             offsets_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
             if (!outSize_perthread_arr || !offsets_perthread_arr) {
                 if (outSize_perthread_arr) free(outSize_perthread_arr);
@@ -1250,7 +1262,7 @@ szp_float_openmp_threadblock_randomaccess_topology_preserved(float *oriData, siz
             }
         }
 
-        if (outSize_perthread_arr) outSize_perthread_arr[tid] = outSize_perthread;
+        if (outSize_perthread_arr) outSize_perthread_arr[tid].size = outSize_perthread;
 
 #pragma omp atomic
         g_type_total += l_total;
@@ -1268,9 +1280,9 @@ szp_float_openmp_threadblock_randomaccess_topology_preserved(float *oriData, siz
             if (outSize_perthread_arr && offsets_perthread_arr) {
                 offsets_perthread_arr[0] = 0;
                 for (i = 1; i < nbThreads; i++)
-                    offsets_perthread_arr[i] = offsets_perthread_arr[i - 1] + outSize_perthread_arr[i - 1];
+                    offsets_perthread_arr[i] = offsets_perthread_arr[i - 1] + outSize_perthread_arr[i - 1].size;
 
-                *outSize += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1];
+                *outSize += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1].size;
                 memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
             }
         }
@@ -1443,7 +1455,12 @@ szp_float_openmp_threadblock(float *oriData, size_t *outSize, float absErrBound,
     size_t maxPreservedBufferSize_perthread = 0;
 
     unsigned char *real_outputBytes; 
-    size_t *outSize_perthread_arr;
+    // Use padded structure to avoid false sharing (64-byte cache line alignment)
+    struct PaddedSize {
+        size_t size;
+        char padding[64 - sizeof(size_t)];  // Pad to 64-byte cache line boundary
+    };
+    struct PaddedSize *outSize_perthread_arr;
     size_t *offsets_perthread_arr;
 
     unsigned char *output = (unsigned char *)malloc(maxPreservedBufferSize);
@@ -1465,7 +1482,8 @@ szp_float_openmp_threadblock(float *oriData, size_t *outSize, float absErrBound,
             nbThreads = omp_get_num_threads();
             real_outputBytes = outputBytes + nbThreads * sizeof(size_t);
             (*outSize) += nbThreads * sizeof(size_t); 
-            outSize_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
+            // Allocate padded structures to avoid false sharing
+            outSize_perthread_arr = (struct PaddedSize *)malloc(nbThreads * sizeof(struct PaddedSize));
             offsets_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
 
             inver_bound = 1 / absErrBound;
@@ -1560,7 +1578,7 @@ szp_float_openmp_threadblock(float *oriData, size_t *outSize, float absErrBound,
             }
         }
 
-        outSize_perthread_arr[tid] = outSize_perthread;
+        outSize_perthread_arr[tid].size = outSize_perthread;
 #pragma omp barrier
 
 #pragma omp single
@@ -1568,9 +1586,9 @@ szp_float_openmp_threadblock(float *oriData, size_t *outSize, float absErrBound,
             offsets_perthread_arr[0] = 0;
             for (i = 1; i < nbThreads; i++)
             {
-                offsets_perthread_arr[i] = offsets_perthread_arr[i - 1] + outSize_perthread_arr[i - 1];
+                offsets_perthread_arr[i] = offsets_perthread_arr[i - 1] + outSize_perthread_arr[i - 1].size;
             }
-            (*outSize) += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1];
+            (*outSize) += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1].size;
             memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
         }
 #pragma omp barrier
@@ -1609,7 +1627,12 @@ void szp_float_openmp_threadblock_arg(unsigned char *output, float *oriData, siz
     size_t maxPreservedBufferSize_perthread = 0;
     
     unsigned char *real_outputBytes; 
-    size_t *outSize_perthread_arr;
+    // Use padded structure to avoid false sharing (64-byte cache line alignment)
+    struct PaddedSize {
+        size_t size;
+        char padding[64 - sizeof(size_t)];  // Pad to 64-byte cache line boundary
+    };
+    struct PaddedSize *outSize_perthread_arr;
     size_t *offsets_perthread_arr;
     
 	unsigned char* outputBytes = output + sizeof(float);
@@ -1630,7 +1653,8 @@ void szp_float_openmp_threadblock_arg(unsigned char *output, float *oriData, siz
             nbThreads = omp_get_num_threads();
             real_outputBytes = outputBytes + nbThreads * sizeof(size_t);
             (*outSize) += nbThreads * sizeof(size_t); 
-            outSize_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
+            // Allocate padded structures to avoid false sharing
+            outSize_perthread_arr = (struct PaddedSize *)malloc(nbThreads * sizeof(struct PaddedSize));
             offsets_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
 
             inver_bound = 1 / absErrBound;
@@ -1725,7 +1749,7 @@ void szp_float_openmp_threadblock_arg(unsigned char *output, float *oriData, siz
             }
         }
 
-        outSize_perthread_arr[tid] = outSize_perthread;
+        outSize_perthread_arr[tid].size = outSize_perthread;
 #pragma omp barrier
 
 #pragma omp single
@@ -1733,10 +1757,10 @@ void szp_float_openmp_threadblock_arg(unsigned char *output, float *oriData, siz
             offsets_perthread_arr[0] = 0;
             for (i = 1; i < nbThreads; i++)
             {
-                offsets_perthread_arr[i] = offsets_perthread_arr[i - 1] + outSize_perthread_arr[i - 1];
+                offsets_perthread_arr[i] = offsets_perthread_arr[i - 1] + outSize_perthread_arr[i - 1].size;
                 
             }
-            (*outSize) += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1];
+            (*outSize) += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1].size;
             memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
             
         }
@@ -2282,7 +2306,12 @@ szp_float_openmp_threadblock_randomaccess_arg(unsigned char *output, float *oriD
     size_t maxPreservedBufferSize = sizeof(float) + sizeof(float) * nbEle; 
     size_t maxPreservedBufferSize_perthread = 0;
     unsigned char *real_outputBytes; 
-    size_t *outSize_perthread_arr;
+    // Use padded structure to avoid false sharing (64-byte cache line alignment)
+    struct PaddedSize {
+        size_t size;
+        char padding[64 - sizeof(size_t)];  // Pad to 64-byte cache line boundary
+    };
+    struct PaddedSize *outSize_perthread_arr;
     size_t *offsets_perthread_arr;
     
     (*outSize) = 0;
@@ -2300,7 +2329,8 @@ szp_float_openmp_threadblock_randomaccess_arg(unsigned char *output, float *oriD
             nbThreads = omp_get_num_threads();
             real_outputBytes = outputBytes + nbThreads * sizeof(size_t);
             (*outSize) += nbThreads * sizeof(size_t); 
-            outSize_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
+            // Allocate padded structures to avoid false sharing
+            outSize_perthread_arr = (struct PaddedSize *)malloc(nbThreads * sizeof(struct PaddedSize));
             offsets_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
 
             maxPreservedBufferSize_perthread = (sizeof(float) * nbEle + nbThreads - 1) / nbThreads;
@@ -2394,7 +2424,7 @@ szp_float_openmp_threadblock_randomaccess_arg(unsigned char *output, float *oriD
             }
         }
 
-        outSize_perthread_arr[tid] = outSize_perthread;
+        outSize_perthread_arr[tid].size = outSize_perthread;
 #pragma omp barrier
 
 #pragma omp single
@@ -2402,10 +2432,10 @@ szp_float_openmp_threadblock_randomaccess_arg(unsigned char *output, float *oriD
             offsets_perthread_arr[0] = 0;
             for (i = 1; i < nbThreads; i++)
             {
-                offsets_perthread_arr[i] = offsets_perthread_arr[i - 1] + outSize_perthread_arr[i - 1];
+                offsets_perthread_arr[i] = offsets_perthread_arr[i - 1] + outSize_perthread_arr[i - 1].size;
                 
             }
-            (*outSize) += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1];
+            (*outSize) += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1].size;
             memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
             
         }

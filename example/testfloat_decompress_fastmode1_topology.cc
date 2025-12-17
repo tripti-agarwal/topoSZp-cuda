@@ -89,7 +89,12 @@ int* build_sort_position_mapping(int *critical_points_types, int *sort_positions
     // Use two-pass approach: count first, then assign with offsets
     #ifdef _OPENMP
     int num_threads = omp_get_max_threads();
-    size_t *thread_counts = (size_t*)calloc(num_threads, sizeof(size_t));
+    // Use padded structure to avoid false sharing (64-byte cache line alignment)
+    struct PaddedCount {
+        size_t count;
+        char padding[64 - sizeof(size_t)];  // Pad to 64-byte cache line boundary
+    };
+    struct PaddedCount *thread_counts = (struct PaddedCount*)calloc(num_threads, sizeof(struct PaddedCount));
     
     // First pass: count extrema per thread
     #pragma omp parallel
@@ -101,7 +106,7 @@ int* build_sort_position_mapping(int *critical_points_types, int *sort_positions
                 int idx = i * cols + j;
                 int type = critical_points_types[idx];
                 if (type == 1 || type == 2) {
-                    thread_counts[tid]++;
+                    thread_counts[tid].count++;
                 }
             }
         }
@@ -111,7 +116,7 @@ int* build_sort_position_mapping(int *critical_points_types, int *sort_positions
     size_t *thread_offsets = (size_t*)malloc(num_threads * sizeof(size_t));
     thread_offsets[0] = 0;
     for (int t = 1; t < num_threads; t++) {
-        thread_offsets[t] = thread_offsets[t-1] + thread_counts[t-1];
+        thread_offsets[t] = thread_offsets[t-1] + thread_counts[t-1].count;
     }
     
     // Second pass: assign indices in parallel
