@@ -198,9 +198,12 @@ def generate_thread_comparison_table(log_files, output_file):
     """Generate a table with datasets as rows and thread counts as columns, grouped by error bound."""
     # Extract thread-specific data
     thread_folders = ['topoSZp_1_thread', 'topoSZp_2_thread', 'topoSZp_4_thread', 
-                      'topoSZp_8_thread', 'topoSZp_16_thread', 'topoSZp_32_thread']
-    thread_numbers = [1, 2, 4, 8, 16, 32]
-    
+                      'topoSZp_8_thread', 'topoSZp_16_thread', 'topoSZp_18_thread',
+                      'topoSZp_20_thread', 'topoSZp_24_thread', 'topoSZp_26_thread', 
+                      'topoSZp_28_thread', 'topoSZp_30_thread',
+                      'topoSZp_32_thread', 'topoSZp_36_thread']
+    thread_numbers = [1, 2, 4, 8, 16, 18, 20, 24, 26, 28, 30, 32, 36]
+
     # Organize data by error bound, dataset, and thread
     error_bound_data = defaultdict(lambda: defaultdict(dict))
     
@@ -312,7 +315,7 @@ def generate_thread_comparison_table(log_files, output_file):
     print(f"  - {combined_csv} (combined)")
 
 def main():
-    base_dir = '/u/tagarwal1/TopologySZp/SZp/example/analysis'
+    base_dir = os.getcwd()
     
     if not os.path.exists(base_dir):
         print(f"Error: Base directory not found: {base_dir}")
@@ -335,4 +338,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 

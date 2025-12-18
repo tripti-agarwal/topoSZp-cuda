@@ -1,0 +1,973 @@
+Input directory: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/
+Output directory: ../../SDRBENCH-CESM-ATM-cleared-1800x3600/topoSZp_30_thread/
+Dimensions: 1800x3600 (6480000 elements)
+Error bound: 1E-3
+Block size: 16
+
+Found 60 .dat file(s) to process
+
+[1/60] Processing: AEROD_v_1_1800_3600.dat
+
+compression time=0.044714, total fastmode1 topology
+compression size = 5062701, CR = 5.119797
+done
+decompression time=0.196658
+done
+Min=0, Max=0.57155454158782958984, range=0.57155454158782958984
+Max absolute error = 0.0019486547
+Max relative error = 0.003409
+Max pw relative error = 0.001949
+PSNR = 60.478751, NRMSE= 0.00094637320809632459635
+acEff=0.999982
+compressionRatio = 5.119797
+  ✓ Compression and decompression successful (ratio: 5.11x)
+
+[2/60] Processing: CLDHGH_1_1800_3600.dat
+
+compression time=0.045213, total fastmode1 topology
+compression size = 6656710, CR = 3.893816
+done
+decompression time=0.233145
+done
+Min=3.374915706899628276E-07, Max=0.92075449228286743164, range=0.9207541346549987793
+Max absolute error = 0.0019636154
+Max relative error = 0.002133
+Max pw relative error = 0.001964
+PSNR = 64.048848, NRMSE= 0.00062741887987786319845
+acEff=0.999998
+compressionRatio = 3.893815
+  ✓ Compression and decompression successful (ratio: 3.89x)
+
+[3/60] Processing: CLDLOW_1_1800_3600.dat
+
+compression time=0.035162, total fastmode1 topology
+compression size = 6478101, CR = 4.001173
+done
+decompression time=0.221362
+done
+Min=-1.2620235048717439418E-16, Max=0.9765370488166809082, range=0.9765370488166809082
+Max absolute error = 0.0019726604
+Max relative error = 0.002020
+Max pw relative error = 0.001973
+PSNR = 64.804209, NRMSE= 0.00057516117555479306499
+acEff=0.999999
+compressionRatio = 4.001173
+  ✓ Compression and decompression successful (ratio: 4.00x)
+
+[4/60] Processing: CLDMED_1_1800_3600.dat
+
+compression time=0.077114, total fastmode1 topology
+compression size = 6336383, CR = 4.090662
+done
+decompression time=0.231675
+done
+Min=-8.7300302704795394065E-18, Max=0.83042794466018676758, range=0.83042794466018676758
+Max absolute error = 0.0019799173
+Max relative error = 0.002384
+Max pw relative error = 0.001980
+PSNR = 63.291697, NRMSE= 0.00068456575792251873457
+acEff=0.999997
+compressionRatio = 4.090662
+  ✓ Compression and decompression successful (ratio: 4.09x)
+
+[5/60] Processing: CLDTOT_1_1800_3600.dat
+
+compression time=0.039395, total fastmode1 topology
+compression size = 6839425, CR = 3.789792
+done
+decompression time=0.230099
+done
+Min=0.0089103020727634429932, Max=0.98004901409149169922, range=0.97113871574401855469
+Max absolute error = 0.0019866228
+Max relative error = 0.002046
+Max pw relative error = 0.001987
+PSNR = 64.510888, NRMSE= 0.00059491596061791421259
+acEff=0.999999
+compressionRatio = 3.789792
+  ✓ Compression and decompression successful (ratio: 3.78x)
+
+[6/60] Processing: FLDS_1_1800_3600.dat
+
+compression time=0.049861, total fastmode1 topology
+compression size = 11077626, CR = 2.339852
+done
+decompression time=0.191391
+done
+Min=111.13311767578125, Max=436.666412353515625, range=325.533294677734375
+Max absolute error = 0.0019531250
+Max relative error = 0.000006
+Max pw relative error = 0.000014
+PSNR = 115.019633, NRMSE= 1.7742644331723546288E-06
+acEff=1.000000
+compressionRatio = 2.339852
+  ✓ Compression and decompression successful (ratio: 2.33x)
+
+[7/60] Processing: FLDSC_1_1800_3600.dat
+
+compression time=0.035652, total fastmode1 topology
+compression size = 10209094, CR = 2.538913
+done
+decompression time=0.177206
+done
+Min=92.84610748291015625, Max=418.2393798828125, range=325.393280029296875
+Max absolute error = 0.0019683838
+Max relative error = 0.000006
+Max pw relative error = 0.000017
+PSNR = 115.019015, NRMSE= 1.7743907161568026322E-06
+acEff=1.000000
+compressionRatio = 2.538913
+  ✓ Compression and decompression successful (ratio: 2.53x)
+
+[8/60] Processing: FLNS_1_1800_3600.dat
+
+compression time=0.058076, total fastmode1 topology
+compression size = 11092530, CR = 2.336708
+done
+decompression time=0.205953
+done
+Min=2.3647515773773193359, Max=177.68426513671875, range=175.31951904296875
+Max absolute error = 0.0019493103
+Max relative error = 0.000011
+Max pw relative error = 0.000318
+PSNR = 109.644483, NRMSE= 3.2943964414738271265E-06
+acEff=1.000000
+compressionRatio = 2.336708
+  ✓ Compression and decompression successful (ratio: 2.33x)
+
+[9/60] Processing: FLNSC_1_1800_3600.dat
+
+compression time=0.042536, total fastmode1 topology
+compression size = 10286314, CR = 2.519853
+done
+decompression time=0.196464
+done
+Min=33.335693359375, Max=179.8714752197265625, range=146.5357818603515625
+Max absolute error = 0.0019721985
+Max relative error = 0.000013
+Max pw relative error = 0.000053
+PSNR = 108.090532, NRMSE= 3.939792845808095842E-06
+acEff=1.000000
+compressionRatio = 2.519853
+  ✓ Compression and decompression successful (ratio: 2.51x)
+
+[10/60] Processing: FLNT_1_1800_3600.dat
+
+compression time=0.040665, total fastmode1 topology
+compression size = 10691114, CR = 2.424443
+done
+decompression time=0.194776
+done
+Min=140.1259002685546875, Max=320.225982666015625, range=180.1000823974609375
+Max absolute error = 0.0019836426
+Max relative error = 0.000011
+Max pw relative error = 0.000012
+PSNR = 109.877694, NRMSE= 3.2071207631849299532E-06
+acEff=1.000000
+compressionRatio = 2.424443
+  ✓ Compression and decompression successful (ratio: 2.42x)
+
+[11/60] Processing: FLNTC_1_1800_3600.dat
+
+compression time=0.042266, total fastmode1 topology
+compression size = 9749098, CR = 2.658708
+done
+decompression time=0.180187
+done
+Min=148.67449951171875, Max=324.029327392578125, range=175.354827880859375
+Max absolute error = 0.0019531250
+Max relative error = 0.000011
+Max pw relative error = 0.000012
+PSNR = 109.647177, NRMSE= 3.2933745917052395658E-06
+acEff=1.000000
+compressionRatio = 2.658708
+  ✓ Compression and decompression successful (ratio: 2.65x)
+
+[12/60] Processing: FLUT_1_1800_3600.dat
+
+compression time=0.057929, total fastmode1 topology
+compression size = 10691173, CR = 2.424430
+done
+decompression time=0.185849
+done
+Min=140.81109619140625, Max=321.594085693359375, range=180.782989501953125
+Max absolute error = 0.0019531250
+Max relative error = 0.000011
+Max pw relative error = 0.000012
+PSNR = 109.910855, NRMSE= 3.1948998869632093507E-06
+acEff=1.000000
+compressionRatio = 2.424430
+  ✓ Compression and decompression successful (ratio: 2.42x)
+
+[13/60] Processing: FLUTC_1_1800_3600.dat
+
+compression time=0.055325, total fastmode1 topology
+compression size = 9748803, CR = 2.658788
+done
+decompression time=0.179021
+done
+Min=149.345123291015625, Max=325.3800048828125, range=176.034881591796875
+Max absolute error = 0.0019836426
+Max relative error = 0.000011
+Max pw relative error = 0.000011
+PSNR = 109.679813, NRMSE= 3.2810234563881833124E-06
+acEff=1.000000
+compressionRatio = 2.658788
+  ✓ Compression and decompression successful (ratio: 2.65x)
+
+[14/60] Processing: FREQSH_1_1800_3600.dat
+
+compression time=0.075466, total fastmode1 topology
+compression size = 7016145, CR = 3.694336
+done
+decompression time=0.210432
+done
+Min=0.0055586360394954681396, Max=1, range=0.99444139003753662109
+Max absolute error = 0.0019882917
+Max relative error = 0.001999
+Max pw relative error = 0.001988
+PSNR = 64.687633, NRMSE= 0.00058293264121144893614
+acEff=0.999999
+compressionRatio = 3.694336
+  ✓ Compression and decompression successful (ratio: 3.69x)
+
+[15/60] Processing: FREQZM_1_1800_3600.dat
+
+compression time=0.037643, total fastmode1 topology
+compression size = 5718775, CR = 4.532439
+done
+decompression time=0.206340
+done
+Min=-1.2376302794798001768E-16, Max=0.94867545366287231445, range=0.94867545366287231445
+Max absolute error = 0.0019914508
+Max relative error = 0.002099
+Max pw relative error = 0.001991
+PSNR = 66.146614, NRMSE= 0.00049279839700426520364
+acEff=0.999999
+compressionRatio = 4.532439
+  ✓ Compression and decompression successful (ratio: 4.53x)
+
+[16/60] Processing: FSDS_1_1800_3600.dat
+
+compression time=0.040792, total fastmode1 topology
+compression size = 10943854, CR = 2.368453
+done
+decompression time=0.215656
+done
+Min=0, Max=458.06646728515625, range=458.06646728515625
+Max absolute error = 0.0019531250
+Max relative error = 0.000004
+Max pw relative error = 0.001000
+PSNR = 118.545995, NRMSE= 1.182225364565890202E-06
+acEff=1.000000
+compressionRatio = 2.368453
+  ✓ Compression and decompression successful (ratio: 2.36x)
+
+[17/60] Processing: FSDSC_1_1800_3600.dat
+
+compression time=0.035580, total fastmode1 topology
+compression size = 8554423, CR = 3.030011
+done
+decompression time=0.168117
+done
+Min=0, Max=478.47100830078125, range=478.47100830078125
+Max absolute error = 0.0019531250
+Max relative error = 0.000004
+Max pw relative error = 0.001000
+PSNR = 118.927085, NRMSE= 1.1314770392014991031E-06
+acEff=1.000000
+compressionRatio = 3.030011
+  ✓ Compression and decompression successful (ratio: 3.03x)
+
+[18/60] Processing: FSDTOA_1_1800_3600.dat
+
+compression time=0.023740, total fastmode1 topology
+compression size = 7412446, CR = 3.496821
+done
+decompression time=0.167286
+done
+Min=0, Max=548.49273681640625, range=548.49273681640625
+Max absolute error = 0.0013732910
+Max relative error = 0.000003
+Max pw relative error = 0.001000
+PSNR = 120.108873, NRMSE= 9.8754371274565097104E-07
+acEff=1.000000
+compressionRatio = 3.496821
+  ✓ Compression and decompression successful (ratio: 3.49x)
+
+[19/60] Processing: FSNS_1_1800_3600.dat
+
+compression time=0.064552, total fastmode1 topology
+compression size = 11024688, CR = 2.351087
+done
+decompression time=0.190450
+done
+Min=0, Max=374.014617919921875, range=374.014617919921875
+Max absolute error = 0.0019226074
+Max relative error = 0.000005
+Max pw relative error = 0.001793
+PSNR = 116.787658, NRMSE= 1.447495139990443626E-06
+acEff=1.000000
+compressionRatio = 2.351087
+  ✓ Compression and decompression successful (ratio: 2.35x)
+
+[20/60] Processing: FSNSC_1_1800_3600.dat
+
+compression time=0.038049, total fastmode1 topology
+compression size = 9310176, CR = 2.784050
+done
+decompression time=0.182847
+done
+Min=0, Max=378.979705810546875, range=378.979705810546875
+Max absolute error = 0.0019531250
+Max relative error = 0.000005
+Max pw relative error = 0.001932
+PSNR = 116.902942, NRMSE= 1.4284100966982144941E-06
+acEff=1.000000
+compressionRatio = 2.784050
+  ✓ Compression and decompression successful (ratio: 2.78x)
+
+[21/60] Processing: FSNT_1_1800_3600.dat
+
+compression time=0.093719, total fastmode1 topology
+compression size = 10935895, CR = 2.370176
+done
+decompression time=0.191719
+done
+Min=0, Max=458.6556396484375, range=458.6556396484375
+Max absolute error = 0.0019531250
+Max relative error = 0.000004
+Max pw relative error = 0.001000
+PSNR = 118.557001, NRMSE= 1.1807282247469414744E-06
+acEff=1.000000
+compressionRatio = 2.370176
+  ✓ Compression and decompression successful (ratio: 2.37x)
+
+[22/60] Processing: FSNTC_1_1800_3600.dat
+
+compression time=0.038756, total fastmode1 topology
+compression size = 9112737, CR = 2.844370
+done
+decompression time=0.170389
+done
+Min=0, Max=465.281341552734375, range=465.281341552734375
+Max absolute error = 0.0019531250
+Max relative error = 0.000004
+Max pw relative error = 0.001000
+PSNR = 118.681150, NRMSE= 1.1639719332312335727E-06
+acEff=1.000000
+compressionRatio = 2.844370
+  ✓ Compression and decompression successful (ratio: 2.84x)
+
+[23/60] Processing: FSNTOA_1_1800_3600.dat
+
+compression time=0.041233, total fastmode1 topology
+compression size = 10936128, CR = 2.370126
+done
+decompression time=0.204033
+done
+Min=0, Max=462.84429931640625, range=462.84429931640625
+Max absolute error = 0.0019531250
+Max relative error = 0.000004
+Max pw relative error = 0.001000
+PSNR = 118.632513, NRMSE= 1.1705078639213521418E-06
+acEff=1.000000
+compressionRatio = 2.370126
+  ✓ Compression and decompression successful (ratio: 2.37x)
+
+[24/60] Processing: FSNTOAC_1_1800_3600.dat
+
+compression time=0.035191, total fastmode1 topology
+compression size = 9122012, CR = 2.841478
+done
+decompression time=0.180501
+done
+Min=0, Max=469.5364990234375, range=469.5364990234375
+Max absolute error = 0.0019836426
+Max relative error = 0.000004
+Max pw relative error = 0.001000
+PSNR = 118.762989, NRMSE= 1.15305638404048774E-06
+acEff=1.000000
+compressionRatio = 2.841478
+  ✓ Compression and decompression successful (ratio: 2.84x)
+
+[25/60] Processing: FSUTOA_1_1800_3600.dat
+
+compression time=0.104792, total fastmode1 topology
+compression size = 10944426, CR = 2.368329
+done
+decompression time=0.189463
+done
+Min=0, Max=393.674560546875, range=393.674560546875
+Max absolute error = 0.0019607544
+Max relative error = 0.000005
+Max pw relative error = 0.001000
+PSNR = 117.231268, NRMSE= 1.3754239473483392701E-06
+acEff=1.000000
+compressionRatio = 2.368329
+  ✓ Compression and decompression successful (ratio: 2.36x)
+
+[26/60] Processing: ICEFRAC_1_1800_3600.dat
+
+compression time=0.024322, total fastmode1 topology
+compression size = 4083599, CR = 6.347342
+done
+decompression time=0.172327
+done
+Min=0, Max=1, range=1
+Max absolute error = 0.0019114614
+Max relative error = 0.001911
+Max pw relative error = 0.001911
+PSNR = 72.004289, NRMSE= 0.00025106463771627676555
+acEff=1.000000
+compressionRatio = 6.347342
+  ✓ Compression and decompression successful (ratio: 6.34x)
+
+[27/60] Processing: LANDFRAC_1_1800_3600.dat
+
+compression time=0.024466, total fastmode1 topology
+compression size = 4222615, CR = 6.138376
+done
+decompression time=0.157664
+done
+Min=-2.1914590571359658655E-14, Max=1, range=1
+Max absolute error = 0.0019786954
+Max relative error = 0.001979
+Max pw relative error = 0.001979
+PSNR = 64.741068, NRMSE= 0.00057935744470720299069
+acEff=1.000000
+compressionRatio = 6.138376
+  ✓ Compression and decompression successful (ratio: 6.13x)
+
+[28/60] Processing: LHFLX_1_1800_3600.dat
+
+compression time=0.095924, total fastmode1 topology
+compression size = 10901556, CR = 2.377642
+done
+decompression time=0.192109
+done
+Min=-5.2279806137084960938, Max=543.463134765625, range=548.69110107421875
+Max absolute error = 0.0019845068
+Max relative error = 0.000004
+Max pw relative error = 0.001985
+PSNR = 119.555827, NRMSE= 1.0524674256971015281E-06
+acEff=1.000000
+compressionRatio = 2.377642
+  ✓ Compression and decompression successful (ratio: 2.37x)
+
+[29/60] Processing: LWCF_1_1800_3600.dat
+
+compression time=0.070155, total fastmode1 topology
+compression size = 10432962, CR = 2.484433
+done
+decompression time=0.207843
+done
+Min=-0.33079123497009277344, Max=112.6002197265625, range=112.93100738525390625
+Max absolute error = 0.0019478798
+Max relative error = 0.000017
+Max pw relative error = 0.001948
+PSNR = 105.825008, NRMSE= 5.113869199292606729E-06
+acEff=1.000000
+compressionRatio = 2.484433
+  ✓ Compression and decompression successful (ratio: 2.48x)
+
+[30/60] Processing: OCNFRAC_1_1800_3600.dat
+
+compression time=0.025928, total fastmode1 topology
+compression size = 4376497, CR = 5.922545
+done
+decompression time=0.169905
+done
+Min=-2.189816829657829228E-14, Max=1, range=1
+Max absolute error = 0.0019949079
+Max relative error = 0.001995
+Max pw relative error = 0.001995
+PSNR = 62.661747, NRMSE= 0.00073605903509382515203
+acEff=1.000000
+compressionRatio = 5.922545
+  ✓ Compression and decompression successful (ratio: 5.92x)
+
+[31/60] Processing: ODV_bcar1_1_1800_3600.dat
+
+compression time=0.025896, total fastmode1 topology
+compression size = 3681118, CR = 7.041339
+done
+decompression time=0.164045
+done
+Min=0, Max=0.014418269507586956024, range=0.014418269507586956024
+Max absolute error = 0.0010020561
+Max relative error = 0.069499
+Max pw relative error = 0.001002
+PSNR = 37.799506, NRMSE= 0.012883228389838980582
+acEff=0.969565
+compressionRatio = 7.041339
+  ✓ Compression and decompression successful (ratio: 7.04x)
+
+[32/60] Processing: ODV_bcar2_1_1800_3600.dat
+
+compression time=0.022822, total fastmode1 topology
+compression size = 3695142, CR = 7.014616
+done
+decompression time=0.158794
+done
+Min=0, Max=0.018967432901263237, range=0.018967432901263237
+Max absolute error = 0.0010054428
+Max relative error = 0.053009
+Max pw relative error = 0.001005
+PSNR = 34.475866, NRMSE= 0.018888902450963005603
+acEff=0.984481
+compressionRatio = 7.014615
+  ✓ Compression and decompression successful (ratio: 7.01x)
+
+[33/60] Processing: ODV_dust1_1_1800_3600.dat
+
+compression time=0.024692, total fastmode1 topology
+compression size = 3976658, CR = 6.518036
+done
+decompression time=0.160144
+done
+Min=0, Max=0.18463411927223205566, range=0.18463411927223205566
+Max absolute error = 0.0010069236
+Max relative error = 0.005454
+Max pw relative error = 0.001007
+PSNR = 51.693730, NRMSE= 0.0026020371514440588691
+acEff=0.999838
+compressionRatio = 6.518036
+  ✓ Compression and decompression successful (ratio: 6.51x)
+
+[34/60] Processing: ODV_dust2_1_1800_3600.dat
+
+compression time=0.020919, total fastmode1 topology
+compression size = 3956148, CR = 6.551828
+done
+decompression time=0.161573
+done
+Min=0, Max=0.17442569136619567871, range=0.17442569136619567871
+Max absolute error = 0.0010096559
+Max relative error = 0.005788
+Max pw relative error = 0.001010
+PSNR = 51.262324, NRMSE= 0.0027345371285137131181
+acEff=0.999792
+compressionRatio = 6.551828
+  ✓ Compression and decompression successful (ratio: 6.55x)
+
+[35/60] Processing: ODV_dust3_1_1800_3600.dat
+
+compression time=0.022198, total fastmode1 topology
+compression size = 3822123, CR = 6.781571
+done
+decompression time=0.156336
+done
+Min=0, Max=0.096076495945453643799, range=0.096076495945453643799
+Max absolute error = 0.0010055713
+Max relative error = 0.010466
+Max pw relative error = 0.001006
+PSNR = 47.997286, NRMSE= 0.0039823160358517213989
+acEff=0.998688
+compressionRatio = 6.781571
+  ✓ Compression and decompression successful (ratio: 6.78x)
+
+[36/60] Processing: ODV_dust4_1_1800_3600.dat
+
+compression time=0.024509, total fastmode1 topology
+compression size = 3771469, CR = 6.872653
+done
+decompression time=0.162083
+done
+Min=0, Max=0.10546880215406417847, range=0.10546880215406417847
+Max absolute error = 0.0010096007
+Max relative error = 0.009573
+Max pw relative error = 0.001010
+PSNR = 51.253408, NRMSE= 0.0027373452867163142882
+acEff=0.998065
+compressionRatio = 6.872654
+  ✓ Compression and decompression successful (ratio: 6.87x)
+
+[37/60] Processing: ODV_ocar1_1_1800_3600.dat
+
+compression time=0.023660, total fastmode1 topology
+compression size = 3688189, CR = 7.027839
+done
+decompression time=0.173076
+done
+Min=0, Max=0.019741568714380264282, range=0.019741568714380264282
+Max absolute error = 0.0009999990
+Max relative error = 0.050654
+Max pw relative error = 0.001000
+PSNR = 40.086475, NRMSE= 0.0099009355203032358567
+acEff=0.981775
+compressionRatio = 7.027839
+  ✓ Compression and decompression successful (ratio: 7.02x)
+
+[38/60] Processing: ODV_ocar2_1_1800_3600.dat
+
+compression time=0.041838, total fastmode1 topology
+compression size = 3880178, CR = 6.680106
+done
+decompression time=0.176817
+done
+Min=0, Max=0.067497961223125457764, range=0.067497961223125457764
+Max absolute error = 0.0010095410
+Max relative error = 0.014957
+Max pw relative error = 0.001010
+PSNR = 43.666455, NRMSE= 0.0065565783244026249604
+acEff=0.996808
+compressionRatio = 6.680106
+  ✓ Compression and decompression successful (ratio: 6.68x)
+
+[39/60] Processing: ODV_SSLTA_1_1800_3600.dat
+
+compression time=0.032559, total fastmode1 topology
+compression size = 4536393, CR = 5.713791
+done
+decompression time=0.199308
+done
+Min=0, Max=0.078465133905410766602, range=0.078465133905410766602
+Max absolute error = 0.0018765815
+Max relative error = 0.023916
+Max pw relative error = 0.001877
+PSNR = 43.301544, NRMSE= 0.0068379011083256387854
+acEff=0.999769
+compressionRatio = 5.713791
+  ✓ Compression and decompression successful (ratio: 5.71x)
+
+[40/60] Processing: ODV_SSLTC_1_1800_3600.dat
+
+compression time=0.033832, total fastmode1 topology
+compression size = 4404090, CR = 5.885438
+done
+decompression time=0.190369
+done
+Min=0, Max=0.051866430789232254028, range=0.051866430789232254028
+Max absolute error = 0.0017109439
+Max relative error = 0.032988
+Max pw relative error = 0.001711
+PSNR = 39.808295, NRMSE= 0.010223162727158327523
+acEff=0.999440
+compressionRatio = 5.885438
+  ✓ Compression and decompression successful (ratio: 5.88x)
+
+[41/60] Processing: ODV_sulf_1_1800_3600.dat
+
+compression time=0.036764, total fastmode1 topology
+compression size = 4691435, CR = 5.524962
+done
+decompression time=0.193757
+done
+Min=0, Max=0.19155621528625488281, range=0.19155621528625488281
+Max absolute error = 0.0013958467
+Max relative error = 0.007287
+Max pw relative error = 0.001396
+PSNR = 50.973659, NRMSE= 0.0028269429003504598086
+acEff=0.999824
+compressionRatio = 5.524962
+  ✓ Compression and decompression successful (ratio: 5.52x)
+
+[42/60] Processing: QREFHT_1_1800_3600.dat
+
+compression time=0.026344, total fastmode1 topology
+compression size = 3892488, CR = 6.658980
+done
+decompression time=0.164482
+done
+Min=9.6609612228348851204E-05, Max=0.019656945019960403442, range=0.019560335204005241394
+Max absolute error = 0.0010089866
+Max relative error = 0.051583
+Max pw relative error = 0.001009
+PSNR = 30.976199, NRMSE= 0.028261163893059423891
+acEff=0.998883
+compressionRatio = 6.658980
+  ✓ Compression and decompression successful (ratio: 6.65x)
+
+[43/60] Processing: RHREFHT_1_1800_3600.dat
+
+compression time=0.037160, total fastmode1 topology
+compression size = 9771566, CR = 2.652594
+done
+decompression time=0.185520
+done
+Min=19.985654830932617188, Max=115.62657928466796875, range=95.64092254638671875
+Max absolute error = 0.0019607544
+Max relative error = 0.000021
+Max pw relative error = 0.000048
+PSNR = 104.382327, NRMSE= 6.0378683850677950534E-06
+acEff=1.000000
+compressionRatio = 2.652594
+  ✓ Compression and decompression successful (ratio: 2.65x)
+
+[44/60] Processing: SHFLX_1_1800_3600.dat
+
+compression time=0.075031, total fastmode1 topology
+compression size = 10735472, CR = 2.414426
+done
+decompression time=0.187605
+done
+Min=-78.49718475341796875, Max=326.216217041015625, range=404.713409423828125
+Max absolute error = 0.0019378662
+Max relative error = 0.000005
+Max pw relative error = 0.001923
+PSNR = 116.912808, NRMSE= 1.4267884696235208956E-06
+acEff=1.000000
+compressionRatio = 2.414426
+  ✓ Compression and decompression successful (ratio: 2.41x)
+
+[45/60] Processing: SNOWHICE_1_1800_3600.dat
+
+compression time=0.026490, total fastmode1 topology
+compression size = 4088107, CR = 6.340343
+done
+decompression time=0.172466
+done
+Min=0, Max=0.66062295436859130859, range=0.66062295436859130859
+Max absolute error = 0.0019169450
+Max relative error = 0.002902
+Max pw relative error = 0.001917
+PSNR = 68.484839, NRMSE= 0.00037649398728535344834
+acEff=0.999999
+compressionRatio = 6.340343
+  ✓ Compression and decompression successful (ratio: 6.34x)
+
+[46/60] Processing: SOLIN_1_1800_3600.dat
+
+compression time=0.021859, total fastmode1 topology
+compression size = 7412448, CR = 3.496820
+done
+decompression time=0.163250
+done
+Min=0, Max=548.49273681640625, range=548.49273681640625
+Max absolute error = 0.0013732910
+Max relative error = 0.000003
+Max pw relative error = 0.001000
+PSNR = 120.108871, NRMSE= 9.8754393914378184002E-07
+acEff=1.000000
+compressionRatio = 3.496820
+  ✓ Compression and decompression successful (ratio: 3.49x)
+
+[47/60] Processing: SRFRAD_1_1800_3600.dat
+
+compression time=0.041962, total fastmode1 topology
+compression size = 11920991, CR = 2.174316
+done
+decompression time=0.199735
+done
+Min=112.9439239501953125, Max=713.7137451171875, range=600.76983642578125
+Max absolute error = 0.0019531250
+Max relative error = 0.000003
+Max pw relative error = 0.000014
+PSNR = 120.340072, NRMSE= 9.6160427169310838922E-07
+acEff=1.000000
+compressionRatio = 2.174316
+  ✓ Compression and decompression successful (ratio: 2.17x)
+
+[48/60] Processing: SWCF_1_1800_3600.dat
+
+compression time=0.041708, total fastmode1 topology
+compression size = 10601038, CR = 2.445044
+done
+decompression time=0.192079
+done
+Min=-200.759490966796875, Max=9.9914715974591672421E-05, range=200.7595977783203125
+Max absolute error = 0.0019869804
+Max relative error = 0.000010
+Max pw relative error = 0.001760
+PSNR = 111.396098, NRMSE= 2.6927441874303092061E-06
+acEff=1.000000
+compressionRatio = 2.445044
+  ✓ Compression and decompression successful (ratio: 2.44x)
+
+[49/60] Processing: TAUX_1_1800_3600.dat
+
+compression time=0.031036, total fastmode1 topology
+compression size = 5694386, CR = 4.551852
+done
+decompression time=0.194070
+done
+Min=-1.4790518283843994141, Max=1.1800894737243652344, range=2.6591413021087646484
+Max absolute error = 0.0019279271
+Max relative error = 0.000725
+Max pw relative error = 0.001928
+PSNR = 73.278130, NRMSE= 0.00021681709312309778263
+acEff=0.999991
+compressionRatio = 4.551852
+  ✓ Compression and decompression successful (ratio: 4.55x)
+
+[50/60] Processing: TAUY_1_1800_3600.dat
+
+compression time=0.029080, total fastmode1 topology
+compression size = 5626193, CR = 4.607023
+done
+decompression time=0.202387
+done
+Min=-1.1452076435089111328, Max=1.2904068231582641602, range=2.4356145858764648438
+Max absolute error = 0.0019518137
+Max relative error = 0.000801
+Max pw relative error = 0.001952
+PSNR = 72.528335, NRMSE= 0.0002363650550337790656
+acEff=0.999978
+compressionRatio = 4.607023
+  ✓ Compression and decompression successful (ratio: 4.60x)
+
+[51/60] Processing: TGCLDIWP_1_1800_3600.dat
+
+compression time=0.044521, total fastmode1 topology
+compression size = 10739794, CR = 2.413454
+done
+decompression time=0.200701
+done
+Min=1.4108197943230038618E-09, Max=108.541107177734375, range=108.541107177734375
+Max absolute error = 0.0019721985
+Max relative error = 0.000018
+Max pw relative error = 0.001933
+PSNR = 105.481110, NRMSE= 5.3204026478404386791E-06
+acEff=1.000000
+compressionRatio = 2.413454
+  ✓ Compression and decompression successful (ratio: 2.41x)
+
+[52/60] Processing: TGCLDLWP_1_1800_3600.dat
+
+compression time=0.110891, total fastmode1 topology
+compression size = 12481498, CR = 2.076674
+done
+decompression time=0.191032
+done
+Min=0.00016882304043974727392, Max=693.2628173828125, range=693.26263427734375
+Max absolute error = 0.0018844604
+Max relative error = 0.000003
+Max pw relative error = 0.001473
+PSNR = 121.586124, NRMSE= 8.3309360942159605774E-07
+acEff=1.000000
+compressionRatio = 2.076674
+  ✓ Compression and decompression successful (ratio: 2.07x)
+
+[53/60] Processing: TMQ_1_1800_3600.dat
+
+compression time=0.028892, total fastmode1 topology
+compression size = 8198846, CR = 3.161421
+done
+decompression time=0.166733
+done
+Min=0.43145361542701721191, Max=55.315334320068359375, range=54.883880615234375
+Max absolute error = 0.0018944740
+Max relative error = 0.000035
+Max pw relative error = 0.001279
+PSNR = 99.560838, NRMSE= 1.0518603690364697673E-05
+acEff=1.000000
+compressionRatio = 3.161421
+  ✓ Compression and decompression successful (ratio: 3.16x)
+
+[54/60] Processing: TREFHT_1_1800_3600.dat
+
+compression time=0.031141, total fastmode1 topology
+compression size = 8513493, CR = 3.044579
+done
+decompression time=0.176723
+done
+Min=231.5278472900390625, Max=305.8504638671875, range=74.3226165771484375
+Max absolute error = 0.0019226074
+Max relative error = 0.000026
+Max pw relative error = 0.000008
+PSNR = 102.193714, NRMSE= 7.7680908397661858938E-06
+acEff=1.000000
+compressionRatio = 3.044579
+  ✓ Compression and decompression successful (ratio: 3.04x)
+
+[55/60] Processing: TREFMNAV_1_1800_3600.dat
+
+compression time=0.034906, total fastmode1 topology
+compression size = 8819240, CR = 2.939029
+done
+decompression time=0.179134
+done
+Min=227.771759033203125, Max=301.67401123046875, range=73.902252197265625
+Max absolute error = 0.0019836426
+Max relative error = 0.000027
+Max pw relative error = 0.000008
+PSNR = 102.138429, NRMSE= 7.817691852220089025E-06
+acEff=1.000000
+compressionRatio = 2.939029
+  ✓ Compression and decompression successful (ratio: 2.93x)
+
+[56/60] Processing: TREFMXAV_1_1800_3600.dat
+
+compression time=0.032709, total fastmode1 topology
+compression size = 8617277, CR = 3.007911
+done
+decompression time=0.178911
+done
+Min=233.2447509765625, Max=313.71270751953125, range=80.46795654296875
+Max absolute error = 0.0019073486
+Max relative error = 0.000024
+Max pw relative error = 0.000008
+PSNR = 102.879725, NRMSE= 7.1781705534138979464E-06
+acEff=1.000000
+compressionRatio = 3.007911
+  ✓ Compression and decompression successful (ratio: 3.00x)
+
+[57/60] Processing: TROP_T_1_1800_3600.dat
+
+compression time=0.030311, total fastmode1 topology
+compression size = 7752041, CR = 3.343636
+done
+decompression time=0.174771
+done
+Min=185.6568450927734375, Max=218.2051239013671875, range=32.54827880859375
+Max absolute error = 0.0019683838
+Max relative error = 0.000060
+Max pw relative error = 0.000010
+PSNR = 95.024068, NRMSE= 1.7733586847586995701E-05
+acEff=1.000000
+compressionRatio = 3.343636
+  ✓ Compression and decompression successful (ratio: 3.34x)
+
+[58/60] Processing: TS_1_1800_3600.dat
+
+compression time=0.030769, total fastmode1 topology
+compression size = 8593694, CR = 3.016165
+done
+decompression time=0.168740
+done
+Min=228.4328460693359375, Max=308.9439697265625, range=80.5111236572265625
+Max absolute error = 0.0019683838
+Max relative error = 0.000024
+Max pw relative error = 0.000008
+PSNR = 102.883782, NRMSE= 7.1748183828200738814E-06
+acEff=1.000000
+compressionRatio = 3.016165
+  ✓ Compression and decompression successful (ratio: 3.01x)
+
+[59/60] Processing: TSMN_1_1800_3600.dat
+
+compression time=0.033998, total fastmode1 topology
+compression size = 9043863, CR = 2.866032
+done
+decompression time=0.172743
+done
+Min=211.0350189208984375, Max=303.356781005859375, range=92.3217620849609375
+Max absolute error = 0.0019531250
+Max relative error = 0.000021
+Max pw relative error = 0.000008
+PSNR = 104.073468, NRMSE= 6.2564301279177547501E-06
+acEff=1.000000
+compressionRatio = 2.866032
+  ✓ Compression and decompression successful (ratio: 2.86x)
+
+[60/60] Processing: TSMX_1_1800_3600.dat
+
+compression time=0.030391, total fastmode1 topology
+compression size = 8648339, CR = 2.997107
+done
+decompression time=0.173195
+done
+Min=241.6193389892578125, Max=336.633941650390625, range=95.0146026611328125
+Max absolute error = 0.0019836426
+Max relative error = 0.000021
+Max pw relative error = 0.000008
+PSNR = 104.325283, NRMSE= 6.0776520985930161745E-06
+acEff=1.000000
+compressionRatio = 2.997107
+  ✓ Compression and decompression successful (ratio: 2.99x)
+
+=== Summary ===
+Total files processed: 60
+Total files skipped: 0
+Total files failed: 0
+
