@@ -1,0 +1,541 @@
+Input directory: ../../SDRBENCH-CESM-ATM-26x1800x3600/
+Output directory: ../../SDRBENCH-CESM-ATM-26x1800x3600/topoSZp_4_thread/
+Dimensions: 46800x3600 (168480000 elements)
+Error bound: 1E-3
+Block size: 16
+
+Found 33 .dat file(s) to process
+
+[1/33] Processing: CLDICE_1_26_1800_3600.f32
+
+compression time=1.506238, total fastmode1 topology
+compression size = 102552786, CR = 6.571445
+done
+decompression time=3.155573
+done
+Min=-2.6610822882840609092E-22, Max=7.8551689512096345425E-05, range=7.8551689512096345425E-05
+Max absolute error = 0.0000771237
+Max relative error = 0.981821
+Max pw relative error = 0.000077
+PSNR = 26.179467, NRMSE= 0.049093797638826867924
+acEff=0.013247
+compressionRatio = 6.571445
+  ✓ Compression and decompression successful (ratio: 6.57x)
+
+[2/33] Processing: CLDLIQ_1_26_1800_3600.f32
+
+compression time=1.619475, total fastmode1 topology
+compression size = 104135672, CR = 6.471558
+done
+decompression time=3.180424
+done
+Min=-4.0656774028049155498E-23, Max=0.00052058178698644042015, range=0.00052058178698644042015
+Max absolute error = 0.0005204922
+Max relative error = 0.999828
+Max pw relative error = 0.000520
+PSNR = 28.647962, NRMSE= 0.036948932005497418796
+acEff=0.013416
+compressionRatio = 6.471558
+  ✓ Compression and decompression successful (ratio: 6.47x)
+
+[3/33] Processing: CLOUD_1_26_1800_3600.f32
+
+compression time=1.324275, total fastmode1 topology
+compression size = 141729516, CR = 4.754973
+done
+decompression time=3.765416
+done
+Min=-1.1366352489998319864E-17, Max=0.96405673027038574219, range=0.96405673027038574219
+Max absolute error = 0.0205829740
+Max relative error = 0.021350
+Max pw relative error = 0.020583
+PSNR = 66.315904, NRMSE= 0.00048328664766056285591
+acEff=0.999994
+compressionRatio = 4.754973
+  ✓ Compression and decompression successful (ratio: 4.75x)
+
+[4/33] Processing: CMFDQ_1_26_1800_3600.f32
+
+compression time=0.854396, total fastmode1 topology
+compression size = 99997550, CR = 6.739365
+done
+decompression time=2.891416
+done
+Min=-1.7015851483392907539E-07, Max=5.8479585618442797568E-08, range=2.2863810045237187296E-07
+Max absolute error = 0.0000100995
+Max relative error = 44.172573
+Max pw relative error = 0.000010
+PSNR = -13.304002, NRMSE= 4.6259411429469041721
+acEff=0.013267
+compressionRatio = 6.739365
+  ✓ Compression and decompression successful (ratio: 6.73x)
+
+[5/33] Processing: CMFDQR_1_26_1800_3600.f32
+
+compression time=0.817023, total fastmode1 topology
+compression size = 98439175, CR = 6.846055
+done
+decompression time=2.770446
+done
+Min=-4.7476461565327603357E-24, Max=3.5336977788347212481E-08, range=3.5336977788347212481E-08
+Max absolute error = 0.0000100242
+Max relative error = 283.673767
+Max pw relative error = 0.000010
+PSNR = -28.005662, NRMSE= 25.135244571674881797
+acEff=0.015748
+compressionRatio = 6.846055
+  ✓ Compression and decompression successful (ratio: 6.84x)
+
+[6/33] Processing: CMFDT_1_26_1800_3600.f32
+
+compression time=0.867790, total fastmode1 topology
+compression size = 99952225, CR = 6.742421
+done
+decompression time=2.887324
+done
+Min=-7.3109455115627497435E-05, Max=0.00036908459151163697243, range=0.00044219405390322208405
+Max absolute error = 0.0003660469
+Max relative error = 0.827797
+Max pw relative error = 0.000366
+PSNR = 34.368728, NRMSE= 0.019123333536441730618
+acEff=0.015912
+compressionRatio = 6.742421
+  ✓ Compression and decompression successful (ratio: 6.74x)
+
+[7/33] Processing: CONCLD_1_26_1800_3600.f32
+
+compression time=1.039204, total fastmode1 topology
+compression size = 116515575, CR = 5.783948
+done
+decompression time=3.211986
+done
+Min=-2.320791031574100349E-17, Max=0.49021291732788085938, range=0.49021291732788085938
+Max absolute error = 0.0381130278
+Max relative error = 0.077748
+Max pw relative error = 0.038113
+PSNR = 62.023549, NRMSE= 0.00079217756644472622253
+acEff=0.999968
+compressionRatio = 5.783948
+  ✓ Compression and decompression successful (ratio: 5.78x)
+
+[8/33] Processing: DCQ_1_26_1800_3600.f32
+
+compression time=1.147114, total fastmode1 topology
+compression size = 104287440, CR = 6.462140
+done
+decompression time=3.167121
+done
+Min=-2.0368227637845848221E-07, Max=7.4886848722144350177E-08, range=2.7856913220603018999E-07
+Max absolute error = 0.0000101259
+Max relative error = 36.349609
+Max pw relative error = 0.000010
+PSNR = -14.158293, NRMSE= 5.1040468350727703495
+acEff=0.012255
+compressionRatio = 6.462140
+  ✓ Compression and decompression successful (ratio: 6.46x)
+
+[9/33] Processing: DTCOND_1_26_1800_3600.f32
+
+compression time=1.183234, total fastmode1 topology
+compression size = 103178475, CR = 6.531595
+done
+decompression time=3.087961
+done
+Min=-0.00026664164033718407154, Max=0.00031546861282549798489, range=0.00058211025316268205643
+Max absolute error = 0.0003078315
+Max relative error = 0.528820
+Max pw relative error = 0.000308
+PSNR = 32.040080, NRMSE= 0.025003223072847999969
+acEff=0.014091
+compressionRatio = 6.531595
+  ✓ Compression and decompression successful (ratio: 6.53x)
+
+[10/33] Processing: DTV_1_26_1800_3600.f32
+
+compression time=0.740964, total fastmode1 topology
+compression size = 98128703, CR = 6.867715
+done
+decompression time=2.831648
+done
+Min=-0.0002512722858227789402, Max=0.0012127617374062538147, range=0.0014640339650213718414
+Max absolute error = 0.0009978374
+Max relative error = 0.681567
+Max pw relative error = 0.000998
+PSNR = 36.886931, NRMSE= 0.014310455788524720916
+acEff=0.026810
+compressionRatio = 6.867715
+  ✓ Compression and decompression successful (ratio: 6.86x)
+
+[11/33] Processing: FICE_1_26_1800_3600.f32
+
+compression time=0.516591, total fastmode1 topology
+compression size = 108075997, CR = 6.235612
+done
+decompression time=2.630051
+done
+Min=-5.6506481118730634162E-17, Max=1, range=1
+Max absolute error = 0.0018819124
+Max relative error = 0.001882
+Max pw relative error = 0.001882
+PSNR = 62.259404, NRMSE= 0.00077095635534440314952
+acEff=1.000000
+compressionRatio = 6.235612
+  ✓ Compression and decompression successful (ratio: 6.23x)
+
+[12/33] Processing: GCLDLWP_1_26_1800_3600.f32
+
+compression time=1.240844, total fastmode1 topology
+compression size = 189673110, CR = 3.553061
+done
+decompression time=3.580204
+done
+Min=0, Max=167.3115997314453125, range=167.3115997314453125
+Max absolute error = 23.6733093262
+Max relative error = 0.141492
+Max pw relative error = 0.148607
+PSNR = 70.364197, NRMSE= 0.00030324254566102727551
+acEff=0.999991
+compressionRatio = 3.553060
+  ✓ Compression and decompression successful (ratio: 3.55x)
+
+[13/33] Processing: ICIMR_1_26_1800_3600.f32
+
+compression time=1.883745, total fastmode1 topology
+compression size = 108429306, CR = 6.215294
+done
+decompression time=3.412574
+done
+Min=-5.7941400814054021487E-21, Max=0.0074772443622350692749, range=0.0074772443622350692749
+Max absolute error = 0.0035939654
+Max relative error = 0.480654
+Max pw relative error = 0.003594
+PSNR = 41.129021, NRMSE= 0.0087811005271426888913
+acEff=0.613199
+compressionRatio = 6.215294
+  ✓ Compression and decompression successful (ratio: 6.21x)
+
+[14/33] Processing: ICLDIWP_1_26_1800_3600.f32
+
+compression time=1.958257, total fastmode1 topology
+compression size = 205378620, CR = 3.281354
+done
+decompression time=3.858087
+done
+Min=-6.0854777163624196312E-15, Max=1799.3199462890625, range=1799.3199462890625
+Max absolute error = 0.0010681152
+Max relative error = 0.000001
+Max pw relative error = 0.001008
+PSNR = 132.823934, NRMSE= 2.2845639413035243234E-07
+acEff=1.000000
+compressionRatio = 3.281354
+  ✓ Compression and decompression successful (ratio: 3.28x)
+
+[15/33] Processing: ICLDTWP_1_26_1800_3600.f32
+
+compression time=1.676980, total fastmode1 topology
+compression size = 251695168, CR = 2.677525
+done
+decompression time=3.886500
+done
+Min=0, Max=8722.8828125, range=8722.8828125
+Max absolute error = 0.0014648438
+Max relative error = 0.000000
+Max pw relative error = 0.001008
+PSNR = 145.442072, NRMSE= 5.3443683256208805535E-08
+acEff=1.000000
+compressionRatio = 2.677525
+  ✓ Compression and decompression successful (ratio: 2.67x)
+
+[16/33] Processing: ICWMR_1_26_1800_3600.f32
+
+compression time=1.985569, total fastmode1 topology
+compression size = 110854182, CR = 6.079338
+done
+decompression time=3.430282
+done
+Min=-2.9150729698977735985E-23, Max=0.021344149485230445862, range=0.021344149485230445862
+Max absolute error = 0.0072128996
+Max relative error = 0.337933
+Max pw relative error = 0.007213
+PSNR = 40.942615, NRMSE= 0.0089715869749403612254
+acEff=0.890700
+compressionRatio = 6.079338
+  ✓ Compression and decompression successful (ratio: 6.07x)
+
+[17/33] Processing: OMEGA_1_26_1800_3600.f32
+
+compression time=1.234353, total fastmode1 topology
+compression size = 143163773, CR = 4.707336
+done
+decompression time=3.834277
+done
+Min=-1.1917198896408081055, Max=2.8957533836364746094, range=4.0874733924865722656
+Max absolute error = 0.1058862209
+Max relative error = 0.025905
+Max pw relative error = 0.051594
+PSNR = 77.792142, NRMSE= 0.00012894155286902498638
+acEff=0.999925
+compressionRatio = 4.707336
+  ✓ Compression and decompression successful (ratio: 4.70x)
+
+[18/33] Processing: OMEGAT_1_26_1800_3600.f32
+
+compression time=1.057944, total fastmode1 topology
+compression size = 260522775, CR = 2.586799
+done
+decompression time=3.609622
+done
+Min=-304.239990234375, Max=735.3590087890625, range=1039.5989990234375
+Max absolute error = 0.2034912109
+Max relative error = 0.000196
+Max pw relative error = 0.001994
+PSNR = 125.065746, NRMSE= 5.581008456223927118E-07
+acEff=1.000000
+compressionRatio = 2.586799
+  ✓ Compression and decompression successful (ratio: 2.58x)
+
+[19/33] Processing: Q_1_26_1800_3600.f32
+
+compression time=0.558945, total fastmode1 topology
+compression size = 96937121, CR = 6.952136
+done
+decompression time=2.567081
+done
+Min=1.0770934295578626916E-06, Max=0.019757116213440895081, range=0.019756039604544639587
+Max absolute error = 0.0010098224
+Max relative error = 0.051115
+Max pw relative error = 0.001010
+PSNR = 35.605531, NRMSE= 0.016585304746027932504
+acEff=0.996784
+compressionRatio = 6.952135
+  ✓ Compression and decompression successful (ratio: 6.95x)
+
+[20/33] Processing: QC_1_26_1800_3600.f32
+
+compression time=0.833897, total fastmode1 topology
+compression size = 98641961, CR = 6.831981
+done
+decompression time=2.772590
+done
+Min=-1.3202021911232409341E-23, Max=9.8005060067407612223E-08, range=9.8005060067407612223E-08
+Max absolute error = 0.0000100518
+Max relative error = 102.564529
+Max pw relative error = 0.000010
+PSNR = -19.352791, NRMSE= 9.2819564527946933907
+acEff=0.016006
+compressionRatio = 6.831981
+  ✓ Compression and decompression successful (ratio: 6.83x)
+
+[21/33] Processing: QRL_1_26_1800_3600.f32
+
+compression time=1.151742, total fastmode1 topology
+compression size = 101680740, CR = 6.627804
+done
+decompression time=3.048745
+done
+Min=-0.00030383409466594457626, Max=3.7730242183897644281E-05, range=0.00034156432957388460636
+Max absolute error = 0.0002966523
+Max relative error = 0.868511
+Max pw relative error = 0.000297
+PSNR = 24.209139, NRMSE= 0.061594660037576381972
+acEff=0.007567
+compressionRatio = 6.627804
+  ✓ Compression and decompression successful (ratio: 6.62x)
+
+[22/33] Processing: QRS_1_26_1800_3600.f32
+
+compression time=1.086499, total fastmode1 topology
+compression size = 100358406, CR = 6.715132
+done
+decompression time=2.996608
+done
+Min=0, Max=6.8808403739240020514E-05, range=6.8808403739240020514E-05
+Max absolute error = 0.0000786755
+Max relative error = 1.143400
+Max pw relative error = 0.000079
+PSNR = 13.647970, NRMSE= 0.20777892016299628897
+acEff=0.003259
+compressionRatio = 6.715133
+  ✓ Compression and decompression successful (ratio: 6.71x)
+
+[23/33] Processing: RELHUM_1_26_1800_3600.f32
+
+compression time=0.748345, total fastmode1 topology
+compression size = 222670687, CR = 3.026532
+done
+decompression time=2.997826
+done
+Min=0.0011152154766023159027, Max=99.60451507568359375, range=99.60340118408203125
+Max absolute error = 0.0019836426
+Max relative error = 0.000020
+Max pw relative error = 0.001202
+PSNR = 104.743668, NRMSE= 5.7918405812855956909E-06
+acEff=1.000000
+compressionRatio = 3.026532
+  ✓ Compression and decompression successful (ratio: 3.02x)
+
+[24/33] Processing: T_1_26_1800_3600.f32
+
+compression time=0.661435, total fastmode1 topology
+compression size = 197136955, CR = 3.418537
+done
+decompression time=2.834419
+done
+Min=183.7064361572265625, Max=305.932281494140625, range=122.2258453369140625
+Max absolute error = 0.0019836426
+Max relative error = 0.000016
+Max pw relative error = 0.000009
+PSNR = 106.514570, NRMSE= 4.723582221046955019E-06
+acEff=1.000000
+compressionRatio = 3.418537
+  ✓ Compression and decompression successful (ratio: 3.41x)
+
+[25/33] Processing: U_1_26_1800_3600.f32
+
+compression time=0.664507, total fastmode1 topology
+compression size = 214466771, CR = 3.142305
+done
+decompression time=2.790938
+done
+Min=-57.64739990234375, Max=101.3042449951171875, range=158.9516448974609375
+Max absolute error = 0.0019779205
+Max relative error = 0.000012
+Max pw relative error = 0.001968
+PSNR = 108.796434, NRMSE= 3.6322715276366016802E-06
+acEff=1.000000
+compressionRatio = 3.142305
+  ✓ Compression and decompression successful (ratio: 3.14x)
+
+[26/33] Processing: UU_1_26_1800_3600.f32
+
+compression time=0.755430, total fastmode1 topology
+compression size = 295961803, CR = 2.277051
+done
+decompression time=2.785303
+done
+Min=0.81607228517532348633, Max=11182.326171875, range=11181.509765625
+Max absolute error = 0.0019531250
+Max relative error = 0.000000
+Max pw relative error = 0.000991
+PSNR = 145.731743, NRMSE= 5.1690751521486150055E-08
+acEff=1.000000
+compressionRatio = 2.277051
+  ✓ Compression and decompression successful (ratio: 2.27x)
+
+[27/33] Processing: V_1_26_1800_3600.f32
+
+compression time=0.706892, total fastmode1 topology
+compression size = 216100071, CR = 3.118555
+done
+decompression time=2.884819
+done
+Min=-60.1439208984375, Max=65.46759796142578125, range=125.61151885986328125
+Max absolute error = 0.0019879341
+Max relative error = 0.000016
+Max pw relative error = 0.001978
+PSNR = 106.751982, NRMSE= 4.5962207692485664663E-06
+acEff=1.000000
+compressionRatio = 3.118555
+  ✓ Compression and decompression successful (ratio: 3.11x)
+
+[28/33] Processing: VD01_1_26_1800_3600.f32
+
+compression time=0.919065, total fastmode1 topology
+compression size = 99354696, CR = 6.782971
+done
+decompression time=2.927052
+done
+Min=-2.6109083250958065037E-07, Max=4.6007784249013639055E-07, range=7.2116870342142647132E-07
+Max absolute error = 0.0000101575
+Max relative error = 14.084815
+Max pw relative error = 0.000010
+PSNR = -2.835689, NRMSE= 1.3860677074635794348
+acEff=0.007608
+compressionRatio = 6.782971
+  ✓ Compression and decompression successful (ratio: 6.78x)
+
+[29/33] Processing: VQ_1_26_1800_3600.f32
+
+compression time=0.673632, total fastmode1 topology
+compression size = 103527621, CR = 6.509567
+done
+decompression time=2.721694
+done
+Min=-0.19961507618427276611, Max=0.13738395273685455322, range=0.33699902892112731934
+Max absolute error = 0.0018337220
+Max relative error = 0.005441
+Max pw relative error = 0.001834
+PSNR = 59.655606, NRMSE= 0.0010404463475260036266
+acEff=0.999537
+compressionRatio = 6.509567
+  ✓ Compression and decompression successful (ratio: 6.50x)
+
+[30/33] Processing: VT_1_26_1800_3600.f32
+
+compression time=0.904217, total fastmode1 topology
+compression size = 368091967, CR = 1.830847
+done
+decompression time=2.873708
+done
+Min=-13185.3759765625, Max=14451.169921875, range=27636.546875
+Max absolute error = 0.0014648438
+Max relative error = 0.000000
+Max pw relative error = 0.001000
+PSNR = 153.575961, NRMSE= 2.0950863958247148476E-08
+acEff=1.000000
+compressionRatio = 1.830847
+  ✓ Compression and decompression successful (ratio: 1.83x)
+
+[31/33] Processing: VU_1_26_1800_3600.f32
+
+compression time=0.763535, total fastmode1 topology
+compression size = 283162151, CR = 2.379979
+done
+decompression time=2.858263
+done
+Min=-4087.43359375, Max=4946.85302734375, range=9034.287109375
+Max absolute error = 0.0021972656
+Max relative error = 0.000000
+Max pw relative error = 0.001000
+PSNR = 143.888430, NRMSE= 6.3911421401055437141E-08
+acEff=1.000000
+compressionRatio = 2.379979
+  ✓ Compression and decompression successful (ratio: 2.37x)
+
+[32/33] Processing: VV_1_26_1800_3600.f32
+
+compression time=0.755255, total fastmode1 topology
+compression size = 280887811, CR = 2.399250
+done
+decompression time=2.871009
+done
+Min=0.92609137296676635742, Max=5137.27294921875, range=5136.3466796875
+Max absolute error = 0.0010986328
+Max relative error = 0.000000
+Max pw relative error = 0.000897
+PSNR = 138.983262, NRMSE= 1.1241826456785410324E-07
+acEff=1.000000
+compressionRatio = 2.399250
+  ✓ Compression and decompression successful (ratio: 2.39x)
+
+[33/33] Processing: Z3_1_26_1800_3600.f32
+
+compression time=0.875857, total fastmode1 topology
+compression size = 290845561, CR = 2.317106
+done
+decompression time=2.814918
+done
+Min=-28.956722259521484375, Max=39018.06640625, range=39047.0234375
+Max absolute error = 0.0078125000
+Max relative error = 0.000000
+Max pw relative error = 0.000991
+PSNR = 153.838302, NRMSE= 2.0327543508414498268E-08
+acEff=1.000000
+compressionRatio = 2.317106
+  ✓ Compression and decompression successful (ratio: 2.31x)
+
+=== Summary ===
+Total files processed: 33
+Total files skipped: 0
+Total files failed: 0
+
