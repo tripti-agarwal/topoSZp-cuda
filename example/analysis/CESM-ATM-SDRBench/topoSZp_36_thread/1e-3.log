@@ -6,68 +6,227 @@ Block size: 16
 
 Found 60 .dat file(s) to process
 
-[1/60] Skipping: AEROD_v_1_1800_3600.dat (output files already exist)
-[2/60] Skipping: CLDHGH_1_1800_3600.dat (output files already exist)
-[3/60] Skipping: CLDLOW_1_1800_3600.dat (output files already exist)
-[4/60] Skipping: CLDMED_1_1800_3600.dat (output files already exist)
-[5/60] Skipping: CLDTOT_1_1800_3600.dat (output files already exist)
-[6/60] Skipping: FLDS_1_1800_3600.dat (output files already exist)
-[7/60] Skipping: FLDSC_1_1800_3600.dat (output files already exist)
-[8/60] Skipping: FLNS_1_1800_3600.dat (output files already exist)
-[9/60] Skipping: FLNSC_1_1800_3600.dat (output files already exist)
-[10/60] Skipping: FLNT_1_1800_3600.dat (output files already exist)
-[11/60] Skipping: FLNTC_1_1800_3600.dat (output files already exist)
-[12/60] Skipping: FLUT_1_1800_3600.dat (output files already exist)
-[13/60] Skipping: FLUTC_1_1800_3600.dat (output files already exist)
-[14/60] Skipping: FREQSH_1_1800_3600.dat (output files already exist)
-[15/60] Skipping: FREQZM_1_1800_3600.dat (output files already exist)
-[16/60] Skipping: FSDS_1_1800_3600.dat (output files already exist)
-[17/60] Skipping: FSDSC_1_1800_3600.dat (output files already exist)
-[18/60] Skipping: FSDTOA_1_1800_3600.dat (output files already exist)
-[19/60] Skipping: FSNS_1_1800_3600.dat (output files already exist)
-[20/60] Skipping: FSNSC_1_1800_3600.dat (output files already exist)
-[21/60] Skipping: FSNT_1_1800_3600.dat (output files already exist)
-[22/60] Skipping: FSNTC_1_1800_3600.dat (output files already exist)
-[23/60] Skipping: FSNTOA_1_1800_3600.dat (output files already exist)
-[24/60] Skipping: FSNTOAC_1_1800_3600.dat (output files already exist)
-[25/60] Skipping: FSUTOA_1_1800_3600.dat (output files already exist)
-[26/60] Skipping: ICEFRAC_1_1800_3600.dat (output files already exist)
-[27/60] Skipping: LANDFRAC_1_1800_3600.dat (output files already exist)
-[28/60] Skipping: LHFLX_1_1800_3600.dat (output files already exist)
-[29/60] Skipping: LWCF_1_1800_3600.dat (output files already exist)
-[30/60] Skipping: OCNFRAC_1_1800_3600.dat (output files already exist)
-[31/60] Skipping: ODV_bcar1_1_1800_3600.dat (output files already exist)
-[32/60] Skipping: ODV_bcar2_1_1800_3600.dat (output files already exist)
-[33/60] Skipping: ODV_dust1_1_1800_3600.dat (output files already exist)
-[34/60] Skipping: ODV_dust2_1_1800_3600.dat (output files already exist)
-[35/60] Skipping: ODV_dust3_1_1800_3600.dat (output files already exist)
-[36/60] Skipping: ODV_dust4_1_1800_3600.dat (output files already exist)
-[37/60] Skipping: ODV_ocar1_1_1800_3600.dat (output files already exist)
-[38/60] Skipping: ODV_ocar2_1_1800_3600.dat (output files already exist)
-[39/60] Skipping: ODV_SSLTA_1_1800_3600.dat (output files already exist)
-[40/60] Skipping: ODV_SSLTC_1_1800_3600.dat (output files already exist)
-[41/60] Skipping: ODV_sulf_1_1800_3600.dat (output files already exist)
-[42/60] Skipping: QREFHT_1_1800_3600.dat (output files already exist)
-[43/60] Skipping: RHREFHT_1_1800_3600.dat (output files already exist)
-[44/60] Skipping: SHFLX_1_1800_3600.dat (output files already exist)
-[45/60] Skipping: SNOWHICE_1_1800_3600.dat (output files already exist)
-[46/60] Skipping: SOLIN_1_1800_3600.dat (output files already exist)
-[47/60] Skipping: SRFRAD_1_1800_3600.dat (output files already exist)
-[48/60] Skipping: SWCF_1_1800_3600.dat (output files already exist)
-[49/60] Skipping: TAUX_1_1800_3600.dat (output files already exist)
-[50/60] Skipping: TAUY_1_1800_3600.dat (output files already exist)
-[51/60] Skipping: TGCLDIWP_1_1800_3600.dat (output files already exist)
-[52/60] Skipping: TGCLDLWP_1_1800_3600.dat (output files already exist)
-[53/60] Skipping: TMQ_1_1800_3600.dat (output files already exist)
-[54/60] Skipping: TREFHT_1_1800_3600.dat (output files already exist)
-[55/60] Skipping: TREFMNAV_1_1800_3600.dat (output files already exist)
-[56/60] Skipping: TREFMXAV_1_1800_3600.dat (output files already exist)
-[57/60] Skipping: TROP_T_1_1800_3600.dat (output files already exist)
-[58/60] Skipping: TS_1_1800_3600.dat (output files already exist)
-[59/60] Skipping: TSMN_1_1800_3600.dat (output files already exist)
-[60/60] Skipping: TSMX_1_1800_3600.dat (output files already exist)
+[1/60] Processing: AEROD_v_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[2/60] Processing: CLDHGH_1_1800_3600.dat
+
+compression time=0.475154, total fastmode1 topology
+compression size = 6656806, CR = 3.893759
+done
+decompression time=0.483473
+done
+Min=3.374915706899628276E-07, Max=0.92075449228286743164, range=0.9207541346549987793
+Max absolute error = 0.0019636154
+Max relative error = 0.002133
+Max pw relative error = 0.001964
+PSNR = 64.048947, NRMSE= 0.00062741176466235169459
+acEff=0.999998
+compressionRatio = 3.893759
+  ✓ Compression and decompression successful (ratio: 3.89x)
+
+[3/60] Processing: CLDLOW_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[4/60] Processing: CLDMED_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[5/60] Processing: CLDTOT_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[6/60] Processing: FLDS_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[7/60] Processing: FLDSC_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[8/60] Processing: FLNS_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[9/60] Processing: FLNSC_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[10/60] Processing: FLNT_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[11/60] Processing: FLNTC_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[12/60] Processing: FLUT_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[13/60] Processing: FLUTC_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[14/60] Processing: FREQSH_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[15/60] Processing: FREQZM_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[16/60] Processing: FSDS_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[17/60] Processing: FSDSC_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[18/60] Processing: FSDTOA_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[19/60] Processing: FSNS_1_1800_3600.dat
+
+compression time=0.347366, total fastmode1 topology
+compression size = 11024772, CR = 2.351069
+done
+decompression time=0.165372
+done
+Min=0, Max=374.014617919921875, range=374.014617919921875
+Max absolute error = 0.0019226074
+Max relative error = 0.000005
+Max pw relative error = 0.001793
+PSNR = 116.787660, NRMSE= 1.4474947299889259497E-06
+acEff=1.000000
+compressionRatio = 2.351069
+  ✓ Compression and decompression successful (ratio: 2.35x)
+
+[20/60] Processing: FSNSC_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[21/60] Processing: FSNT_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[22/60] Processing: FSNTC_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[23/60] Processing: FSNTOA_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[24/60] Processing: FSNTOAC_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[25/60] Processing: FSUTOA_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[26/60] Processing: ICEFRAC_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[27/60] Processing: LANDFRAC_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[28/60] Processing: LHFLX_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[29/60] Processing: LWCF_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[30/60] Processing: OCNFRAC_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[31/60] Processing: ODV_bcar1_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[32/60] Processing: ODV_bcar2_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[33/60] Processing: ODV_dust1_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[34/60] Processing: ODV_dust2_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[35/60] Processing: ODV_dust3_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[36/60] Processing: ODV_dust4_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[37/60] Processing: ODV_ocar1_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[38/60] Processing: ODV_ocar2_1_1800_3600.dat
+
+compression time=0.029764, total fastmode1 topology
+compression size = 3880362, CR = 6.679789
+done
+decompression time=0.160658
+done
+Min=0, Max=0.067497961223125457764, range=0.067497961223125457764
+Max absolute error = 0.0010095410
+Max relative error = 0.014957
+Max pw relative error = 0.001010
+PSNR = 43.666464, NRMSE= 0.0065565713843551585646
+acEff=0.996808
+compressionRatio = 6.679789
+  ✓ Compression and decompression successful (ratio: 6.67x)
+
+[39/60] Processing: ODV_SSLTA_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[40/60] Processing: ODV_SSLTC_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[41/60] Processing: ODV_sulf_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[42/60] Processing: QREFHT_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[43/60] Processing: RHREFHT_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[44/60] Processing: SHFLX_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[45/60] Processing: SNOWHICE_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[46/60] Processing: SOLIN_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[47/60] Processing: SRFRAD_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[48/60] Processing: SWCF_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[49/60] Processing: TAUX_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[50/60] Processing: TAUY_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[51/60] Processing: TGCLDIWP_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[52/60] Processing: TGCLDLWP_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[53/60] Processing: TMQ_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[54/60] Processing: TREFHT_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[55/60] Processing: TREFMNAV_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[56/60] Processing: TREFMXAV_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[57/60] Processing: TROP_T_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[58/60] Processing: TS_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[59/60] Processing: TSMN_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
+[60/60] Processing: TSMX_1_1800_3600.dat
+  ✗ Compression failed (exit code: 1)
+
 === Summary ===
-Total files processed: 0
-Total files skipped: 60
-Total files failed: 0
+Total files processed: 3
+Total files skipped: 0
+Total files failed: 57
 
