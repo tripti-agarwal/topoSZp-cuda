@@ -1,0 +1,442 @@
+Input directory: ../../ERA5/
+Output directory: ../../ERA5/topoSZp_8_thread/
+Dimensions: 73728x256 (18874368 elements)
+Error bound: 1E-3
+Block size: 16
+
+Found 30 .dat file(s) to process
+
+[1/30] Processing: CIWP.f32
+Error: No critical points found!
+  ✗ Compression failed
+
+[2/30] Processing: CLD.f32
+
+compression time=0.059833, total fastmode1 topology
+compression size = 17470564, CR = 4.321410
+done
+decompression time=0.266551
+done
+Min=0, Max=100, range=100
+Max absolute error = 0.0010070801
+Max relative error = 0.000010
+Max pw relative error = 0.000020
+PSNR = 100.772701, NRMSE= 9.1488168230517589124E-06
+acEff=1.000000
+compressionRatio = 4.321410
+  ✓ Compression and decompression successful (ratio: 4.32x)
+
+[3/30] Processing: CLWP.f32
+
+compression time=0.164115, total fastmode1 topology
+compression size = 23647045, CR = 3.192681
+done
+decompression time=0.495691
+done
+Min=0, Max=2.8853793144226074219, range=2.8853793144226074219
+Max absolute error = 0.0020253658
+Max relative error = 0.000702
+Max pw relative error = 0.001980
+PSNR = 75.220000, NRMSE= 0.00017338039534233365521
+acEff=0.999997
+compressionRatio = 3.192681
+  ✓ Compression and decompression successful (ratio: 3.19x)
+
+[4/30] Processing: LHF.f32
+
+compression time=0.167717, total fastmode1 topology
+compression size = 50540611, CR = 1.493798
+done
+decompression time=0.579921
+done
+Min=50.560329437255859375, Max=635.80322265625, range=585.242919921875
+Max absolute error = 0.0016937256
+Max relative error = 0.000003
+Max pw relative error = 0.000022
+PSNR = 120.162310, NRMSE= 9.814868858956477803E-07
+acEff=1.000000
+compressionRatio = 1.493798
+  ✓ Compression and decompression successful (ratio: 1.49x)
+
+[5/30] Processing: LWNSC.f32
+
+compression time=0.154596, total fastmode1 topology
+compression size = 36776747, CR = 2.052859
+done
+decompression time=0.516234
+done
+Min=91.157257080078125, Max=110.026031494140625, range=18.8687744140625
+Max absolute error = 0.0019683838
+Max relative error = 0.000104
+Max pw relative error = 0.000021
+PSNR = 90.337566, NRMSE= 3.0417372488828075161E-05
+acEff=1.000000
+compressionRatio = 2.052859
+  ✓ Compression and decompression successful (ratio: 2.05x)
+
+[6/30] Processing: LWNS.f32
+
+compression time=0.136153, total fastmode1 topology
+compression size = 43175171, CR = 1.748632
+done
+decompression time=0.523940
+done
+Min=8.959529876708984375, Max=110.026031494140625, range=101.066497802734375
+Max absolute error = 0.0018615723
+Max relative error = 0.000018
+Max pw relative error = 0.000100
+PSNR = 104.887479, NRMSE= 5.6967351203239913155E-06
+acEff=1.000000
+compressionRatio = 1.748632
+  ✓ Compression and decompression successful (ratio: 1.74x)
+
+[7/30] Processing: LWNTC.f32
+
+compression time=0.116086, total fastmode1 topology
+compression size = 29908091, CR = 2.524316
+done
+decompression time=0.524423
+done
+Min=265.375640869140625, Max=274.5592041015625, range=9.183563232421875
+Max absolute error = 0.0019836426
+Max relative error = 0.000216
+Max pw relative error = 0.000007
+PSNR = 84.072191, NRMSE= 6.2573499216930867565E-05
+acEff=1.000000
+compressionRatio = 2.524316
+  ✓ Compression and decompression successful (ratio: 2.52x)
+
+[8/30] Processing: LWNT.f32
+
+compression time=0.165611, total fastmode1 topology
+compression size = 40042789, CR = 1.885420
+done
+decompression time=0.559575
+done
+Min=231.24786376953125, Max=274.55877685546875, range=43.3109130859375
+Max absolute error = 0.0019836426
+Max relative error = 0.000046
+Max pw relative error = 0.000008
+PSNR = 97.520691, NRMSE= 1.3303486358074639317E-05
+acEff=1.000000
+compressionRatio = 1.885420
+  ✓ Compression and decompression successful (ratio: 1.88x)
+
+[9/30] Processing: PIWP.f32
+Error: No critical points found!
+  ✗ Compression failed
+
+[10/30] Processing: PLWP.f32
+
+compression time=0.077913, total fastmode1 topology
+compression size = 15006619, CR = 5.030945
+done
+decompression time=0.383903
+done
+Min=0, Max=4.8534579277038574219, range=4.8534579277038574219
+Max absolute error = 0.0060498714
+Max relative error = 0.001247
+Max pw relative error = 0.002323
+PSNR = 82.604307, NRMSE= 7.4094278470395125375E-05
+acEff=0.999993
+compressionRatio = 5.030945
+  ✓ Compression and decompression successful (ratio: 5.03x)
+
+[11/30] Processing: Prec.f32
+
+compression time=0.080244, total fastmode1 topology
+compression size = 16632520, CR = 4.539148
+done
+decompression time=0.343543
+done
+Min=0, Max=1435.127685546875, range=1435.127685546875
+Max absolute error = 0.0537109375
+Max relative error = 0.000037
+Max pw relative error = 0.001774
+PSNR = 131.008166, NRMSE= 2.8157344374031843773E-07
+acEff=1.000000
+compressionRatio = 4.539148
+  ✓ Compression and decompression successful (ratio: 4.53x)
+
+[12/30] Processing: PSFC.f32
+
+compression time=0.159242, total fastmode1 topology
+compression size = 24769422, CR = 3.048011
+done
+decompression time=0.649247
+done
+Min=1017.97113037109375, Max=1025.544921875, range=7.57379150390625
+Max absolute error = 0.0019531250
+Max relative error = 0.000258
+Max pw relative error = 0.000002
+PSNR = 82.259098, NRMSE= 7.7098356761820958363E-05
+acEff=1.000000
+compressionRatio = 3.048011
+  ✓ Compression and decompression successful (ratio: 3.04x)
+
+[13/30] Processing: PW.f32
+
+compression time=0.110174, total fastmode1 topology
+compression size = 31449964, CR = 2.400558
+done
+decompression time=0.483249
+done
+Min=10.495588302612304688, Max=16.374101638793945312, range=5.878513336181640625
+Max absolute error = 0.0019521713
+Max relative error = 0.000332
+Max pw relative error = 0.000159
+PSNR = 80.200100, NRMSE= 9.7722594891739558362E-05
+acEff=1.000000
+compressionRatio = 2.400558
+  ✓ Compression and decompression successful (ratio: 2.40x)
+
+[14/30] Processing: SHF.f32
+
+compression time=0.160431, total fastmode1 topology
+compression size = 46297172, CR = 1.630715
+done
+decompression time=0.586466
+done
+Min=9.1072521209716796875, Max=264.23828125, range=255.1310272216796875
+Max absolute error = 0.0018758774
+Max relative error = 0.000007
+Max pw relative error = 0.000156
+PSNR = 112.947589, NRMSE= 2.2522705517013174698E-06
+acEff=1.000000
+compressionRatio = 1.630715
+  ✓ Compression and decompression successful (ratio: 1.63x)
+
+[15/30] Processing: SOLIN.f32
+
+compression time=0.032277, total fastmode1 topology
+compression size = 10617018, CR = 7.110987
+done
+decompression time=0.244625
+done
+Min=0, Max=1083.29541015625, range=1083.29541015625
+Max absolute error = 0.0009765625
+Max relative error = 0.000001
+Max pw relative error = 0.000539
+PSNR = 127.493942, NRMSE= 4.2199073035391845963E-07
+acEff=1.000000
+compressionRatio = 7.110987
+  ✓ Compression and decompression successful (ratio: 7.11x)
+
+[16/30] Processing: SWNSC.f32
+
+compression time=0.110454, total fastmode1 topology
+compression size = 22405345, CR = 3.369619
+done
+decompression time=0.415159
+done
+Min=0, Max=890.4625244140625, range=890.4625244140625
+Max absolute error = 0.3214111328
+Max relative error = 0.000361
+Max pw relative error = 0.001008
+PSNR = 102.388929, NRMSE= 7.5954504492203036247E-06
+acEff=1.000000
+compressionRatio = 3.369619
+  ✓ Compression and decompression successful (ratio: 3.36x)
+
+[17/30] Processing: SWNS.f32
+
+compression time=0.115529, total fastmode1 topology
+compression size = 31372961, CR = 2.406451
+done
+decompression time=0.436882
+done
+Min=0, Max=890.0162353515625, range=890.0162353515625
+Max absolute error = 0.0110473633
+Max relative error = 0.000012
+Max pw relative error = 0.001730
+PSNR = 125.383163, NRMSE= 5.3807379407663721012E-07
+acEff=1.000000
+compressionRatio = 2.406450
+  ✓ Compression and decompression successful (ratio: 2.40x)
+
+[18/30] Processing: SWNTC.f32
+
+compression time=0.108598, total fastmode1 topology
+compression size = 18316936, CR = 4.121730
+done
+decompression time=0.437603
+done
+Min=0, Max=1014.9635009765625, range=1014.9635009765625
+Max absolute error = 0.2575683594
+Max relative error = 0.000254
+Max pw relative error = 0.000786
+PSNR = 102.758618, NRMSE= 7.2789564823524423648E-06
+acEff=1.000000
+compressionRatio = 4.121730
+  ✓ Compression and decompression successful (ratio: 4.12x)
+
+[19/30] Processing: SWNT.f32
+
+compression time=0.114151, total fastmode1 topology
+compression size = 30664834, CR = 2.462021
+done
+decompression time=0.442325
+done
+Min=0, Max=1014.83648681640625, range=1014.83648681640625
+Max absolute error = 0.0287475586
+Max relative error = 0.000028
+Max pw relative error = 0.001000
+PSNR = 125.633849, NRMSE= 5.2276625561177778746E-07
+acEff=1.000000
+compressionRatio = 2.462021
+  ✓ Compression and decompression successful (ratio: 2.46x)
+
+[20/30] Processing: SWVP.f32
+
+compression time=0.106508, total fastmode1 topology
+compression size = 28386019, CR = 2.659671
+done
+decompression time=0.520097
+done
+Min=24.473577499389648438, Max=31.809076309204101562, range=7.335498809814453125
+Max absolute error = 0.0019817352
+Max relative error = 0.000270
+Max pw relative error = 0.000077
+PSNR = 82.123673, NRMSE= 7.8309846757351883259E-05
+acEff=1.000000
+compressionRatio = 2.659671
+  ✓ Compression and decompression successful (ratio: 2.65x)
+
+[21/30] Processing: TB.f32
+
+compression time=0.248651, total fastmode1 topology
+compression size = 39975344, CR = 1.888601
+done
+decompression time=0.756348
+done
+Min=264.443817138671875, Max=288.876007080078125, range=24.43218994140625
+Max absolute error = 0.0019531250
+Max relative error = 0.000080
+Max pw relative error = 0.000007
+PSNR = 91.736301, NRMSE= 2.5893152643364840767E-05
+acEff=1.000000
+compressionRatio = 1.888601
+  ✓ Compression and decompression successful (ratio: 1.88x)
+
+[22/30] Processing: time.f32
+Error: Dimension mismatch!
+  File contains: 288 elements
+  Expected from dimensions (73728 x 256): 18874368 elements
+  This will cause a segmentation fault. Please check your dimensions.
+  ✗ Compression failed
+
+[23/30] Processing: U850.f32
+
+compression time=0.170424, total fastmode1 topology
+compression size = 37845931, CR = 1.994864
+done
+decompression time=0.624088
+done
+Min=-0.089712001383304595947, Max=17.794498443603515625, range=17.884210586547851562
+Max absolute error = 0.0019006729
+Max relative error = 0.000106
+Max pw relative error = 0.000988
+PSNR = 89.899600, NRMSE= 3.1990424149601993714E-05
+acEff=1.000000
+compressionRatio = 1.994864
+  ✓ Compression and decompression successful (ratio: 1.99x)
+
+[24/30] Processing: USFC.f32
+
+compression time=0.166857, total fastmode1 topology
+compression size = 40849680, CR = 1.848178
+done
+decompression time=0.609576
+done
+Min=-3.1613340377807617188, Max=15.389082908630371094, range=18.550416946411132812
+Max absolute error = 0.0019114017
+Max relative error = 0.000103
+Max pw relative error = 0.001729
+PSNR = 90.214956, NRMSE= 3.0849790553377923815E-05
+acEff=1.000000
+compressionRatio = 1.848178
+  ✓ Compression and decompression successful (ratio: 1.84x)
+
+[25/30] Processing: V850.f32
+
+compression time=0.174110, total fastmode1 topology
+compression size = 38668044, CR = 1.952451
+done
+decompression time=0.650709
+done
+Min=-23.705722808837890625, Max=-6.174167633056640625, range=17.53155517578125
+Max absolute error = 0.0019016266
+Max relative error = 0.000108
+Max pw relative error = 0.000000
+PSNR = 89.654159, NRMSE= 3.2907284715825177532E-05
+acEff=1.000000
+compressionRatio = 1.952451
+  ✓ Compression and decompression successful (ratio: 1.95x)
+
+[26/30] Processing: VSFC.f32
+
+compression time=0.173931, total fastmode1 topology
+compression size = 41078776, CR = 1.837870
+done
+decompression time=0.617910
+done
+Min=-21.430400848388671875, Max=-2.6408491134643554688, range=18.78955078125
+Max absolute error = 0.0019445419
+Max relative error = 0.000103
+Max pw relative error = 0.000000
+PSNR = 90.256523, NRMSE= 3.070250817922775497E-05
+acEff=1.000000
+compressionRatio = 1.837871
+  ✓ Compression and decompression successful (ratio: 1.83x)
+
+[27/30] Processing: x.f32
+Error: Dimension mismatch!
+  File contains: 256 elements
+  Expected from dimensions (73728 x 256): 18874368 elements
+  This will cause a segmentation fault. Please check your dimensions.
+  ✗ Compression failed
+
+[28/30] Processing: y.f32
+Error: Dimension mismatch!
+  File contains: 256 elements
+  Expected from dimensions (73728 x 256): 18874368 elements
+  This will cause a segmentation fault. Please check your dimensions.
+  ✗ Compression failed
+
+[29/30] Processing: ZC.f32
+
+compression time=0.206622, total fastmode1 topology
+compression size = 28097609, CR = 2.686971
+done
+decompression time=0.481171
+done
+Min=0, Max=2.9875001907348632812, range=2.9875001907348632812
+Max absolute error = 0.0014803410
+Max relative error = 0.000496
+Max pw relative error = 0.000933
+PSNR = 76.517823, NRMSE= 0.00014931685617241153684
+acEff=1.000000
+compressionRatio = 2.686971
+  ✓ Compression and decompression successful (ratio: 2.68x)
+
+[30/30] Processing: ZE.f32
+
+compression time=0.075806, total fastmode1 topology
+compression size = 22098636, CR = 3.416386
+done
+decompression time=0.390982
+done
+Min=0, Max=2.9375002384185791016, range=2.9375002384185791016
+Max absolute error = 0.0014784336
+Max relative error = 0.000503
+Max pw relative error = 0.000834
+PSNR = 79.788668, NRMSE= 0.00010246289395127827326
+acEff=1.000000
+compressionRatio = 3.416386
+  ✓ Compression and decompression successful (ratio: 3.41x)
+
+=== Summary ===
+Total files processed: 25
+Total files skipped: 0
+Total files failed: 5
+

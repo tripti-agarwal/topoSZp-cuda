@@ -1,0 +1,182 @@
+Input directory: ../../ERA5/
+Output directory: ../../ERA5/topoSZp_36_thread/
+Dimensions: 73728x256 (18874368 elements)
+Error bound: 1E-3
+Block size: 16
+
+Found 30 .dat file(s) to process
+
+[1/30] Processing: CIWP.f32
+Error: No critical points found!
+  ✗ Compression failed
+
+[2/30] Processing: CLD.f32
+  ✗ Compression failed (exit code: 1)
+
+[3/30] Processing: CLWP.f32
+  ✗ Compression failed (exit code: 1)
+
+[4/30] Processing: LHF.f32
+  ✗ Compression failed (exit code: 1)
+
+[5/30] Processing: LWNSC.f32
+  ✗ Compression failed (exit code: 1)
+
+[6/30] Processing: LWNS.f32
+  ✗ Compression failed (exit code: 1)
+
+[7/30] Processing: LWNTC.f32
+  ✗ Compression failed (exit code: 1)
+
+[8/30] Processing: LWNT.f32
+
+compression time=0.142455, total fastmode1 topology
+compression size = 40043346, CR = 1.885394
+done
+decompression time=0.626280
+done
+Min=231.24786376953125, Max=274.55877685546875, range=43.3109130859375
+Max absolute error = 0.0020141602
+Max relative error = 0.000047
+Max pw relative error = 0.000008
+PSNR = 97.523082, NRMSE= 1.3299823576317165654E-05
+acEff=1.000000
+compressionRatio = 1.885394
+  ✓ Compression and decompression successful (ratio: 1.88x)
+
+[9/30] Processing: PIWP.f32
+Error: No critical points found!
+  ✗ Compression failed
+
+[10/30] Processing: PLWP.f32
+  ✗ Compression failed (exit code: 1)
+
+[11/30] Processing: Prec.f32
+  ✗ Compression failed (exit code: 1)
+
+[12/30] Processing: PSFC.f32
+
+compression time=0.228848, total fastmode1 topology
+compression size = 24770060, CR = 3.047933
+done
+decompression time=0.747350
+done
+Min=1017.97113037109375, Max=1025.544921875, range=7.57379150390625
+Max absolute error = 0.0019531250
+Max relative error = 0.000258
+Max pw relative error = 0.000002
+PSNR = 82.239897, NRMSE= 7.7268978627696829941E-05
+acEff=1.000000
+compressionRatio = 3.047933
+  ✓ Compression and decompression successful (ratio: 3.04x)
+
+[13/30] Processing: PW.f32
+  ✗ Compression failed (exit code: 1)
+
+[14/30] Processing: SHF.f32
+
+compression time=0.112215, total fastmode1 topology
+compression size = 46297314, CR = 1.630710
+done
+decompression time=0.662029
+done
+Min=9.1072521209716796875, Max=264.23828125, range=255.1310272216796875
+Max absolute error = 0.0018758774
+Max relative error = 0.000007
+Max pw relative error = 0.000156
+PSNR = 112.949301, NRMSE= 2.2518265081684081492E-06
+acEff=1.000000
+compressionRatio = 1.630710
+  ✓ Compression and decompression successful (ratio: 1.63x)
+
+[15/30] Processing: SOLIN.f32
+  ✗ Compression failed (exit code: 1)
+
+[16/30] Processing: SWNSC.f32
+
+compression time=0.334138, total fastmode1 topology
+compression size = 22405673, CR = 3.369570
+done
+decompression time=0.464860
+done
+Min=0, Max=890.4625244140625, range=890.4625244140625
+Max absolute error = 0.3455810547
+Max relative error = 0.000388
+Max pw relative error = 0.001008
+PSNR = 102.323024, NRMSE= 7.6533010052245461054E-06
+acEff=1.000000
+compressionRatio = 3.369569
+  ✓ Compression and decompression successful (ratio: 3.36x)
+
+[17/30] Processing: SWNS.f32
+  ✗ Compression failed (exit code: 1)
+
+[18/30] Processing: SWNTC.f32
+  ✗ Compression failed (exit code: 1)
+
+[19/30] Processing: SWNT.f32
+
+compression time=0.205201, total fastmode1 topology
+compression size = 30665564, CR = 2.461963
+done
+decompression time=0.512632
+done
+Min=0, Max=1014.83648681640625, range=1014.83648681640625
+Max absolute error = 0.0249023438
+Max relative error = 0.000025
+Max pw relative error = 0.001000
+PSNR = 125.933376, NRMSE= 5.0504628865957525919E-07
+acEff=1.000000
+compressionRatio = 2.461963
+  ✓ Compression and decompression successful (ratio: 2.46x)
+
+[20/30] Processing: SWVP.f32
+  ✗ Compression failed (exit code: 1)
+
+[21/30] Processing: TB.f32
+  ✗ Compression failed (exit code: 1)
+
+[22/30] Processing: time.f32
+Error: Dimension mismatch!
+  File contains: 288 elements
+  Expected from dimensions (73728 x 256): 18874368 elements
+  This will cause a segmentation fault. Please check your dimensions.
+  ✗ Compression failed
+
+[23/30] Processing: U850.f32
+  ✗ Compression failed (exit code: 1)
+
+[24/30] Processing: USFC.f32
+  ✗ Compression failed (exit code: 1)
+
+[25/30] Processing: V850.f32
+  ✗ Compression failed (exit code: 1)
+
+[26/30] Processing: VSFC.f32
+  ✗ Compression failed (exit code: 1)
+
+[27/30] Processing: x.f32
+Error: Dimension mismatch!
+  File contains: 256 elements
+  Expected from dimensions (73728 x 256): 18874368 elements
+  This will cause a segmentation fault. Please check your dimensions.
+  ✗ Compression failed
+
+[28/30] Processing: y.f32
+Error: Dimension mismatch!
+  File contains: 256 elements
+  Expected from dimensions (73728 x 256): 18874368 elements
+  This will cause a segmentation fault. Please check your dimensions.
+  ✗ Compression failed
+
+[29/30] Processing: ZC.f32
+  ✗ Compression failed (exit code: 1)
+
+[30/30] Processing: ZE.f32
+  ✗ Compression failed (exit code: 1)
+
+=== Summary ===
+Total files processed: 5
+Total files skipped: 0
+Total files failed: 25
+
