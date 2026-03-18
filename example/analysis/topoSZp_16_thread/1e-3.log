@@ -1,0 +1,185 @@
+Input directory: ../../ERA5_3d_converted_to_2D/
+Output directory: ../../ERA5_3d_converted_to_2D/topoSZp_16_thread/
+Dimensions: 24960x65536 (1635778560 elements)
+Error bound: 1E-3
+Block size: 16
+
+Found 13 .dat file(s) to process
+
+[1/13] Processing: PP.f32
+
+compression time=3.800356, total fastmode1 topology
+compression size = 2666951608, CR = 2.453406
+done
+decompression time=31.675584
+done
+Min=-66.26192474365234375, Max=40.1545257568359375, range=106.41645050048828125
+Max absolute error = 1.2598991394
+Max relative error = 0.011839
+Max pw relative error = 0.043751
+PSNR = 99.258986, NRMSE= 1.0890572394339705938E-05
+acEff=1.000000
+compressionRatio = 2.453406
+  ✓ Compression and decompression successful (ratio: 2.45x)
+
+[2/13] Processing: QCI.f32
+Error: No critical points found!
+  ✗ Compression failed
+
+[3/13] Processing: QCL.f32
+
+compression time=13.056514, total fastmode1 topology
+compression size = 1077462166, CR = 6.072709
+done
+decompression time=26.502804
+done
+Min=0, Max=2.7764112949371337891, range=2.7764112949371337891
+Max absolute error = 0.4884123802
+Max relative error = 0.175915
+Max pw relative error = 0.199140
+PSNR = 67.803968, NRMSE= 0.00040719421526863054921
+acEff=0.999874
+compressionRatio = 6.072709
+  ✓ Compression and decompression successful (ratio: 6.07x)
+
+[4/13] Processing: QPI.f32
+Error: No critical points found!
+  ✗ Compression failed
+
+[5/13] Processing: QPL.f32
+
+compression time=8.114589, total fastmode1 topology
+compression size = 1010342548, CR = 6.476135
+done
+decompression time=26.049284
+done
+Min=0, Max=2.4814052581787109375, range=2.4814052581787109375
+Max absolute error = 0.1362516880
+Max relative error = 0.054909
+Max pw relative error = 0.074811
+PSNR = 83.188657, NRMSE= 6.9273506349405789885E-05
+acEff=0.999976
+compressionRatio = 6.476135
+  ✓ Compression and decompression successful (ratio: 6.47x)
+
+[6/13] Processing: QRAD.f32
+
+compression time=19.695786, total fastmode1 topology
+compression size = 2529887583, CR = 2.586326
+done
+decompression time=43.777165
+done
+Min=-401.05810546875, Max=91.2327728271484375, range=492.2908935546875
+Max absolute error = 0.2047004700
+Max relative error = 0.000416
+Max pw relative error = 0.005600
+PSNR = 116.854623, NRMSE= 1.4363782726861135023E-06
+acEff=1.000000
+compressionRatio = 2.586326
+  ✓ Compression and decompression successful (ratio: 2.58x)
+
+[7/13] Processing: QV.f32
+
+compression time=3.559704, total fastmode1 topology
+compression size = 1805582700, CR = 3.623824
+done
+decompression time=33.368838
+done
+Min=0, Max=8.2970571517944335938, range=8.2970571517944335938
+Max absolute error = 0.0183944702
+Max relative error = 0.002217
+Max pw relative error = 0.003318
+PSNR = 83.229885, NRMSE= 6.8945471964928915125E-05
+acEff=1.000000
+compressionRatio = 3.623824
+  ✓ Compression and decompression successful (ratio: 3.62x)
+
+[8/13] Processing: REI.f32
+Error: No critical points found!
+  ✗ Compression failed
+
+[9/13] Processing: REL.f32
+
+compression time=14.992465, total fastmode1 topology
+compression size = 2347912210, CR = 2.786780
+done
+decompression time=30.207730
+done
+Min=0, Max=1344.0875244140625, range=1344.0875244140625
+Max absolute error = 0.1022949219
+Max relative error = 0.000076
+Max pw relative error = 0.000907
+PSNR = 129.192121, NRMSE= 3.4705150955627030173E-07
+acEff=1.000000
+compressionRatio = 2.786780
+  ✓ Compression and decompression successful (ratio: 2.78x)
+
+[10/13] Processing: TABS.f32
+
+compression time=2.644660, total fastmode1 topology
+compression size = 2012127543, CR = 3.251839
+done
+decompression time=29.831280
+done
+Min=235.3312530517578125, Max=287.489227294921875, range=52.1579742431640625
+Max absolute error = 0.0019836426
+Max relative error = 0.000038
+Max pw relative error = 0.000007
+PSNR = 99.121933, NRMSE= 1.1063775593644232652E-05
+acEff=1.000000
+compressionRatio = 3.251839
+  ✓ Compression and decompression successful (ratio: 3.25x)
+
+[11/13] Processing: U.f32
+
+compression time=7.453887, total fastmode1 topology
+compression size = 2473657399, CR = 2.645118
+done
+decompression time=38.551811
+done
+Min=-3.7389369010925292969, Max=42.305400848388671875, range=46.044338226318359375
+Max absolute error = 0.0091590881
+Max relative error = 0.000199
+Max pw relative error = 0.001010
+PSNR = 97.987534, NRMSE= 1.2607335407383868329E-05
+acEff=1.000000
+compressionRatio = 2.645117
+  ✓ Compression and decompression successful (ratio: 2.64x)
+
+[12/13] Processing: V.f32
+
+compression time=7.981723, total fastmode1 topology
+compression size = 2478411042, CR = 2.640044
+done
+decompression time=40.348619
+done
+Min=-46.772830963134765625, Max=-2.2331724166870117188, range=44.5396575927734375
+Max absolute error = 0.0024528503
+Max relative error = 0.000055
+Max pw relative error = 0.000000
+PSNR = 97.736207, NRMSE= 1.2977458274956199286E-05
+acEff=1.000000
+compressionRatio = 2.640044
+  ✓ Compression and decompression successful (ratio: 2.64x)
+
+[13/13] Processing: W.f32
+
+compression time=10.437341, total fastmode1 topology
+compression size = 2419563625, CR = 2.704254
+done
+decompression time=38.809426
+done
+Min=-7.5944828987121582031, Max=11.412766456604003906, range=19.007249832153320312
+Max absolute error = 1.1612777710
+Max relative error = 0.061097
+Max pw relative error = 0.146678
+PSNR = 82.392119, NRMSE= 7.5926614490181928052E-05
+acEff=0.999992
+compressionRatio = 2.704254
+  ✓ Compression and decompression successful (ratio: 2.70x)
+
+=== Summary ===
+Total files processed: 10
+Total files skipped: 0
+Total files failed: 3
+
