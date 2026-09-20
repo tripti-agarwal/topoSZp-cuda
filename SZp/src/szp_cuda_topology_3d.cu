@@ -573,14 +573,143 @@ __global__ void mark_critical_types_3d_kernel(
     }
 }
 
-/*
- * The sizing and packing kernels for topology-preserved compression are
- * identical to the 2D versions — they work on flat 1D data with a per-element
- * critical_type array.  Re-declare with static linkage to avoid ODR conflicts.
- */
+/* ================================================================== */
+/*  SADDLE-AWARE QUANTIZATION                                          */
+/*                                                                     */
+/*  After standard quantization, saddle points may lose their saddle   */
+/*  condition because neighboring quantized values change relative     */
+/*  ordering.  This kernel detects broken saddles and adjusts the      */
+/*  center quantized value to restore the saddle condition.            */
+/*  Priority: maxima/minima are never modified.                        */
+/* ================================================================== */
 
-__global__ static void compress_topo_sizing_3d(
-    const float *data, size_t nbEle, unsigned int blockSize, double inver_bound,
+/**
+ * Quantize all data to integers: q[i] = (int)(data[i] * inver_bound)
+ */
+__global__ static void quantize_3d_kernel(
+    const float *data, int *qdata, size_t nbEle, double inver_bound)
+{
+    size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < nbEle) qdata[idx] = (int)(data[idx] * inver_bound);
+}
+
+/**
+ * Fix saddle quantized values to preserve saddle condition.
+ * For each saddle point, check if the 6-connected neighborhood
+ * still has the saddle property in quantized space. If not,
+ * adjust the center quantized value.
+ *
+ * Saddle condition: high along some axes AND low along others.
+ * We find a valid quantized value that satisfies this.
+ */
+__global__ static void fix_saddles_3d_kernel(
+    int *qdata, const unsigned char *critical_type,
+    int d1, int d2, int d3, size_t nbEle)
+{
+    size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    /* Map to interior voxel */
+    unsigned int total_interior = (unsigned int)(d1-2) * (unsigned int)(d2-2) * (unsigned int)(d3-2);
+    if (idx >= total_interior) return;
+
+    unsigned int d2m2 = (unsigned int)(d2-2);
+    unsigned int d3m2 = (unsigned int)(d3-2);
+    int x = 1 + (int)(idx / (d2m2 * d3m2));
+    int rem = (int)(idx % (d2m2 * d3m2));
+    int y = 1 + rem / (int)d3m2;
+    int z = 1 + rem % (int)d3m2;
+
+    size_t flat = (size_t)x * d2 * d3 + (size_t)y * d3 + z;
+    if (critical_type[flat] != 3) return;  /* only fix saddles */
+
+    int c  = qdata[flat];
+    int xm = qdata[(x-1)*d2*d3 + y*d3 + z];
+    int xp = qdata[(x+1)*d2*d3 + y*d3 + z];
+    int ym = qdata[x*d2*d3 + (y-1)*d3 + z];
+    int yp = qdata[x*d2*d3 + (y+1)*d3 + z];
+    int zm = qdata[x*d2*d3 + y*d3 + (z-1)];
+    int zp = qdata[x*d2*d3 + y*d3 + (z+1)];
+
+    /* Check if saddle condition already holds */
+    int x_high = (c > xm) && (c > xp);
+    int x_low  = (c < xm) && (c < xp);
+    int y_high = (c > ym) && (c > yp);
+    int y_low  = (c < ym) && (c < yp);
+    int z_high = (c > zm) && (c > zp);
+    int z_low  = (c < zm) && (c < zp);
+    int high_axes = x_high + y_high + z_high;
+    int low_axes  = x_low  + y_low  + z_low;
+
+    if (high_axes >= 1 && low_axes >= 1) return;  /* saddle is preserved */
+
+    /* Saddle is broken — try to find a valid quantized value.
+     * Strategy: for each axis, compute the range where center would be
+     * high or low. Find a value that makes at least one axis high and
+     * one axis low. Try values within ±1 of current quantized value first. */
+
+    /* Axis bounds: to be high along axis A, need c > max(Am, Ap)
+     *              to be low  along axis A, need c < min(Am, Ap) */
+    int x_max = (xm > xp) ? xm : xp;  /* need c > x_max to be x-high */
+    int x_min = (xm < xp) ? xm : xp;  /* need c < x_min to be x-low  */
+    int y_max = (ym > yp) ? ym : yp;
+    int y_min = (ym < yp) ? ym : yp;
+    int z_max = (zm > zp) ? zm : zp;
+    int z_min = (zm < zp) ? zm : zp;
+
+    /* Try candidates c-1, c, c+1 (within ±1 quantization step = within error bound) */
+    for (int delta = 0; delta <= 1; delta++) {
+        for (int sign = -1; sign <= 1; sign += 2) {
+            int trial = c + sign * delta;
+            if (delta == 0 && sign == 1) continue;  /* skip duplicate c+0 */
+
+            int th = 0, tl = 0;
+            if (trial > x_max) th++; if (trial < x_min) tl++;
+            if (trial > y_max) th++; if (trial < y_min) tl++;
+            if (trial > z_max) th++; if (trial < z_min) tl++;
+
+            if (th >= 1 && tl >= 1) {
+                /* Check: don't break neighboring maxima/minima */
+                int ok = 1;
+                /* If a neighbor is a maximum, it must stay > center */
+                if (critical_type[(x-1)*d2*d3+y*d3+z] == 1 && xm <= trial) ok = 0;
+                if (critical_type[(x+1)*d2*d3+y*d3+z] == 1 && xp <= trial) ok = 0;
+                if (critical_type[x*d2*d3+(y-1)*d3+z] == 1 && ym <= trial) ok = 0;
+                if (critical_type[x*d2*d3+(y+1)*d3+z] == 1 && yp <= trial) ok = 0;
+                if (critical_type[x*d2*d3+y*d3+(z-1)] == 1 && zm <= trial) ok = 0;
+                if (critical_type[x*d2*d3+y*d3+(z+1)] == 1 && zp <= trial) ok = 0;
+                /* If a neighbor is a minimum, it must stay < center */
+                if (critical_type[(x-1)*d2*d3+y*d3+z] == 2 && xm >= trial) ok = 0;
+                if (critical_type[(x+1)*d2*d3+y*d3+z] == 2 && xp >= trial) ok = 0;
+                if (critical_type[x*d2*d3+(y-1)*d3+z] == 2 && ym >= trial) ok = 0;
+                if (critical_type[x*d2*d3+(y+1)*d3+z] == 2 && yp >= trial) ok = 0;
+                if (critical_type[x*d2*d3+y*d3+(z-1)] == 2 && zm >= trial) ok = 0;
+                if (critical_type[x*d2*d3+y*d3+(z+1)] == 2 && zp >= trial) ok = 0;
+
+                if (ok) { qdata[flat] = trial; return; }
+            }
+        }
+    }
+    /* If ±1 didn't work, try ±2 (still within 2×eb which is our effective bound) */
+    for (int delta = 2; delta <= 2; delta++) {
+        for (int sign = -1; sign <= 1; sign += 2) {
+            int trial = c + sign * delta;
+            int th = 0, tl = 0;
+            if (trial > x_max) th++; if (trial < x_min) tl++;
+            if (trial > y_max) th++; if (trial < y_min) tl++;
+            if (trial > z_max) th++; if (trial < z_min) tl++;
+            if (th >= 1 && tl >= 1) {
+                qdata[flat] = trial;
+                return;
+            }
+        }
+    }
+}
+
+/**
+ * Compression kernels that work on PRE-QUANTIZED data (int array)
+ * instead of floating-point data.
+ */
+__global__ static void compress_topo_sizing_3d_preq(
+    const int *qdata, size_t nbEle, unsigned int blockSize,
     size_t *block_sizes)
 {
     size_t bid = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
@@ -592,10 +721,10 @@ __global__ static void compress_topo_sizing_3d(
     size_t out = sizeof(int);
 
     if (cur > 1) {
-        int prior = (int)((double)data[bs] * inver_bound);
+        int prior = qdata[bs];
         unsigned int mx = 0;
         for (size_t j = 1; j < cur; j++) {
-            int c = (int)((double)data[bs + j] * inver_bound);
+            int c = qdata[bs + j];
             int d = c - prior; prior = c;
             unsigned int ad = (d < 0) ? (unsigned int)(-d) : (unsigned int)d;
             if (ad > mx) mx = ad;
@@ -617,8 +746,8 @@ __global__ static void compress_topo_sizing_3d(
     block_sizes[bid] = out;
 }
 
-__global__ static void compress_topo_packing_3d(
-    const float *data, size_t nbEle, unsigned int blockSize, double inver_bound,
+__global__ static void compress_topo_packing_3d_preq(
+    const int *qdata, size_t nbEle, unsigned int blockSize,
     const unsigned char *critical_type,
     const size_t *block_offsets, unsigned char *output)
 {
@@ -630,7 +759,7 @@ __global__ static void compress_topo_packing_3d(
     size_t cur = (bs + blockSize > nbEle) ? (nbEle - bs) : (size_t)blockSize;
     unsigned char *ptr = output + block_offsets[bid];
 
-    int prior = (int)((double)data[bs] * inver_bound);
+    int prior = qdata[bs];
     memcpy(ptr, &prior, sizeof(int));
     ptr += sizeof(int);
 
@@ -641,7 +770,7 @@ __global__ static void compress_topo_packing_3d(
         unsigned int mx = 0;
 
         for (unsigned int j = 0; j < n; j++) {
-            int c = (int)((double)data[bs + j + 1] * inver_bound);
+            int c = qdata[bs + j + 1];
             int d = c - prior; prior = c;
             if (d < 0) { lsigns[j] = 1; lmags[j] = (unsigned int)(-d); }
             else       { lsigns[j] = 0; lmags[j] = (unsigned int)d; }
@@ -746,15 +875,38 @@ unsigned char *szp_cuda_float_compress_topology_3d(
         cudaFree(d_cp);
     }
 
-    /* Sizing pass */
+    /* ---- Saddle-aware quantization ---- */
+    /* Step 1: Quantize all data */
+    int *d_qdata;
+    CUDA_CHECK(cudaMalloc(&d_qdata, nbEle * sizeof(int)));
+    {
+        int qtpb = 256;
+        int qgrid = ((int)nbEle + qtpb - 1) / qtpb;
+        quantize_3d_kernel<<<qgrid, qtpb>>>(d_data, d_qdata, nbEle, inver_bound);
+        CUDA_CHECK(cudaGetLastError());
+    }
+
+    /* Step 2: Fix saddle quantized values (multiple passes for convergence) */
+    {
+        unsigned int total_interior = (unsigned int)(d1-2) * (unsigned int)(d2-2) * (unsigned int)(d3-2);
+        int stpb = 256;
+        int sgrid = ((int)total_interior + stpb - 1) / stpb;
+        for (int pass = 0; pass < 3; pass++) {
+            fix_saddles_3d_kernel<<<sgrid, stpb>>>(d_qdata, d_ct, d1, d2, d3, nbEle);
+            CUDA_CHECK(cudaGetLastError());
+        }
+    }
+
+    cudaFree(d_data);  /* no longer need float data */
+
+    /* ---- Compress pre-quantized data ---- */
     size_t *d_bs, *d_bo;
     CUDA_CHECK(cudaMalloc(&d_bs, num_blocks * sizeof(size_t)));
     CUDA_CHECK(cudaMalloc(&d_bo, num_blocks * sizeof(size_t)));
 
     int tpb = 256;
     int grid = ((int)num_blocks + tpb - 1) / tpb;
-    compress_topo_sizing_3d<<<grid, tpb>>>(
-        d_data, nbEle, bsz, inver_bound, d_bs);
+    compress_topo_sizing_3d_preq<<<grid, tpb>>>(d_qdata, nbEle, bsz, d_bs);
     CUDA_CHECK(cudaGetLastError());
 
     /* Prefix sum */
@@ -778,12 +930,12 @@ unsigned char *szp_cuda_float_compress_topology_3d(
     /* Packing pass */
     unsigned char *d_out;
     CUDA_CHECK(cudaMalloc(&d_out, total));
-    compress_topo_packing_3d<<<grid, tpb>>>(
-        d_data, nbEle, bsz, inver_bound, d_ct, d_bo, d_out);
+    compress_topo_packing_3d_preq<<<grid, tpb>>>(
+        d_qdata, nbEle, bsz, d_ct, d_bo, d_out);
     CUDA_CHECK(cudaGetLastError());
     CUDA_CHECK(cudaMemcpy(output + hdr, d_out, total, cudaMemcpyDeviceToHost));
 
-    cudaFree(d_data);
+    cudaFree(d_qdata);
     cudaFree(d_ct);
     cudaFree(d_bs);
     cudaFree(d_bo);
