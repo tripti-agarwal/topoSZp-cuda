@@ -18,6 +18,7 @@
 #include <cstring>
 #include <cmath>
 #include <sys/time.h>
+#include <cuda_runtime.h>
 
 #include "szp.h"
 #include "szp_cuda_compress.cuh"
@@ -53,6 +54,16 @@ int main(int argc, char *argv[]) {
     if (nread != nbEle) {
         fprintf(stderr, "Read only %zu of %zu elements\n", nread, nbEle);
         return 1;
+    }
+
+    /* Warm up CUDA context (first cudaMalloc initializes the driver) */
+    {
+        void *d_tmp;
+        cudaSetDevice(0);
+        cudaMalloc(&d_tmp, 1);
+        cudaFree(d_tmp);
+        cudaDeviceSynchronize();
+        printf("CUDA device warmed up.\n");
     }
 
     /* ---- CUDA Compression ---- */

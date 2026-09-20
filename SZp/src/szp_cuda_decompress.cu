@@ -823,40 +823,47 @@ cuda_decompress_randomaccess_impl(T *hostOut, size_t nbEle,
         cmpTotalSize = (size_t)(maxPtr - cmpBytes);
     }
 
-    /* 3. Allocate device memory */
-    unsigned char *d_cmpBytes;
-    T *d_newData;
-    size_t *d_block_offsets;
+    /* 3. Single device allocation for all buffers */
+    size_t offsets_bytes = numBlocks * sizeof(size_t);
+    size_t output_bytes  = nbEle * sizeof(T);
+    /* Align each sub-buffer to 256 bytes for coalescing */
+    size_t cmpAligned     = (cmpTotalSize + 255) & ~(size_t)255;
+    size_t offsetsAligned = (offsets_bytes + 255) & ~(size_t)255;
+    size_t total_device   = cmpAligned + offsetsAligned + output_bytes;
 
-    CUDA_CHECK(cudaMalloc(&d_cmpBytes, cmpTotalSize));
-    CUDA_CHECK(cudaMalloc(&d_newData, nbEle * sizeof(T)));
-    CUDA_CHECK(cudaMalloc(&d_block_offsets, numBlocks * sizeof(size_t)));
+    unsigned char *d_pool = NULL;
+    CUDA_CHECK(cudaMalloc(&d_pool, total_device));
 
-    /* 4. Copy data to device */
-    CUDA_CHECK(cudaMemcpy(d_cmpBytes, cmpBytes, cmpTotalSize,
-                          cudaMemcpyHostToDevice));
-    CUDA_CHECK(cudaMemcpy(d_block_offsets, h_block_offsets,
-                          numBlocks * sizeof(size_t),
-                          cudaMemcpyHostToDevice));
+    unsigned char *d_cmpBytes      = d_pool;
+    size_t        *d_block_offsets = (size_t *)(d_pool + cmpAligned);
+    T             *d_newData       = (T *)(d_pool + cmpAligned + offsetsAligned);
+
+    /* 4. Async copy data to device */
+    cudaStream_t stream;
+    cudaStreamCreate(&stream);
+    cudaMemcpyAsync(d_cmpBytes, cmpBytes, cmpTotalSize,
+                    cudaMemcpyHostToDevice, stream);
+    cudaMemcpyAsync(d_block_offsets, h_block_offsets, offsets_bytes,
+                    cudaMemcpyHostToDevice, stream);
 
     /* 5. Launch kernel */
     unsigned char *d_rcp = d_cmpBytes + hdr_size;
     int cudaBlkSize = 256;
     int numCudaBlocks = (int)((numBlocks + cudaBlkSize - 1) / cudaBlkSize);
 
-    kernel_decompress_randomaccess<T><<<numCudaBlocks, cudaBlkSize>>>(
+    kernel_decompress_randomaccess<T><<<numCudaBlocks, cudaBlkSize, 0, stream>>>(
         d_newData, d_rcp, d_block_offsets, nbEle, absErrBound,
         blockSize, numBlocks);
     CUDA_CHECK(cudaGetLastError());
 
-    /* 6. Copy result back */
-    CUDA_CHECK(cudaMemcpy(hostOut, d_newData, nbEle * sizeof(T),
-                          cudaMemcpyDeviceToHost));
+    /* 6. Async copy result back */
+    cudaMemcpyAsync(hostOut, d_newData, output_bytes,
+                    cudaMemcpyDeviceToHost, stream);
+    cudaStreamSynchronize(stream);
 
     /* 7. Cleanup */
-    cudaFree(d_cmpBytes);
-    cudaFree(d_newData);
-    cudaFree(d_block_offsets);
+    cudaStreamDestroy(stream);
+    cudaFree(d_pool);
     free(h_block_offsets);
 }
 

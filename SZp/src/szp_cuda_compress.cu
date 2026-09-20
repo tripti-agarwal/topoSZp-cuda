@@ -399,69 +399,78 @@ cuda_compress_randomaccess_impl(T *oriData, size_t *outSize, T absErrBound,
     double inver_bound = 1.0 / (double)absErrBound;
     size_t numBlocks = (nbEle + blockSize - 1) / blockSize;
 
-    /* --- device allocations --- */
-    T *d_data = NULL;
-    size_t *d_blockSizes = NULL, *d_blockOffsets = NULL;
-    unsigned char *d_output = NULL;
+    /* --- Single device allocation for input + metadata --- */
+    size_t data_bytes = nbEle * sizeof(T);
+    size_t meta_bytes = numBlocks * sizeof(size_t) * 2; /* sizes + offsets */
+    size_t pool_bytes = data_bytes + meta_bytes;
 
-    CUDA_CHECK(cudaMalloc(&d_data, nbEle * sizeof(T)));
-    CUDA_CHECK(cudaMemcpy(d_data, oriData, nbEle * sizeof(T), cudaMemcpyHostToDevice));
+    unsigned char *d_pool = NULL;
+    CUDA_CHECK(cudaMalloc(&d_pool, pool_bytes));
 
-    CUDA_CHECK(cudaMalloc(&d_blockSizes,   numBlocks * sizeof(size_t)));
-    CUDA_CHECK(cudaMalloc(&d_blockOffsets,  numBlocks * sizeof(size_t)));
+    T      *d_data         = (T *)d_pool;
+    size_t *d_blockSizes   = (size_t *)(d_pool + data_bytes);
+    size_t *d_blockOffsets  = d_blockSizes + numBlocks;
+
+    /* --- Async copy input using a stream --- */
+    cudaStream_t stream;
+    cudaStreamCreate(&stream);
+    cudaMemcpyAsync(d_data, oriData, data_bytes, cudaMemcpyHostToDevice, stream);
 
     /* --- Pass 1: sizing --- */
     int tpb = 256;
     int gpb = (int)((numBlocks + tpb - 1) / tpb);
-    ra_compress_sizing_kernel<T><<<gpb, tpb>>>(d_data, nbEle, blockSize,
-                                                inver_bound, d_blockSizes);
+    ra_compress_sizing_kernel<T><<<gpb, tpb, 0, stream>>>(
+        d_data, nbEle, blockSize, inver_bound, d_blockSizes);
     CUDA_CHECK(cudaGetLastError());
 
-    /* --- prefix sum --- */
+    /* --- prefix sum (Thrust needs default stream; sync stream first) --- */
+    cudaStreamSynchronize(stream);
     thrust::device_ptr<size_t> sz_ptr(d_blockSizes);
     thrust::device_ptr<size_t> of_ptr(d_blockOffsets);
     thrust::exclusive_scan(sz_ptr, sz_ptr + numBlocks, of_ptr);
-    CUDA_CHECK(cudaDeviceSynchronize());
 
     /* --- total compressed body size --- */
     size_t lastSz = 0, lastOff = 0;
-    CUDA_CHECK(cudaMemcpy(&lastSz,  d_blockSizes   + numBlocks - 1, sizeof(size_t), cudaMemcpyDeviceToHost));
-    CUDA_CHECK(cudaMemcpy(&lastOff, d_blockOffsets  + numBlocks - 1, sizeof(size_t), cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(&lastSz,  d_blockSizes   + numBlocks - 1,
+                           sizeof(size_t), cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(&lastOff, d_blockOffsets  + numBlocks - 1,
+                           sizeof(size_t), cudaMemcpyDeviceToHost));
     size_t totalBody = lastOff + lastSz;
 
-    /* --- allocate device output & run Pass 2 --- */
+    /* --- Separate allocation for compressed output (size now known) --- */
+    unsigned char *d_output = NULL;
     CUDA_CHECK(cudaMalloc(&d_output, totalBody));
-    ra_compress_packing_kernel<T><<<gpb, tpb>>>(d_data, nbEle, blockSize,
-                                                 inver_bound, d_blockOffsets,
-                                                 d_output);
-    CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 
-    /* --- assemble host output ─── */
-    /* Format: [absErrBound : sizeof(T)] [offset0 = 0 : sizeof(size_t)] [body] */
-    size_t nChunks   = 1;
-    size_t headerSz  = sizeof(T) + nChunks * sizeof(size_t);
+    /* --- Pass 2: packing --- */
+    ra_compress_packing_kernel<T><<<gpb, tpb, 0, stream>>>(
+        d_data, nbEle, blockSize, inver_bound, d_blockOffsets, d_output);
+    CUDA_CHECK(cudaGetLastError());
+
+    /* --- Assemble host output --- */
+    size_t nChunks  = 1;
+    size_t headerSz = sizeof(T) + nChunks * sizeof(size_t);
     *outSize = headerSz + totalBody;
     unsigned char *output = (unsigned char *)malloc(*outSize);
-    if (!output) { *outSize = 0; goto cleanup; }
+    if (!output) {
+        *outSize = 0;
+        cudaStreamDestroy(stream);
+        cudaFree(d_pool);
+        cudaFree(d_output);
+        return NULL;
+    }
 
-    /* Write absErrBound as raw bytes (same endianness as memcpy, matching the  *
-     * OpenMP code on little-endian + floatToBytes which stores big-endian.     *
-     * We use memcpy here for simplicity; call floatToBytes on the host side    *
-     * if cross-endian is needed).                                              */
     memcpy(output, &absErrBound, sizeof(T));
-
-    /* single offset = 0 */
     { size_t zero = 0; memcpy(output + sizeof(T), &zero, sizeof(size_t)); }
 
-    /* copy body from device */
-    CUDA_CHECK(cudaMemcpy(output + headerSz, d_output, totalBody, cudaMemcpyDeviceToHost));
+    /* Async copy body from device */
+    cudaMemcpyAsync(output + headerSz, d_output, totalBody,
+                    cudaMemcpyDeviceToHost, stream);
+    cudaStreamSynchronize(stream);
 
-cleanup:
-    if (d_data)         cudaFree(d_data);
-    if (d_blockSizes)   cudaFree(d_blockSizes);
-    if (d_blockOffsets) cudaFree(d_blockOffsets);
-    if (d_output)       cudaFree(d_output);
+    /* Cleanup */
+    cudaStreamDestroy(stream);
+    cudaFree(d_pool);
+    cudaFree(d_output);
     return output;
 }
 
@@ -477,38 +486,45 @@ cuda_compress_randomaccess_arg_impl(unsigned char *output, T *oriData,
     double inver_bound = 1.0 / (double)absErrBound;
     size_t numBlocks = (nbEle + blockSize - 1) / blockSize;
 
-    T *d_data = NULL;
-    size_t *d_blockSizes = NULL, *d_blockOffsets = NULL;
-    unsigned char *d_output = NULL;
+    /* Single device allocation for input + metadata */
+    size_t data_bytes = nbEle * sizeof(T);
+    size_t meta_bytes = numBlocks * sizeof(size_t) * 2;
+    size_t pool_bytes = data_bytes + meta_bytes;
 
-    CUDA_CHECK(cudaMalloc(&d_data, nbEle * sizeof(T)));
-    CUDA_CHECK(cudaMemcpy(d_data, oriData, nbEle * sizeof(T), cudaMemcpyHostToDevice));
+    unsigned char *d_pool = NULL;
+    CUDA_CHECK(cudaMalloc(&d_pool, pool_bytes));
 
-    CUDA_CHECK(cudaMalloc(&d_blockSizes,  numBlocks * sizeof(size_t)));
-    CUDA_CHECK(cudaMalloc(&d_blockOffsets, numBlocks * sizeof(size_t)));
+    T      *d_data         = (T *)d_pool;
+    size_t *d_blockSizes   = (size_t *)(d_pool + data_bytes);
+    size_t *d_blockOffsets  = d_blockSizes + numBlocks;
+
+    cudaStream_t stream;
+    cudaStreamCreate(&stream);
+    cudaMemcpyAsync(d_data, oriData, data_bytes, cudaMemcpyHostToDevice, stream);
 
     int tpb = 256;
     int gpb = (int)((numBlocks + tpb - 1) / tpb);
-    ra_compress_sizing_kernel<T><<<gpb, tpb>>>(d_data, nbEle, blockSize,
-                                                inver_bound, d_blockSizes);
+    ra_compress_sizing_kernel<T><<<gpb, tpb, 0, stream>>>(
+        d_data, nbEle, blockSize, inver_bound, d_blockSizes);
     CUDA_CHECK(cudaGetLastError());
 
+    cudaStreamSynchronize(stream);
     thrust::device_ptr<size_t> sz_ptr(d_blockSizes);
     thrust::device_ptr<size_t> of_ptr(d_blockOffsets);
     thrust::exclusive_scan(sz_ptr, sz_ptr + numBlocks, of_ptr);
-    CUDA_CHECK(cudaDeviceSynchronize());
 
     size_t lastSz = 0, lastOff = 0;
-    CUDA_CHECK(cudaMemcpy(&lastSz,  d_blockSizes  + numBlocks - 1, sizeof(size_t), cudaMemcpyDeviceToHost));
-    CUDA_CHECK(cudaMemcpy(&lastOff, d_blockOffsets + numBlocks - 1, sizeof(size_t), cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(&lastSz,  d_blockSizes  + numBlocks - 1,
+                           sizeof(size_t), cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(&lastOff, d_blockOffsets + numBlocks - 1,
+                           sizeof(size_t), cudaMemcpyDeviceToHost));
     size_t totalBody = lastOff + lastSz;
 
+    unsigned char *d_output = NULL;
     CUDA_CHECK(cudaMalloc(&d_output, totalBody));
-    ra_compress_packing_kernel<T><<<gpb, tpb>>>(d_data, nbEle, blockSize,
-                                                 inver_bound, d_blockOffsets,
-                                                 d_output);
+    ra_compress_packing_kernel<T><<<gpb, tpb, 0, stream>>>(
+        d_data, nbEle, blockSize, inver_bound, d_blockOffsets, d_output);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 
     size_t nChunks  = 1;
     size_t headerSz = sizeof(T) + nChunks * sizeof(size_t);
@@ -516,10 +532,13 @@ cuda_compress_randomaccess_arg_impl(unsigned char *output, T *oriData,
 
     memcpy(output, &absErrBound, sizeof(T));
     { size_t zero = 0; memcpy(output + sizeof(T), &zero, sizeof(size_t)); }
-    CUDA_CHECK(cudaMemcpy(output + headerSz, d_output, totalBody, cudaMemcpyDeviceToHost));
+    cudaMemcpyAsync(output + headerSz, d_output, totalBody,
+                    cudaMemcpyDeviceToHost, stream);
+    cudaStreamSynchronize(stream);
 
-    cudaFree(d_data); cudaFree(d_blockSizes);
-    cudaFree(d_blockOffsets); cudaFree(d_output);
+    cudaStreamDestroy(stream);
+    cudaFree(d_pool);
+    cudaFree(d_output);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════ */
