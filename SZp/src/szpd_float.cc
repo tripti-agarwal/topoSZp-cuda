@@ -747,11 +747,8 @@ void szp_float_decompress_openmp_threadblock_randomaccess_topology_preserved(
             }
 
             const unsigned int typebytelength = (2 * current_block_size + 7) / 8;
-            memset(temp_type_arr, 0, current_block_size);
-            // Safety check: ensure we don't read past the buffer
-            unsigned int safe_typebytelength = typebytelength;
-            if (typebytelength > 64) safe_typebytelength = 64; // Cap at reasonable max
-            convertByteArray2IntArray_fast_2b(current_block_size, block_pointer, safe_typebytelength, &temp_type_arr);
+            memset(temp_type_arr, 0, block_size);
+            convertByteArray2IntArray_fast_2b(current_block_size, block_pointer, typebytelength, &temp_type_arr);
             // Vectorized copy
             #pragma omp simd
             for (unsigned int j = 0; j < current_block_size; j++) {

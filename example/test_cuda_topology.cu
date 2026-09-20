@@ -692,6 +692,9 @@ int main(int argc, char *argv[]) {
     printf("--- OpenMP Topology Decompression ---\n");
     printf("Decompressed in %.2f ms\n\n", ot3 - ot2);
 
+    printf("OpenMP decompress returned: data=%s, FN=%s\n",
+           omp_decompressed ? "OK" : "NULL", omp_FN ? "OK" : "NULL");
+
     if (omp_decompressed && omp_FN) {
         /* Raw decompression error */
         double omp_raw_max_err = 0.0;
