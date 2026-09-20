@@ -655,6 +655,102 @@ int main(int argc, char *argv[]) {
     printf("  Status: %s\n", eb_status);
 
     /* ============================================================ */
+    /* Step 9: Persistence-based saddle analysis                      */
+    /*                                                                */
+    /* Persistence = |value(saddle) - value(paired extremum)|         */
+    /* Saddles with persistence < error bound are below the noise     */
+    /* floor — losing them is expected. Only saddles with high        */
+    /* persistence are scientifically meaningful.                      */
+    /* ============================================================ */
+    printf("--- Step 9: Persistence-based saddle analysis ---\n");
+    {
+        /* For each saddle, compute persistence as the minimum absolute
+           difference between the saddle value and its 4 neighbors' values.
+           This approximates the persistence (true persistence requires
+           full merge-tree computation, but min-neighbor-diff is a fast
+           and reasonable proxy). */
+        size_t saddle_count = 0;
+        double *saddle_persistence = (double *)malloc(orig_cp_count * sizeof(double));
+        int *saddle_preserved_flag = (int *)calloc(orig_cp_count, sizeof(int));
+        size_t *saddle_indices = (size_t *)malloc(orig_cp_count * sizeof(size_t));
+
+        for (size_t i = 0; i < orig_cp_count; i++) {
+            if (orig_cps[i].type != 3) continue;  /* only saddles */
+
+            int x = orig_cps[i].x, y = orig_cps[i].y;
+            if (x < 1 || x >= rows-1 || y < 1 || y >= cols-1) continue;
+
+            float center = data[x * cols + y];
+            float up    = data[(x-1) * cols + y];
+            float down  = data[(x+1) * cols + y];
+            float left  = data[x * cols + (y-1)];
+            float right = data[x * cols + (y+1)];
+
+            /* Persistence proxy: min of |center - neighbor| across all 4 neighbors */
+            double d_up    = fabs((double)center - up);
+            double d_down  = fabs((double)center - down);
+            double d_left  = fabs((double)center - left);
+            double d_right = fabs((double)center - right);
+            double min_diff = fmin(fmin(d_up, d_down), fmin(d_left, d_right));
+
+            /* Check if this saddle was preserved */
+            size_t flat = (size_t)x * cols + y;
+            int was_preserved = (decomp_type_map[flat] == 3) ? 1 : 0;
+
+            saddle_persistence[saddle_count] = min_diff;
+            saddle_preserved_flag[saddle_count] = was_preserved;
+            saddle_indices[saddle_count] = i;
+            saddle_count++;
+        }
+
+        /* Analyze at multiple persistence thresholds */
+        double thresholds[] = {0.0, 0.5, 1.0, 2.0, 5.0, 10.0};
+        int num_thresholds = 6;
+
+        printf("\n  %-20s %10s %10s %10s %8s\n",
+               "Persistence threshold", "Total", "Preserved", "Lost", "Rate");
+        printf("  %-20s %10s %10s %10s %8s\n",
+               "--------------------", "-----", "---------", "----", "----");
+
+        for (int t = 0; t < num_thresholds; t++) {
+            double thresh = thresholds[t] * (double)absErrBound;
+            size_t above = 0, above_preserved = 0;
+            for (size_t j = 0; j < saddle_count; j++) {
+                if (saddle_persistence[j] > thresh) {
+                    above++;
+                    if (saddle_preserved_flag[j]) above_preserved++;
+                }
+            }
+            size_t above_lost = above - above_preserved;
+            char label[64];
+            if (t == 0)
+                snprintf(label, sizeof(label), "All saddles");
+            else
+                snprintf(label, sizeof(label), "> %.1f×eb", thresholds[t]);
+
+            printf("  %-20s %10zu %10zu %10zu %7.2f%%\n",
+                   label, above, above_preserved, above_lost,
+                   above > 0 ? 100.0 * above_preserved / above : 0.0);
+        }
+
+        /* Also report persistence statistics */
+        double p_min = 1e30, p_max = 0, p_sum = 0;
+        for (size_t j = 0; j < saddle_count; j++) {
+            if (saddle_persistence[j] < p_min) p_min = saddle_persistence[j];
+            if (saddle_persistence[j] > p_max) p_max = saddle_persistence[j];
+            p_sum += saddle_persistence[j];
+        }
+        double p_avg = saddle_count > 0 ? p_sum / saddle_count : 0;
+        printf("\n  Saddle persistence stats:\n");
+        printf("    Min: %e    Avg: %e    Max: %e\n", p_min, p_avg, p_max);
+        printf("    Error bound: %e\n\n", (double)absErrBound);
+
+        free(saddle_persistence);
+        free(saddle_preserved_flag);
+        free(saddle_indices);
+    }
+
+    /* ============================================================ */
     /* Summary                                                        */
     /* ============================================================ */
     printf("\n==================== SUMMARY ====================\n");

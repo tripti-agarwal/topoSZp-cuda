@@ -709,6 +709,81 @@ int main(int argc, char *argv[])
     /* ============================================================ */
     /* Summary                                                       */
     /* ============================================================ */
+    /* ---- Persistence-based saddle analysis ---- */
+    printf("--- Persistence-based saddle analysis ---\n");
+    {
+        size_t s = (size_t)d2 * d3;
+        size_t saddle_count = 0;
+        double *saddle_pers = (double *)malloc(orig_cp_count * sizeof(double));
+        int *saddle_kept = (int *)calloc(orig_cp_count, sizeof(int));
+
+        /* Build decomp type map */
+        int *dtype_map = (int *)calloc(nbEle, sizeof(int));
+        for (size_t i = 0; i < dcp; i++) {
+            CriticalPoint3D *dp = &decomp_cps[i];
+            size_t flat = (size_t)dp->x * s + dp->y * d3 + dp->z;
+            if (flat < nbEle) dtype_map[flat] = dp->type;
+        }
+
+        for (size_t i = 0; i < orig_cp_count; i++) {
+            if (orig_cps[i].type != 3) continue;
+            int x = orig_cps[i].x, y = orig_cps[i].y, z = orig_cps[i].z;
+            if (x<1||x>=d1-1||y<1||y>=d2-1||z<1||z>=d3-1) continue;
+
+            size_t flat = (size_t)x*s + y*d3 + z;
+            float c = data[flat];
+            float nb[6] = {
+                data[(x-1)*s+y*d3+z], data[(x+1)*s+y*d3+z],
+                data[x*s+(y-1)*d3+z], data[x*s+(y+1)*d3+z],
+                data[x*s+y*d3+(z-1)], data[x*s+y*d3+(z+1)]
+            };
+            double min_diff = 1e30;
+            for (int n = 0; n < 6; n++) {
+                double d = fabs((double)c - nb[n]);
+                if (d < min_diff) min_diff = d;
+            }
+
+            saddle_pers[saddle_count] = min_diff;
+            saddle_kept[saddle_count] = (dtype_map[flat] == 3) ? 1 : 0;
+            saddle_count++;
+        }
+
+        double thresholds[] = {0.0, 0.5, 1.0, 2.0, 5.0, 10.0};
+        int nt = 6;
+        printf("\n  %-20s %10s %10s %10s %8s\n",
+               "Persistence threshold", "Total", "Preserved", "Lost", "Rate");
+        printf("  %-20s %10s %10s %10s %8s\n",
+               "--------------------", "-----", "---------", "----", "----");
+        for (int t = 0; t < nt; t++) {
+            double thresh = thresholds[t] * (double)absErrBound;
+            size_t above = 0, above_kept = 0;
+            for (size_t j = 0; j < saddle_count; j++) {
+                if (saddle_pers[j] > thresh) {
+                    above++;
+                    if (saddle_kept[j]) above_kept++;
+                }
+            }
+            char label[64];
+            if (t == 0) snprintf(label, sizeof(label), "All saddles");
+            else snprintf(label, sizeof(label), "> %.1f×eb", thresholds[t]);
+            printf("  %-20s %10zu %10zu %10zu %7.2f%%\n",
+                   label, above, above_kept, above - above_kept,
+                   above > 0 ? 100.0*above_kept/above : 0.0);
+        }
+
+        double p_min=1e30, p_max=0, p_sum=0;
+        for (size_t j = 0; j < saddle_count; j++) {
+            if (saddle_pers[j] < p_min) p_min = saddle_pers[j];
+            if (saddle_pers[j] > p_max) p_max = saddle_pers[j];
+            p_sum += saddle_pers[j];
+        }
+        printf("\n  Saddle persistence: min=%e  avg=%e  max=%e\n",
+               p_min, saddle_count>0 ? p_sum/saddle_count : 0.0, p_max);
+        printf("  Error bound: %e\n\n", (double)absErrBound);
+
+        free(saddle_pers); free(saddle_kept); free(dtype_map);
+    }
+
     printf("==================== 3D SUMMARY ====================\n");
     printf("Grid:              %d × %d × %d = %zu\n", d1, d2, d3, nbEle);
     printf("Critical points:   %zu → %zu in decompressed\n", orig_cp_count, dcp);
