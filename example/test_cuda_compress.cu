@@ -69,10 +69,13 @@ int main(int argc, char *argv[]) {
            t1 - t0, (nbEle * sizeof(float)) / ((t1 - t0) * 1e6));
 
     /* ---- CUDA Decompression ---- */
+    /* Skip absErrBound header (sizeof(float)) — decompressor expects cmpBytes
+       starting at the offset table */
+    unsigned char *cuda_cmpData = cuda_compressed + sizeof(float);
     float *cuda_decompressed = (float *)malloc(nbEle * sizeof(float));
     double t2 = get_time_ms();
     szp_cuda_float_decompress_randomaccess_arg(cuda_decompressed, nbEle, absErrBound,
-                                                blockSize, cuda_compressed);
+                                                blockSize, cuda_cmpData);
     double t3 = get_time_ms();
 
     printf("\n--- CUDA Decompression ---\n");
