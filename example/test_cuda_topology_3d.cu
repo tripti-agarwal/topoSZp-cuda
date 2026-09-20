@@ -609,15 +609,10 @@ int main(int argc, char *argv[])
     float eps = fmaxf(1e-6f, 0.1f * absErrBound);
     restore_extrema_3d(FN, decompressed, orig_decomp, d1, d2, d3, eps, absErrBound);
 
-    /* Saddle stencil: try all 6 axis patterns (runs before RBF) */
-    int stencil_restored = stencil_restore_saddles_3d(
-        decompressed, FN, orig_decomp, d1, d2, d3, absErrBound);
-    printf("  Saddle stencil restored %d saddles\n", stencil_restored);
-
-    /* RBF saddle restoration (handles remaining saddles that stencil couldn't fix) */
-    int rbf_restored = rbf_restore_saddles_3d(decompressed, FN, orig_decomp,
-                                               d1, d2, d3, eps, absErrBound);
-    printf("  RBF restored %d additional saddles\n", rbf_restored);
+    /* RBF saddle restoration */
+    int restored = rbf_restore_saddles_3d(decompressed, FN, orig_decomp,
+                                           d1, d2, d3, eps, absErrBound);
+    printf("  RBF restored %d saddles\n", restored);
 
     double tp1 = get_time_ms();
     printf("  Post-processing done in %.2f ms\n\n", tp1 - tp0);
