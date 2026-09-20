@@ -207,6 +207,92 @@ szp_detect_nbThreads_threadblock(const unsigned char *cmpBytes,
     return 1;
 }
 
+/**
+ * Validate a candidate nbThreads for topology-preserved random-access data.
+ * Same as regular random-access but each block also has 2-bit type data
+ * appended: (2 * current_block_size + 7) / 8 extra bytes per block.
+ */
+static inline int
+szp_validate_nbThreads_randomaccess_topo(const unsigned char *cmpBytes,
+                                          size_t nbEle, int blockSize,
+                                          unsigned int try_nt,
+                                          size_t bufLimit)
+{
+    const size_t *offs = (const size_t *)cmpBytes;
+    size_t hdr_size = (size_t)try_nt * sizeof(size_t);
+    const unsigned char *rcp = cmpBytes + hdr_size;
+    const unsigned char *bufEnd = cmpBytes + bufLimit;
+
+    size_t num_blocks = ((size_t)nbEle + blockSize - 1) / blockSize;
+    size_t blocks_per_thread = (num_blocks + try_nt - 1) / try_nt;
+
+    for (unsigned int tid = 0; tid < try_nt; tid++) {
+        size_t start_block = tid * blocks_per_thread;
+        size_t end_block   = (tid + 1) * blocks_per_thread;
+        if (end_block > num_blocks) end_block = num_blocks;
+
+        const unsigned char *ptr = rcp + offs[tid];
+        if (ptr >= bufEnd || ptr < rcp) return 0;
+
+        for (size_t bidx = start_block; bidx < end_block; bidx++) {
+            size_t i = bidx * blockSize;
+            if (i >= nbEle) break;
+            size_t cur_bs = ((i + blockSize) > nbEle) ? (nbEle - i) : (size_t)blockSize;
+
+            if (ptr + sizeof(int) > bufEnd) return 0;
+            ptr += sizeof(int); /* anchor */
+
+            if (cur_bs > 1) {
+                if (ptr >= bufEnd) return 0;
+                unsigned int bc = ptr[0]; ptr++;
+                if (bc > 32) return 0;
+                if (bc != 0) {
+                    unsigned int n = (unsigned int)(cur_bs - 1);
+                    unsigned int sb = (n + 7) / 8;
+                    unsigned int mb = szp_fixed_bits_byte_length(n, bc);
+                    ptr += sb + mb;
+                    if (ptr > bufEnd) return 0;
+                }
+            }
+
+            /* 2-bit type data */
+            unsigned int type_bytes = (2 * (unsigned int)cur_bs + 7) / 8;
+            ptr += type_bytes;
+            if (ptr > bufEnd) return 0;
+        }
+    }
+    return 1;
+}
+
+/**
+ * Auto-detect nbThreads from topology-preserved random-access compressed data.
+ */
+static inline unsigned int
+szp_detect_nbThreads_randomaccess_topo(const unsigned char *cmpBytes,
+                                        size_t nbEle, int blockSize)
+{
+    const size_t *offs = (const size_t *)cmpBytes;
+    size_t maxCmpSize = 8ull * nbEle + 1024;
+
+    if (offs[0] != 0) return 1;
+
+    for (unsigned int try_nt = 1; try_nt <= 128; try_nt++) {
+        int valid = 1;
+        for (unsigned int k = 1; k < try_nt; k++) {
+            if (offs[k] > maxCmpSize || offs[k] < offs[k-1]) {
+                valid = 0; break;
+            }
+        }
+        if (!valid) break;
+
+        if (szp_validate_nbThreads_randomaccess_topo(cmpBytes, nbEle, blockSize,
+                                                      try_nt, maxCmpSize)) {
+            return try_nt;
+        }
+    }
+    return 1;
+}
+
 #ifdef __cplusplus
 }
 #endif

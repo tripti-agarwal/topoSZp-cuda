@@ -629,7 +629,7 @@ void szp_float_decompress_openmp_threadblock_randomaccess_topology_preserved(
     size_t num_blocks_estimate = (nbEle + block_size - 1) / block_size;
     int optimal_threads = 0;
 
-    nbThreads = szp_detect_nbThreads_randomaccess(cmpBytes, nbEle, blockSize);
+    nbThreads = szp_detect_nbThreads_randomaccess_topo(cmpBytes, nbEle, blockSize);
     if (nbThreads == 0) nbThreads = 1;
 
     // For high thread counts with small problems, limit effective parallelism
