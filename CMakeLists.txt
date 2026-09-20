@@ -49,6 +49,7 @@ if(OpenMP_CXX_FOUND)
       SZp/src/szp_rw.cc
       SZp/src/szpd_double.cc
       SZp/src/szpd_float.cc
+      SZp/src/szp_topology_3d.cc
   )
   target_compile_features(SZp PUBLIC c_std_99 cxx_std_14)
   target_link_libraries(SZp PUBLIC OpenMP::OpenMP_CXX)
@@ -71,6 +72,7 @@ if(ENABLE_CUDA)
       SZp/src/szp_cuda_compress.cu
       SZp/src/szp_cuda_decompress.cu
       SZp/src/szp_cuda_topology.cu
+      SZp/src/szp_cuda_topology_3d.cu
   )
   target_compile_features(SZp_cuda PUBLIC cxx_std_17)
   target_link_libraries(SZp_cuda PUBLIC CUDA::cudart)
@@ -99,6 +101,11 @@ if(ENABLE_CUDA)
     add_executable(test_cuda_topology example/test_cuda_topology.cu)
     target_link_libraries(test_cuda_topology SZp SZp_cuda OpenMP::OpenMP_CXX)
     target_include_directories(test_cuda_topology PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/SZp/include)
+
+    add_executable(test_cuda_topology_3d example/test_cuda_topology_3d.cu)
+    target_link_libraries(test_cuda_topology_3d SZp SZp_cuda OpenMP::OpenMP_CXX)
+    target_include_directories(test_cuda_topology_3d PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/SZp/include)
   else()
     message(STATUS "OpenMP CXX not found — test programs skipped. SZp_cuda library will still be built.")
