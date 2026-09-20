@@ -688,20 +688,7 @@ __global__ static void fix_saddles_3d_kernel(
             }
         }
     }
-    /* If ±1 didn't work, try ±2 (still within 2×eb which is our effective bound) */
-    for (int delta = 2; delta <= 2; delta++) {
-        for (int sign = -1; sign <= 1; sign += 2) {
-            int trial = c + sign * delta;
-            int th = 0, tl = 0;
-            if (trial > x_max) th++; if (trial < x_min) tl++;
-            if (trial > y_max) th++; if (trial < y_min) tl++;
-            if (trial > z_max) th++; if (trial < z_min) tl++;
-            if (th >= 1 && tl >= 1) {
-                qdata[flat] = trial;
-                return;
-            }
-        }
-    }
+    /* ±1 didn't work — don't try ±2 to keep total error within 2×eb */
 }
 
 /**
