@@ -11,7 +11,7 @@ option(ENABLE_CUDA "Enable CUDA GPU acceleration" OFF)
 if(ENABLE_CUDA)
   enable_language(CUDA)
   find_package(CUDAToolkit REQUIRED)
-  set(CMAKE_CUDA_STANDARD 14)
+  set(CMAKE_CUDA_STANDARD 17)
   set(CMAKE_CUDA_STANDARD_REQUIRED ON)
   set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-extended-lambda")
   message(STATUS "CUDA support enabled (arch: ${CMAKE_CUDA_ARCHITECTURES})")
@@ -72,7 +72,7 @@ if(ENABLE_CUDA)
       SZp/src/szp_cuda_decompress.cu
       SZp/src/szp_cuda_topology.cu
   )
-  target_compile_features(SZp_cuda PUBLIC cxx_std_14)
+  target_compile_features(SZp_cuda PUBLIC cxx_std_17)
   target_link_libraries(SZp_cuda PUBLIC CUDA::cudart)
   target_include_directories(SZp_cuda
       PUBLIC

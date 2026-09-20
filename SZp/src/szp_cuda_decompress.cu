@@ -259,8 +259,6 @@ scan_randomaccess_block_offsets(const unsigned char *cmpBytes,
 
         /* Verify we can parse at least the first block after the header */
         size_t hdr_size = try_nt * sizeof(size_t);
-        const unsigned char *rcp = cmpBytes + hdr_size;
-
         /* Try to parse first block: 4 bytes (int32) + 1 byte (bit_count) */
         if (hdr_size + 5 <= maxCmpSize) {
             nbThreads = try_nt;
@@ -292,7 +290,6 @@ scan_randomaccess_block_offsets(const unsigned char *cmpBytes,
         size_t hi = (tid == nbThreads - 1) ? nbEle : (tid + 1) * threadblocksize;
 
         const unsigned char *ptr = rcp + offs[tid];
-        size_t base_offset = offs[tid];  /* relative to rcp */
 
         /* In random-access mode, each block starts with int32 anchor */
         for (size_t i = lo; i < hi; i += blockSize) {
@@ -372,8 +369,8 @@ scan_randomaccess_topo_block_offsets(const unsigned char *cmpBytes,
     size_t *block_offsets = (size_t *)malloc(total_blocks * sizeof(size_t));
     if (!block_offsets) return NULL;
 
-    size_t threadblocksize = nbEle / nbThreads;
     size_t global_block_idx = 0;
+    (void)global_block_idx;
 
     for (unsigned int tid = 0; tid < nbThreads; tid++) {
         /* Use block-based distribution matching the compressor */
@@ -697,7 +694,6 @@ kernel_decompress_randomaccess_topo(float        *newData,
     }
 
     /* Unpack 2-bit type data */
-    unsigned int type_bytes = (2 * (unsigned int)current_block_size + 7) / 8;
     device_unpack_2b(ptr, fnData + elem_start, (unsigned int)current_block_size);
 }
 
