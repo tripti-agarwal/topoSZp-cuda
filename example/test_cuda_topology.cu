@@ -837,11 +837,22 @@ int main(int argc, char *argv[]) {
 
         printf("--- OpenMP Post-Processing ---\n");
 
-        /* Skip OpenMP sort positions + stencils — just do extrema enforcement + RBF.
-           The OpenMP sort position format has edge cases at tight error bounds. */
+        /* Apply extrema enforcement + RBF using the FN types */
         restore_extrema_clamped(omp_FN, omp_decompressed, omp_orig_decomp, rows, cols, eps, absErrBound);
-        int omp_restored = rbf_restore_saddles(omp_decompressed, omp_FN, omp_orig_decomp,
+
+        /* RBF — guard against crash by validating FN has reasonable values */
+        int omp_fn_valid = 1;
+        for (size_t i = 0; i < nbEle && omp_fn_valid; i++) {
+            if (omp_FN[i] < 0 || omp_FN[i] > 3) omp_fn_valid = 0;
+        }
+
+        int omp_restored = 0;
+        if (omp_fn_valid) {
+            omp_restored = rbf_restore_saddles(omp_decompressed, omp_FN, omp_orig_decomp,
                                                 rows, cols, eps, absErrBound);
+        } else {
+            printf("  WARNING: OMP FN array has invalid values, skipping RBF\n");
+        }
         printf("  RBF restored %d saddles\n\n", omp_restored);
 
         /* Find CPs in OpenMP post-processed data */
