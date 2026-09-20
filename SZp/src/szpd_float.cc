@@ -23,6 +23,8 @@
 
 using namespace szp;
 
+#include "szp_detect_threads.h"
+
 float *szp_float_decompress_openmp_threadblock(size_t nbEle, float absErrBound, int blockSize, unsigned char *cmpBytes)
 {
 #ifdef _OPENMP
@@ -30,18 +32,16 @@ float *szp_float_decompress_openmp_threadblock(size_t nbEle, float absErrBound, 
     size_t *offsets = (size_t *)cmpBytes;
     unsigned char *rcp;
     unsigned int nbThreads = 0;
-    
+
     size_t threadblocksize = 0;
     int block_size = blockSize;
 
-#pragma omp parallel
+    nbThreads = szp_detect_nbThreads_threadblock(cmpBytes, nbEle, blockSize);
+    rcp = cmpBytes + nbThreads * sizeof(size_t);
+    threadblocksize = nbEle / nbThreads;
+
+#pragma omp parallel num_threads(nbThreads)
     {
-#pragma omp single
-        {
-            nbThreads = omp_get_num_threads();
-            rcp = cmpBytes + nbThreads * sizeof(size_t);
-            threadblocksize = nbEle / nbThreads;
-        }
         int tid = omp_get_thread_num();
         size_t lo = tid * threadblocksize;
         size_t hi = (tid + 1) * threadblocksize;
@@ -323,22 +323,20 @@ size_t szp_float_decompress_single_thread_arg_record(float *newData, size_t nbEl
 void szp_float_decompress_openmp_threadblock_arg(float *newData, size_t nbEle, float absErrBound, int blockSize, unsigned char *cmpBytes)
 {
 #ifdef _OPENMP
-    
+
     size_t *offsets = (size_t *)cmpBytes;
     unsigned char *rcp;
     unsigned int nbThreads = 0;
-    
+
     size_t threadblocksize = 0;
     size_t block_size = blockSize;
 
-#pragma omp parallel
+    nbThreads = szp_detect_nbThreads_threadblock(cmpBytes, nbEle, blockSize);
+    rcp = cmpBytes + nbThreads * sizeof(size_t);
+    threadblocksize = nbEle / nbThreads;
+
+#pragma omp parallel num_threads(nbThreads)
     {
-#pragma omp single
-        {
-            nbThreads = omp_get_num_threads();
-            rcp = cmpBytes + nbThreads * sizeof(size_t);
-            threadblocksize = nbEle / nbThreads;
-        }
         int tid = omp_get_thread_num();
         size_t lo = tid * threadblocksize;
         size_t hi = (tid + 1) * threadblocksize;
@@ -436,14 +434,12 @@ float *szp_float_decompress_openmp_threadblock_randomaccess(size_t nbEle, float 
     size_t threadblocksize = 0;
     int block_size = blockSize;
 
-#pragma omp parallel
-{
-#pragma omp single
-        {
-            nbThreads = omp_get_num_threads();
-            rcp = cmpBytes + nbThreads * sizeof(size_t);
-            threadblocksize = nbEle / nbThreads;
-        }
+    nbThreads = szp_detect_nbThreads_randomaccess(cmpBytes, nbEle, blockSize);
+    rcp = cmpBytes + nbThreads * sizeof(size_t);
+    threadblocksize = nbEle / nbThreads;
+
+#pragma omp parallel num_threads(nbThreads)
+    {
         int tid = omp_get_thread_num();
         size_t lo = tid * threadblocksize;
         size_t hi = (tid + 1) * threadblocksize;
@@ -536,21 +532,19 @@ float *szp_float_decompress_openmp_threadblock_randomaccess(size_t nbEle, float 
 void szp_float_decompress_openmp_threadblock_randomaccess_arg(float *newData, size_t nbEle, float absErrBound, int blockSize, unsigned char *cmpBytes)
 {
 #ifdef _OPENMP
-    // *newData = (float *)malloc(sizeof(float) * nbEle);
     size_t *offsets = (size_t *)cmpBytes;
     unsigned char *rcp;
     unsigned int nbThreads = 0;
-    
+
     size_t threadblocksize = 0;
     int block_size = blockSize;
-#pragma omp parallel
+
+    nbThreads = szp_detect_nbThreads_randomaccess(cmpBytes, nbEle, blockSize);
+    rcp = cmpBytes + nbThreads * sizeof(size_t);
+    threadblocksize = nbEle / nbThreads;
+
+#pragma omp parallel num_threads(nbThreads)
     {
-#pragma omp single
-        {
-            nbThreads = omp_get_num_threads();
-            rcp = cmpBytes + nbThreads * sizeof(size_t);
-            threadblocksize = nbEle / nbThreads;
-        }
         int tid = omp_get_thread_num();
         size_t lo = tid * threadblocksize;
         size_t hi = (tid + 1) * threadblocksize;
@@ -661,29 +655,26 @@ void szp_float_decompress_openmp_threadblock_randomaccess_topology_preserved(
 
     // Adaptive thread limiting for better scaling with high thread counts
     size_t num_blocks_estimate = (nbEle + block_size - 1) / block_size;
-    int optimal_threads = 0;  // Will be set in parallel region
+    int optimal_threads = 0;
 
-#pragma omp parallel
+    nbThreads = szp_detect_nbThreads_randomaccess(cmpBytes, nbEle, blockSize);
+    if (nbThreads == 0) nbThreads = 1;
+
+    // For high thread counts with small problems, limit effective parallelism
+    if (nbThreads >= 16 && num_blocks_estimate < nbThreads * 8) {
+        optimal_threads = (num_blocks_estimate + 7) / 8;
+        if (optimal_threads < 1) optimal_threads = 1;
+    } else {
+        optimal_threads = nbThreads;
+    }
+
+    rcp              = cmpBytes + nbThreads * sizeof(size_t);
+    threadblocksize  = (unsigned int)(nbEle / nbThreads);
+    remainder        = (unsigned int)(nbEle % nbThreads);
+    num_remainder_in_tb = threadblocksize % block_size;
+
+#pragma omp parallel num_threads(nbThreads)
     {
-#pragma omp single
-        {
-            nbThreads        = omp_get_num_threads();
-            if (nbThreads == 0) nbThreads = 1;
-            
-            // For high thread counts with small problems, limit effective parallelism
-            if (nbThreads >= 16 && num_blocks_estimate < nbThreads * 8) {
-                optimal_threads = (num_blocks_estimate + 7) / 8;
-                if (optimal_threads < 1) optimal_threads = 1;
-            } else {
-                optimal_threads = nbThreads;
-            }
-            
-            rcp              = cmpBytes + nbThreads * sizeof(size_t);
-            threadblocksize  = (unsigned int)(nbEle / nbThreads);
-            remainder        = (unsigned int)(nbEle % nbThreads);
-            num_remainder_in_tb = threadblocksize % block_size;
-        }
-
         const int tid = omp_get_thread_num();
         
         // Use block-based distribution for better cache locality and load balancing
@@ -832,29 +823,27 @@ int *szp_decompress_sort_positions(unsigned char *cmpBytes, size_t critical_coun
 
     size_t threadblocksize = 0;
     int block_size = blockSize;
-    
+
     // Adaptive thread limiting for better scaling with high thread counts
     size_t num_blocks_estimate = (critical_count + block_size - 1) / block_size;
-    int optimal_threads = 0;  // Will be set in parallel region
+    int optimal_threads = 0;
 
-#pragma omp parallel
+    nbThreads = szp_detect_nbThreads_randomaccess(cmpBytes, critical_count, blockSize);
+    if (nbThreads == 0) nbThreads = 1;
+
+    // For high thread counts with small problems, limit effective parallelism
+    if (nbThreads >= 16 && num_blocks_estimate < nbThreads * 8) {
+        optimal_threads = (num_blocks_estimate + 7) / 8;
+        if (optimal_threads < 1) optimal_threads = 1;
+    } else {
+        optimal_threads = nbThreads;
+    }
+
+    rcp = cmpBytes + nbThreads * sizeof(size_t);
+    threadblocksize = critical_count / nbThreads;
+
+#pragma omp parallel num_threads(nbThreads)
     {
-#pragma omp single
-        {
-            nbThreads = omp_get_num_threads();
-            if (nbThreads == 0) nbThreads = 1;
-            
-            // For high thread counts with small problems, limit effective parallelism
-            if (nbThreads >= 16 && num_blocks_estimate < nbThreads * 8) {
-                optimal_threads = (num_blocks_estimate + 7) / 8;
-                if (optimal_threads < 1) optimal_threads = 1;
-            } else {
-                optimal_threads = nbThreads;
-            }
-            
-            rcp = cmpBytes + nbThreads * sizeof(size_t);
-            threadblocksize = critical_count / nbThreads;
-        }
         int tid = omp_get_thread_num();
         
         // Use block-based distribution for better cache locality and load balancing

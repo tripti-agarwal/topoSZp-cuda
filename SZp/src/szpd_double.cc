@@ -20,6 +20,8 @@
 
 using namespace szp;
 
+#include "szp_detect_threads.h"
+
 double *szp_double_decompress_openmp_threadblock(size_t nbEle, double absErrBound, int blockSize, unsigned char *cmpBytes)
 {
 #ifdef _OPENMP
@@ -31,18 +33,16 @@ double *szp_double_decompress_openmp_threadblock(size_t nbEle, double absErrBoun
     size_t threadblocksize = 0;
     int block_size = blockSize;
 
-#pragma omp parallel
+    nbThreads = szp_detect_nbThreads_threadblock(cmpBytes, nbEle, blockSize);
+    rcp = cmpBytes + nbThreads * sizeof(size_t);
+    threadblocksize = nbEle / nbThreads;
+
+#pragma omp parallel num_threads(nbThreads)
     {
-#pragma omp single
-        {
-            nbThreads = omp_get_num_threads();
-            rcp = cmpBytes + nbThreads * sizeof(size_t);
-            threadblocksize = nbEle / nbThreads;
-        }
         int tid = omp_get_thread_num();
         size_t lo = tid * threadblocksize;
         size_t hi = (tid + 1) * threadblocksize;
-        if (tid == nbThreads - 1) {
+        if (tid == (int)nbThreads - 1) {
             hi = nbEle; // Ensure the last thread processes all remaining elements
         }
 
@@ -65,14 +65,14 @@ double *szp_double_decompress_openmp_threadblock(size_t nbEle, double absErrBoun
             block_pointer += sizeof(unsigned int);
 
             ori_prior = (double)prior * absErrBound;
-            memcpy(newData_perthread, &ori_prior, sizeof(double)); 
+            memcpy(newData_perthread, &ori_prior, sizeof(double));
             newData_perthread += 1;
         }
-        
+
         unsigned char *temp_sign_arr = (unsigned char *)malloc(blockSize * sizeof(unsigned char));
         unsigned int *temp_predict_arr = (unsigned int *)malloc(blockSize * sizeof(unsigned int));
         unsigned int savedbitsbytelength = 0;
-        
+
         for (i = lo + 1; i < hi; i = i + block_size)
         {
             size_t current_block_size = (i + block_size > hi) ? (hi - i) : block_size;
@@ -331,18 +331,16 @@ void szp_double_decompress_openmp_threadblock_arg(double *newData, size_t nbEle,
     size_t threadblocksize = 0;
     size_t block_size = blockSize;
 
-#pragma omp parallel
+    nbThreads = szp_detect_nbThreads_threadblock(cmpBytes, nbEle, blockSize);
+    rcp = cmpBytes + nbThreads * sizeof(size_t);
+    threadblocksize = nbEle / nbThreads;
+
+#pragma omp parallel num_threads(nbThreads)
     {
-#pragma omp single
-        {
-            nbThreads = omp_get_num_threads();
-            rcp = cmpBytes + nbThreads * sizeof(size_t);
-            threadblocksize = nbEle / nbThreads;
-        }
         int tid = omp_get_thread_num();
         size_t lo = tid * threadblocksize;
         size_t hi = (tid + 1) * threadblocksize;
-        if (tid == nbThreads - 1) {
+        if (tid == (int)nbThreads - 1) {
             hi = nbEle; // Ensure the last thread processes all remaining elements
         }
 
@@ -354,25 +352,23 @@ void szp_double_decompress_openmp_threadblock_arg(double *newData, size_t nbEle,
         int current = 0;
         int diff = 0;
 
-        
         int max = 0;
         int bit_count = 0;
-        unsigned char *block_pointer = rcp + offsets[tid]; 
+        unsigned char *block_pointer = rcp + offsets[tid];
         double ori_prior = 0.0;
         double ori_current = 0.0;
-        
+
         if (lo < hi) { // Ensure thread has data to process
             memcpy(&prior, block_pointer, sizeof(int));
             block_pointer += sizeof(unsigned int);
 
             ori_prior = (double)prior * absErrBound;
-            memcpy(newData_perthread, &ori_prior, sizeof(double)); 
+            memcpy(newData_perthread, &ori_prior, sizeof(double));
             newData_perthread += 1;
         }
-        
-        
+
         unsigned char *temp_sign_arr = (unsigned char *)malloc(blockSize * sizeof(unsigned char));
-        
+
         unsigned int *temp_predict_arr = (unsigned int *)malloc(blockSize * sizeof(unsigned int));
         unsigned int savedbitsbytelength = 0;
 
@@ -438,23 +434,22 @@ double *szp_double_decompress_openmp_threadblock_randomaccess(size_t nbEle, doub
 
     size_t threadblocksize = 0;
     int block_size = blockSize;
-#pragma omp parallel
+
+    nbThreads = szp_detect_nbThreads_randomaccess(cmpBytes, nbEle, blockSize);
+    rcp = cmpBytes + nbThreads * sizeof(size_t);
+    threadblocksize = nbEle / nbThreads;
+
+#pragma omp parallel num_threads(nbThreads)
     {
-#pragma omp single
-        {
-            nbThreads = omp_get_num_threads();
-            rcp = cmpBytes + nbThreads * sizeof(size_t);
-            threadblocksize = nbEle / nbThreads;
-        }
         int tid = omp_get_thread_num();
         size_t lo = tid * threadblocksize;
         size_t hi = (tid + 1) * threadblocksize;
-        if (tid == nbThreads - 1) {
+        if (tid == (int)nbThreads - 1) {
             hi = nbEle;
         }
         double *newData_perthread = newData + lo;
         size_t i = 0;
-        size_t j = 0;   
+        size_t j = 0;
 
         int prior = 0;
         int current = 0;
@@ -467,10 +462,10 @@ double *szp_double_decompress_openmp_threadblock_randomaccess(size_t nbEle, doub
         double ori_prior = 0.0;
         double ori_current = 0.0;
 
-        unsigned char *temp_sign_arr = (unsigned char *)malloc((block_size-1) * sizeof(unsigned char)); // 1 direct value and (block_size - 1) diff. values
-        
+        unsigned char *temp_sign_arr = (unsigned char *)malloc((block_size-1) * sizeof(unsigned char));
+
         unsigned int *temp_predict_arr = (unsigned int *)malloc((block_size-1) * sizeof(unsigned int));
-        unsigned int signbytelength = 0; 
+        unsigned int signbytelength = 0;
         unsigned int savedbitsbytelength = 0;
 
         for (i = lo; i < hi; i = i + block_size)
@@ -544,19 +539,16 @@ void szp_double_decompress_openmp_threadblock_randomaccess_arg(double *newData, 
     size_t threadblocksize = 0;
     int block_size = blockSize;
 
-#pragma omp parallel
-    {
-#pragma omp single
-        {
-            nbThreads = omp_get_num_threads();
-            rcp = cmpBytes + nbThreads * sizeof(size_t);
-            threadblocksize = nbEle / nbThreads;
+    nbThreads = szp_detect_nbThreads_randomaccess(cmpBytes, nbEle, blockSize);
+    rcp = cmpBytes + nbThreads * sizeof(size_t);
+    threadblocksize = nbEle / nbThreads;
 
-        }
+#pragma omp parallel num_threads(nbThreads)
+    {
         int tid = omp_get_thread_num();
         size_t lo = tid * threadblocksize;
         size_t hi = (tid + 1) * threadblocksize;
-        if (tid == nbThreads - 1)
+        if (tid == (int)nbThreads - 1)
         {
             hi = nbEle; // last thread may have more elements
         }
@@ -571,15 +563,14 @@ void szp_double_decompress_openmp_threadblock_randomaccess_arg(double *newData, 
 
         unsigned int max = 0;
         unsigned int bit_count = 0;
-        unsigned char *outputBytes_perthread = rcp + offsets[tid]; 
+        unsigned char *outputBytes_perthread = rcp + offsets[tid];
         unsigned char *block_pointer = outputBytes_perthread;
 
         double ori_prior = 0.0;
         double ori_current = 0.0;
 
-        
         unsigned char *temp_sign_arr = (unsigned char *)malloc((block_size - 1) * sizeof(unsigned char));
-        
+
         unsigned int *temp_predict_arr = (unsigned int *)malloc((block_size - 1) * sizeof(unsigned int));
         unsigned int savedbitsbytelength = 0;
 
