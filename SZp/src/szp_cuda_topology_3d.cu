@@ -585,8 +585,7 @@ __global__ void mark_critical_types_3d_kernel(
 
 /**
  * Quantize all data to integers: q[i] = (int)((double)data[i] * inver_bound)
- * Uses double precision arithmetic to avoid float rounding errors,
- * critical for tight error bounds (1e-6, 1e-7).
+ * Uses double precision arithmetic to avoid float rounding errors.
  */
 __global__ static void quantize_3d_kernel_float(
     const float *data, int *qdata, size_t nbEle, double inver_bound)
@@ -600,6 +599,79 @@ __global__ static void quantize_3d_kernel_double(
 {
     size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < nbEle) qdata[idx] = (int)(data[idx] * inver_bound);
+}
+
+/**
+ * Pre-quantization perturbation: adjust FLOAT data at saddle neighbors
+ * to ensure the saddle condition survives quantization.
+ *
+ * For each saddle, identify which axes are HIGH (center > both neighbors)
+ * and which are LOW (center < both neighbors) in the ORIGINAL data.
+ * Then perturb NON-CRITICAL neighbors by ±0.5*eb:
+ *   - High-axis neighbors: decrease by 0.5*eb (so they quantize lower)
+ *   - Low-axis neighbors:  increase by 0.5*eb (so they quantize higher)
+ *
+ * This creates a quantization-level gap that preserves the saddle pattern.
+ * Only modifies neighbors that are REGULAR points (type 0).
+ * Max added error per element: 0.5*eb (well within the 2*eb budget).
+ */
+__global__ static void perturb_saddle_neighbors_3d_kernel(
+    float *data, const unsigned char *critical_type,
+    int d1, int d2, int d3, float absErrBound)
+{
+    unsigned int total_interior = (unsigned int)(d1-2) * (unsigned int)(d2-2) * (unsigned int)(d3-2);
+    unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= total_interior) return;
+
+    unsigned int d2m2 = (unsigned int)(d2-2);
+    unsigned int d3m2 = (unsigned int)(d3-2);
+    int x = 1 + (int)(idx / (d2m2 * d3m2));
+    int rem = (int)(idx % (d2m2 * d3m2));
+    int y = 1 + rem / (int)d3m2;
+    int z = 1 + rem % (int)d3m2;
+
+    size_t flat = (size_t)x * d2 * d3 + (size_t)y * d3 + z;
+    if (critical_type[flat] != 3) return;  /* only process saddles */
+
+    float center = data[flat];
+    float half_eb = 0.5f * absErrBound;
+
+    /* 6 neighbors: indices and values */
+    size_t nb[6];
+    nb[0] = (size_t)(x-1)*d2*d3 + y*d3 + z;  /* x- */
+    nb[1] = (size_t)(x+1)*d2*d3 + y*d3 + z;  /* x+ */
+    nb[2] = (size_t)x*d2*d3 + (y-1)*d3 + z;  /* y- */
+    nb[3] = (size_t)x*d2*d3 + (y+1)*d3 + z;  /* y+ */
+    nb[4] = (size_t)x*d2*d3 + y*d3 + (z-1);  /* z- */
+    nb[5] = (size_t)x*d2*d3 + y*d3 + (z+1);  /* z+ */
+
+    /* Determine which axes are high/low in original data */
+    /* Axis 0 (x): neighbors nb[0], nb[1] */
+    /* Axis 1 (y): neighbors nb[2], nb[3] */
+    /* Axis 2 (z): neighbors nb[4], nb[5] */
+    for (int axis = 0; axis < 3; axis++) {
+        size_t n0 = nb[axis*2];
+        size_t n1 = nb[axis*2+1];
+        float v0 = data[n0];
+        float v1 = data[n1];
+
+        int is_high = (center > v0) && (center > v1);  /* center above both */
+        int is_low  = (center < v0) && (center < v1);  /* center below both */
+
+        if (is_high) {
+            /* Decrease high-axis neighbors (if they're regular points) */
+            if (critical_type[n0] == 0)
+                atomicAdd(&data[n0], -half_eb);
+            if (critical_type[n1] == 0)
+                atomicAdd(&data[n1], -half_eb);
+        } else if (is_low) {
+            /* Increase low-axis neighbors (if they're regular points) */
+            if (critical_type[n0] == 0)
+                atomicAdd(&data[n0], half_eb);
+            if (critical_type[n1] == 0)
+                atomicAdd(&data[n1], half_eb);
+        }
+    }
 }
 
 /**
@@ -872,7 +944,18 @@ unsigned char *szp_cuda_float_compress_topology_3d(
     }
 
     /* ---- Saddle-aware quantization ---- */
-    /* Step 1: Quantize all data */
+
+    /* Step 0: Perturb neighbor values at saddle points (pre-quantization) */
+    {
+        unsigned int total_interior = (unsigned int)(d1-2) * (unsigned int)(d2-2) * (unsigned int)(d3-2);
+        int ptpb = 256;
+        int pgrid = ((int)total_interior + ptpb - 1) / ptpb;
+        perturb_saddle_neighbors_3d_kernel<<<pgrid, ptpb>>>(
+            d_data, d_ct, d1, d2, d3, absErrBound);
+        CUDA_CHECK(cudaGetLastError());
+    }
+
+    /* Step 1: Quantize perturbed data */
     int *d_qdata;
     CUDA_CHECK(cudaMalloc(&d_qdata, nbEle * sizeof(int)));
     {
@@ -882,7 +965,7 @@ unsigned char *szp_cuda_float_compress_topology_3d(
         CUDA_CHECK(cudaGetLastError());
     }
 
-    /* Step 2: Fix saddle quantized values (multiple passes for convergence) */
+    /* Step 2: Fix remaining broken saddles in quantized space (±1 adjustment) */
     {
         unsigned int total_interior = (unsigned int)(d1-2) * (unsigned int)(d2-2) * (unsigned int)(d3-2);
         int stpb = 256;
