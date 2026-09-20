@@ -23,6 +23,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cmath>
+#include <cfloat>
 #include <sys/time.h>
 #include <cuda_runtime.h>
 
@@ -43,6 +44,92 @@ static const char *type_name(int t) {
         case 2: return "MIN";
         case 3: return "SADDLE";
         default: return "REGULAR";
+    }
+}
+
+/* ---- Post-processing stencils (ported from OpenMP decompressor) ---- */
+
+static const int NB4[4][2] = {{-1,0},{1,0},{0,-1},{0,1}};
+
+/* Classify a point as max(1)/min(2)/saddle(3)/regular(0) using 4-connectivity */
+static int classify_point(const float *data, int rows, int cols, int i, int j) {
+    float center = data[i * cols + j];
+    float up     = data[(i-1) * cols + j];
+    float down   = data[(i+1) * cols + j];
+    float left   = data[i * cols + (j-1)];
+    float right  = data[i * cols + (j+1)];
+
+    if (center > up && center > down && center > left && center > right) return 1;
+    if (center < up && center < down && center < left && center < right) return 2;
+    if ((center < up && center < down && center > left && center > right) ||
+        (center > up && center > down && center < left && center < right)) return 3;
+    return 0;
+}
+
+/* Restore maxima: set value slightly above max neighbor */
+static void apply_maxima_stencil(float *data, int rows, int cols, int i, int j, int sort_pos) {
+    float max_neighbor = data[i*cols+j];
+    for (int n = 0; n < 4; n++) {
+        int ni = i + NB4[n][0], nj = j + NB4[n][1];
+        float v = data[ni*cols+nj];
+        if (v > max_neighbor) max_neighbor = v;
+    }
+    data[i*cols+j] = max_neighbor * (1.0f + (sort_pos * FLT_EPSILON));
+}
+
+/* Restore minima: set value slightly below min neighbor */
+static void apply_minima_stencil(float *data, int rows, int cols, int i, int j, int sort_pos) {
+    float min_neighbor = data[i*cols+j];
+    for (int n = 0; n < 4; n++) {
+        int ni = i + NB4[n][0], nj = j + NB4[n][1];
+        float v = data[ni*cols+nj];
+        if (v < min_neighbor) min_neighbor = v;
+    }
+    if (sort_pos == 0) data[i*cols+j] = min_neighbor * (1.0f - FLT_EPSILON);
+    else data[i*cols+j] = min_neighbor * (1.0f - ((1.0f/sort_pos) * FLT_EPSILON));
+}
+
+/* Final enforcement: ensure extrema are strictly above/below neighbors */
+static void restore_extrema_from_types(const int *types, float *data,
+                                        int rows, int cols, float eps) {
+    float eps_soft = 0.25f * eps;
+    for (int i = 1; i < rows-1; i++) {
+        for (int j = 1; j < cols-1; j++) {
+            int idx = i*cols+j;
+            if (types[idx] == 1) { /* maxima */
+                float n = data[(i-1)*cols+j], s = data[(i+1)*cols+j];
+                float w = data[i*cols+(j-1)], e = data[i*cols+(j+1)];
+                float m = fmaxf(fmaxf(n,s), fmaxf(w,e));
+                float target = m + eps_soft;
+                if (data[idx] < target) data[idx] = target;
+            } else if (types[idx] == 2) { /* minima */
+                float n = data[(i-1)*cols+j], s = data[(i+1)*cols+j];
+                float w = data[i*cols+(j-1)], e = data[i*cols+(j+1)];
+                float m = fminf(fminf(n,s), fminf(w,e));
+                float target = m - eps_soft;
+                if (data[idx] > target) data[idx] = target;
+            }
+        }
+    }
+}
+
+/* Apply stencils to all extrema using sort positions */
+static void apply_stencils(float *data, const int *types, const int *sort_positions,
+                            int rows, int cols, size_t extrema_count) {
+    /* Build mapping from grid position to sort_position index.
+       Extrema are enumerated in row-major order. */
+    size_t sort_idx = 0;
+    for (int i = 1; i < rows-1; i++) {
+        for (int j = 1; j < cols-1; j++) {
+            int idx = i*cols+j;
+            int type = types[idx];
+            if (type == 1 || type == 2) {
+                int sp = (sort_idx < extrema_count) ? sort_positions[sort_idx] : 0;
+                if (type == 1) apply_maxima_stencil(data, rows, cols, i, j, sp);
+                else           apply_minima_stencil(data, rows, cols, i, j, sp);
+                sort_idx++;
+            }
+        }
     }
 }
 
@@ -163,9 +250,50 @@ int main(int argc, char *argv[]) {
     }
 
     /* ============================================================ */
-    /* Step 5: Find critical points in decompressed data             */
+    /* Step 4b: Post-processing — restore critical points            */
+    /*          (same pipeline as the OpenMP decompressor)            */
     /* ============================================================ */
-    printf("--- Step 5: Find critical points in decompressed data ---\n");
+    printf("--- Step 4b: Post-processing — restore critical points ---\n");
+    double t7b = get_time_ms();
+
+    /* Compress sort positions and decompress them (same as OpenMP pipeline) */
+    size_t sort_outSize = 0;
+    unsigned char *sort_compressed = szp_cuda_compress_sort_positions(
+        orig_cps, orig_cp_count, &sort_outSize, blockSize);
+
+    /* Count extrema */
+    size_t extrema_count = 0;
+    for (size_t i = 0; i < orig_cp_count; i++) {
+        if (orig_cps[i].type == 1 || orig_cps[i].type == 2)
+            extrema_count++;
+    }
+
+    int *sort_positions = NULL;
+    if (sort_compressed && sort_outSize > 0 && extrema_count > 0) {
+        /* The compressed sort positions have offset table at front */
+        sort_positions = szp_cuda_decompress_sort_positions(
+            sort_compressed + sizeof(size_t), /* skip first offset entry */
+            extrema_count, blockSize);
+    }
+
+    /* Apply stencils to extrema using sort positions */
+    if (sort_positions && extrema_count > 0) {
+        apply_stencils(decompressed, FN, sort_positions, rows, cols, extrema_count);
+        printf("  Applied stencils to %zu extrema\n", extrema_count);
+    }
+
+    /* Final enforcement: ensure extrema are strictly above/below neighbors */
+    float eps = fmaxf(1e-6f, 0.1f * absErrBound);
+    restore_extrema_from_types(FN, decompressed, rows, cols, eps);
+
+    double t7c = get_time_ms();
+    printf("  Post-processing done in %.2f ms\n\n", t7c - t7b);
+
+    /* ============================================================ */
+    /* Step 5: Find critical points in decompressed data             */
+    /*         (AFTER post-processing)                               */
+    /* ============================================================ */
+    printf("--- Step 5: Find critical points in post-processed data ---\n");
     size_t decomp_cp_count = 0;
     CriticalPoint *decomp_cps = szp_cuda_find_critical_points(decompressed, &decomp_cp_count, rows, cols, absErrBound);
 
@@ -316,6 +444,8 @@ int main(int argc, char *argv[]) {
     free(decomp_type_map);
     free(orig_type_map);
     free(orig_type_arr);
+    if (sort_compressed) free(sort_compressed);
+    if (sort_positions) free(sort_positions);
 
     return overall;
 }
