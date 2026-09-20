@@ -222,21 +222,18 @@ void szp_cuda_sort_critical_points_by_original_data(CriticalPoint *critical_poin
     }
     size_t data_bytes = (max_flat + 1) * sizeof(float);
 
-    /* Single device allocation */
-    size_t cp_bytes   = critical_count * sizeof(CriticalPoint);
-    size_t keys_bytes = critical_count * sizeof(BinValueKey);
-    size_t bnd_bytes  = critical_count * sizeof(int);
-    size_t total_pool = cp_bytes + data_bytes + keys_bytes + bnd_bytes;
+    /* Separate allocations for proper struct alignment */
+    CriticalPoint *d_cp = NULL;
+    float *d_data = NULL;
+    BinValueKey *d_keys = NULL;
+    int *d_boundaries = NULL;
 
-    unsigned char *d_pool = NULL;
-    CUDA_CHECK(cudaMalloc(&d_pool, total_pool));
+    CUDA_CHECK(cudaMalloc(&d_cp, critical_count * sizeof(CriticalPoint)));
+    CUDA_CHECK(cudaMalloc(&d_data, data_bytes));
+    CUDA_CHECK(cudaMalloc(&d_keys, critical_count * sizeof(BinValueKey)));
+    CUDA_CHECK(cudaMalloc(&d_boundaries, critical_count * sizeof(int)));
 
-    CriticalPoint *d_cp = (CriticalPoint *)d_pool;
-    float *d_data        = (float *)(d_pool + cp_bytes);
-    BinValueKey *d_keys  = (BinValueKey *)((unsigned char *)d_data + data_bytes);
-    int *d_boundaries    = (int *)((unsigned char *)d_keys + keys_bytes);
-
-    CUDA_CHECK(cudaMemcpy(d_cp, critical_points, cp_bytes, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_cp, critical_points, critical_count * sizeof(CriticalPoint), cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemcpy(d_data, data, data_bytes, cudaMemcpyHostToDevice));
 
     int threadsPerBlock = 256;
@@ -258,9 +255,12 @@ void szp_cuda_sort_critical_points_by_original_data(CriticalPoint *critical_poin
     CUDA_CHECK(cudaGetLastError());
 
     /* Copy back */
-    CUDA_CHECK(cudaMemcpy(critical_points, d_cp, cp_bytes, cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(critical_points, d_cp, critical_count * sizeof(CriticalPoint), cudaMemcpyDeviceToHost));
 
-    cudaFree(d_pool);
+    cudaFree(d_cp);
+    cudaFree(d_data);
+    cudaFree(d_keys);
+    cudaFree(d_boundaries);
 }
 
 /* ================================================================== */
