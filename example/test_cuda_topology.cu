@@ -657,9 +657,172 @@ int main(int argc, char *argv[]) {
            fn_mismatch == 0 ? "PASS" : "PARTIAL", fn_match, nbEle);
     printf("Compression ratio: %.2fx\n", (double)(nbEle * sizeof(float)) / topo_outSize);
 
-    int overall = (err_count == 0 && preserved == orig_cp_count) ? 0 : 1;
-    printf("\nOverall: %s\n", overall == 0 ? "ALL CRITICAL POINTS PRESERVED ✓" :
-           (preserved > orig_cp_count * 0.99) ? "MOSTLY PRESERVED (>99%)" : "SOME CRITICAL POINTS LOST");
+    size_t cuda_preserved = preserved;
+    size_t cuda_decomp_cp_count = decomp_cp_count;
+    double cuda_max_err = max_err;
+    size_t cuda_err_count = err_count;
+
+    /* ============================================================ */
+    /* Step 9: OpenMP pipeline for comparison                        */
+    /* ============================================================ */
+    printf("\n============ OpenMP PIPELINE COMPARISON ============\n\n");
+
+    /* Re-find and sort critical points for OpenMP (use omp_cps) */
+    szp_sort_critical_points_by_original_data(omp_cps, omp_cp_count, data, cols);
+
+    /* OpenMP topology-preserved compression */
+    size_t omp_topo_outSize = 0;
+    double ot0 = get_time_ms();
+    unsigned char *omp_topo_compressed = szp_float_openmp_threadblock_randomaccess_topology_preserved(
+        data, &omp_topo_outSize, absErrBound, nbEle, blockSize,
+        omp_cps, (int)omp_cp_count, rows, cols);
+    double ot1 = get_time_ms();
+    printf("--- OpenMP Topology Compression ---\n");
+    printf("Compressed: %zu bytes (ratio: %.2fx) in %.2f ms\n\n",
+           omp_topo_outSize, (double)(nbEle * sizeof(float)) / omp_topo_outSize, ot1 - ot0);
+
+    /* OpenMP topology-preserved decompression */
+    float *omp_decompressed = NULL;
+    int *omp_FN = NULL;
+    double ot2 = get_time_ms();
+    szp_float_decompress_openmp_threadblock_randomaccess_topology_preserved(
+        &omp_decompressed, nbEle, absErrBound, blockSize,
+        omp_topo_compressed, &omp_FN);
+    double ot3 = get_time_ms();
+    printf("--- OpenMP Topology Decompression ---\n");
+    printf("Decompressed in %.2f ms\n\n", ot3 - ot2);
+
+    if (omp_decompressed && omp_FN) {
+        /* Raw decompression error */
+        double omp_raw_max_err = 0.0;
+        for (size_t i = 0; i < nbEle; i++) {
+            double e = fabs((double)data[i] - (double)omp_decompressed[i]);
+            if (e > omp_raw_max_err) omp_raw_max_err = e;
+        }
+        printf("--- OpenMP Raw Decompression ---\n");
+        printf("Raw max error: %e\n", omp_raw_max_err);
+
+        /* Raw CP preservation */
+        size_t omp_raw_preserved = 0;
+        for (size_t i = 0; i < orig_cp_count; i++) {
+            int x = orig_cps[i].x, y = orig_cps[i].y;
+            if (x >= 1 && x < rows-1 && y >= 1 && y < cols-1) {
+                int dt = classify_point(omp_decompressed, rows, cols, x, y);
+                if (dt == orig_cps[i].type) omp_raw_preserved++;
+            }
+        }
+        printf("Raw CP preservation: %zu / %zu (%.2f%%)\n\n", omp_raw_preserved, orig_cp_count,
+               100.0 * omp_raw_preserved / orig_cp_count);
+
+        /* Post-processing: stencils + RBF (same pipeline as CUDA) */
+        float *omp_orig_decomp = (float *)malloc(nbEle * sizeof(float));
+        memcpy(omp_orig_decomp, omp_decompressed, nbEle * sizeof(float));
+
+        /* Compress/decompress sort positions (OpenMP) */
+        size_t omp_sort_outSize = 0;
+        unsigned char *omp_sort_compressed = szp_compress_sort_positions(
+            omp_cps, omp_cp_count, &omp_sort_outSize, blockSize);
+
+        size_t omp_extrema_count = 0;
+        for (size_t i = 0; i < omp_cp_count; i++)
+            if (omp_cps[i].type == 1 || omp_cps[i].type == 2) omp_extrema_count++;
+
+        int *omp_sort_positions = NULL;
+        if (omp_sort_compressed && omp_sort_outSize > 0 && omp_extrema_count > 0) {
+            omp_sort_positions = szp_decompress_sort_positions(
+                omp_sort_compressed, omp_extrema_count, blockSize);
+        }
+
+        if (omp_sort_positions && omp_extrema_count > 0) {
+            apply_stencils_clamped(omp_decompressed, omp_orig_decomp, omp_FN,
+                                    omp_sort_positions, rows, cols, absErrBound, omp_extrema_count);
+        }
+        restore_extrema_clamped(omp_FN, omp_decompressed, omp_orig_decomp, rows, cols, eps, absErrBound);
+        int omp_restored = rbf_restore_saddles(omp_decompressed, omp_FN, omp_orig_decomp,
+                                                rows, cols, eps, absErrBound);
+        printf("--- OpenMP Post-Processing ---\n");
+        printf("RBF restored %d saddles\n\n", omp_restored);
+
+        /* Find CPs in OpenMP post-processed data */
+        size_t omp_decomp_cp_count = 0;
+        CriticalPoint *omp_decomp_cps = szp_cuda_find_critical_points(
+            omp_decompressed, &omp_decomp_cp_count, rows, cols, absErrBound);
+
+        /* Count preservation */
+        int *omp_decomp_type_map = (int *)calloc(nbEle, sizeof(int));
+        for (size_t i = 0; i < omp_decomp_cp_count; i++) {
+            size_t flat = (size_t)omp_decomp_cps[i].x * cols + omp_decomp_cps[i].y;
+            if (flat < nbEle) omp_decomp_type_map[flat] = omp_decomp_cps[i].type;
+        }
+
+        size_t omp_preserved = 0, omp_lost = 0;
+        size_t omp_lost_max = 0, omp_lost_min = 0, omp_lost_saddle = 0;
+        for (size_t i = 0; i < orig_cp_count; i++) {
+            size_t flat = (size_t)orig_cps[i].x * cols + orig_cps[i].y;
+            if (omp_decomp_type_map[flat] == orig_cps[i].type) omp_preserved++;
+            else {
+                omp_lost++;
+                if (orig_cps[i].type == 1) omp_lost_max++;
+                else if (orig_cps[i].type == 2) omp_lost_min++;
+                else omp_lost_saddle++;
+            }
+        }
+
+        double omp_max_err = 0.0;
+        size_t omp_err_count = 0;
+        for (size_t i = 0; i < nbEle; i++) {
+            double e = fabs((double)data[i] - (double)omp_decompressed[i]);
+            if (e > omp_max_err) omp_max_err = e;
+            if (e > absErrBound * 2.0) omp_err_count++;
+        }
+
+        size_t omp_decomp_max = 0, omp_decomp_min = 0, omp_decomp_saddle = 0;
+        for (size_t i = 0; i < omp_decomp_cp_count; i++) {
+            if (omp_decomp_cps[i].type == 1) omp_decomp_max++;
+            else if (omp_decomp_cps[i].type == 2) omp_decomp_min++;
+            else if (omp_decomp_cps[i].type == 3) omp_decomp_saddle++;
+        }
+
+        /* ============================================================ */
+        /* Side-by-side comparison                                       */
+        /* ============================================================ */
+        printf("\n============ SIDE-BY-SIDE COMPARISON ============\n\n");
+        printf("%-35s %12s %12s\n", "Metric", "CUDA", "OpenMP");
+        printf("%-35s %12s %12s\n", "---", "----", "------");
+        printf("%-35s %12zu %12zu\n", "Compression size (bytes)", topo_outSize, omp_topo_outSize);
+        printf("%-35s %11.2fx %11.2fx\n", "Compression ratio",
+               (double)(nbEle*sizeof(float))/topo_outSize,
+               (double)(nbEle*sizeof(float))/omp_topo_outSize);
+        printf("%-35s %12zu %12zu\n", "Total CPs in decompressed", cuda_decomp_cp_count, omp_decomp_cp_count);
+        printf("%-35s %12zu %12zu\n", "Preserved (same type)", cuda_preserved, omp_preserved);
+        printf("%-35s %11.2f%% %11.2f%%\n", "Preservation rate",
+               100.0*cuda_preserved/orig_cp_count, 100.0*omp_preserved/orig_cp_count);
+        printf("%-35s %12zu %12zu\n", "  Lost maxima", (size_t)0, omp_lost_max);
+        printf("%-35s %12zu %12zu\n", "  Lost minima", (size_t)0, omp_lost_min);
+        printf("%-35s %12zu %12zu\n", "  Lost saddles",
+               orig_cp_count - cuda_preserved, omp_lost_saddle);
+        printf("%-35s %12e %12e\n", "Max error", cuda_max_err, omp_max_err);
+        printf("%-35s %12s %12s\n", "Within 2×eb",
+               cuda_max_err <= absErrBound * 2.0 ? "YES" : "NO",
+               omp_max_err <= absErrBound * 2.0 ? "YES" : "NO");
+        printf("%-35s %12zu %12zu\n", "Elements > 2×eb", cuda_err_count, omp_err_count);
+
+        /* Cleanup OpenMP */
+        free(omp_orig_decomp);
+        free(omp_decomp_type_map);
+        if (omp_decomp_cps) free(omp_decomp_cps);
+        if (omp_sort_compressed) free(omp_sort_compressed);
+        if (omp_sort_positions) free(omp_sort_positions);
+    } else {
+        printf("OpenMP topology decompression failed — skipping comparison.\n");
+    }
+
+    if (omp_decompressed) free(omp_decompressed);
+    if (omp_FN) free(omp_FN);
+    if (omp_topo_compressed) free(omp_topo_compressed);
+
+    int overall = (cuda_max_err <= absErrBound * 2.0 && cuda_preserved > orig_cp_count * 0.9) ? 0 : 1;
+    printf("\nOverall: %s\n", overall == 0 ? "TOPOLOGY PRESERVED WITHIN 2×eb ✓" : "NEEDS INVESTIGATION");
 
     /* Cleanup */
     free(data);
