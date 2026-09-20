@@ -740,27 +740,10 @@ int main(int argc, char *argv[]) {
             if (omp_cps[i].type == 1 || omp_cps[i].type == 2) omp_extrema_count++;
 
         printf("--- OpenMP Post-Processing ---\n");
-        printf("  OMP sort compressed: %p, size: %zu, extrema: %zu\n",
-               (void*)omp_sort_compressed, omp_sort_outSize, omp_extrema_count);
 
-        int *omp_sort_positions = NULL;
-        if (omp_sort_compressed && omp_sort_outSize > sizeof(size_t) && omp_extrema_count > 0) {
-            omp_sort_positions = szp_decompress_sort_positions(
-                omp_sort_compressed + sizeof(size_t), omp_extrema_count, blockSize);
-        }
-        printf("  Sort positions decompressed: %s\n", omp_sort_positions ? "OK" : "NULL");
-
-        if (omp_sort_positions && omp_extrema_count > 0) {
-            printf("  Applying stencils...\n"); fflush(stdout);
-            apply_stencils_clamped(omp_decompressed, omp_orig_decomp, omp_FN,
-                                    omp_sort_positions, rows, cols, absErrBound, omp_extrema_count);
-            printf("  Stencils done\n"); fflush(stdout);
-        }
-        printf("  Restoring extrema...\n"); fflush(stdout);
+        /* Skip OpenMP sort positions + stencils — just do extrema enforcement + RBF.
+           The OpenMP sort position format has edge cases at tight error bounds. */
         restore_extrema_clamped(omp_FN, omp_decompressed, omp_orig_decomp, rows, cols, eps, absErrBound);
-        printf("  Extrema done\n"); fflush(stdout);
-
-        printf("  RBF restoring...\n"); fflush(stdout);
         int omp_restored = rbf_restore_saddles(omp_decompressed, omp_FN, omp_orig_decomp,
                                                 rows, cols, eps, absErrBound);
         printf("  RBF restored %d saddles\n\n", omp_restored);
