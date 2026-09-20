@@ -37,11 +37,12 @@ option(BUILD_SHARED_LIBS "build shared libraries over static libraries" ON)
 include(CTest)
 include(GNUInstallDirs)
 
-find_package(OpenMP REQUIRED COMPONENTS C CXX)
+find_package(OpenMP COMPONENTS C CXX)
 find_package(PkgConfig)
 pkg_search_module(ZSTD  IMPORTED_TARGET libzstd)
 
-
+# Build the OpenMP SZp library only if OpenMP CXX was found
+if(OpenMP_CXX_FOUND)
 add_library(
     SZp
         SZp/src/szp.cc
@@ -55,7 +56,10 @@ add_library(
         SZp/src/szpd_float.cc
 )
 target_compile_features(SZp PUBLIC c_std_99 cxx_std_14)
-target_link_libraries(SZp PUBLIC PkgConfig::ZSTD OpenMP::OpenMP_CXX)
+target_link_libraries(SZp PUBLIC OpenMP::OpenMP_CXX)
+if(ZSTD_FOUND)
+  target_link_libraries(SZp PUBLIC PkgConfig::ZSTD)
+endif()
 target_include_directories(SZp
     PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/SZp/include>
@@ -64,6 +68,8 @@ target_include_directories(SZp
 
 
 install(TARGETS SZp EXPORT SZpTargets)
+endif() # OpenMP_CXX_FOUND
+
 install(EXPORT SZpTargets NAMESPACE SZp:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SZp/)
 export(EXPORT SZpTargets FILE ${CMAKE_CURRENT_BINARY_DIR}/cmake/SZpTargets.cmake NAMESPACE SZp::)
 include(CMakePackageConfigHelpers)
@@ -104,14 +110,20 @@ if(ENABLE_CUDA)
 
   install(TARGETS SZp_cuda EXPORT SZpTargets)
 
-  # Example/test programs
-  add_executable(test_cuda_compress example/test_cuda_compress.cu)
-  target_link_libraries(test_cuda_compress SZp SZp_cuda OpenMP::OpenMP_CXX)
-  target_include_directories(test_cuda_compress PRIVATE
-      ${CMAKE_CURRENT_SOURCE_DIR}/SZp/include)
+  install(TARGETS SZp_cuda EXPORT SZpTargets)
 
-  add_executable(test_cuda_decompress example/test_cuda_decompress.cu)
-  target_link_libraries(test_cuda_decompress SZp SZp_cuda OpenMP::OpenMP_CXX)
-  target_include_directories(test_cuda_decompress PRIVATE
-      ${CMAKE_CURRENT_SOURCE_DIR}/SZp/include)
+  # Example/test programs (need both SZp and SZp_cuda for cross-validation)
+  if(OpenMP_CXX_FOUND)
+    add_executable(test_cuda_compress example/test_cuda_compress.cu)
+    target_link_libraries(test_cuda_compress SZp SZp_cuda OpenMP::OpenMP_CXX)
+    target_include_directories(test_cuda_compress PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/SZp/include)
+
+    add_executable(test_cuda_decompress example/test_cuda_decompress.cu)
+    target_link_libraries(test_cuda_decompress SZp SZp_cuda OpenMP::OpenMP_CXX)
+    target_include_directories(test_cuda_decompress PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/SZp/include)
+  else()
+    message(STATUS "OpenMP CXX not found — test programs (which cross-validate CUDA vs OpenMP) are skipped. SZp_cuda library will still be built.")
+  endif()
 endif()
