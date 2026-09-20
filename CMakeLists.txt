@@ -95,6 +95,11 @@ if(ENABLE_CUDA)
     target_link_libraries(test_cuda_decompress SZp SZp_cuda OpenMP::OpenMP_CXX)
     target_include_directories(test_cuda_decompress PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/SZp/include)
+
+    add_executable(test_cuda_topology example/test_cuda_topology.cu)
+    target_link_libraries(test_cuda_topology SZp SZp_cuda OpenMP::OpenMP_CXX)
+    target_include_directories(test_cuda_topology PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/SZp/include)
   else()
     message(STATUS "OpenMP CXX not found — test programs skipped. SZp_cuda library will still be built.")
   endif()
