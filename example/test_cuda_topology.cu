@@ -113,11 +113,10 @@ static void restore_extrema_from_types(const int *types, float *data,
     }
 }
 
-/* Apply stencils to all extrema using sort positions */
-static void apply_stencils(float *data, const int *types, const int *sort_positions,
-                            int rows, int cols, size_t extrema_count) {
-    /* Build mapping from grid position to sort_position index.
-       Extrema are enumerated in row-major order. */
+/* Apply stencils to all extrema with error bound clamping (matching OpenMP pipeline) */
+static void apply_stencils_clamped(float *data, const float *orig_decomp, const int *types,
+                                    const int *sort_positions,
+                                    int rows, int cols, float errBound, size_t extrema_count) {
     size_t sort_idx = 0;
     for (int i = 1; i < rows-1; i++) {
         for (int j = 1; j < cols-1; j++) {
@@ -125,9 +124,72 @@ static void apply_stencils(float *data, const int *types, const int *sort_positi
             int type = types[idx];
             if (type == 1 || type == 2) {
                 int sp = (sort_idx < extrema_count) ? sort_positions[sort_idx] : 0;
-                if (type == 1) apply_maxima_stencil(data, rows, cols, i, j, sp);
-                else           apply_minima_stencil(data, rows, cols, i, j, sp);
+                float orig_val = orig_decomp[idx];
+                float max_allowed = orig_val + errBound;
+                float min_allowed = orig_val - errBound;
+
+                if (type == 1) {
+                    /* Maxima: set above max neighbor */
+                    float max_neighbor = data[idx];
+                    for (int n = 0; n < 4; n++) {
+                        int ni = i + NB4[n][0], nj = j + NB4[n][1];
+                        float v = data[ni*cols+nj];
+                        if (v > max_neighbor) max_neighbor = v;
+                    }
+                    float target = max_neighbor * (1.0f + (sp * FLT_EPSILON));
+                    /* Clamp to error bound */
+                    if (target > max_allowed) target = max_allowed;
+                    if (target < min_allowed) target = min_allowed;
+                    data[idx] = target;
+                } else {
+                    /* Minima: set below min neighbor */
+                    float min_neighbor = data[idx];
+                    for (int n = 0; n < 4; n++) {
+                        int ni = i + NB4[n][0], nj = j + NB4[n][1];
+                        float v = data[ni*cols+nj];
+                        if (v < min_neighbor) min_neighbor = v;
+                    }
+                    float target;
+                    if (sp == 0) target = min_neighbor * (1.0f - FLT_EPSILON);
+                    else target = min_neighbor * (1.0f - ((1.0f/sp) * FLT_EPSILON));
+                    /* Clamp to error bound */
+                    if (target > max_allowed) target = max_allowed;
+                    if (target < min_allowed) target = min_allowed;
+                    data[idx] = target;
+                }
                 sort_idx++;
+            }
+        }
+    }
+}
+
+/* Final enforcement with error bound clamping */
+static void restore_extrema_clamped(const int *types, float *data, const float *orig_decomp,
+                                     int rows, int cols, float eps, float errBound) {
+    float eps_soft = 0.25f * eps;
+    for (int i = 1; i < rows-1; i++) {
+        for (int j = 1; j < cols-1; j++) {
+            int idx = i*cols+j;
+            float orig_val = orig_decomp[idx];
+            float max_allowed = orig_val + errBound;
+            float min_allowed = orig_val - errBound;
+
+            if (types[idx] == 1) {
+                float n = data[(i-1)*cols+j], s = data[(i+1)*cols+j];
+                float w = data[i*cols+(j-1)], e = data[i*cols+(j+1)];
+                float m = fmaxf(fmaxf(n,s), fmaxf(w,e));
+                float target = m + eps_soft;
+                if (target > max_allowed) target = max_allowed;
+                if (target < min_allowed) target = min_allowed;
+                if (data[idx] < target) data[idx] = target;
+            } else if (types[idx] == 2) {
+                float n = data[(i-1)*cols+j], s = data[(i+1)*cols+j];
+                float w = data[i*cols+(j-1)], e = data[i*cols+(j+1)];
+                float m = fminf(fminf(n,s), fminf(w,e));
+                float target = m - eps_soft;
+                if (target < min_allowed) target = min_allowed;
+                if (target > max_allowed) target = max_allowed;
+                if (data[idx] > target) data[idx] = target;
             }
         }
     }
@@ -253,8 +315,39 @@ int main(int argc, char *argv[]) {
     /* Step 4b: Post-processing — restore critical points            */
     /*          (same pipeline as the OpenMP decompressor)            */
     /* ============================================================ */
+    /* ---- Step 4a-verify: Raw decompression error check (before stencils) ---- */
+    printf("--- Step 4a: Verify raw decompression (before post-processing) ---\n");
+    {
+        double raw_max_err = 0.0;
+        size_t raw_err_count = 0;
+        for (size_t i = 0; i < nbEle; i++) {
+            double err = fabs((double)data[i] - (double)decompressed[i]);
+            if (err > raw_max_err) raw_max_err = err;
+            if (err > absErrBound * 1.01) raw_err_count++;
+        }
+        printf("Raw max error: %e (bound: %e) — %s\n",
+               raw_max_err, (double)absErrBound,
+               raw_err_count == 0 ? "PASS" : "FAIL");
+
+        /* Check raw CP preservation (without post-processing) */
+        size_t raw_preserved = 0;
+        for (size_t i = 0; i < orig_cp_count; i++) {
+            int x = orig_cps[i].x, y = orig_cps[i].y;
+            if (x >= 1 && x < rows-1 && y >= 1 && y < cols-1) {
+                int decomp_type = classify_point(decompressed, rows, cols, x, y);
+                if (decomp_type == orig_cps[i].type) raw_preserved++;
+            }
+        }
+        printf("Raw CP preservation (no stencils): %zu / %zu (%.2f%%)\n\n",
+               raw_preserved, orig_cp_count, 100.0 * raw_preserved / orig_cp_count);
+    }
+
     printf("--- Step 4b: Post-processing — restore critical points ---\n");
     double t7b = get_time_ms();
+
+    /* Save original decompressed values for error bound clamping */
+    float *orig_decomp = (float *)malloc(nbEle * sizeof(float));
+    memcpy(orig_decomp, decompressed, nbEle * sizeof(float));
 
     /* Compress sort positions and decompress them (same as OpenMP pipeline) */
     size_t sort_outSize = 0;
@@ -270,22 +363,22 @@ int main(int argc, char *argv[]) {
 
     int *sort_positions = NULL;
     if (sort_compressed && sort_outSize > 0 && extrema_count > 0) {
-        /* Compressed sort positions start with offset table (nChunks=1) */
         sort_positions = szp_cuda_decompress_sort_positions(
             sort_compressed, extrema_count, blockSize);
     }
     printf("  Sort positions: %zu extrema, compressed %zu bytes, decompressed: %s\n",
            extrema_count, sort_outSize, sort_positions ? "OK" : "NULL");
 
-    /* Apply stencils to extrema using sort positions */
+    /* Apply stencils to extrema with error bound clamping */
     if (sort_positions && extrema_count > 0) {
-        apply_stencils(decompressed, FN, sort_positions, rows, cols, extrema_count);
-        printf("  Applied stencils to %zu extrema\n", extrema_count);
+        apply_stencils_clamped(decompressed, orig_decomp, FN, sort_positions,
+                                rows, cols, absErrBound, extrema_count);
+        printf("  Applied clamped stencils to %zu extrema\n", extrema_count);
     }
 
-    /* Final enforcement: ensure extrema are strictly above/below neighbors */
+    /* Final enforcement with error bound clamping */
     float eps = fmaxf(1e-6f, 0.1f * absErrBound);
-    restore_extrema_from_types(FN, decompressed, rows, cols, eps);
+    restore_extrema_clamped(FN, decompressed, orig_decomp, rows, cols, eps, absErrBound);
 
     double t7c = get_time_ms();
     printf("  Post-processing done in %.2f ms\n\n", t7c - t7b);
@@ -447,6 +540,7 @@ int main(int argc, char *argv[]) {
     free(orig_type_arr);
     if (sort_compressed) free(sort_compressed);
     if (sort_positions) free(sort_positions);
+    if (orig_decomp) free(orig_decomp);
 
     return overall;
 }
