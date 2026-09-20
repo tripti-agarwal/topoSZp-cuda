@@ -29,6 +29,7 @@
 #include "szp.h"
 #include "szp_cuda_compress.cuh"
 #include "szp_cuda_decompress.cuh"
+#include "szp_errbound.h"
 #include "szp_cuda_topology_3d.cuh"
 #include "szp_topology_3d.h"
 
@@ -440,8 +441,9 @@ int main(int argc, char *argv[])
 {
     if (argc < 7) {
         fprintf(stderr,
-            "Usage: %s <input_file> <d1> <d2> <d3> <absErrBound> <blockSize>\n",
+            "Usage: %s <input_file> <d1> <d2> <d3> <errBound> <blockSize>\n",
             argv[0]);
+        fprintf(stderr, "  errBound: 1e-3 for absolute, rel:1e-4 for relative (fraction of data range)\n");
         return 1;
     }
 
@@ -449,14 +451,9 @@ int main(int argc, char *argv[])
     int d1 = atoi(argv[2]);
     int d2 = atoi(argv[3]);
     int d3 = atoi(argv[4]);
-    float absErrBound = (float)atof(argv[5]);
+    const char *eb_arg = argv[5];
     int blockSize = atoi(argv[6]);
     size_t nbEle = (size_t)d1 * d2 * d3;
-
-    printf("=== TopoSZp 3D Critical Point Preservation Test ===\n");
-    printf("Input: %s  (%d × %d × %d = %zu elements)\n",
-           input_file, d1, d2, d3, nbEle);
-    printf("Error bound: %e    Block size: %d\n\n", absErrBound, blockSize);
 
     /* Read input */
     float *data = (float *)malloc(nbEle * sizeof(float));
@@ -467,6 +464,26 @@ int main(int argc, char *argv[])
     if (nread != nbEle) {
         fprintf(stderr, "Read %zu / %zu elements\n", nread, nbEle);
         return 1;
+    }
+
+    /* Parse error bound */
+    float absErrBound;
+    const char *eb_mode;
+    if (szp_parse_errbound_float(eb_arg, data, nbEle, &absErrBound, &eb_mode) != 0) {
+        fprintf(stderr, "Invalid error bound: %s\n", eb_arg);
+        return 1;
+    }
+
+    printf("=== TopoSZp 3D Critical Point Preservation Test ===\n");
+    printf("Input: %s  (%d × %d × %d = %zu elements)\n",
+           input_file, d1, d2, d3, nbEle);
+    if (strcmp(eb_mode, "REL") == 0) {
+        float range;
+        szp_rel_to_abs_float(data, nbEle, (float)atof(eb_arg+4), &absErrBound, &range);
+        printf("Error bound: %s → abs=%e (range=%e)    Block size: %d\n\n",
+               eb_arg, absErrBound, range, blockSize);
+    } else {
+        printf("Error bound: %e    Block size: %d\n\n", absErrBound, blockSize);
     }
 
     /* CUDA warmup */
