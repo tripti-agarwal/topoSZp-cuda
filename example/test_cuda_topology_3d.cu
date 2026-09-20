@@ -165,6 +165,153 @@ static void restore_extrema_3d(const int *types, float *data,
     }
 }
 
+/* ---- Saddle stencil: try all 6 axis patterns to restore saddles ---- */
+
+/**
+ * For each false-negative saddle, try 6 axis patterns to find a valid
+ * center value that satisfies the saddle condition within error bound.
+ *
+ * 6 patterns (which axes are high vs low):
+ *   0: x-high, y-low, z-low    3: x-high, y-high, z-low
+ *   1: y-high, x-low, z-low    4: x-high, z-high, y-low
+ *   2: z-high, x-low, y-low    5: y-high, z-high, x-low
+ *
+ * For each pattern:
+ *   high_threshold = max of both neighbors on each high axis
+ *   low_threshold  = min of both neighbors on each low axis
+ *   target = midpoint between thresholds (if valid gap exists)
+ *
+ * Validates: saddle condition holds, no false CPs created at neighbors.
+ */
+static int stencil_restore_saddles_3d(float *data, const int *types0,
+                                       const float *orig_decomp,
+                                       int d1, int d2, int d3,
+                                       float errBound)
+{
+    size_t s = (size_t)d2 * d3;
+    int restored = 0;
+
+    /* Axis patterns: each has a bitmask of which axes are HIGH (1) vs LOW (0)
+       bit 0 = x-axis, bit 1 = y-axis, bit 2 = z-axis
+       Valid saddle: at least 1 high AND at least 1 low → patterns 1-6
+       (skip 0=all-low and 7=all-high) */
+    for (int x = 1; x < d1 - 1; x++) {
+        for (int y = 1; y < d2 - 1; y++) {
+            for (int z = 1; z < d3 - 1; z++) {
+                size_t flat = x * s + y * d3 + z;
+                if (types0[flat] != 3) continue;  /* only saddles */
+
+                /* Already a saddle? skip */
+                if (classify_3d(data, d1, d2, d3, x, y, z) == 3) continue;
+
+                float orig_val = orig_decomp[flat];
+                float max_a = orig_val + errBound * 0.999f;
+                float min_a = orig_val - errBound * 0.999f;
+
+                /* Read 6 neighbors */
+                float nb[6];
+                nb[0] = data[(x-1)*s + y*d3 + z];  /* x- */
+                nb[1] = data[(x+1)*s + y*d3 + z];  /* x+ */
+                nb[2] = data[x*s + (y-1)*d3 + z];  /* y- */
+                nb[3] = data[x*s + (y+1)*d3 + z];  /* y+ */
+                nb[4] = data[x*s + y*d3 + (z-1)];  /* z- */
+                nb[5] = data[x*s + y*d3 + (z+1)];  /* z+ */
+
+                int fixed = 0;
+
+                /* Try 6 valid axis patterns (bitmask 1-6, skip 0 and 7) */
+                for (int pattern = 1; pattern <= 6 && !fixed; pattern++) {
+                    int x_high = (pattern >> 0) & 1;
+                    int y_high = (pattern >> 1) & 1;
+                    int z_high = (pattern >> 2) & 1;
+                    int num_high = x_high + y_high + z_high;
+                    if (num_high == 0 || num_high == 3) continue;  /* need mixed */
+
+                    /* Compute thresholds:
+                       high_threshold = max of max(pair) for each HIGH axis
+                       low_threshold  = min of min(pair) for each LOW axis
+                       Need: center > high_threshold AND center < low_threshold */
+                    float high_thresh = -1e30f;
+                    float low_thresh  =  1e30f;
+
+                    /* X axis */
+                    float x_pair_max = fmaxf(nb[0], nb[1]);
+                    float x_pair_min = fminf(nb[0], nb[1]);
+                    if (x_high) {
+                        if (x_pair_max > high_thresh) high_thresh = x_pair_max;
+                    } else {
+                        if (x_pair_min < low_thresh) low_thresh = x_pair_min;
+                    }
+
+                    /* Y axis */
+                    float y_pair_max = fmaxf(nb[2], nb[3]);
+                    float y_pair_min = fminf(nb[2], nb[3]);
+                    if (y_high) {
+                        if (y_pair_max > high_thresh) high_thresh = y_pair_max;
+                    } else {
+                        if (y_pair_min < low_thresh) low_thresh = y_pair_min;
+                    }
+
+                    /* Z axis */
+                    float z_pair_max = fmaxf(nb[4], nb[5]);
+                    float z_pair_min = fminf(nb[4], nb[5]);
+                    if (z_high) {
+                        if (z_pair_max > high_thresh) high_thresh = z_pair_max;
+                    } else {
+                        if (z_pair_min < low_thresh) low_thresh = z_pair_min;
+                    }
+
+                    /* Is there a valid gap? Need: high_thresh < low_thresh */
+                    if (high_thresh >= low_thresh) continue;
+
+                    /* Target: midpoint, nudged slightly to ensure strict inequality */
+                    float target = 0.5f * (high_thresh + low_thresh);
+                    float nudge = (low_thresh - high_thresh) * 0.01f;
+                    if (nudge < FLT_EPSILON) nudge = FLT_EPSILON;
+
+                    /* Ensure strict > and < */
+                    if (target <= high_thresh) target = high_thresh + nudge;
+                    if (target >= low_thresh)  target = low_thresh - nudge;
+                    if (target <= high_thresh || target >= low_thresh) continue;
+
+                    /* Clamp to error bound */
+                    if (target > max_a || target < min_a) continue;
+
+                    /* Validate: set temporarily and check */
+                    float saved = data[flat];
+                    data[flat] = target;
+
+                    int bad = 0;
+                    /* Must be classified as saddle */
+                    if (classify_3d(data, d1, d2, d3, x, y, z) != 3) bad = 1;
+
+                    /* Check 6 neighbors: regular ones must stay regular */
+                    if (!bad && x-1>=1 && types0[(x-1)*s+y*d3+z]==0 &&
+                        classify_3d(data,d1,d2,d3,x-1,y,z)!=0) bad=1;
+                    if (!bad && x+1<d1-1 && types0[(x+1)*s+y*d3+z]==0 &&
+                        classify_3d(data,d1,d2,d3,x+1,y,z)!=0) bad=1;
+                    if (!bad && y-1>=1 && types0[x*s+(y-1)*d3+z]==0 &&
+                        classify_3d(data,d1,d2,d3,x,y-1,z)!=0) bad=1;
+                    if (!bad && y+1<d2-1 && types0[x*s+(y+1)*d3+z]==0 &&
+                        classify_3d(data,d1,d2,d3,x,y+1,z)!=0) bad=1;
+                    if (!bad && z-1>=1 && types0[x*s+y*d3+(z-1)]==0 &&
+                        classify_3d(data,d1,d2,d3,x,y,z-1)!=0) bad=1;
+                    if (!bad && z+1<d3-1 && types0[x*s+y*d3+(z+1)]==0 &&
+                        classify_3d(data,d1,d2,d3,x,y,z+1)!=0) bad=1;
+
+                    if (bad) {
+                        data[flat] = saved;
+                    } else {
+                        restored++;
+                        fixed = 1;
+                    }
+                }
+            }
+        }
+    }
+    return restored;
+}
+
 /* RBF saddle restoration with 3×3×3 Gaussian kernel */
 static int rbf_restore_saddles_3d(float *data, const int *types0,
                                     const float *orig_decomp,
@@ -462,10 +609,15 @@ int main(int argc, char *argv[])
     float eps = fmaxf(1e-6f, 0.1f * absErrBound);
     restore_extrema_3d(FN, decompressed, orig_decomp, d1, d2, d3, eps, absErrBound);
 
-    /* RBF saddle restoration */
-    int restored = rbf_restore_saddles_3d(decompressed, FN, orig_decomp,
-                                           d1, d2, d3, eps, absErrBound);
-    printf("  RBF restored %d saddles\n", restored);
+    /* Saddle stencil: try all 6 axis patterns (runs before RBF) */
+    int stencil_restored = stencil_restore_saddles_3d(
+        decompressed, FN, orig_decomp, d1, d2, d3, absErrBound);
+    printf("  Saddle stencil restored %d saddles\n", stencil_restored);
+
+    /* RBF saddle restoration (handles remaining saddles that stencil couldn't fix) */
+    int rbf_restored = rbf_restore_saddles_3d(decompressed, FN, orig_decomp,
+                                               d1, d2, d3, eps, absErrBound);
+    printf("  RBF restored %d additional saddles\n", rbf_restored);
 
     double tp1 = get_time_ms();
     printf("  Post-processing done in %.2f ms\n\n", tp1 - tp0);
