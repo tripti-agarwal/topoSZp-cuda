@@ -169,45 +169,42 @@ __global__ void build_sort_keys_kernel(
     keys[idx].original_index = idx;
 }
 
-__global__ void assign_sort_positions_kernel(
-    CriticalPoint *cp, const BinValueKey *sorted_keys, size_t n)
+/* O(n) parallel boundary marking — replaces the O(n²) backward walk */
+__global__ void mark_boundaries_kernel(
+    const BinValueKey *sorted_keys, int *boundaries, size_t n)
 {
     size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= n) return;
 
-    int pos = 0;
-    if (idx > 0 && sorted_keys[idx].bin == sorted_keys[idx - 1].bin) {
-        /* Same bin — check if value changed */
-        if (sorted_keys[idx].value != sorted_keys[idx - 1].value) {
-            /* Need to count distinct values before this one in the bin.
-               Walk backward (small bins make this acceptable). */
-            size_t k = idx;
-            while (k > 0 && sorted_keys[k - 1].bin == sorted_keys[idx].bin) {
-                if (sorted_keys[k].value != sorted_keys[k - 1].value)
-                    pos++;
-                k--;
-            }
-        } else {
-            /* Same value — copy position from predecessor.
-               Walk backward to the first element with this value in this bin. */
-            size_t k = idx - 1;
-            while (k > 0 && sorted_keys[k - 1].bin == sorted_keys[idx].bin &&
-                   sorted_keys[k - 1].value == sorted_keys[idx].value) {
-                k--;
-            }
-            /* k is now the first with this value — count distinct values before k */
-            pos = 0;
-            size_t m = k;
-            while (m > 0 && sorted_keys[m - 1].bin == sorted_keys[idx].bin) {
-                if (sorted_keys[m].value != sorted_keys[m - 1].value)
-                    pos++;
-                m--;
-            }
-        }
+    if (idx == 0) {
+        boundaries[idx] = 0;
+    } else {
+        int same_bin   = (sorted_keys[idx].bin == sorted_keys[idx - 1].bin);
+        int same_value = (sorted_keys[idx].value == sorted_keys[idx - 1].value);
+        if (!same_bin)
+            boundaries[idx] = 0;    /* new bin → reset to 0 */
+        else if (!same_value)
+            boundaries[idx] = 1;    /* new value in same bin → increment */
+        else
+            boundaries[idx] = 0;    /* same bin, same value → same position */
     }
-    /* else: first element of a new bin → pos = 0 */
+}
 
-    cp[sorted_keys[idx].original_index].sort_position = pos;
+/* O(n) sequential scan to compute cumulative positions within each bin */
+__global__ void compute_sort_positions_kernel(
+    CriticalPoint *cp, const BinValueKey *sorted_keys,
+    const int *boundaries, size_t n)
+{
+    if (blockIdx.x != 0 || threadIdx.x != 0) return;
+
+    int pos = 0;
+    for (size_t i = 0; i < n; i++) {
+        if (i > 0 && sorted_keys[i].bin != sorted_keys[i - 1].bin)
+            pos = 0;
+        else
+            pos += boundaries[i];
+        cp[sorted_keys[i].original_index].sort_position = pos;
+    }
 }
 
 extern "C"
@@ -217,29 +214,30 @@ void szp_cuda_sort_critical_points_by_original_data(CriticalPoint *critical_poin
 {
     if (!critical_points || critical_count == 0 || !data) return;
 
-    /* Copy data and critical points to device */
-    CriticalPoint *d_cp;
-    float *d_data;
-    BinValueKey *d_keys;
-
-    CUDA_CHECK(cudaMalloc(&d_cp,   critical_count * sizeof(CriticalPoint)));
-    CUDA_CHECK(cudaMalloc(&d_data, /* need to know data size — use rows*cols but we don't have rows here;
-                                      caller provides flat array, we only read x*cols+y which is bounded by
-                                      the max index in critical_points.  Copy a generous upper bound. */
-               (size_t)(critical_points[0].x + 1) * cols * sizeof(float)));  /* will re-compute below */
-
-    /* Find max flat index to determine how much data to copy */
+    /* Find max flat index to determine data copy size */
     size_t max_flat = 0;
     for (size_t i = 0; i < critical_count; i++) {
         size_t flat = (size_t)critical_points[i].x * cols + critical_points[i].y;
         if (flat > max_flat) max_flat = flat;
     }
-    cudaFree(d_data);
-    CUDA_CHECK(cudaMalloc(&d_data, (max_flat + 1) * sizeof(float)));
-    CUDA_CHECK(cudaMemcpy(d_data, data, (max_flat + 1) * sizeof(float), cudaMemcpyHostToDevice));
+    size_t data_bytes = (max_flat + 1) * sizeof(float);
 
-    CUDA_CHECK(cudaMemcpy(d_cp, critical_points, critical_count * sizeof(CriticalPoint), cudaMemcpyHostToDevice));
-    CUDA_CHECK(cudaMalloc(&d_keys, critical_count * sizeof(BinValueKey)));
+    /* Single device allocation */
+    size_t cp_bytes   = critical_count * sizeof(CriticalPoint);
+    size_t keys_bytes = critical_count * sizeof(BinValueKey);
+    size_t bnd_bytes  = critical_count * sizeof(int);
+    size_t total_pool = cp_bytes + data_bytes + keys_bytes + bnd_bytes;
+
+    unsigned char *d_pool = NULL;
+    CUDA_CHECK(cudaMalloc(&d_pool, total_pool));
+
+    CriticalPoint *d_cp = (CriticalPoint *)d_pool;
+    float *d_data        = (float *)(d_pool + cp_bytes);
+    BinValueKey *d_keys  = (BinValueKey *)((unsigned char *)d_data + data_bytes);
+    int *d_boundaries    = (int *)((unsigned char *)d_keys + keys_bytes);
+
+    CUDA_CHECK(cudaMemcpy(d_cp, critical_points, cp_bytes, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_data, data, data_bytes, cudaMemcpyHostToDevice));
 
     int threadsPerBlock = 256;
     int blocks = ((int)critical_count + threadsPerBlock - 1) / threadsPerBlock;
@@ -252,16 +250,17 @@ void szp_cuda_sort_critical_points_by_original_data(CriticalPoint *critical_poin
     thrust::device_ptr<BinValueKey> keys_ptr(d_keys);
     thrust::sort(keys_ptr, keys_ptr + critical_count, BinValueCmp());
 
-    /* Assign sort positions */
-    assign_sort_positions_kernel<<<blocks, threadsPerBlock>>>(d_cp, d_keys, critical_count);
+    /* O(n) position assignment: mark boundaries → sequential scan */
+    mark_boundaries_kernel<<<blocks, threadsPerBlock>>>(d_keys, d_boundaries, critical_count);
+    CUDA_CHECK(cudaGetLastError());
+
+    compute_sort_positions_kernel<<<1, 1>>>(d_cp, d_keys, d_boundaries, critical_count);
     CUDA_CHECK(cudaGetLastError());
 
     /* Copy back */
-    CUDA_CHECK(cudaMemcpy(critical_points, d_cp, critical_count * sizeof(CriticalPoint), cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(critical_points, d_cp, cp_bytes, cudaMemcpyDeviceToHost));
 
-    cudaFree(d_cp);
-    cudaFree(d_data);
-    cudaFree(d_keys);
+    cudaFree(d_pool);
 }
 
 /* ================================================================== */

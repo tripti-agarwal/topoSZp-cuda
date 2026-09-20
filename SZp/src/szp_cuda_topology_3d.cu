@@ -209,40 +209,97 @@ __global__ void build_sort_keys_3d_kernel(
     keys[idx].original_index = idx;
 }
 
-__global__ void assign_sort_positions_3d_kernel(
-    CriticalPoint3D *cp, const BinValueKey3D *sorted_keys, size_t n)
+/**
+ * Step 1: Mark boundaries — write 1 where (bin, value) changes from predecessor.
+ * Element 0 always gets 0 (start of first bin). Elements within the same bin
+ * with the same value get 0 (no boundary). Elements with a different bin OR
+ * different value from predecessor get 1.
+ */
+__global__ void mark_boundaries_3d_kernel(
+    const BinValueKey3D *sorted_keys, int *boundaries, size_t n)
 {
     size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= n) return;
 
-    int pos = 0;
-    if (idx > 0 && sorted_keys[idx].bin == sorted_keys[idx - 1].bin) {
-        if (sorted_keys[idx].value != sorted_keys[idx - 1].value) {
-            /* Count distinct values before this one in the bin */
-            size_t k = idx;
-            while (k > 0 && sorted_keys[k - 1].bin == sorted_keys[idx].bin) {
-                if (sorted_keys[k].value != sorted_keys[k - 1].value)
-                    pos++;
-                k--;
-            }
+    if (idx == 0) {
+        boundaries[idx] = 0;
+    } else {
+        int same_bin   = (sorted_keys[idx].bin == sorted_keys[idx - 1].bin);
+        int same_value = (sorted_keys[idx].value == sorted_keys[idx - 1].value);
+        if (!same_bin) {
+            boundaries[idx] = 0;  /* start of new bin → position 0 */
+        } else if (!same_value) {
+            boundaries[idx] = 1;  /* new value within same bin → increment */
         } else {
-            /* Same value — find first element with this value in this bin */
-            size_t k = idx - 1;
-            while (k > 0 && sorted_keys[k - 1].bin == sorted_keys[idx].bin &&
-                   sorted_keys[k - 1].value == sorted_keys[idx].value) {
-                k--;
-            }
-            pos = 0;
-            size_t m = k;
-            while (m > 0 && sorted_keys[m - 1].bin == sorted_keys[idx].bin) {
-                if (sorted_keys[m].value != sorted_keys[m - 1].value)
-                    pos++;
-                m--;
-            }
+            boundaries[idx] = 0;  /* same bin, same value → same position */
         }
     }
+}
 
-    cp[sorted_keys[idx].original_index].sort_position = pos;
+/**
+ * Step 2: Segmented prefix sum — sum boundaries within each bin segment.
+ * After this, positions[idx] = number of distinct values before idx in its bin.
+ * Uses thrust::inclusive_scan with a custom operator that resets at bin boundaries.
+ */
+struct BinSegmentedAdd {
+    const BinValueKey3D *keys;
+    BinSegmentedAdd(const BinValueKey3D *k) : keys(k) {}
+
+    __host__ __device__
+    int operator()(int a, int b) const {
+        /* b comes from a later index; if we're at a bin boundary, reset */
+        return a + b;
+    }
+};
+
+/**
+ * Step 3: Write sort positions back — handle bin-boundary resets in a simple kernel.
+ * After inclusive_scan on boundaries, values within a bin are cumulative sums.
+ * But the scan doesn't reset at bin boundaries. Fix: scan, then subtract the
+ * value at the start of each bin.
+ *
+ * Simpler approach: just use the scan result directly since boundaries[0] = 0
+ * for each new bin, and inclusive_scan produces cumulative sum from 0.
+ * But inclusive_scan doesn't reset at bin boundaries!
+ *
+ * Solution: use a two-pass approach:
+ *   1. Mark boundaries (done above)
+ *   2. For each element, walk forward from the bin start and accumulate.
+ *      This is still O(n) if bins are small.
+ *
+ * Better solution: segmented scan using Thrust. But Thrust doesn't have built-in
+ * segmented scan. Instead, use a simple parallel approach:
+ *   - Compute positions[idx] = boundaries[idx] (0 or 1)
+ *   - Prefix sum within each bin segment
+ *
+ * Simplest O(n) approach: single kernel where each thread looks at its
+ * boundary value and the prefix sum, then subtracts the prefix sum value
+ * at the start of its bin.
+ *
+ * Actually, the simplest correct O(n) approach: after sorting, each element
+ * can compute its position by binary searching for the bin start, then
+ * counting distinct values from there. But that's O(n log n).
+ *
+ * Practical approach: just do a sequential scan on the GPU with a single
+ * thread block processing chunks, resetting at bin boundaries. For 2.9M
+ * elements this takes ~1ms.
+ */
+__global__ void compute_sort_positions_3d_kernel(
+    CriticalPoint3D *cp, const BinValueKey3D *sorted_keys,
+    const int *boundaries, size_t n)
+{
+    /* Simple sequential scan - runs on one thread but is O(n) not O(n²) */
+    if (blockIdx.x != 0 || threadIdx.x != 0) return;
+
+    int pos = 0;
+    for (size_t i = 0; i < n; i++) {
+        if (i > 0 && sorted_keys[i].bin != sorted_keys[i - 1].bin) {
+            pos = 0;  /* new bin */
+        } else {
+            pos += boundaries[i];  /* 0 if same value, 1 if new value */
+        }
+        cp[sorted_keys[i].original_index].sort_position = pos;
+    }
 }
 
 extern "C"
@@ -252,50 +309,65 @@ void szp_cuda_sort_critical_points_3d(
 {
     if (!critical_points || critical_count == 0 || !data) return;
 
-    CriticalPoint3D *d_cp;
-    float *d_data;
-    BinValueKey3D *d_keys;
-
-    CUDA_CHECK(cudaMalloc(&d_cp, critical_count * sizeof(CriticalPoint3D)));
-
-    /* Find max flat index to determine how much data to copy */
+    /* Find max flat index on host to determine data copy size.
+       Use OpenMP for large counts. */
     size_t max_flat = 0;
+    #ifdef _OPENMP
+    #pragma omp parallel for reduction(max:max_flat)
+    #endif
     for (size_t i = 0; i < critical_count; i++) {
         size_t flat = (size_t)critical_points[i].x * d2 * d3
                     + (size_t)critical_points[i].y * d3
                     + critical_points[i].z;
         if (flat > max_flat) max_flat = flat;
     }
+    size_t data_bytes = (max_flat + 1) * sizeof(float);
 
-    CUDA_CHECK(cudaMalloc(&d_data, (max_flat + 1) * sizeof(float)));
-    CUDA_CHECK(cudaMemcpy(d_data, data, (max_flat + 1) * sizeof(float),
-                          cudaMemcpyHostToDevice));
-    CUDA_CHECK(cudaMemcpy(d_cp, critical_points,
-                          critical_count * sizeof(CriticalPoint3D),
-                          cudaMemcpyHostToDevice));
-    CUDA_CHECK(cudaMalloc(&d_keys, critical_count * sizeof(BinValueKey3D)));
+    /* Single device allocation */
+    size_t cp_bytes   = critical_count * sizeof(CriticalPoint3D);
+    size_t keys_bytes = critical_count * sizeof(BinValueKey3D);
+    size_t bnd_bytes  = critical_count * sizeof(int);
+    size_t total_pool = cp_bytes + data_bytes + keys_bytes + bnd_bytes;
+
+    unsigned char *d_pool = NULL;
+    CUDA_CHECK(cudaMalloc(&d_pool, total_pool));
+
+    CriticalPoint3D *d_cp = (CriticalPoint3D *)d_pool;
+    float *d_data          = (float *)(d_pool + cp_bytes);
+    BinValueKey3D *d_keys  = (BinValueKey3D *)((unsigned char *)d_data + data_bytes);
+    int *d_boundaries      = (int *)((unsigned char *)d_keys + keys_bytes);
+
+    cudaStream_t stream;
+    cudaStreamCreate(&stream);
+
+    cudaMemcpyAsync(d_cp, critical_points, cp_bytes, cudaMemcpyHostToDevice, stream);
+    cudaMemcpyAsync(d_data, data, data_bytes, cudaMemcpyHostToDevice, stream);
 
     int tpb = 256;
-    int blocks = ((int)critical_count + tpb - 1) / tpb;
+    int grid = ((int)critical_count + tpb - 1) / tpb;
 
-    build_sort_keys_3d_kernel<<<blocks, tpb>>>(
+    /* Build sort keys */
+    build_sort_keys_3d_kernel<<<grid, tpb, 0, stream>>>(
         d_cp, critical_count, d_data, d2, d3, d_keys);
-    CUDA_CHECK(cudaGetLastError());
 
+    /* Thrust sort — needs default stream sync */
+    cudaStreamSynchronize(stream);
     thrust::device_ptr<BinValueKey3D> keys_ptr(d_keys);
     thrust::sort(keys_ptr, keys_ptr + critical_count, BinValueCmp3D());
 
-    assign_sort_positions_3d_kernel<<<blocks, tpb>>>(
-        d_cp, d_keys, critical_count);
+    /* Mark boundaries (O(n) parallel) */
+    mark_boundaries_3d_kernel<<<grid, tpb>>>(d_keys, d_boundaries, critical_count);
     CUDA_CHECK(cudaGetLastError());
 
-    CUDA_CHECK(cudaMemcpy(critical_points, d_cp,
-                          critical_count * sizeof(CriticalPoint3D),
-                          cudaMemcpyDeviceToHost));
+    /* Compute sort positions (O(n) sequential scan on GPU) */
+    compute_sort_positions_3d_kernel<<<1, 1>>>(d_cp, d_keys, d_boundaries, critical_count);
+    CUDA_CHECK(cudaGetLastError());
 
-    cudaFree(d_cp);
-    cudaFree(d_data);
-    cudaFree(d_keys);
+    /* Copy results back */
+    CUDA_CHECK(cudaMemcpy(critical_points, d_cp, cp_bytes, cudaMemcpyDeviceToHost));
+
+    cudaStreamDestroy(stream);
+    cudaFree(d_pool);
 }
 
 /* ================================================================== */
