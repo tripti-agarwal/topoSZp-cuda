@@ -751,6 +751,107 @@ int main(int argc, char *argv[]) {
     }
 
     /* ============================================================ */
+    /* Step 10: Local order verification                               */
+    /*                                                                */
+    /* Check if the relative ordering between adjacent vertices is    */
+    /* preserved in the decompressed data.                            */
+    /*   - All pairs: every adjacent pair of interior vertices        */
+    /*   - CP pairs: pairs where at least one vertex is a CP         */
+    /*   - CP-CP pairs: pairs where both vertices are CPs            */
+    /* ============================================================ */
+    printf("--- Step 10: Local order verification ---\n");
+    {
+        /* Build original CP type map */
+        unsigned char *cp_map = (unsigned char *)calloc(nbEle, 1);
+        for (size_t i = 0; i < orig_cp_count; i++) {
+            size_t flat = (size_t)orig_cps[i].x * cols + orig_cps[i].y;
+            if (flat < nbEle) cp_map[flat] = (unsigned char)orig_cps[i].type;
+        }
+
+        size_t all_pairs = 0, all_violations = 0;
+        size_t cp_pairs = 0, cp_violations = 0;       /* at least one is CP */
+        size_t cpcp_pairs = 0, cpcp_violations = 0;   /* both are CPs */
+        size_t extrema_pairs = 0, extrema_violations = 0; /* at least one is max/min */
+
+        int dx[] = {0, 1};  /* right and down neighbors to avoid double-counting */
+        int dy[] = {1, 0};
+
+        for (int i = 1; i < rows - 1; i++) {
+            for (int j = 1; j < cols - 1; j++) {
+                size_t flat_a = (size_t)i * cols + j;
+                float orig_a = data[flat_a];
+                float decomp_a = decompressed[flat_a];
+                unsigned char type_a = cp_map[flat_a];
+
+                for (int d = 0; d < 2; d++) {
+                    int ni = i + dx[d], nj = j + dy[d];
+                    if (ni >= rows - 1 || nj >= cols - 1) continue;
+
+                    size_t flat_b = (size_t)ni * cols + nj;
+                    float orig_b = data[flat_b];
+                    float decomp_b = decompressed[flat_b];
+                    unsigned char type_b = cp_map[flat_b];
+
+                    /* Original ordering */
+                    int orig_order = 0;
+                    if (orig_a < orig_b) orig_order = -1;
+                    else if (orig_a > orig_b) orig_order = 1;
+                    /* else equal — no constraint */
+
+                    if (orig_order == 0) continue;  /* equal values — skip */
+
+                    /* Decompressed ordering */
+                    int decomp_order = 0;
+                    if (decomp_a < decomp_b) decomp_order = -1;
+                    else if (decomp_a > decomp_b) decomp_order = 1;
+
+                    int violated = (orig_order != decomp_order) ? 1 : 0;
+
+                    /* All pairs */
+                    all_pairs++;
+                    if (violated) all_violations++;
+
+                    /* At least one is a CP */
+                    if (type_a || type_b) {
+                        cp_pairs++;
+                        if (violated) cp_violations++;
+                    }
+
+                    /* Both are CPs */
+                    if (type_a && type_b) {
+                        cpcp_pairs++;
+                        if (violated) cpcp_violations++;
+                    }
+
+                    /* At least one is max or min */
+                    if (type_a == 1 || type_a == 2 || type_b == 1 || type_b == 2) {
+                        extrema_pairs++;
+                        if (violated) extrema_violations++;
+                    }
+                }
+            }
+        }
+
+        printf("\n  %-30s %12s %12s %8s\n", "Pair type", "Total", "Violations", "Rate");
+        printf("  %-30s %12s %12s %8s\n", "-----", "-----", "----------", "----");
+        printf("  %-30s %12zu %12zu %7.4f%%\n", "All adjacent pairs",
+               all_pairs, all_violations,
+               all_pairs > 0 ? 100.0 * (all_pairs - all_violations) / all_pairs : 0.0);
+        printf("  %-30s %12zu %12zu %7.4f%%\n", "At least one CP",
+               cp_pairs, cp_violations,
+               cp_pairs > 0 ? 100.0 * (cp_pairs - cp_violations) / cp_pairs : 0.0);
+        printf("  %-30s %12zu %12zu %7.4f%%\n", "Both CPs",
+               cpcp_pairs, cpcp_violations,
+               cpcp_pairs > 0 ? 100.0 * (cpcp_pairs - cpcp_violations) / cpcp_pairs : 0.0);
+        printf("  %-30s %12zu %12zu %7.4f%%\n", "At least one extremum",
+               extrema_pairs, extrema_violations,
+               extrema_pairs > 0 ? 100.0 * (extrema_pairs - extrema_violations) / extrema_pairs : 0.0);
+        printf("  (Rate = %% of pairs with LOCAL ORDER PRESERVED)\n\n");
+
+        free(cp_map);
+    }
+
+    /* ============================================================ */
     /* Summary                                                        */
     /* ============================================================ */
     printf("\n==================== SUMMARY ====================\n");
