@@ -341,11 +341,9 @@ void szp_cuda_sort_critical_points_3d(
     int grid = ((int)critical_count + tpb - 1) / tpb;
 
     /* Build sort keys */
-    build_sort_keys_3d_kernel<<<grid, tpb, 0, stream>>>(
+    build_sort_keys_3d_kernel<<<grid, tpb>>>(
         d_cp, critical_count, d_data, d2, d3, d_keys);
-
-    /* Thrust sort — needs default stream sync */
-    cudaStreamSynchronize(stream);
+    CUDA_CHECK(cudaGetLastError());
     thrust::device_ptr<BinValueKey3D> keys_ptr(d_keys);
     thrust::sort(keys_ptr, keys_ptr + critical_count, BinValueCmp3D());
 
