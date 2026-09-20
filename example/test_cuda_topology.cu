@@ -270,11 +270,12 @@ int main(int argc, char *argv[]) {
 
     int *sort_positions = NULL;
     if (sort_compressed && sort_outSize > 0 && extrema_count > 0) {
-        /* The compressed sort positions have offset table at front */
+        /* Compressed sort positions start with offset table (nChunks=1) */
         sort_positions = szp_cuda_decompress_sort_positions(
-            sort_compressed + sizeof(size_t), /* skip first offset entry */
-            extrema_count, blockSize);
+            sort_compressed, extrema_count, blockSize);
     }
+    printf("  Sort positions: %zu extrema, compressed %zu bytes, decompressed: %s\n",
+           extrema_count, sort_outSize, sort_positions ? "OK" : "NULL");
 
     /* Apply stencils to extrema using sort positions */
     if (sort_positions && extrema_count > 0) {
