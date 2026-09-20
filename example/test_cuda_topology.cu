@@ -669,7 +669,7 @@ int main(int argc, char *argv[]) {
     size_t cuda_preserved = preserved;
     size_t cuda_decomp_cp_count = decomp_cp_count;
     double cuda_max_err = max_err;
-    size_t cuda_err_count = err_count;
+    size_t cuda_err_count = err_2eb;
 
     /* ============================================================ */
     /* Step 9: OpenMP pipeline for comparison                        */
