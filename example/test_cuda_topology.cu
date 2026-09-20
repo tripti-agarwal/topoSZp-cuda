@@ -740,9 +740,12 @@ int main(int argc, char *argv[]) {
             if (omp_cps[i].type == 1 || omp_cps[i].type == 2) omp_extrema_count++;
 
         int *omp_sort_positions = NULL;
-        if (omp_sort_compressed && omp_sort_outSize > 0 && omp_extrema_count > 0) {
+        if (omp_sort_compressed && omp_sort_outSize > sizeof(size_t) && omp_extrema_count > 0) {
+            /* OpenMP szp_compress_sort_positions output:
+               [extrema_count : size_t][offset table][compressed blocks]
+               The decompressor expects cmpBytes starting at the offset table */
             omp_sort_positions = szp_decompress_sort_positions(
-                omp_sort_compressed, omp_extrema_count, blockSize);
+                omp_sort_compressed + sizeof(size_t), omp_extrema_count, blockSize);
         }
 
         if (omp_sort_positions && omp_extrema_count > 0) {
