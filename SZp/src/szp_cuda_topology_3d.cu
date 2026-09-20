@@ -323,25 +323,19 @@ void szp_cuda_sort_critical_points_3d(
     }
     size_t data_bytes = (max_flat + 1) * sizeof(float);
 
-    /* Single device allocation */
-    size_t cp_bytes   = critical_count * sizeof(CriticalPoint3D);
-    size_t keys_bytes = critical_count * sizeof(BinValueKey3D);
-    size_t bnd_bytes  = critical_count * sizeof(int);
-    size_t total_pool = cp_bytes + data_bytes + keys_bytes + bnd_bytes;
+    /* Separate allocations for proper alignment */
+    CriticalPoint3D *d_cp = NULL;
+    float *d_data = NULL;
+    BinValueKey3D *d_keys = NULL;
+    int *d_boundaries = NULL;
 
-    unsigned char *d_pool = NULL;
-    CUDA_CHECK(cudaMalloc(&d_pool, total_pool));
+    CUDA_CHECK(cudaMalloc(&d_cp, critical_count * sizeof(CriticalPoint3D)));
+    CUDA_CHECK(cudaMalloc(&d_data, data_bytes));
+    CUDA_CHECK(cudaMalloc(&d_keys, critical_count * sizeof(BinValueKey3D)));
+    CUDA_CHECK(cudaMalloc(&d_boundaries, critical_count * sizeof(int)));
 
-    CriticalPoint3D *d_cp = (CriticalPoint3D *)d_pool;
-    float *d_data          = (float *)(d_pool + cp_bytes);
-    BinValueKey3D *d_keys  = (BinValueKey3D *)((unsigned char *)d_data + data_bytes);
-    int *d_boundaries      = (int *)((unsigned char *)d_keys + keys_bytes);
-
-    cudaStream_t stream;
-    cudaStreamCreate(&stream);
-
-    cudaMemcpyAsync(d_cp, critical_points, cp_bytes, cudaMemcpyHostToDevice, stream);
-    cudaMemcpyAsync(d_data, data, data_bytes, cudaMemcpyHostToDevice, stream);
+    CUDA_CHECK(cudaMemcpy(d_cp, critical_points, critical_count * sizeof(CriticalPoint3D), cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_data, data, data_bytes, cudaMemcpyHostToDevice));
 
     int tpb = 256;
     int grid = ((int)critical_count + tpb - 1) / tpb;
@@ -364,10 +358,12 @@ void szp_cuda_sort_critical_points_3d(
     CUDA_CHECK(cudaGetLastError());
 
     /* Copy results back */
-    CUDA_CHECK(cudaMemcpy(critical_points, d_cp, cp_bytes, cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(critical_points, d_cp, critical_count * sizeof(CriticalPoint3D), cudaMemcpyDeviceToHost));
 
-    cudaStreamDestroy(stream);
-    cudaFree(d_pool);
+    cudaFree(d_cp);
+    cudaFree(d_data);
+    cudaFree(d_keys);
+    cudaFree(d_boundaries);
 }
 
 /* ================================================================== */
