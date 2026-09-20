@@ -717,13 +717,8 @@ int main(int argc, char *argv[])
         double *saddle_pers = (double *)malloc(orig_cp_count * sizeof(double));
         int *saddle_kept = (int *)calloc(orig_cp_count, sizeof(int));
 
-        /* Build decomp type map */
-        int *dtype_map = (int *)calloc(nbEle, sizeof(int));
-        for (size_t i = 0; i < dcp; i++) {
-            CriticalPoint3D *dp = &decomp_cps[i];
-            size_t flat = (size_t)dp->x * s + dp->y * d3 + dp->z;
-            if (flat < nbEle) dtype_map[flat] = dp->type;
-        }
+        /* Use existing decomp_type_map (already built in Step 5) */
+        int *dtype_map = decomp_type_map;
 
         for (size_t i = 0; i < orig_cp_count; i++) {
             if (orig_cps[i].type != 3) continue;
@@ -781,7 +776,8 @@ int main(int argc, char *argv[])
                p_min, saddle_count>0 ? p_sum/saddle_count : 0.0, p_max);
         printf("  Error bound: %e\n\n", (double)absErrBound);
 
-        free(saddle_pers); free(saddle_kept); free(dtype_map);
+        free(saddle_pers); free(saddle_kept);
+        /* dtype_map is alias for decomp_type_map — freed later */
     }
 
     printf("==================== 3D SUMMARY ====================\n");
