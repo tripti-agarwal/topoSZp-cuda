@@ -943,19 +943,7 @@ unsigned char *szp_cuda_float_compress_topology_3d(
         cudaFree(d_cp);
     }
 
-    /* ---- Saddle-aware quantization ---- */
-
-    /* Step 0: Perturb neighbor values at saddle points (pre-quantization) */
-    {
-        unsigned int total_interior = (unsigned int)(d1-2) * (unsigned int)(d2-2) * (unsigned int)(d3-2);
-        int ptpb = 256;
-        int pgrid = ((int)total_interior + ptpb - 1) / ptpb;
-        perturb_saddle_neighbors_3d_kernel<<<pgrid, ptpb>>>(
-            d_data, d_ct, d1, d2, d3, absErrBound);
-        CUDA_CHECK(cudaGetLastError());
-    }
-
-    /* Step 1: Quantize perturbed data */
+    /* ---- Standard quantization (no saddle adjustment) ---- */
     int *d_qdata;
     CUDA_CHECK(cudaMalloc(&d_qdata, nbEle * sizeof(int)));
     {
@@ -965,18 +953,7 @@ unsigned char *szp_cuda_float_compress_topology_3d(
         CUDA_CHECK(cudaGetLastError());
     }
 
-    /* Step 2: Fix remaining broken saddles in quantized space (±1 adjustment) */
-    {
-        unsigned int total_interior = (unsigned int)(d1-2) * (unsigned int)(d2-2) * (unsigned int)(d3-2);
-        int stpb = 256;
-        int sgrid = ((int)total_interior + stpb - 1) / stpb;
-        for (int pass = 0; pass < 3; pass++) {
-            fix_saddles_3d_kernel<<<sgrid, stpb>>>(d_qdata, d_ct, d1, d2, d3, nbEle);
-            CUDA_CHECK(cudaGetLastError());
-        }
-    }
-
-    cudaFree(d_data);  /* no longer need float data */
+    cudaFree(d_data);
 
     /* ---- Compress pre-quantized data ---- */
     size_t *d_bs, *d_bo;
