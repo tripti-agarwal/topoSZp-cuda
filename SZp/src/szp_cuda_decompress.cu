@@ -345,6 +345,62 @@ scan_randomaccess_block_offsets(const unsigned char *cmpBytes,
  * Same as scan_randomaccess_block_offsets but accounts for the extra
  * 2-bit type data appended after each block's sign+magnitude.
  */
+/**
+ * Validate a candidate nbThreads for topology-preserved format.
+ * Walks ALL blocks including the extra 2-bit type data per block.
+ */
+static int
+validate_nbThreads_topo(const unsigned char *cmpBytes,
+                         size_t nbEle, int blockSize,
+                         unsigned int try_nt,
+                         size_t bufferLimit)
+{
+    const size_t *offs = (const size_t *)cmpBytes;
+    size_t hdr_size = (size_t)try_nt * sizeof(size_t);
+    const unsigned char *rcp = cmpBytes + hdr_size;
+    const unsigned char *bufEnd = cmpBytes + bufferLimit;
+
+    size_t num_blocks = (nbEle + blockSize - 1) / blockSize;
+    size_t blocks_per_thread = (num_blocks + try_nt - 1) / try_nt;
+
+    for (unsigned int tid = 0; tid < try_nt; tid++) {
+        size_t start_block = tid * blocks_per_thread;
+        size_t end_block   = (tid + 1) * blocks_per_thread;
+        if (end_block > num_blocks) end_block = num_blocks;
+
+        const unsigned char *ptr = rcp + offs[tid];
+        if (ptr >= bufEnd || ptr < rcp) return 0;
+
+        for (size_t bidx = start_block; bidx < end_block; bidx++) {
+            size_t i = bidx * blockSize;
+            if (i >= nbEle) break;
+            size_t cur_bs = ((i + blockSize) > nbEle) ? (nbEle - i) : (size_t)blockSize;
+
+            if (ptr + sizeof(int) > bufEnd) return 0;
+            ptr += sizeof(int); /* anchor */
+
+            if (cur_bs > 1) {
+                if (ptr >= bufEnd) return 0;
+                unsigned int bc = ptr[0]; ptr++;
+                if (bc > 32) return 0;
+                if (bc != 0) {
+                    unsigned int n = (unsigned int)(cur_bs - 1);
+                    unsigned int sb = (n + 7) / 8;
+                    unsigned int mb = host_fixed_bits_byte_length(n, bc);
+                    ptr += sb + mb;
+                    if (ptr > bufEnd) return 0;
+                }
+            }
+
+            /* 2-bit type data */
+            unsigned int type_bytes = (2 * (unsigned int)cur_bs + 7) / 8;
+            ptr += type_bytes;
+            if (ptr > bufEnd) return 0;
+        }
+    }
+    return 1;
+}
+
 static size_t *
 scan_randomaccess_topo_block_offsets(const unsigned char *cmpBytes,
                                      size_t nbEle, int blockSize,
@@ -352,24 +408,27 @@ scan_randomaccess_topo_block_offsets(const unsigned char *cmpBytes,
                                      unsigned int *outNbThreads)
 {
     const size_t *offs = (const size_t *)cmpBytes;
-
-    unsigned int nbThreads = 0;
     size_t maxCmpSize = 8ull * nbEle + 1024;
 
-    for (unsigned int try_nt = 1; try_nt <= 256; try_nt++) {
-        if (offs[0] != 0) break;
-        int valid = 1;
-        for (unsigned int k = 1; k < try_nt; k++) {
-            if (offs[k] > maxCmpSize || offs[k] < offs[k-1]) {
-                valid = 0; break;
+    /* Robust nbThreads detection: accept FIRST valid candidate */
+    unsigned int nbThreads = 1;
+    if (offs[0] == 0) {
+        for (unsigned int try_nt = 1; try_nt <= 128; try_nt++) {
+            int valid = 1;
+            for (unsigned int k = 1; k < try_nt; k++) {
+                if (offs[k] > maxCmpSize || offs[k] < offs[k-1]) {
+                    valid = 0; break;
+                }
+            }
+            if (!valid) break;
+
+            if (validate_nbThreads_topo(cmpBytes, nbEle, blockSize,
+                                         try_nt, maxCmpSize)) {
+                nbThreads = try_nt;
+                break;
             }
         }
-        if (!valid) break;
-        size_t hdr_size = try_nt * sizeof(size_t);
-        if (hdr_size + 5 <= maxCmpSize)
-            nbThreads = try_nt;
     }
-    if (nbThreads == 0) nbThreads = 1;
     *outNbThreads = nbThreads;
 
     size_t hdr_size = nbThreads * sizeof(size_t);
@@ -408,17 +467,17 @@ scan_randomaccess_topo_block_offsets(const unsigned char *cmpBytes,
             /* int32 anchor */
             ptr += sizeof(int);
 
-            unsigned int actual_new = (current_block_size > 1) ? (unsigned int)(current_block_size - 1) : 0;
+            if (current_block_size > 1) {
+                unsigned int actual_new = (unsigned int)(current_block_size - 1);
+                unsigned int bit_count = ptr[0];
+                ptr++;
 
-            /* bit_count */
-            unsigned int bit_count = ptr[0];
-            ptr++;
-
-            if (bit_count != 0 && actual_new > 0) {
-                unsigned int sign_bytes = (actual_new + 7) / 8;
-                ptr += sign_bytes;
-                unsigned int mag_bytes = host_fixed_bits_byte_length(actual_new, bit_count);
-                ptr += mag_bytes;
+                if (bit_count != 0) {
+                    unsigned int sign_bytes = (actual_new + 7) / 8;
+                    ptr += sign_bytes;
+                    unsigned int mag_bytes = host_fixed_bits_byte_length(actual_new, bit_count);
+                    ptr += mag_bytes;
+                }
             }
 
             /* 2-bit type data */
@@ -656,54 +715,39 @@ kernel_decompress_randomaccess_topo(float        *newData,
     unsigned int actual_n = (current_block_size > 1)
                             ? (unsigned int)(current_block_size - 1) : 0;
 
-    /* Read bit_count */
-    unsigned int bit_count = ptr[0];
-    ptr++;
+    if (actual_n > 0) {
+        /* Read bit_count */
+        unsigned int bit_count = ptr[0];
+        ptr++;
 
-    if (bit_count == 0) {
-        for (unsigned int j = 0; j < actual_n; j++)
-            dst[1 + j] = ori;
-    } else if (actual_n > 0) {
-        unsigned int sign_bytes = (actual_n + 7) / 8;
-        const unsigned char *sign_data = ptr;
-        ptr += sign_bytes;
-
-        unsigned int mag_byte_len = fixed_bits_byte_length(actual_n, bit_count);
-        const unsigned char *mag_data = ptr;
-        ptr += mag_byte_len;
-
-        int current;
-        for (unsigned int j = 0; j < actual_n; j++) {
-            unsigned int sb = j >> 3;
-            unsigned int si = 7 - (j & 7);
-            int sign = (sign_data[sb] >> si) & 1;
-
-            unsigned int mag = device_extract_fixed_bits(mag_data, j,
-                                                         actual_n, bit_count);
-            int diff = sign ? -(int)mag : (int)mag;
-            current = prior + diff;
-            dst[1 + j] = (float)current * scale;
-            prior = current;
-        }
-    }
-
-    /* Advance ptr past sign+magnitude to reach type data.
-     * If bit_count != 0 and actual_n > 0, ptr is already past magnitude.
-     * If bit_count == 0, ptr is right after the bit_count byte.
-     * We need to get to the type data regardless. */
-    if (bit_count == 0) {
-        /* ptr is already at type data */
-    } else if (actual_n > 0) {
-        /* ptr was already advanced past magnitude above - but we used
-         * local mag_data pointer.  Recompute ptr position. */
-        const unsigned char *base = rcp + block_offsets[bid] + sizeof(int) + 1;
-        if (bit_count != 0 && actual_n > 0) {
+        if (bit_count == 0) {
+            for (unsigned int j = 0; j < actual_n; j++)
+                dst[1 + j] = ori;
+        } else {
             unsigned int sign_bytes = (actual_n + 7) / 8;
+            const unsigned char *sign_data = ptr;
+            ptr += sign_bytes;
+
             unsigned int mag_byte_len = fixed_bits_byte_length(actual_n, bit_count);
-            base += sign_bytes + mag_byte_len;
+            const unsigned char *mag_data = ptr;
+            ptr += mag_byte_len;
+
+            int current;
+            for (unsigned int j = 0; j < actual_n; j++) {
+                unsigned int sb = j >> 3;
+                unsigned int si = 7 - (j & 7);
+                int sign = (sign_data[sb] >> si) & 1;
+
+                unsigned int mag = device_extract_fixed_bits(mag_data, j,
+                                                             actual_n, bit_count);
+                int diff = sign ? -(int)mag : (int)mag;
+                current = prior + diff;
+                dst[1 + j] = (float)current * scale;
+                prior = current;
+            }
         }
-        ptr = base;
     }
+    /* ptr now points to the start of the 2-bit type data */
 
     /* Unpack 2-bit type data */
     device_unpack_2b(ptr, fnData + elem_start, (unsigned int)current_block_size);
@@ -1077,11 +1121,13 @@ void szp_cuda_float_decompress_randomaccess_topology_preserved(
                          ? (nbEle - last_start) : (size_t)blockSize;
         /* Skip anchor */
         ptr += sizeof(int);
-        unsigned int actual_n = (last_bs > 1) ? (unsigned int)(last_bs - 1) : 0;
-        unsigned int bc = ptr[0]; ptr++;
-        if (bc != 0 && actual_n > 0) {
-            ptr += (actual_n + 7) / 8;
-            ptr += host_fixed_bits_byte_length(actual_n, bc);
+        if (last_bs > 1) {
+            unsigned int actual_n = (unsigned int)(last_bs - 1);
+            unsigned int bc = ptr[0]; ptr++;
+            if (bc != 0) {
+                ptr += (actual_n + 7) / 8;
+                ptr += host_fixed_bits_byte_length(actual_n, bc);
+            }
         }
         ptr += (2 * (unsigned int)last_bs + 7) / 8;
         cmpTotalSize = (size_t)(ptr - cmpBytes);
