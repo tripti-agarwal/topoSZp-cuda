@@ -817,7 +817,6 @@ int main(int argc, char *argv[]) {
         free(omp_decomp_type_map);
         if (omp_decomp_cps) free(omp_decomp_cps);
         if (omp_sort_compressed) free(omp_sort_compressed);
-        if (omp_sort_positions) free(omp_sort_positions);
     } else {
         printf("OpenMP topology decompression failed — skipping comparison.\n");
     }
