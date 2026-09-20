@@ -584,10 +584,19 @@ __global__ void mark_critical_types_3d_kernel(
 /* ================================================================== */
 
 /**
- * Quantize all data to integers: q[i] = (int)(data[i] * inver_bound)
+ * Quantize all data to integers: q[i] = (int)((double)data[i] * inver_bound)
+ * Uses double precision arithmetic to avoid float rounding errors,
+ * critical for tight error bounds (1e-6, 1e-7).
  */
-__global__ static void quantize_3d_kernel(
+__global__ static void quantize_3d_kernel_float(
     const float *data, int *qdata, size_t nbEle, double inver_bound)
+{
+    size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < nbEle) qdata[idx] = (int)((double)data[idx] * inver_bound);
+}
+
+__global__ static void quantize_3d_kernel_double(
+    const double *data, int *qdata, size_t nbEle, double inver_bound)
 {
     size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < nbEle) qdata[idx] = (int)(data[idx] * inver_bound);
@@ -869,7 +878,7 @@ unsigned char *szp_cuda_float_compress_topology_3d(
     {
         int qtpb = 256;
         int qgrid = ((int)nbEle + qtpb - 1) / qtpb;
-        quantize_3d_kernel<<<qgrid, qtpb>>>(d_data, d_qdata, nbEle, inver_bound);
+        quantize_3d_kernel_float<<<qgrid, qtpb>>>(d_data, d_qdata, nbEle, inver_bound);
         CUDA_CHECK(cudaGetLastError());
     }
 
@@ -915,6 +924,116 @@ unsigned char *szp_cuda_float_compress_topology_3d(
     memcpy(output, &zero, sizeof(size_t));
 
     /* Packing pass */
+    unsigned char *d_out;
+    CUDA_CHECK(cudaMalloc(&d_out, total));
+    compress_topo_packing_3d_preq<<<grid, tpb>>>(
+        d_qdata, nbEle, bsz, d_ct, d_bo, d_out);
+    CUDA_CHECK(cudaGetLastError());
+    CUDA_CHECK(cudaMemcpy(output + hdr, d_out, total, cudaMemcpyDeviceToHost));
+
+    cudaFree(d_qdata);
+    cudaFree(d_ct);
+    cudaFree(d_bs);
+    cudaFree(d_bo);
+    cudaFree(d_out);
+
+    return output;
+}
+
+/* ================================================================== */
+/*  DOUBLE-PRECISION 3D TOPOLOGY COMPRESSION                           */
+/* ================================================================== */
+
+extern "C"
+unsigned char *szp_cuda_double_compress_topology_3d(
+    double *oriData, size_t *outSize, double absErrBound,
+    size_t nbEle, int blockSize,
+    CriticalPoint3D *critical_points, int critical_count,
+    int d1, int d2, int d3)
+{
+    if (absErrBound <= 0.0 || !oriData || nbEle == 0) {
+        *outSize = 0;
+        return NULL;
+    }
+
+    double inver_bound = 1.0 / absErrBound;
+    unsigned int bsz = (unsigned int)blockSize;
+    size_t num_blocks = (nbEle + bsz - 1) / bsz;
+
+    /* Device allocations */
+    double *d_data;
+    CUDA_CHECK(cudaMalloc(&d_data, nbEle * sizeof(double)));
+    CUDA_CHECK(cudaMemcpy(d_data, oriData, nbEle * sizeof(double),
+                          cudaMemcpyHostToDevice));
+
+    /* Build critical type array */
+    unsigned char *d_ct;
+    CUDA_CHECK(cudaMalloc(&d_ct, nbEle));
+    CUDA_CHECK(cudaMemset(d_ct, 0, nbEle));
+
+    if (critical_points && critical_count > 0) {
+        CriticalPoint3D *d_cp;
+        CUDA_CHECK(cudaMalloc(&d_cp, critical_count * sizeof(CriticalPoint3D)));
+        CUDA_CHECK(cudaMemcpy(d_cp, critical_points,
+                              critical_count * sizeof(CriticalPoint3D),
+                              cudaMemcpyHostToDevice));
+
+        int mtpb = 256;
+        int mgrid = (critical_count + mtpb - 1) / mtpb;
+        mark_critical_types_3d_kernel<<<mgrid, mtpb>>>(
+            d_cp, critical_count, d1, d2, d3, d_ct);
+        CUDA_CHECK(cudaGetLastError());
+        cudaFree(d_cp);
+    }
+
+    /* Saddle-aware quantization with double precision */
+    int *d_qdata;
+    CUDA_CHECK(cudaMalloc(&d_qdata, nbEle * sizeof(int)));
+    {
+        int qtpb = 256;
+        int qgrid = ((int)nbEle + qtpb - 1) / qtpb;
+        quantize_3d_kernel_double<<<qgrid, qtpb>>>(d_data, d_qdata, nbEle, inver_bound);
+        CUDA_CHECK(cudaGetLastError());
+    }
+
+    /* Fix saddles */
+    {
+        unsigned int total_interior = (unsigned int)(d1-2) * (unsigned int)(d2-2) * (unsigned int)(d3-2);
+        int stpb = 256;
+        int sgrid = ((int)total_interior + stpb - 1) / stpb;
+        for (int pass = 0; pass < 3; pass++) {
+            fix_saddles_3d_kernel<<<sgrid, stpb>>>(d_qdata, d_ct, d1, d2, d3, nbEle);
+            CUDA_CHECK(cudaGetLastError());
+        }
+    }
+
+    cudaFree(d_data);
+
+    /* Compress pre-quantized data (same kernels as float — they work on int) */
+    size_t *d_bs, *d_bo;
+    CUDA_CHECK(cudaMalloc(&d_bs, num_blocks * sizeof(size_t)));
+    CUDA_CHECK(cudaMalloc(&d_bo, num_blocks * sizeof(size_t)));
+
+    int tpb = 256;
+    int grid = ((int)num_blocks + tpb - 1) / tpb;
+    compress_topo_sizing_3d_preq<<<grid, tpb>>>(d_qdata, nbEle, bsz, d_bs);
+    CUDA_CHECK(cudaGetLastError());
+
+    thrust::device_ptr<size_t> sp(d_bs);
+    thrust::device_ptr<size_t> op(d_bo);
+    thrust::exclusive_scan(sp, sp + num_blocks, op);
+
+    size_t lsz, loff;
+    CUDA_CHECK(cudaMemcpy(&lsz, d_bs + num_blocks - 1, sizeof(size_t), cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(&loff, d_bo + num_blocks - 1, sizeof(size_t), cudaMemcpyDeviceToHost));
+    size_t total = loff + lsz;
+
+    size_t hdr = sizeof(size_t);
+    *outSize = hdr + total;
+    unsigned char *output = (unsigned char *)malloc(*outSize);
+    size_t zero = 0;
+    memcpy(output, &zero, sizeof(size_t));
+
     unsigned char *d_out;
     CUDA_CHECK(cudaMalloc(&d_out, total));
     compress_topo_packing_3d_preq<<<grid, tpb>>>(

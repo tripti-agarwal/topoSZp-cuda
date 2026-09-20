@@ -31,6 +31,12 @@ unsigned char *szp_cuda_float_compress_topology_3d(
     CriticalPoint3D *critical_points, int critical_count,
     int d1, int d2, int d3);
 
+unsigned char *szp_cuda_double_compress_topology_3d(
+    double *oriData, size_t *outSize, double absErrBound,
+    size_t nbEle, int blockSize,
+    CriticalPoint3D *critical_points, int critical_count,
+    int d1, int d2, int d3);
+
 #ifdef __cplusplus
 }
 #endif
