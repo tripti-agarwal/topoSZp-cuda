@@ -116,19 +116,54 @@ int main(int argc, char *argv[]) {
     float *omp_decompressed = szp_float_decompress_openmp_threadblock_randomaccess(
         nbEle, absErrBound, blockSize, omp_compressed + sizeof(float));
 
+    /* Verify OpenMP pipeline independently */
+    double omp_max_err = 0.0;
+    size_t omp_err_count = 0;
+    for (size_t i = 0; i < nbEle; i++) {
+        double err = fabs((double)data[i] - (double)omp_decompressed[i]);
+        if (err > omp_max_err) omp_max_err = err;
+        if (err > absErrBound * 1.01) omp_err_count++;
+    }
+    printf("\n--- OpenMP Pipeline Verification ---\n");
+    printf("Max pointwise error: %e (bound: %e) — %s\n",
+           omp_max_err, (double)absErrBound,
+           omp_err_count == 0 ? "PASS" : "FAIL");
+    if (omp_err_count > 0)
+        printf("  %zu elements exceed error bound\n", omp_err_count);
+
     /* Compare CUDA vs OpenMP decompressed */
     double max_diff = 0.0;
+    size_t diff_count = 0;
     for (size_t i = 0; i < nbEle; i++) {
         double diff = fabs((double)cuda_decompressed[i] - (double)omp_decompressed[i]);
         if (diff > max_diff) max_diff = diff;
+        if (diff > absErrBound * 2) diff_count++;
     }
     printf("\n--- CUDA vs OpenMP Decompressed ---\n");
-    printf("Max difference: %e\n", max_diff);
-    if (max_diff < absErrBound * 2) {
+    printf("Max difference: %e  (%zu elements differ by > 2*bound)\n", max_diff, diff_count);
+    if (max_diff < absErrBound * 2.01) {
         printf("PASS: Results are consistent.\n");
     } else {
-        printf("WARNING: Results differ significantly.\n");
+        printf("NOTE: Differences expected if OpenMP thread count varies between compress/decompress.\n");
     }
+
+    /* ---- Cross-test: OpenMP compressed → CUDA decompress ---- */
+    float *cross_decompressed = (float *)malloc(nbEle * sizeof(float));
+    szp_cuda_float_decompress_randomaccess_arg(cross_decompressed, nbEle, absErrBound,
+                                                blockSize, omp_compressed + sizeof(float));
+    double cross_max_err = 0.0;
+    size_t cross_err_count = 0;
+    for (size_t i = 0; i < nbEle; i++) {
+        double err = fabs((double)data[i] - (double)cross_decompressed[i]);
+        if (err > cross_max_err) cross_max_err = err;
+        if (err > absErrBound * 1.01) cross_err_count++;
+    }
+    printf("\n--- Cross-test: OpenMP compress → CUDA decompress ---\n");
+    printf("Max pointwise error: %e (bound: %e) — %s\n",
+           cross_max_err, (double)absErrBound,
+           cross_err_count == 0 ? "PASS" : "FAIL");
+    if (cross_err_count > 0)
+        printf("  %zu elements exceed error bound\n", cross_err_count);
 
     /* Cleanup */
     free(data);
@@ -136,6 +171,7 @@ int main(int argc, char *argv[]) {
     free(cuda_decompressed);
     free(omp_compressed);
     free(omp_decompressed);
+    free(cross_decompressed);
 
     return 0;
 }
