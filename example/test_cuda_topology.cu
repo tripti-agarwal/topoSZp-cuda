@@ -163,7 +163,7 @@ static void apply_stencils_clamped(float *data, const float *orig_decomp, const 
     }
 }
 
-/* Final enforcement with error bound clamping */
+/* Final enforcement with strict error bound clamping */
 static void restore_extrema_clamped(const int *types, float *data, const float *orig_decomp,
                                      int rows, int cols, float eps, float errBound) {
     float eps_soft = 0.25f * eps;
@@ -171,8 +171,9 @@ static void restore_extrema_clamped(const int *types, float *data, const float *
         for (int j = 1; j < cols-1; j++) {
             int idx = i*cols+j;
             float orig_val = orig_decomp[idx];
-            float max_allowed = orig_val + errBound;
-            float min_allowed = orig_val - errBound;
+            /* Strict clamping: stay within errBound of original decompressed value */
+            float max_allowed = orig_val + errBound * 0.999f;
+            float min_allowed = orig_val - errBound * 0.999f;
 
             if (types[idx] == 1) {
                 float n = data[(i-1)*cols+j], s = data[(i+1)*cols+j];
@@ -193,6 +194,134 @@ static void restore_extrema_clamped(const int *types, float *data, const float *
             }
         }
     }
+}
+
+/* ---- RBF saddle restoration (ported from OpenMP decompressor) ---- */
+
+static inline float clamp_saddle_center(float cand, float n, float s, float w, float e, float eps) {
+    float ns_max = fmaxf(n,s), we_max = fmaxf(w,e);
+    float ns_min = fminf(n,s), we_min = fminf(w,e);
+    float lo = fminf(ns_max, we_max) - 0.25f*eps;
+    float hi = fmaxf(ns_min, we_min) + 0.25f*eps;
+    if (lo > hi) { float mid = 0.5f*(lo+hi); lo = mid - 0.25f*eps; hi = mid + 0.25f*eps; }
+    if (cand < lo) cand = lo;
+    if (cand > hi) cand = hi;
+    return cand;
+}
+
+static inline int cls4(float c, float n, float s, float w, float e, float eps) {
+    if (c > n+eps && c > s+eps && c > w+eps && c > e+eps) return 1;
+    if (c < n-eps && c < s-eps && c < w-eps && c < e-eps) return 2;
+    int vh = (c > n+eps) && (c > s+eps), vl = (c < n-eps) && (c < s-eps);
+    int hh = (c > w+eps) && (c > e+eps), hl = (c < w-eps) && (c < e-eps);
+    if ((vh && hl) || (vl && hh)) return 3;
+    return 0;
+}
+
+static inline int cls_idx(const float *a, int r, int c, int i, int j, float eps) {
+    (void)r;
+    return cls4(a[i*c+j], a[(i-1)*c+j], a[(i+1)*c+j], a[i*c+(j-1)], a[i*c+(j+1)], eps);
+}
+
+static int rbf_restore_saddles(float *data, const int *types0, const float *orig_decomp,
+                                int rows, int cols, float eps, float errBound) {
+    /* Build lock mask around extrema */
+    size_t N = (size_t)rows * cols;
+    unsigned char *locks = (unsigned char *)calloc(N, 1);
+    for (int i = 1; i < rows-1; i++)
+        for (int j = 1; j < cols-1; j++) {
+            int idx = i*cols+j;
+            if (types0[idx] == 1 || types0[idx] == 2)
+                for (int di = -1; di <= 1; di++)
+                    for (int dj = -1; dj <= 1; dj++) {
+                        int ii = i+di, jj = j+dj;
+                        if (ii > 0 && ii < rows-1 && jj > 0 && jj < cols-1)
+                            locks[ii*cols+jj] = 1;
+                    }
+        }
+
+    /* Identify false-negative saddles */
+    unsigned char *fn_mask = (unsigned char *)calloc(N, 1);
+    int fn_count = 0;
+    for (int i = 1; i < rows-1; i++)
+        for (int j = 1; j < cols-1; j++) {
+            int idx = i*cols+j;
+            if (types0[idx] == 3 && classify_point(data, rows, cols, i, j) != 3) {
+                fn_mask[idx] = 1;
+                fn_count++;
+            }
+        }
+
+    if (fn_count == 0) { free(locks); free(fn_mask); return 0; }
+
+    /* Gaussian RBF kernel */
+    double sigma = 0.8;
+    int ksize = 3, r = ksize/2;
+    double s2 = sigma*sigma;
+    double w[9];
+    for (int di = -r; di <= r; di++)
+        for (int dj = -r; dj <= r; dj++)
+            w[(di+r)*ksize+(dj+r)] = exp(-((double)di*di + dj*dj) / (2.0*s2));
+
+    int restored = 0;
+    for (int i = 1; i < rows-1; i++) {
+        for (int j = 1; j < cols-1; j++) {
+            int idx = i*cols+j;
+            if (!fn_mask[idx] || types0[idx] != 3) continue;
+
+            /* RBF weighted average */
+            double num = 0, den = 0;
+            for (int di = -r; di <= r; di++) {
+                int ii = i+di; if (ii < 0 || ii >= rows) continue;
+                for (int dj = -r; dj <= r; dj++) {
+                    int jj = j+dj; if (jj < 0 || jj >= cols) continue;
+                    double ww = w[(di+r)*ksize+(dj+r)];
+                    if (locks[ii*cols+jj]) ww *= 0.4;
+                    num += ww * data[ii*cols+jj];
+                    den += ww;
+                }
+            }
+            if (den <= 0) continue;
+
+            float oldc = data[idx];
+            float orig_val = orig_decomp[idx];
+            float n = data[(i-1)*cols+j], s = data[(i+1)*cols+j];
+            float wv = data[i*cols+(j-1)], ev = data[i*cols+(j+1)];
+            float cand = (float)(num/den);
+            cand = clamp_saddle_center(cand, n, s, wv, ev, eps);
+
+            /* Strict error bound clamping */
+            float min_a = orig_val - errBound * 0.999f;
+            float max_a = orig_val + errBound * 0.999f;
+            if (cand < min_a) cand = min_a;
+            if (cand > max_a) cand = max_a;
+
+            /* Iterative alpha reduction with validation */
+            float step = cand - oldc, alpha = 1.0f;
+            for (int it = 0; it < 10; it++) {
+                float trial = oldc + alpha*step;
+                if (trial < min_a) trial = min_a;
+                if (trial > max_a) trial = max_a;
+
+                float saved = data[idx]; data[idx] = trial;
+                int bad = 0;
+                /* Check we don't create new CPs at regular points */
+                if (types0[idx] == 0 && cls_idx(data,rows,cols,i,j,eps) != 0) bad = 1;
+                if (!bad && i-1 >= 1 && types0[(i-1)*cols+j] == 0 && cls_idx(data,rows,cols,i-1,j,eps) != 0) bad = 1;
+                if (!bad && i+1 < rows-1 && types0[(i+1)*cols+j] == 0 && cls_idx(data,rows,cols,i+1,j,eps) != 0) bad = 1;
+                if (!bad && j-1 >= 1 && types0[i*cols+(j-1)] == 0 && cls_idx(data,rows,cols,i,j-1,eps) != 0) bad = 1;
+                if (!bad && j+1 < cols-1 && types0[i*cols+(j+1)] == 0 && cls_idx(data,rows,cols,i,j+1,eps) != 0) bad = 1;
+                if (!bad && cls_idx(data,rows,cols,i,j,eps) != 3) bad = 1;
+
+                if (bad) { data[idx] = saved; alpha *= 0.5f; }
+                else { restored++; break; }
+            }
+        }
+    }
+
+    free(locks);
+    free(fn_mask);
+    return restored;
 }
 
 int main(int argc, char *argv[]) {
@@ -379,6 +508,11 @@ int main(int argc, char *argv[]) {
     /* Final enforcement with error bound clamping */
     float eps = fmaxf(1e-6f, 0.1f * absErrBound);
     restore_extrema_clamped(FN, decompressed, orig_decomp, rows, cols, eps, absErrBound);
+
+    /* RBF saddle restoration — restore lost saddles via Gaussian smoothing */
+    int restored_saddles = rbf_restore_saddles(decompressed, FN, orig_decomp,
+                                               rows, cols, eps, absErrBound);
+    printf("  RBF restored %d saddles\n", restored_saddles);
 
     double t7c = get_time_ms();
     printf("  Post-processing done in %.2f ms\n\n", t7c - t7b);
