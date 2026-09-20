@@ -187,6 +187,51 @@ host_fixed_bits_byte_length(unsigned int totalElements, unsigned int bit_count)
 /* ================================================================== */
 
 /**
+ * Try to walk ALL blocks for a candidate nbThreads.
+ * Returns 1 if the walk succeeds (no out-of-bounds), 0 otherwise.
+ */
+static int
+validate_nbThreads_randomaccess(const unsigned char *cmpBytes,
+                                 size_t nbEle, int blockSize,
+                                 unsigned int try_nt,
+                                 size_t bufferLimit)
+{
+    const size_t *offs = (const size_t *)cmpBytes;
+    size_t hdr_size = try_nt * sizeof(size_t);
+    const unsigned char *rcp = cmpBytes + hdr_size;
+    const unsigned char *bufEnd = cmpBytes + bufferLimit;
+
+    size_t threadblocksize = nbEle / try_nt;
+
+    for (unsigned int tid = 0; tid < try_nt; tid++) {
+        size_t lo = tid * threadblocksize;
+        size_t hi = (tid == try_nt - 1) ? nbEle : (tid + 1) * threadblocksize;
+
+        const unsigned char *ptr = rcp + offs[tid];
+        if (ptr >= bufEnd) return 0;
+
+        for (size_t i = lo; i < hi; i += blockSize) {
+            size_t cur_bs = ((i + blockSize) > hi) ? (hi - i) : (size_t)blockSize;
+            if (ptr + sizeof(int) > bufEnd) return 0;
+            ptr += sizeof(int); /* anchor */
+            if (cur_bs > 1) {
+                if (ptr >= bufEnd) return 0;
+                unsigned int bc = ptr[0]; ptr++;
+                if (bc > 32) return 0; /* bit_count should be small */
+                if (bc != 0) {
+                    unsigned int n = (unsigned int)(cur_bs - 1);
+                    unsigned int sb = (n + 7) / 8;
+                    ptr += sb;
+                    ptr += host_fixed_bits_byte_length(n, bc);
+                    if (ptr > bufEnd) return 0;
+                }
+            }
+        }
+    }
+    return 1;
+}
+
+/**
  * Scan random-access compressed data to build per-compression-block
  * byte offset table.
  *
@@ -194,6 +239,7 @@ host_fixed_bits_byte_length(unsigned int totalElements, unsigned int bit_count)
  * @param nbEle           total number of elements
  * @param blockSize       compression block size
  * @param[out] numBlocks  total number of compression blocks
+ * @param[out] outNbThreads  detected number of OMP threads
  * @return  host-allocated array of byte offsets (relative to rcp)
  *          for each compression block, caller must free()
  */
@@ -203,70 +249,38 @@ scan_randomaccess_block_offsets(const unsigned char *cmpBytes,
                                 size_t *numBlocks,
                                 unsigned int *outNbThreads)
 {
-    /*
-     * Determine nbThreads from the offset table.
-     * The compressor writes nbThreads size_t offsets at the beginning.
-     * We need to figure out nbThreads.  The offsets are monotonically
-     * increasing, and offsets[0] is always 0.  We can infer nbThreads
-     * by looking at the pattern.
-     *
-     * Strategy: try nbThreads = 1,2,4,8,16,32,... and check if the
-     * implied rcp + offsets[0] makes sense.
-     *
-     * Simpler: we know the number of compression blocks, and from the
-     * offsets we can reconstruct.  But the cleanest way: we just need
-     * to know where rcp starts.  offsets[0] should be 0 (first thread
-     * starts at rcp+0).  The number of offset entries equals nbThreads.
-     *
-     * We can try powers of 2 and verify: cast cmpBytes as size_t*,
-     * check if entry 0 == 0.  If so, that's one valid nbThreads.
-     * Then check if entry 1 could be a valid byte offset (< total size).
-     *
-     * Best approach: try nbThreads from 1 up, validate by checking
-     * that all offsets are monotonically non-decreasing and < total
-     * data size.  Use smallest valid nbThreads where we can parse
-     * all blocks.  In practice, just try common values.
-     */
-
-    /* Try to detect nbThreads: offsets[0] should be 0. */
     const size_t *offs = (const size_t *)cmpBytes;
 
-    /* Binary search for nbThreads: we know offsets[0]==0 always.
-     * Walk up checking when offs[k] starts looking like data.
-     * The first offset entry that is NOT 0 (for k>0) or that
-     * exceeds a reasonable bound tells us where the offset table ends.
-     *
-     * Most robust: try nbThreads = 1..128 and verify:
-     *   - offs[0] == 0
-     *   - all offs[i] < total compressed size
-     *   - we can walk through all blocks without going out of bounds
-     */
-    unsigned int nbThreads = 0;
-
-    /* Estimate total compressed data size (upper bound) */
+    /* Upper bound on total compressed size */
     size_t maxCmpSize = sizeof(float) * nbEle + sizeof(float);
 
-    for (unsigned int try_nt = 1; try_nt <= 256; try_nt++) {
-        if (offs[0] != 0) break;  /* offsets[0] must be 0 */
+    /*
+     * Detect nbThreads: try candidates from 1 upward.
+     * For each candidate, check offset table validity AND
+     * verify we can walk ALL blocks without going out of bounds.
+     * Accept the FIRST (smallest) valid candidate.
+     */
+    unsigned int nbThreads = 1; /* default */
 
-        /* Check all offsets are within bounds */
-        int valid = 1;
-        for (unsigned int k = 1; k < try_nt; k++) {
-            if (offs[k] > maxCmpSize) { valid = 0; break; }
-            if (offs[k] < offs[k-1]) { valid = 0; break; }
-        }
-        if (!valid) break;
+    if (offs[0] == 0) {
+        for (unsigned int try_nt = 1; try_nt <= 128; try_nt++) {
+            /* Check basic offset validity */
+            int valid = 1;
+            for (unsigned int k = 1; k < try_nt; k++) {
+                if (offs[k] > maxCmpSize || offs[k] < offs[k-1]) {
+                    valid = 0; break;
+                }
+            }
+            if (!valid) break;
 
-        /* Verify we can parse at least the first block after the header */
-        size_t hdr_size = try_nt * sizeof(size_t);
-        /* Try to parse first block: 4 bytes (int32) + 1 byte (bit_count) */
-        if (hdr_size + 5 <= maxCmpSize) {
-            nbThreads = try_nt;
-            /* Keep going to find the largest valid nbThreads */
+            /* Full validation: walk all blocks */
+            if (validate_nbThreads_randomaccess(cmpBytes, nbEle, blockSize,
+                                                 try_nt, maxCmpSize)) {
+                nbThreads = try_nt;
+                break;  /* Accept first valid candidate */
+            }
         }
     }
-    /* Fallback: if nothing worked, assume 1 thread */
-    if (nbThreads == 0) nbThreads = 1;
 
     *outNbThreads = nbThreads;
 
@@ -312,13 +326,11 @@ scan_randomaccess_block_offsets(const unsigned char *cmpBytes,
                 if (bit_count == 0) {
                     /* no sign/magnitude data */
                 } else {
-                    /* sign bytes */
-                    unsigned int sign_bytes = (unsigned int)((current_block_size - 2) / 8 + 1);
+                    unsigned int n = (unsigned int)(current_block_size - 1);
+                    unsigned int sign_bytes = (n + 7) / 8;
                     ptr += sign_bytes;
 
-                    /* magnitude bytes */
-                    unsigned int mag_bytes = host_fixed_bits_byte_length(
-                        (unsigned int)(current_block_size - 1), bit_count);
+                    unsigned int mag_bytes = host_fixed_bits_byte_length(n, bit_count);
                     ptr += mag_bytes;
                 }
             }
@@ -779,38 +791,36 @@ cuda_decompress_randomaccess_impl(T *hostOut, size_t nbEle,
         cmpBytes, nbEle, blockSize, &numBlocks, &nbOMPThreads);
     if (!h_block_offsets) return;
 
-    /* 2. Compute total compressed size */
+    /* 2. Compute total compressed size by walking ALL threads' blocks */
     const size_t *offs = (const size_t *)cmpBytes;
     size_t hdr_size = nbOMPThreads * sizeof(size_t);
-    /* The total compressed data size after header */
-    /* We need to figure out the end.  The last OMP thread's data ends
-     * at the end of the compressed buffer.  We can compute this by
-     * summing up all block sizes, or just use the maximum offset + data. */
-    /* Conservative: use sizeof(T)*nbEle as upper bound */
     size_t cmpTotalSize = hdr_size;
-    /* Walk through last thread to find end */
     {
-        size_t lastOff = offs[nbOMPThreads - 1];
-        /* Walk blocks of last thread to find end */
         size_t threadblocksize = nbEle / nbOMPThreads;
-        size_t lo = (nbOMPThreads - 1) * threadblocksize;
-        size_t hi = nbEle;
         const unsigned char *rcp = cmpBytes + hdr_size;
-        const unsigned char *ptr = rcp + lastOff;
+        const unsigned char *maxPtr = rcp;
 
-        for (size_t i = lo; i < hi; i += blockSize) {
-            size_t cur_bs = ((i + blockSize) > hi) ? (hi - i) : (size_t)blockSize;
-            ptr += sizeof(int);
-            if (cur_bs > 1) {
-                unsigned int bc = ptr[0]; ptr++;
-                if (bc != 0) {
-                    unsigned int sb = (unsigned int)((cur_bs - 2) / 8 + 1);
-                    ptr += sb;
-                    ptr += host_fixed_bits_byte_length((unsigned int)(cur_bs - 1), bc);
+        for (unsigned int tid = 0; tid < nbOMPThreads; tid++) {
+            size_t lo = tid * threadblocksize;
+            size_t hi = (tid == nbOMPThreads - 1) ? nbEle : (tid + 1) * threadblocksize;
+            const unsigned char *ptr = rcp + offs[tid];
+
+            for (size_t i = lo; i < hi; i += blockSize) {
+                size_t cur_bs = ((i + blockSize) > hi) ? (hi - i) : (size_t)blockSize;
+                ptr += sizeof(int); /* anchor */
+                if (cur_bs > 1) {
+                    unsigned int bc = ptr[0]; ptr++;
+                    if (bc != 0) {
+                        unsigned int n = (unsigned int)(cur_bs - 1);
+                        unsigned int sb = (n + 7) / 8;
+                        ptr += sb;
+                        ptr += host_fixed_bits_byte_length(n, bc);
+                    }
                 }
             }
+            if (ptr > maxPtr) maxPtr = ptr;
         }
-        cmpTotalSize = (size_t)(ptr - cmpBytes);
+        cmpTotalSize = (size_t)(maxPtr - cmpBytes);
     }
 
     /* 3. Allocate device memory */
@@ -884,9 +894,10 @@ cuda_decompress_threadblock_impl(T *hostOut, size_t nbEle,
                     size_t cur_bs = ((i + blockSize) > hi) ? (hi - i) : (size_t)blockSize;
                     unsigned int bc = ptr[0]; ptr++;
                     if (bc != 0) {
-                        unsigned int sb = (unsigned int)((cur_bs - 1) / 8 + 1);
+                        unsigned int n = (unsigned int)cur_bs;
+                        unsigned int sb = (n + 7) / 8;
                         ptr += sb;
-                        ptr += host_fixed_bits_byte_length((unsigned int)cur_bs, bc);
+                        ptr += host_fixed_bits_byte_length(n, bc);
                     }
                 }
             }
