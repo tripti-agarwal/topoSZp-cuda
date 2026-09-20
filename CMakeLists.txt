@@ -7,6 +7,18 @@ project (szp
   LANGUAGES C CXX
   )
 
+# Optional CUDA support
+option(ENABLE_CUDA "Enable CUDA GPU acceleration" OFF)
+if(ENABLE_CUDA)
+  enable_language(CUDA)
+  find_package(CUDAToolkit REQUIRED)
+  set(CMAKE_CUDA_STANDARD 14)
+  set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+  # Allow __host__ __device__ lambdas for Thrust
+  set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-extended-lambda")
+  message(STATUS "CUDA support enabled (arch: ${CMAKE_CUDA_ARCHITECTURES})")
+endif()
+
 #correct was to set a default build type
 # https://blog.kitware.com/cmake-and-the-default-build-type/
 set(default_build_type "Release")
@@ -70,3 +82,36 @@ install(FILES
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SZp
 )
 install(DIRECTORY SZp/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/SZp)
+
+# ---- CUDA library and example targets ----
+if(ENABLE_CUDA)
+  add_library(SZp_cuda
+      SZp/src/szp_cuda_compress.cu
+      SZp/src/szp_cuda_decompress.cu
+      SZp/src/szp_cuda_topology.cu
+  )
+  target_compile_features(SZp_cuda PUBLIC cxx_std_14)
+  target_link_libraries(SZp_cuda PUBLIC CUDA::cudart)
+  target_include_directories(SZp_cuda
+      PUBLIC
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/SZp/include>
+      $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SZp>
+  )
+  # Set CUDA architectures (default to common ones if not specified)
+  if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+    set_target_properties(SZp_cuda PROPERTIES CUDA_ARCHITECTURES "60;70;75;80;86;89;90")
+  endif()
+
+  install(TARGETS SZp_cuda EXPORT SZpTargets)
+
+  # Example/test programs
+  add_executable(test_cuda_compress example/test_cuda_compress.cu)
+  target_link_libraries(test_cuda_compress SZp SZp_cuda OpenMP::OpenMP_CXX)
+  target_include_directories(test_cuda_compress PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/SZp/include)
+
+  add_executable(test_cuda_decompress example/test_cuda_decompress.cu)
+  target_link_libraries(test_cuda_decompress SZp SZp_cuda OpenMP::OpenMP_CXX)
+  target_include_directories(test_cuda_decompress PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/SZp/include)
+endif()
