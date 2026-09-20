@@ -23,6 +23,7 @@
 #include "szp.h"
 #include "szp_cuda_compress.cuh"
 #include "szp_cuda_decompress.cuh"
+#include "szp_errbound.h"
 
 static double get_time_ms() {
     struct timeval tv;
@@ -32,18 +33,15 @@ static double get_time_ms() {
 
 int main(int argc, char *argv[]) {
     if (argc < 5) {
-        fprintf(stderr, "Usage: %s <input_file> <nbEle> <absErrBound> <blockSize>\n", argv[0]);
+        fprintf(stderr, "Usage: %s <input_file> <nbEle> <errBound> <blockSize>\n", argv[0]);
+        fprintf(stderr, "  errBound: 1e-3 for absolute, rel:1e-4 for relative (fraction of data range)\n");
         return 1;
     }
 
     const char *input_file = argv[1];
     size_t nbEle = (size_t)atol(argv[2]);
-    float absErrBound = (float)atof(argv[3]);
+    const char *eb_arg = argv[3];
     int blockSize = atoi(argv[4]);
-
-    printf("=== TopoSZp CUDA Compression Test ===\n");
-    printf("Input: %s  (%zu elements)\n", input_file, nbEle);
-    printf("Error bound: %e    Block size: %d\n", absErrBound, blockSize);
 
     /* Read input data */
     float *data = (float *)malloc(nbEle * sizeof(float));
@@ -54,6 +52,24 @@ int main(int argc, char *argv[]) {
     if (nread != nbEle) {
         fprintf(stderr, "Read only %zu of %zu elements\n", nread, nbEle);
         return 1;
+    }
+
+    /* Parse error bound (absolute or relative) */
+    float absErrBound;
+    const char *eb_mode;
+    if (szp_parse_errbound_float(eb_arg, data, nbEle, &absErrBound, &eb_mode) != 0) {
+        fprintf(stderr, "Invalid error bound: %s\n", eb_arg);
+        return 1;
+    }
+
+    printf("=== TopoSZp CUDA Compression Test ===\n");
+    printf("Input: %s  (%zu elements)\n", input_file, nbEle);
+    if (strcmp(eb_mode, "REL") == 0) {
+        float range;
+        szp_rel_to_abs_float(data, nbEle, (float)atof(eb_arg+4), &absErrBound, &range);
+        printf("Error bound: %s → abs=%e (range=%e)    Block size: %d\n", eb_arg, absErrBound, range, blockSize);
+    } else {
+        printf("Error bound: %e    Block size: %d\n", absErrBound, blockSize);
     }
 
     /* Warm up CUDA context (first cudaMalloc initializes the driver) */
