@@ -34,9 +34,18 @@
  *      the point gets its stored code and no neighbour that had its stored
  *      code loses it. Passes repeat (colour classes as in szp_topo_restore.h)
  *      until nothing changes or 8 rounds.
- *  Every changed value stays within eb of its dequantized value (error <= 2 eb).
- *  Unlike the axis mode, false positives present after dequantization (from
- *  ties) are not guaranteed to disappear; the stats report how many remain.
+ *   3. Exceptions (guarantee): the decoder is deterministic (same result on
+ *      CPU and GPU, any thread count), so the compressor runs the same
+ *      decoding and restoration and finds every point that would end up with
+ *      a false positive, a false type, or a lost extremum. It stores the
+ *      original value of such a point; if the point is still wrong, it also
+ *      stores the neighbours whose order relative to it differs from the
+ *      original (a point whose relations to all its neighbours are as in the
+ *      original has exactly its original type). This
+ *      repeats until no point is wrong, and the decoder applies the stored
+ *      values last (szp_pl_apply_exceptions_float).
+ *  Result: no false positives, no false types, all extrema kept; saddles may
+ *  be lost (FN). Every value stays within 2 eb (exceptions are exact).
  */
 #ifndef _SZP_PL_TOPOLOGY_H
 #define _SZP_PL_TOPOLOGY_H
@@ -50,11 +59,14 @@
 
 /* File container of the example programs. v1 (axis mode, unchanged):
      [topology][sort positions][topology size][sort size]
-   v2 (written in PL mode):
-     [topology][sort positions][saddle kinds][topology size][sort size]
-     [kinds size][flags][magic]      (sizes, flags and magic are size_t)
-   flags bit 0 = PL critical points. */
+   v3 (written in PL mode):
+     [topology][sort positions][saddle kinds][exceptions][topology size]
+     [sort size][kinds size][exceptions size][flags][magic]
+                                         (sizes, flags and magic are size_t)
+   flags bit 0 = PL critical points. (v2 = v3 without the exceptions chunk
+   and its size; still read.) */
 #define SZP_CONTAINER_MAGIC_V2 0x325654504F545A53ULL   /* "SZTOPTV2" */
+#define SZP_CONTAINER_MAGIC_V3 0x335654504F545A53ULL   /* "SZTOPTV3" */
 #define SZP_CONTAINER_FLAG_PL  1ULL
 
 enum { SZP_PL_REG = 0, SZP_PL_MAX = 1, SZP_PL_MIN = 2, SZP_PL_SAD1 = 3, SZP_PL_SAD2 = 4, SZP_PL_SADX = 5 };
@@ -89,6 +101,28 @@ CriticalPoint *szp_pl_critical_points_2d(const signed char *codes, const float *
                                          int rows, int cols, float errBound, size_t *count);
 CriticalPoint3D *szp_pl_critical_points_3d(const signed char *codes, const float *data,
                                            int d1, int d2, int d3, float errBound, size_t *count);
+
+/**
+ * Compressor side of the guarantee. orig: original data; field: the decoder's
+ * output before exceptions (szp_topo_restore_float_pl on the decoded stream),
+ * updated in place to the final output; codes: stored PL codes (0..5).
+ * Returns the packed exception list (malloc'ed; [count (size_t)][LEB128 index
+ * deltas][float values]), *outSize its size, *count the number of points.
+ */
+unsigned char *szp_pl_exceptions_float(const float *orig, float *field, const int *codes,
+                                       int nd, int d1, int d2, int d3,
+                                       size_t *outSize, size_t *count);
+
+/** Decoder side: write the stored values. Returns the number of points, or -1 if malformed. */
+long long szp_pl_apply_exceptions_float(float *field, size_t n, const unsigned char *buf, size_t size);
+
+/**
+ * Points of field whose PL code violates the guarantee against the stored
+ * codes: false positives, false types, lost extrema (lost saddles are not
+ * counted). Each pointer may be NULL.
+ */
+void szp_pl_violations(const float *field, const int *codes, int nd, int d1, int d2, int d3,
+                       size_t *fp, size_t *ft, size_t *ext_lost, size_t *sad_lost);
 
 /**
  * CPU restoration in PL mode. codes: stored PL code per point (0..5);

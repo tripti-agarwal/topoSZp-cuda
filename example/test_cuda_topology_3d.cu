@@ -328,6 +328,25 @@ int main(int argc, char *argv[])
         printf("  PL fixes: saddles %zu, other %zu, %zu rounds; false positives %zu -> %zu, false types %zu -> %zu\n",
                rs.saddles_by_stencil, rs.other_fixes, rs.rounds, rs.fp_before, rs.fp_after,
                rs.ft_before, rs.ft_after);
+        /* Compressor side of the guarantee: the same restoration on the CPU
+           (must equal the GPU result), then the exact values it stores. */
+        float *sim = (float *)malloc(nbEle * sizeof(float));
+        memcpy(sim, orig_decomp, nbEle * sizeof(float));
+        szp_topo_restore_stats cs;
+        szp_topo_restore_float_pl(sim, codes, sort_positions, sort_positions ? extrema_count : 0,
+                                  3, d1, d2, d3, absErrBound, &cs);
+        int same = memcmp(sim, decompressed, nbEle * sizeof(float)) == 0;
+        printf("  CPU and GPU restored fields: %s\n", same ? "IDENTICAL" : "DIFFER");
+        size_t exc_size = 0, exc_count = 0;
+        unsigned char *exc = szp_pl_exceptions_float(data, sim, codes, 3, d1, d2, d3, &exc_size, &exc_count);
+        long long applied = szp_pl_apply_exceptions_float(decompressed, nbEle, exc, exc_size);
+        printf("  PL guarantee: %zu points stored exactly (%zu bytes, %.2f%% of points), applied %lld; "
+               "ratio with them %.2fx\n", exc_count, exc_size, 100.0 * exc_count / nbEle, applied,
+               (double)(nbEle * sizeof(float)) / (topo_outSize + sort_outSize + kinds_size + exc_size));
+        if (memcmp(sim, decompressed, nbEle * sizeof(float)) != 0)
+            printf("  ERROR: GPU output with exceptions differs from the compressor's simulation\n");
+        free(sim);
+        free(exc);
         free(codes);
         free(kinds);
     } else {
@@ -577,11 +596,11 @@ int main(int argc, char *argv[])
 
     /* Exit code: 0 only if every guarantee holds. Lost saddles are reported
        above but are not a failure (the method does not guarantee them). In
-       PL mode false positives/types are reported, not guaranteed. */
-    int fail_eb = e2 != 0, fail_fp = !g_pl && new_cps != 0, fail_ft = !g_pl && changed != 0;
+       PL mode FP/FT are checked with the PL codes (saddle kinds included). */
+    int fail_eb = e2 != 0, fail_fp = g_pl ? pl_fp != 0 : new_cps != 0, fail_ft = g_pl ? pl_ft != 0 : changed != 0;
     int fail_ext = (l_max + l_min) != 0, fail_fnarr = fn_match != nbEle;
     int overall = (fail_eb || fail_fp || fail_ft || fail_ext || fail_fnarr) ? 1 : 0;
-    printf("Result: %s%s%s%s%s%s\n", overall ? "FAIL:" : g_pl ? "PASS (PL mode: error <= 2 eb, all extrema kept)"
+    printf("Result: %s%s%s%s%s%s\n", overall ? "FAIL:" : g_pl ? "PASS (PL mode: error <= 2 eb, no FP, no FT, all extrema kept)"
                                                        : "PASS (error <= 2 eb, no FP, no FT, all extrema kept)",
            fail_eb ? " error>2eb" : "", fail_fp ? " false-positives" : "", fail_ft ? " false-types" : "",
            fail_ext ? " extrema-lost" : "", fail_fnarr ? " type-array-mismatch" : "");

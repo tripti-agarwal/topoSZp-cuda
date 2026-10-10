@@ -10,6 +10,7 @@
 #include "szp.h"
 #include "szp_topology_3d.h"
 #include "szp_pl_topology.h"
+#include "szpd_float.h"
 #include <string.h>
 #ifdef _OPENMP
 #include "omp.h"
@@ -139,12 +140,53 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
+  // PL mode guarantee (szp_pl_topology.h, step 3): decode our own streams
+  // exactly as the decoder will, run the same restoration, and store the
+  // original values of the points that would still be false positives,
+  // false types or lost extrema.
+  unsigned char *bytes_exc = NULL;
+  size_t exc_size = 0, exc_count = 0;
+  if (pl) {
+    const size_t pad = 10240;
+    unsigned char *padded = (unsigned char *)calloc(outSize + pad, 1);
+    memcpy(padded, bytes_topology, outSize);
+    float *dec = NULL;
+    int *codes = NULL;
+    szp_float_decompress_openmp_threadblock_randomaccess_topology_preserved_sized(
+        &dec, nbEle, errBound, blockSize, padded, outSize, &codes);
+    free(padded);
+    size_t ext_n = 0;
+    int *ranks = NULL;
+    if (sort_positions_size >= sizeof(size_t)) {
+      memcpy(&ext_n, bytes_sort_positions, sizeof(size_t));
+      ranks = szp_decompress_sort_positions_sized(bytes_sort_positions + sizeof(size_t),
+                                                  sort_positions_size - sizeof(size_t), ext_n, blockSize);
+      if (!ranks) ext_n = 0;
+    }
+    if (!dec || !codes || (depth > 0 && szp_pl_apply_saddle_kinds(codes, nbEle, bytes_kinds, kinds_size) != 0)) {
+      printf("Error: PL mode could not decode its own stream\n");
+      exit(1);
+    }
+    szp_topo_restore_stats rs;
+    szp_topo_restore_float_pl(dec, codes, ranks, ext_n, depth > 0 ? 3 : 2, rows, cols, depth, errBound, &rs);
+    bytes_exc = szp_pl_exceptions_float(data, dec, codes, depth > 0 ? 3 : 2, rows, cols, depth,
+                                        &exc_size, &exc_count);
+    size_t fp = 1, ft = 1, el = 1, sl = 0;
+    szp_pl_violations(dec, codes, depth > 0 ? 3 : 2, rows, cols, depth, &fp, &ft, &el, &sl);
+    printf("PL guarantee: %zu points stored exactly (%zu bytes, %.2f%% of points); "
+           "before: false positives %zu, false types %zu, extrema lost %zu; after: %zu, %zu, %zu; saddles lost %zu\n",
+           exc_count, exc_size, 100.0 * exc_count / nbEle, rs.fp_after, rs.ft_after, rs.extrema_lost_after,
+           fp, ft, el, sl);
+    if (fp || ft || el || !bytes_exc) { printf("Error: PL guarantee not reached\n"); exit(1); }
+    free(dec); free(codes); free(ranks);
+  }
+
   // Append sort positions to topology bytes + footer with sizes
   // Footer format: [topology_size (size_t)] [sort_positions_size (size_t)];
   // in PL mode the v2 container of szp_pl_topology.h (adds saddle kinds,
   // flags and a magic number).
-  size_t footer_size = pl ? 5 * sizeof(size_t) : 2 * sizeof(size_t);
-  size_t total_size = outSize + sort_positions_size + kinds_size + footer_size;
+  size_t footer_size = pl ? 6 * sizeof(size_t) : 2 * sizeof(size_t);
+  size_t total_size = outSize + sort_positions_size + kinds_size + exc_size + footer_size;
   if (total_size < outSize || total_size < sort_positions_size) {
     printf("Error: Integer overflow in size calculation!\n");
     free(critical_points);
@@ -163,8 +205,10 @@ int main(int argc, char *argv[])
     if (pl) {
       if (kinds_size) memcpy(foot, bytes_kinds, kinds_size);
       foot += kinds_size;
-      size_t f[5] = {outSize, sort_positions_size, kinds_size, (size_t)SZP_CONTAINER_FLAG_PL,
-                     (size_t)SZP_CONTAINER_MAGIC_V2};
+      memcpy(foot, bytes_exc, exc_size);
+      foot += exc_size;
+      size_t f[6] = {outSize, sort_positions_size, kinds_size, exc_size, (size_t)SZP_CONTAINER_FLAG_PL,
+                     (size_t)SZP_CONTAINER_MAGIC_V3};
       memcpy(foot, f, sizeof(f));
     } else {
       // Footer: write topology_size and sort_positions_size at the very end
@@ -205,6 +249,7 @@ int main(int argc, char *argv[])
   free(data);
   free(pl_codes);
   free(bytes_kinds);
+  free(bytes_exc);
   if (bytes_topology) {
     free(bytes_topology);  // This points to combined_bytes (if allocation succeeded) or original bytes_topology
   }

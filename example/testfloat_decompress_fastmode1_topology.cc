@@ -84,12 +84,22 @@ int main(int argc, char *argv[])
     // compressor writes [topology][sort positions][footer], so the sizes
     // must add up to the file size exactly; otherwise the whole file is
     // treated as the topology stream (old format).
-    // In PL mode the compressor writes the v2 container (szp_pl_topology.h):
-    // [topology][sort positions][saddle kinds][sizes x3][flags][magic].
-    size_t topology_size = byteLength, sort_positions_size = 0, kinds_size = 0;
+    // In PL mode the compressor writes the v3 container (szp_pl_topology.h):
+    // [topology][sort positions][saddle kinds][exceptions][sizes x4][flags][magic]
+    // (v2: no exceptions chunk).
+    size_t topology_size = byteLength, sort_positions_size = 0, kinds_size = 0, exc_size = 0;
     int pl = 0;
     const size_t footer_size = 2 * sizeof(size_t);
-    if (byteLength >= 5 * sizeof(size_t)) {
+    if (byteLength >= 6 * sizeof(size_t)) {
+        size_t f[6];
+        memcpy(f, bytes + byteLength - sizeof(f), sizeof(f));
+        if (f[5] == (size_t)SZP_CONTAINER_MAGIC_V3 && f[0] > 0 &&
+            f[0] + f[1] + f[2] + f[3] + sizeof(f) == byteLength) {
+            topology_size = f[0]; sort_positions_size = f[1]; kinds_size = f[2]; exc_size = f[3];
+            pl = (f[4] & SZP_CONTAINER_FLAG_PL) != 0;
+        }
+    }
+    if (topology_size == byteLength && byteLength >= 5 * sizeof(size_t)) {
         size_t f[5];
         memcpy(f, bytes + byteLength - sizeof(f), sizeof(f));
         if (f[4] == (size_t)SZP_CONTAINER_MAGIC_V2 && f[0] > 0 &&
@@ -157,6 +167,13 @@ int main(int argc, char *argv[])
             printf("Warning: saddle kinds missing or inconsistent; 3D saddles are restored as 1-saddles\n");
         szp_topo_restore_float_pl(data, critical_points_types, sort_positions, extrema_count,
                                   depth > 0 ? 3 : 2, rows, cols, depth, errBound, &rs);
+        // Stored exact values (the compressor's guarantee step), applied last.
+        if (exc_size) {
+            long long m = szp_pl_apply_exceptions_float(
+                data, nbEle, bytes + topology_size + sort_positions_size + kinds_size, exc_size);
+            if (m < 0) printf("Warning: exception list is malformed; not applied\n");
+            else printf("PL guarantee: %lld points set to their stored exact values\n", m);
+        }
     } else if (depth > 0)
         szp_topo_restore_float_3d(data, critical_points_types, sort_positions, extrema_count,
                                   rows, cols, depth, errBound, &rs);

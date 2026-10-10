@@ -304,10 +304,28 @@ int main(int argc, char *argv[]) {
                                                     rows, cols, absErrBound, &rs);
     if (rrc != 0)
         printf("  ERROR: GPU topology restoration failed\n");
-    if (g_pl)
+    unsigned char *pl_exc = NULL;   /* PL mode: exact values (guarantee) */
+    size_t pl_exc_size = 0;
+    if (g_pl) {
         printf("  PL fixes: saddles %zu, other %zu, %zu rounds; false positives %zu -> %zu, false types %zu -> %zu\n",
                rs.saddles_by_stencil, rs.other_fixes, rs.rounds, rs.fp_before, rs.fp_after,
                rs.ft_before, rs.ft_after);
+        /* Compressor side of the guarantee: the same restoration on the CPU,
+           then the exact values it stores; the decoder applies them last. */
+        float *sim = (float *)malloc(nbEle * sizeof(float));
+        memcpy(sim, orig_decomp, nbEle * sizeof(float));
+        szp_topo_restore_stats cs;
+        szp_topo_restore_float_pl(sim, FN, sort_positions, sort_positions ? extrema_count : 0,
+                                  2, rows, cols, 0, absErrBound, &cs);
+        size_t exc_count = 0;
+        pl_exc = szp_pl_exceptions_float(data, sim, FN, 2, rows, cols, 0, &pl_exc_size, &exc_count);
+        long long applied = szp_pl_apply_exceptions_float(decompressed, nbEle, pl_exc, pl_exc_size);
+        printf("  PL guarantee: %zu points stored exactly (%zu bytes, %.2f%% of points), applied %lld\n",
+               exc_count, pl_exc_size, 100.0 * exc_count / nbEle, applied);
+        if (memcmp(sim, decompressed, nbEle * sizeof(float)) != 0)
+            printf("  ERROR: GPU output with exceptions differs from the compressor's simulation\n");
+        free(sim);
+    }
     printf("  Extrema lost %zu -> %zu of %zu; saddles lost %zu -> %zu of %zu "
            "(stencil %zu, RBF %zu)\n",
            rs.extrema_lost_before, rs.extrema_lost_after, rs.extrema,
@@ -757,10 +775,12 @@ int main(int argc, char *argv[]) {
 
         /* Library restoration on the CPU: same algorithm as the GPU call above. */
         szp_topo_restore_stats ors;
-        if (g_pl)
+        if (g_pl) {
             szp_topo_restore_float_pl(omp_decompressed, omp_FN, omp_sort_positions,
                                       omp_sort_positions ? omp_extrema_count : 0,
                                       2, rows, cols, 0, absErrBound, &ors);
+            szp_pl_apply_exceptions_float(omp_decompressed, nbEle, pl_exc, pl_exc_size);
+        }
         else
             szp_topo_restore_float_2d(omp_decompressed, omp_FN, omp_sort_positions,
                                       omp_sort_positions ? omp_extrema_count : 0,
@@ -851,12 +871,11 @@ int main(int argc, char *argv[]) {
        above but are not a failure (the method does not guarantee them). */
     (void)cuda_preserved;
     int fail_eb = !(cuda_max_err <= absErrBound * 2.0);
-    /* PL mode: false positives/types are reported, not guaranteed. */
-    int fail_fp = !g_pl && new_cps != 0, fail_ft = !g_pl && type_changed != 0;
+    int fail_fp = new_cps != 0, fail_ft = type_changed != 0;
     int fail_ext = (lost_max + lost_min) != 0, fail_fnarr = fn_mismatch != 0;
     int fail_same = g_cpu_gpu_same == 0;
     int overall = (fail_eb || fail_fp || fail_ft || fail_ext || fail_fnarr || fail_same) ? 1 : 0;
-    printf("\nResult: %s%s%s%s%s%s%s\n", overall ? "FAIL:" : g_pl ? "PASS (PL mode: error <= 2 eb, all extrema kept)"
+    printf("\nResult: %s%s%s%s%s%s%s\n", overall ? "FAIL:" : g_pl ? "PASS (PL mode: error <= 2 eb, no FP, no FT, all extrema kept)"
                                                          : "PASS (error <= 2 eb, no FP, no FT, all extrema kept)",
            fail_eb ? " error>2eb" : "", fail_fp ? " false-positives" : "", fail_ft ? " false-types" : "",
            fail_ext ? " extrema-lost" : "", fail_fnarr ? " type-array-mismatch" : "",
@@ -869,6 +888,7 @@ int main(int argc, char *argv[]) {
     free(topo_compressed);
     free(decompressed);
     free(FN);
+    free(pl_exc);
     free(decomp_cps);
     free(decomp_type_map);
     free(orig_type_map);
