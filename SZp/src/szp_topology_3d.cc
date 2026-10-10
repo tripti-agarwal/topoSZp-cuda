@@ -17,6 +17,8 @@
 #include "szp_TypeManager.h"
 #include "szp_CompressionToolkit.h"
 #include "szp_defines.h"
+#include "szp_cp_rank.h"
+#include "szp_detect_threads.h"
 #ifdef _OPENMP
 #include "omp.h"
 #endif
@@ -41,25 +43,39 @@ CriticalPoint3D *szp_find_critical_points_3d(float *data, size_t *outCount,
     CriticalPoint3D *results = (CriticalPoint3D *)malloc(total_interior * sizeof(CriticalPoint3D));
     if (!results) { *outCount = 0; return NULL; }
 
-    size_t count = 0;
+    /* Same bin formula as the compressor's quantization. */
     double inver_bound = 1.0 / absErrBound;
+    int nbThreads = 1;
+    size_t *prefix = NULL;   /* prefix[t] = first output slot of thread t */
+    int failed = 0;
 
     #pragma omp parallel
     {
-        int nbThreads = omp_get_num_threads();
+        #pragma omp single
+        {
+            nbThreads = omp_get_num_threads();
+            prefix = (size_t *)calloc((size_t)nbThreads + 1, sizeof(size_t));
+            if (!prefix) failed = 1;
+        }
         int tid = omp_get_thread_num();
         size_t chunk = total_interior / nbThreads;
         size_t start = tid * chunk;
         size_t end = (tid == nbThreads - 1) ? total_interior : (tid + 1) * chunk;
 
         size_t local_count = 0;
-        CriticalPoint3D *local_results = (CriticalPoint3D *)malloc(
-            (end - start) * sizeof(CriticalPoint3D));
-
+        CriticalPoint3D *local_results = NULL;
+        if (!failed && end > start) {
+            local_results = (CriticalPoint3D *)malloc((end - start) * sizeof(CriticalPoint3D));
+            if (!local_results) {
+                #pragma omp atomic write
+                failed = 1;
+            }
+        }
         size_t d2m2 = (size_t)(d2 - 2);
         size_t d3m2 = (size_t)(d3 - 2);
         size_t plane = d2m2 * d3m2;
 
+        if (local_results)
         for (size_t idx = start; idx < end; idx++) {
             int x = 1 + (int)(idx / plane);
             size_t rem = idx % plane;
@@ -98,7 +114,7 @@ CriticalPoint3D *szp_find_critical_points_3d(float *data, size_t *outCount,
             }
 
             if (type != 0) {
-                int qbin = (int)((center + absErrBound) * inver_bound);
+                int qbin = (int)((double)center * inver_bound);
                 local_results[local_count].x = x;
                 local_results[local_count].y = y;
                 local_results[local_count].z = z;
@@ -109,18 +125,27 @@ CriticalPoint3D *szp_find_critical_points_3d(float *data, size_t *outCount,
             }
         }
 
-        size_t my_offset;
-        #pragma omp atomic capture
-        { my_offset = count; count += local_count; }
-
-        memcpy(results + my_offset, local_results, local_count * sizeof(CriticalPoint3D));
+        /* Concatenate the per-thread lists in thread order: the output is in
+           raster order (the order the decoder assigns ranks in) for any
+           thread count. */
+        if (prefix) prefix[tid + 1] = local_count;
+        #pragma omp barrier
+        #pragma omp single
+        {
+            if (prefix)
+                for (int t = 0; t < nbThreads; t++) prefix[t + 1] += prefix[t];
+        }
+        if (!failed && local_results)
+            memcpy(results + prefix[tid], local_results, local_count * sizeof(CriticalPoint3D));
         free(local_results);
     }
 
+    size_t count = (!failed && prefix) ? prefix[nbThreads] : 0;
+    free(prefix);
     *outCount = count;
     if (count == 0) { free(results); return NULL; }
-    results = (CriticalPoint3D *)realloc(results, count * sizeof(CriticalPoint3D));
-    return results;
+    CriticalPoint3D *shrunk = (CriticalPoint3D *)realloc(results, count * sizeof(CriticalPoint3D));
+    return shrunk ? shrunk : results;
 #else
     printf("Error! OpenMP not supported!\n");
     *outCount = 0;
@@ -136,114 +161,15 @@ void szp_sort_critical_points_3d(CriticalPoint3D *critical_points,
                                   size_t critical_count,
                                   float *data, int d2, int d3)
 {
-#ifdef _OPENMP
-    if (!critical_points || critical_count == 0 || !data) return;
-
-    /* Find min/max bin */
-    int min_bin = critical_points[0].quantized_bin;
-    int max_bin = critical_points[0].quantized_bin;
-    #pragma omp parallel for reduction(min:min_bin) reduction(max:max_bin)
-    for (size_t i = 1; i < critical_count; i++) {
-        int bin = critical_points[i].quantized_bin;
-        if (bin < min_bin) min_bin = bin;
-        if (bin > max_bin) max_bin = bin;
-    }
-
-    int bin_range = max_bin - min_bin + 1;
-    bool *bin_exists = (bool *)calloc(bin_range, sizeof(bool));
-    int *unique_bins = (int *)malloc(critical_count * sizeof(int));
-    int num_unique_bins = 0;
-
-    /* Collect unique bins */
-    for (size_t i = 0; i < critical_count; i++) {
-        int hash = critical_points[i].quantized_bin - min_bin;
-        if (!bin_exists[hash]) {
-            bin_exists[hash] = true;
-            unique_bins[num_unique_bins++] = critical_points[i].quantized_bin;
-        }
-    }
-
-    /* Build per-bin index */
-    size_t *bin_counts = (size_t *)calloc(bin_range, sizeof(size_t));
-    size_t *bin_offsets = (size_t *)malloc(bin_range * sizeof(size_t));
-    size_t *bin_to_indices = (size_t *)malloc(critical_count * sizeof(size_t));
-
-    for (size_t i = 0; i < critical_count; i++)
-        bin_counts[critical_points[i].quantized_bin - min_bin]++;
-
-    bin_offsets[0] = 0;
-    for (int b = 1; b < bin_range; b++)
-        bin_offsets[b] = bin_offsets[b-1] + bin_counts[b-1];
-
-    memset(bin_counts, 0, bin_range * sizeof(size_t));
-    for (size_t i = 0; i < critical_count; i++) {
-        int hash = critical_points[i].quantized_bin - min_bin;
-        bin_to_indices[bin_offsets[hash] + bin_counts[hash]] = i;
-        bin_counts[hash]++;
-    }
-
-    /* Sort each bin by data value, assign sort positions */
-    #pragma omp parallel for schedule(static)
-    for (int bi = 0; bi < num_unique_bins; bi++) {
-        int hash = unique_bins[bi] - min_bin;
-        size_t bcount = bin_counts[hash];
-        size_t boff = bin_offsets[hash];
-
-        size_t *local_idx = (size_t *)malloc(bcount * sizeof(size_t));
-        memcpy(local_idx, &bin_to_indices[boff], bcount * sizeof(size_t));
-
-        /* Insertion sort by data value (3D flat index) */
-        for (size_t ii = 1; ii < bcount; ii++) {
-            size_t key = local_idx[ii];
-            size_t flat_key = (size_t)critical_points[key].x * d2 * d3 +
-                              (size_t)critical_points[key].y * d3 +
-                              critical_points[key].z;
-            float key_val = data[flat_key];
-            size_t jj = ii;
-            while (jj > 0) {
-                size_t prev = local_idx[jj - 1];
-                size_t flat_prev = (size_t)critical_points[prev].x * d2 * d3 +
-                                   (size_t)critical_points[prev].y * d3 +
-                                   critical_points[prev].z;
-                if (data[flat_prev] > key_val) {
-                    local_idx[jj] = local_idx[jj - 1];
-                    jj--;
-                } else break;
-            }
-            local_idx[jj] = key;
-        }
-
-        /* Assign sort positions (ties share the same position) */
-        int pos = 0;
-        size_t first = local_idx[0];
-        size_t flat0 = (size_t)critical_points[first].x * d2 * d3 +
-                        (size_t)critical_points[first].y * d3 +
-                        critical_points[first].z;
-        float prev_val = data[flat0];
-        critical_points[first].sort_position = 0;
-
-        for (size_t ii = 1; ii < bcount; ii++) {
-            size_t ci = local_idx[ii];
-            size_t flat_ci = (size_t)critical_points[ci].x * d2 * d3 +
-                              (size_t)critical_points[ci].y * d3 +
-                              critical_points[ci].z;
-            float cur_val = data[flat_ci];
-            if (cur_val != prev_val) pos++;
-            critical_points[ci].sort_position = pos;
-            prev_val = cur_val;
-        }
-
-        free(local_idx);
-    }
-
-    free(bin_exists);
-    free(unique_bins);
-    free(bin_counts);
-    free(bin_offsets);
-    free(bin_to_indices);
-#else
-    (void)critical_points; (void)critical_count; (void)data; (void)d2; (void)d3;
-#endif
+    /* Rank by original value inside each bin (ties share a rank). Sorting
+       replaces the per-bin insertion sort, which was quadratic in the bin
+       size, and the bin-indexed tables, whose size grew with the value range. */
+    const size_t plane = (size_t)d2 * (size_t)d3;
+    const size_t row = (size_t)d3;
+    szp_assign_sort_positions(critical_points, critical_count, data,
+        [plane, row](const CriticalPoint3D &p) {
+            return (size_t)p.x * plane + (size_t)p.y * row + (size_t)p.z;
+        });
 }
 
 /* ================================================================== */
@@ -279,7 +205,8 @@ unsigned char *szp_compress_sort_positions_3d(CriticalPoint3D *critical_points,
     }
 
     /* Allocate output buffer */
-    size_t maxBufSize = sizeof(size_t) + (extrema_count * (sizeof(int) + 32)) + 1024;
+    size_t maxBufSize = sizeof(size_t) + (size_t)omp_get_max_threads() * sizeof(size_t)
+                      + (extrema_count * (sizeof(int) + 32)) + 1024;
     unsigned char *output = (unsigned char *)malloc(maxBufSize);
     if (!output) { free(sort_positions); *outSize = 0; return NULL; }
 
@@ -329,10 +256,9 @@ unsigned char *szp_compress_sort_positions_3d(CriticalPoint3D *critical_points,
 
         int tid = omp_get_thread_num();
         size_t num_blocks = (extrema_count + block_size - 1) / block_size;
-        size_t blocks_per_thread = (num_blocks + nbThreads - 1) / nbThreads;
-        size_t start_block = tid * blocks_per_thread;
-        size_t end_block = (tid + 1) * blocks_per_thread;
-        if (end_block > num_blocks) end_block = num_blocks;
+        /* Same block-to-thread layout as the 2D encoders and all decoders. */
+        size_t start_block, end_block;
+        szp_thread_block_range(num_blocks, nbThreads, (unsigned int)tid, &start_block, &end_block);
 
         int prior = 0, current = 0, diff = 0;
         unsigned int max_val = 0, bit_count = 0;
@@ -409,6 +335,10 @@ unsigned char *szp_compress_sort_positions_3d(CriticalPoint3D *critical_points,
         if (outputBytes_perthread) free(outputBytes_perthread);
         if (temp_sign_arr) free(temp_sign_arr);
         if (temp_predict_arr) free(temp_predict_arr);
+        /* All threads must finish the memcpy above (it reads
+           offsets_perthread_arr) before one thread frees it; "omp single"
+           has no barrier on entry. */
+#pragma omp barrier
 #pragma omp single
         {
             free(outSize_perthread_arr);
@@ -504,10 +434,9 @@ unsigned char *szp_float_compress_topology_3d(
 
         int tid = omp_get_thread_num();
         size_t num_blocks = (nbEle + block_size - 1) / block_size;
-        size_t blocks_per_thread = (num_blocks + nbThreads - 1) / nbThreads;
-        size_t start_block = tid * blocks_per_thread;
-        size_t end_block = (tid + 1) * blocks_per_thread;
-        if (end_block > num_blocks) end_block = num_blocks;
+        /* Same block-to-thread layout as the 2D encoders and all decoders. */
+        size_t start_block, end_block;
+        szp_thread_block_range(num_blocks, nbThreads, (unsigned int)tid, &start_block, &end_block);
 
         int prior = 0, current = 0, diff = 0;
         unsigned int maxv = 0, bit_count = 0;

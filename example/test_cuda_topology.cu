@@ -32,6 +32,8 @@
 #include "szp_cuda_decompress.cuh"
 #include "szp_cuda_topology.cuh"
 #include "szp_errbound.h"
+#include "szpd_float.h"
+#include "szp_topo_restore.h"
 
 static double get_time_ms() {
     struct timeval tv;
@@ -66,138 +68,6 @@ static int classify_point(const float *data, int rows, int cols, int i, int j) {
         (center > up && center > down && center < left && center < right)) return 3;
     return 0;
 }
-
-/* Restore maxima: set value slightly above max neighbor */
-static void apply_maxima_stencil(float *data, int rows, int cols, int i, int j, int sort_pos) {
-    float max_neighbor = data[i*cols+j];
-    for (int n = 0; n < 4; n++) {
-        int ni = i + NB4[n][0], nj = j + NB4[n][1];
-        float v = data[ni*cols+nj];
-        if (v > max_neighbor) max_neighbor = v;
-    }
-    data[i*cols+j] = max_neighbor * (1.0f + (sort_pos * FLT_EPSILON));
-}
-
-/* Restore minima: set value slightly below min neighbor */
-static void apply_minima_stencil(float *data, int rows, int cols, int i, int j, int sort_pos) {
-    float min_neighbor = data[i*cols+j];
-    for (int n = 0; n < 4; n++) {
-        int ni = i + NB4[n][0], nj = j + NB4[n][1];
-        float v = data[ni*cols+nj];
-        if (v < min_neighbor) min_neighbor = v;
-    }
-    if (sort_pos == 0) data[i*cols+j] = min_neighbor * (1.0f - FLT_EPSILON);
-    else data[i*cols+j] = min_neighbor * (1.0f - ((1.0f/sort_pos) * FLT_EPSILON));
-}
-
-/* Final enforcement: ensure extrema are strictly above/below neighbors */
-static void restore_extrema_from_types(const int *types, float *data,
-                                        int rows, int cols, float eps) {
-    float eps_soft = 0.25f * eps;
-    for (int i = 1; i < rows-1; i++) {
-        for (int j = 1; j < cols-1; j++) {
-            int idx = i*cols+j;
-            if (types[idx] == 1) { /* maxima */
-                float n = data[(i-1)*cols+j], s = data[(i+1)*cols+j];
-                float w = data[i*cols+(j-1)], e = data[i*cols+(j+1)];
-                float m = fmaxf(fmaxf(n,s), fmaxf(w,e));
-                float target = m + eps_soft;
-                if (data[idx] < target) data[idx] = target;
-            } else if (types[idx] == 2) { /* minima */
-                float n = data[(i-1)*cols+j], s = data[(i+1)*cols+j];
-                float w = data[i*cols+(j-1)], e = data[i*cols+(j+1)];
-                float m = fminf(fminf(n,s), fminf(w,e));
-                float target = m - eps_soft;
-                if (data[idx] > target) data[idx] = target;
-            }
-        }
-    }
-}
-
-/* Apply stencils to all extrema with error bound clamping (matching OpenMP pipeline) */
-static void apply_stencils_clamped(float *data, const float *orig_decomp, const int *types,
-                                    const int *sort_positions,
-                                    int rows, int cols, float errBound, size_t extrema_count) {
-    size_t sort_idx = 0;
-    for (int i = 1; i < rows-1; i++) {
-        for (int j = 1; j < cols-1; j++) {
-            int idx = i*cols+j;
-            int type = types[idx];
-            if (type == 1 || type == 2) {
-                int sp = (sort_idx < extrema_count) ? sort_positions[sort_idx] : 0;
-                float orig_val = orig_decomp[idx];
-                float max_allowed = orig_val + errBound;
-                float min_allowed = orig_val - errBound;
-
-                if (type == 1) {
-                    /* Maxima: set above max neighbor */
-                    float max_neighbor = data[idx];
-                    for (int n = 0; n < 4; n++) {
-                        int ni = i + NB4[n][0], nj = j + NB4[n][1];
-                        float v = data[ni*cols+nj];
-                        if (v > max_neighbor) max_neighbor = v;
-                    }
-                    float target = max_neighbor * (1.0f + (sp * FLT_EPSILON));
-                    /* Clamp to error bound */
-                    if (target > max_allowed) target = max_allowed;
-                    if (target < min_allowed) target = min_allowed;
-                    data[idx] = target;
-                } else {
-                    /* Minima: set below min neighbor */
-                    float min_neighbor = data[idx];
-                    for (int n = 0; n < 4; n++) {
-                        int ni = i + NB4[n][0], nj = j + NB4[n][1];
-                        float v = data[ni*cols+nj];
-                        if (v < min_neighbor) min_neighbor = v;
-                    }
-                    float target;
-                    if (sp == 0) target = min_neighbor * (1.0f - FLT_EPSILON);
-                    else target = min_neighbor * (1.0f - ((1.0f/sp) * FLT_EPSILON));
-                    /* Clamp to error bound */
-                    if (target > max_allowed) target = max_allowed;
-                    if (target < min_allowed) target = min_allowed;
-                    data[idx] = target;
-                }
-                sort_idx++;
-            }
-        }
-    }
-}
-
-/* Final enforcement with strict error bound clamping */
-static void restore_extrema_clamped(const int *types, float *data, const float *orig_decomp,
-                                     int rows, int cols, float eps, float errBound) {
-    float eps_soft = 0.25f * eps;
-    for (int i = 1; i < rows-1; i++) {
-        for (int j = 1; j < cols-1; j++) {
-            int idx = i*cols+j;
-            float orig_val = orig_decomp[idx];
-            /* Strict clamping: stay within errBound of original decompressed value */
-            float max_allowed = orig_val + errBound * 0.999f;
-            float min_allowed = orig_val - errBound * 0.999f;
-
-            if (types[idx] == 1) {
-                float n = data[(i-1)*cols+j], s = data[(i+1)*cols+j];
-                float w = data[i*cols+(j-1)], e = data[i*cols+(j+1)];
-                float m = fmaxf(fmaxf(n,s), fmaxf(w,e));
-                float target = m + eps_soft;
-                if (target > max_allowed) target = max_allowed;
-                if (target < min_allowed) target = min_allowed;
-                if (data[idx] < target) data[idx] = target;
-            } else if (types[idx] == 2) {
-                float n = data[(i-1)*cols+j], s = data[(i+1)*cols+j];
-                float w = data[i*cols+(j-1)], e = data[i*cols+(j+1)];
-                float m = fminf(fminf(n,s), fminf(w,e));
-                float target = m - eps_soft;
-                if (target < min_allowed) target = min_allowed;
-                if (target > max_allowed) target = max_allowed;
-                if (data[idx] > target) data[idx] = target;
-            }
-        }
-    }
-}
-
-/* ---- RBF saddle restoration (ported from OpenMP decompressor) ---- */
 
 static inline float clamp_saddle_center(float cand, float n, float s, float w, float e, float eps) {
     float ns_max = fmaxf(n,s), we_max = fmaxf(w,e);
@@ -514,24 +384,29 @@ int main(int argc, char *argv[]) {
     printf("  Sort positions: %zu extrema, compressed %zu bytes, decompressed: %s\n",
            extrema_count, sort_outSize, sort_positions ? "OK" : "NULL");
 
-    /* Apply stencils to extrema with error bound clamping */
-    if (sort_positions && extrema_count > 0) {
-        apply_stencils_clamped(decompressed, orig_decomp, FN, sort_positions,
-                                rows, cols, absErrBound, extrema_count);
-        printf("  Applied clamped stencils to %zu extrema\n", extrema_count);
-    }
-
-    /* Final enforcement with error bound clamping */
+    /* Same order as the OpenMP decompressor: RBF for lost saddles, then
+       ranked extrema restoration (szp_topo_restore.h). */
     float eps = fmaxf(1e-6f, 0.1f * absErrBound);
-    restore_extrema_clamped(FN, decompressed, orig_decomp, rows, cols, eps, absErrBound);
-
-    /* RBF saddle restoration — restore lost saddles via Gaussian smoothing */
     int restored_saddles = rbf_restore_saddles(decompressed, FN, orig_decomp,
                                                rows, cols, eps, absErrBound);
     printf("  RBF restored %d saddles\n", restored_saddles);
 
+    szp_restore_extrema_ranked_2d(decompressed, orig_decomp, FN, sort_positions,
+                                  sort_positions ? extrema_count : 0,
+                                  rows, cols, absErrBound);
+    printf("  Restored %zu extrema (ranked, within eb of dequantized value)\n", extrema_count);
+
     double t7c = get_time_ms();
     printf("  Post-processing done in %.2f ms\n\n", t7c - t7b);
+
+    /* Optional: write the post-processed field for external checks
+       (example/topo_check), e.g. TOPOSZP_DUMP=out.f32 ./test_cuda_topology ... */
+    if (const char *dump_path = getenv("TOPOSZP_DUMP")) {
+        FILE *df = fopen(dump_path, "wb");
+        if (df) { fwrite(decompressed, sizeof(float), nbEle, df); fclose(df);
+                  printf("  Wrote post-processed field to %s\n", dump_path); }
+        else perror(dump_path);
+    }
 
     /* ============================================================ */
     /* Step 5: Find critical points in decompressed data             */
@@ -954,8 +829,12 @@ int main(int argc, char *argv[]) {
 
         printf("--- OpenMP Post-Processing ---\n");
 
-        /* Apply extrema enforcement + RBF using the FN types */
-        restore_extrema_clamped(omp_FN, omp_decompressed, omp_orig_decomp, rows, cols, eps, absErrBound);
+        /* Decode the OpenMP sort positions (stream = [count][offsets][blocks]) */
+        int *omp_sort_positions = NULL;
+        if (omp_sort_compressed && omp_sort_outSize > sizeof(size_t) && omp_extrema_count > 0)
+            omp_sort_positions = szp_decompress_sort_positions_sized(
+                omp_sort_compressed + sizeof(size_t), omp_sort_outSize - sizeof(size_t),
+                omp_extrema_count, blockSize);
 
         /* RBF — guard against crash by validating FN has reasonable values */
         int omp_fn_valid = 1;
@@ -971,6 +850,13 @@ int main(int argc, char *argv[]) {
             printf("  WARNING: OMP FN array has invalid values, skipping RBF\n");
         }
         printf("  RBF restored %d saddles\n\n", omp_restored);
+
+        /* Ranked extrema restoration, as in the CUDA path above */
+        szp_restore_extrema_ranked_2d(omp_decompressed, omp_orig_decomp, omp_FN,
+                                      omp_sort_positions,
+                                      omp_sort_positions ? omp_extrema_count : 0,
+                                      rows, cols, absErrBound);
+        if (omp_sort_positions) free(omp_sort_positions);
 
         /* Find CPs in OpenMP post-processed data */
         size_t omp_decomp_cp_count = 0;

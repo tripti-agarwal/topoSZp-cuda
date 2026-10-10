@@ -11,7 +11,9 @@
  *    3. Compress with topology preservation (CUDA)
  *    4. Decompress with topology + extract FN array (CUDA)
  *    5. Verify raw decompression error
- *    6. Post-processing: stencils (6 neighbors), enforcement, RBF (3×3×3)
+ *    6. Post-processing: saddle stencil + RBF (3×3×3) for lost saddles, then
+ *       ranked extrema restoration (szp_topo_restore.h). Saddle changes are
+ *       rejected if they would change a neighbour's type.
  *    7. Find critical points in post-processed data
  *    8. Verify preservation, FN array, error bound
  *
@@ -32,6 +34,7 @@
 #include "szp_errbound.h"
 #include "szp_cuda_topology_3d.cuh"
 #include "szp_topology_3d.h"
+#include "szp_topo_restore.h"
 
 /* ================================================================ */
 /*  Helpers                                                          */
@@ -72,98 +75,43 @@ static int classify_3d(const float *data, int d1, int d2, int d3,
     return 0;
 }
 
-/* ---- Post-processing: 3D stencils with error-bound clamping ---- */
+/* ---- Neighbour safety check shared by the saddle passes ---- */
 
-static void apply_stencils_3d(float *data, const float *orig_decomp,
-                               const int *types, const int *sort_positions,
-                               int d1, int d2, int d3,
-                               float errBound, size_t extrema_count)
+static const int NB6[6][3] = {{-1,0,0},{1,0,0},{0,-1,0},{0,1,0},{0,0,-1},{0,0,1}};
+
+/* Current type of each face neighbour (-1 for boundary voxels, which are
+   never classified). Call before changing the center. */
+static void neighbour_types_3d(const float *data, int d1, int d2, int d3,
+                               int x, int y, int z, int out[6])
 {
-    size_t sort_idx = 0;
-    size_t s = (size_t)d2 * d3;
-
-    for (int x = 1; x < d1 - 1; x++) {
-        for (int y = 1; y < d2 - 1; y++) {
-            for (int z = 1; z < d3 - 1; z++) {
-                size_t flat = x * s + y * d3 + z;
-                int type = types[flat];
-                if (type != 1 && type != 2) continue;
-
-                int sp = (sort_idx < extrema_count)
-                             ? sort_positions[sort_idx] : 0;
-                float orig_val = orig_decomp[flat];
-                float max_a = orig_val + errBound * 0.999f;
-                float min_a = orig_val - errBound * 0.999f;
-
-                float xm = data[(x-1)*s + y*d3 + z];
-                float xp = data[(x+1)*s + y*d3 + z];
-                float ym = data[x*s + (y-1)*d3 + z];
-                float yp = data[x*s + (y+1)*d3 + z];
-                float zm = data[x*s + y*d3 + (z-1)];
-                float zp = data[x*s + y*d3 + (z+1)];
-
-                if (type == 1) {
-                    /* Maxima: above max of 6 neighbors */
-                    float mn = fmaxf(fmaxf(xm, xp),
-                               fmaxf(fmaxf(ym, yp), fmaxf(zm, zp)));
-                    float target = mn * (1.0f + sp * FLT_EPSILON);
-                    if (target > max_a) target = max_a;
-                    if (target < min_a) target = min_a;
-                    data[flat] = target;
-                } else {
-                    /* Minima: below min of 6 neighbors */
-                    float mn = fminf(fminf(xm, xp),
-                               fminf(fminf(ym, yp), fminf(zm, zp)));
-                    float target = (sp == 0)
-                        ? mn * (1.0f - FLT_EPSILON)
-                        : mn * (1.0f - (1.0f / sp) * FLT_EPSILON);
-                    if (target > max_a) target = max_a;
-                    if (target < min_a) target = min_a;
-                    data[flat] = target;
-                }
-                sort_idx++;
-            }
-        }
+    for (int k = 0; k < 6; k++) {
+        int nx = x + NB6[k][0], ny = y + NB6[k][1], nz = z + NB6[k][2];
+        if (nx < 1 || nx >= d1-1 || ny < 1 || ny >= d2-1 || nz < 1 || nz >= d3-1) { out[k] = -1; continue; }
+        out[k] = classify_3d(data, d1, d2, d3, nx, ny, nz);
     }
 }
 
-/* Final enforcement with 6-neighbor clamping */
-static void restore_extrema_3d(const int *types, float *data,
-                                 const float *orig_decomp,
-                                 int d1, int d2, int d3,
-                                 float eps, float errBound)
+/* With the trial value already written at (x,y,z): reject the change if a
+   regular neighbour becomes critical, if a neighbour that currently has its
+   stored type loses it, or if the center is not below every stored maximum
+   and above every stored minimum next to it (those only move further away
+   later, so this keeps the relation the original data has). */
+static int change_is_safe_3d(const float *data, const int *types0,
+                             int d1, int d2, int d3, int x, int y, int z,
+                             float trial, const int before[6])
 {
-    float eps_soft = 0.25f * eps;
-    size_t s = (size_t)d2 * d3;
-
-    for (int x = 1; x < d1 - 1; x++) {
-        for (int y = 1; y < d2 - 1; y++) {
-            for (int z = 1; z < d3 - 1; z++) {
-                size_t flat = x * s + y * d3 + z;
-                float orig_val = orig_decomp[flat];
-                float max_a = orig_val + errBound * 0.999f;
-                float min_a = orig_val - errBound * 0.999f;
-
-                float xm = data[(x-1)*s+y*d3+z], xp = data[(x+1)*s+y*d3+z];
-                float ym = data[x*s+(y-1)*d3+z], yp = data[x*s+(y+1)*d3+z];
-                float zm = data[x*s+y*d3+(z-1)], zp = data[x*s+y*d3+(z+1)];
-
-                if (types[flat] == 1) {
-                    float m = fmaxf(fmaxf(xm,xp), fmaxf(fmaxf(ym,yp), fmaxf(zm,zp)));
-                    float target = m + eps_soft;
-                    if (target > max_a) target = max_a;
-                    if (target < min_a) target = min_a;
-                    if (data[flat] < target) data[flat] = target;
-                } else if (types[flat] == 2) {
-                    float m = fminf(fminf(xm,xp), fminf(fminf(ym,yp), fminf(zm,zp)));
-                    float target = m - eps_soft;
-                    if (target < min_a) target = min_a;
-                    if (target > max_a) target = max_a;
-                    if (data[flat] > target) data[flat] = target;
-                }
-            }
-        }
+    for (int k = 0; k < 6; k++) {
+        if (before[k] < 0) continue;
+        int nx = x + NB6[k][0], ny = y + NB6[k][1], nz = z + NB6[k][2];
+        size_t nf = IDX(nx, ny, nz, d2, d3);
+        int t0 = types0[nf];
+        int after = classify_3d(data, d1, d2, d3, nx, ny, nz);
+        if (t0 == 0 && after != 0) return 0;
+        if (t0 != 0 && before[k] == t0 && after != t0) return 0;
+        if (t0 == 1 && !(trial < data[nf])) return 0;
+        if (t0 == 2 && !(trial > data[nf])) return 0;
     }
+    return 1;
 }
 
 /* ---- Saddle stencil: try all 6 axis patterns to restore saddles ---- */
@@ -279,26 +227,16 @@ static int stencil_restore_saddles_3d(float *data, const int *types0,
                     if (target > max_a || target < min_a) continue;
 
                     /* Validate: set temporarily and check */
+                    int before[6];
+                    neighbour_types_3d(data, d1, d2, d3, x, y, z, before);
                     float saved = data[flat];
                     data[flat] = target;
 
                     int bad = 0;
                     /* Must be classified as saddle */
                     if (classify_3d(data, d1, d2, d3, x, y, z) != 3) bad = 1;
-
-                    /* Check 6 neighbors: regular ones must stay regular */
-                    if (!bad && x-1>=1 && types0[(x-1)*s+y*d3+z]==0 &&
-                        classify_3d(data,d1,d2,d3,x-1,y,z)!=0) bad=1;
-                    if (!bad && x+1<d1-1 && types0[(x+1)*s+y*d3+z]==0 &&
-                        classify_3d(data,d1,d2,d3,x+1,y,z)!=0) bad=1;
-                    if (!bad && y-1>=1 && types0[x*s+(y-1)*d3+z]==0 &&
-                        classify_3d(data,d1,d2,d3,x,y-1,z)!=0) bad=1;
-                    if (!bad && y+1<d2-1 && types0[x*s+(y+1)*d3+z]==0 &&
-                        classify_3d(data,d1,d2,d3,x,y+1,z)!=0) bad=1;
-                    if (!bad && z-1>=1 && types0[x*s+y*d3+(z-1)]==0 &&
-                        classify_3d(data,d1,d2,d3,x,y,z-1)!=0) bad=1;
-                    if (!bad && z+1<d3-1 && types0[x*s+y*d3+(z+1)]==0 &&
-                        classify_3d(data,d1,d2,d3,x,y,z+1)!=0) bad=1;
+                    /* Must not change any neighbour's type */
+                    if (!bad && !change_is_safe_3d(data, types0, d1, d2, d3, x, y, z, target, before)) bad = 1;
 
                     if (bad) {
                         data[flat] = saved;
@@ -403,24 +341,16 @@ static int rbf_restore_saddles_3d(float *data, const int *types0,
                     if (trial < min_a) trial = min_a;
                     if (trial > max_a) trial = max_a;
 
+                    int before[6];
+                    neighbour_types_3d(data, d1, d2, d3, x, y, z, before);
                     float saved = data[flat];
                     data[flat] = trial;
                     int bad = 0;
 
-                    /* Verify we didn't create false CPs at regular neighbours */
+                    /* Center must become a saddle without changing any
+                       neighbour's type */
                     if (classify_3d(data,d1,d2,d3,x,y,z) != 3) bad = 1;
-                    if (!bad && x-1>=1 && types0[(x-1)*s+y*d3+z]==0 &&
-                        classify_3d(data,d1,d2,d3,x-1,y,z)!=0) bad=1;
-                    if (!bad && x+1<d1-1 && types0[(x+1)*s+y*d3+z]==0 &&
-                        classify_3d(data,d1,d2,d3,x+1,y,z)!=0) bad=1;
-                    if (!bad && y-1>=1 && types0[x*s+(y-1)*d3+z]==0 &&
-                        classify_3d(data,d1,d2,d3,x,y-1,z)!=0) bad=1;
-                    if (!bad && y+1<d2-1 && types0[x*s+(y+1)*d3+z]==0 &&
-                        classify_3d(data,d1,d2,d3,x,y+1,z)!=0) bad=1;
-                    if (!bad && z-1>=1 && types0[x*s+y*d3+(z-1)]==0 &&
-                        classify_3d(data,d1,d2,d3,x,y,z-1)!=0) bad=1;
-                    if (!bad && z+1<d3-1 && types0[x*s+y*d3+(z+1)]==0 &&
-                        classify_3d(data,d1,d2,d3,x,y,z+1)!=0) bad=1;
+                    if (!bad && !change_is_safe_3d(data, types0, d1, d2, d3, x, y, z, trial, before)) bad = 1;
 
                     if (bad) { data[flat] = saved; alpha *= 0.5f; }
                     else     { restored++; break; }
@@ -617,22 +547,33 @@ int main(int argc, char *argv[])
     printf("  Sort positions: %zu extrema, decompressed: %s\n",
            extrema_count, sort_positions ? "OK" : "NULL");
 
-    /* Stencils */
-    if (sort_positions && extrema_count > 0)
-        apply_stencils_3d(decompressed, orig_decomp, FN, sort_positions,
-                          d1, d2, d3, absErrBound, extrema_count);
-
-    /* Enforcement */
+    /* Saddles first: exact stencil search, then RBF for the rest. Both
+       reject changes that would change a neighbour's type. */
+    int st_restored = stencil_restore_saddles_3d(decompressed, FN, orig_decomp,
+                                                 d1, d2, d3, absErrBound);
     float eps = fmaxf(1e-6f, 0.1f * absErrBound);
-    restore_extrema_3d(FN, decompressed, orig_decomp, d1, d2, d3, eps, absErrBound);
-
-    /* RBF saddle restoration */
     int restored = rbf_restore_saddles_3d(decompressed, FN, orig_decomp,
                                            d1, d2, d3, eps, absErrBound);
-    printf("  RBF restored %d saddles\n", restored);
+    printf("  Saddle stencil restored %d saddles; RBF restored %d saddles\n",
+           st_restored, restored);
+
+    /* Extrema last: ranked additive restoration within eb of the
+       dequantized value (szp_topo_restore.h, same rule as the 2D path). */
+    szp_restore_extrema_ranked_3d(decompressed, orig_decomp, FN, sort_positions,
+                                  sort_positions ? extrema_count : 0,
+                                  d1, d2, d3, absErrBound);
 
     double tp1 = get_time_ms();
     printf("  Post-processing done in %.2f ms\n\n", tp1 - tp0);
+
+    /* Optional: write the post-processed field for external checks
+       (example/topo_check), e.g. TOPOSZP_DUMP=out.f32 ./test_cuda_topology_3d ... */
+    if (const char *dump_path = getenv("TOPOSZP_DUMP")) {
+        FILE *df = fopen(dump_path, "wb");
+        if (df) { fwrite(decompressed, sizeof(float), nbEle, df); fclose(df);
+                  printf("  Wrote post-processed field to %s\n", dump_path); }
+        else perror(dump_path);
+    }
 
     /* ============================================================ */
     /* Step 5: CPs in post-processed data                            */
@@ -659,6 +600,7 @@ int main(int argc, char *argv[])
     printf("--- Step 6: Critical point preservation ---\n");
     size_t preserved = 0, lost = 0, changed = 0;
     size_t l_max = 0, l_min = 0, l_sad = 0;
+    size_t changed_to[4][4] = {{0}};
     for (size_t i = 0; i < orig_cp_count; i++) {
         size_t flat = IDX(orig_cps[i].x, orig_cps[i].y, orig_cps[i].z, d2, d3);
         if (decomp_type_map[flat] == orig_cps[i].type) preserved++;
@@ -667,7 +609,10 @@ int main(int argc, char *argv[])
             if (orig_cps[i].type==1) l_max++;
             else if (orig_cps[i].type==2) l_min++;
             else l_sad++;
-        } else changed++;
+        } else {
+            changed++;
+            changed_to[orig_cps[i].type & 3][decomp_type_map[flat] & 3]++;
+        }
     }
 
     /* New CPs */
@@ -685,8 +630,17 @@ int main(int argc, char *argv[])
 
     printf("Original: %zu    Preserved: %zu (%.2f%%)\n", orig_cp_count,
            preserved, 100.0*preserved/orig_cp_count);
-    printf("Lost: %zu (max:%zu min:%zu sad:%zu)  Changed: %zu  New: %zu\n\n",
+    printf("Lost: %zu (max:%zu min:%zu sad:%zu)  Changed: %zu  New: %zu\n",
            lost, l_max, l_min, l_sad, changed, new_cps);
+    if (changed) {
+        static const char *tn[4] = {"reg", "max", "min", "sad"};
+        printf("Changed types:");
+        for (int a = 1; a < 4; a++)
+            for (int b = 1; b < 4; b++)
+                if (changed_to[a][b]) printf("  %s->%s: %zu", tn[a], tn[b], changed_to[a][b]);
+        printf("\n");
+    }
+    printf("\n");
 
     /* ============================================================ */
     /* Step 7: FN array                                              */

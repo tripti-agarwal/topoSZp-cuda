@@ -107,7 +107,8 @@ __global__ void find_critical_points_3d_kernel(
     }
 
     if (type != 0) {
-        int quantized_bin = (int)((center + absErrBound) * inver_bound);
+        /* Same bin formula as the compressor's quantization. */
+        int quantized_bin = (int)((double)center * inver_bound);
         unsigned int pos = atomicAdd(d_count, 1u);
         results[pos].x = x;
         results[pos].y = y;
@@ -117,6 +118,16 @@ __global__ void find_critical_points_3d_kernel(
         results[pos].sort_position = 0;
     }
 }
+
+/* Raster order (x, then y, then z), i.e. increasing flat index. */
+struct CPRasterLess3D {
+    __host__ __device__
+    bool operator()(const CriticalPoint3D &a, const CriticalPoint3D &b) const {
+        if (a.x != b.x) return a.x < b.x;
+        if (a.y != b.y) return a.y < b.y;
+        return a.z < b.z;
+    }
+};
 
 extern "C"
 CriticalPoint3D *szp_cuda_find_critical_points_3d(
@@ -157,6 +168,14 @@ CriticalPoint3D *szp_cuda_find_critical_points_3d(
     unsigned int h_count = 0;
     CUDA_CHECK(cudaMemcpy(&h_count, d_count, sizeof(unsigned int),
                           cudaMemcpyDeviceToHost));
+
+    /* atomicAdd hands out slots in arbitrary order. Sort into raster order:
+       the stored ranks are read back in raster order, and the output is
+       then the same on every run and identical to the OpenMP list. */
+    if (h_count > 1) {
+        thrust::device_ptr<CriticalPoint3D> rp(d_results);
+        thrust::sort(rp, rp + h_count, CPRasterLess3D());
+    }
 
     CriticalPoint3D *results = NULL;
     if (h_count > 0) {
@@ -236,70 +255,20 @@ __global__ void mark_boundaries_3d_kernel(
     }
 }
 
-/**
- * Step 2: Segmented prefix sum — sum boundaries within each bin segment.
- * After this, positions[idx] = number of distinct values before idx in its bin.
- * Uses thrust::inclusive_scan with a custom operator that resets at bin boundaries.
- */
-struct BinSegmentedAdd {
-    const BinValueKey3D *keys;
-    BinSegmentedAdd(const BinValueKey3D *k) : keys(k) {}
-
-    __host__ __device__
-    int operator()(int a, int b) const {
-        /* b comes from a later index; if we're at a bin boundary, reset */
-        return a + b;
-    }
-};
-
-/**
- * Step 3: Write sort positions back — handle bin-boundary resets in a simple kernel.
- * After inclusive_scan on boundaries, values within a bin are cumulative sums.
- * But the scan doesn't reset at bin boundaries. Fix: scan, then subtract the
- * value at the start of each bin.
- *
- * Simpler approach: just use the scan result directly since boundaries[0] = 0
- * for each new bin, and inclusive_scan produces cumulative sum from 0.
- * But inclusive_scan doesn't reset at bin boundaries!
- *
- * Solution: use a two-pass approach:
- *   1. Mark boundaries (done above)
- *   2. For each element, walk forward from the bin start and accumulate.
- *      This is still O(n) if bins are small.
- *
- * Better solution: segmented scan using Thrust. But Thrust doesn't have built-in
- * segmented scan. Instead, use a simple parallel approach:
- *   - Compute positions[idx] = boundaries[idx] (0 or 1)
- *   - Prefix sum within each bin segment
- *
- * Simplest O(n) approach: single kernel where each thread looks at its
- * boundary value and the prefix sum, then subtracts the prefix sum value
- * at the start of its bin.
- *
- * Actually, the simplest correct O(n) approach: after sorting, each element
- * can compute its position by binary searching for the bin start, then
- * counting distinct values from there. But that's O(n log n).
- *
- * Practical approach: just do a sequential scan on the GPU with a single
- * thread block processing chunks, resetting at bin boundaries. For 2.9M
- * elements this takes ~1ms.
- */
-__global__ void compute_sort_positions_3d_kernel(
-    CriticalPoint3D *cp, const BinValueKey3D *sorted_keys,
-    const int *boundaries, size_t n)
+/* Copy the bin of each sorted key into a flat array (scan keys). */
+__global__ static void extract_bins_3d_kernel(
+    const BinValueKey3D *sorted_keys, int *bins, size_t n)
 {
-    /* Simple sequential scan - runs on one thread but is O(n) not O(n²) */
-    if (blockIdx.x != 0 || threadIdx.x != 0) return;
+    size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < n) bins[idx] = sorted_keys[idx].bin;
+}
 
-    int pos = 0;
-    for (size_t i = 0; i < n; i++) {
-        if (i > 0 && sorted_keys[i].bin != sorted_keys[i - 1].bin) {
-            pos = 0;  /* new bin */
-        } else {
-            pos += boundaries[i];  /* 0 if same value, 1 if new value */
-        }
-        cp[sorted_keys[i].original_index].sort_position = pos;
-    }
+/* Write each sorted key's position back to its critical point. */
+__global__ static void scatter_sort_positions_3d_kernel(
+    CriticalPoint3D *cp, const BinValueKey3D *sorted_keys, const int *pos, size_t n)
+{
+    size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < n) cp[sorted_keys[idx].original_index].sort_position = pos[idx];
 }
 
 extern "C"
@@ -351,9 +320,24 @@ void szp_cuda_sort_critical_points_3d(
     mark_boundaries_3d_kernel<<<grid, tpb>>>(d_keys, d_boundaries, critical_count);
     CUDA_CHECK(cudaGetLastError());
 
-    /* Compute sort positions (O(n) sequential scan on GPU) */
-    compute_sort_positions_3d_kernel<<<1, 1>>>(d_cp, d_keys, d_boundaries, critical_count);
-    CUDA_CHECK(cudaGetLastError());
+    /* Position = number of value changes so far within the bin: a segmented
+       inclusive scan of the boundary flags, keyed by bin (replaces a
+       single-thread sequential loop over all critical points). */
+    {
+        int *d_bins = NULL, *d_pos = NULL;
+        CUDA_CHECK(cudaMalloc(&d_bins, critical_count * sizeof(int)));
+        CUDA_CHECK(cudaMalloc(&d_pos, critical_count * sizeof(int)));
+        extract_bins_3d_kernel<<<grid, tpb>>>(d_keys, d_bins, critical_count);
+        CUDA_CHECK(cudaGetLastError());
+        thrust::device_ptr<int> bins_ptr(d_bins);
+        thrust::device_ptr<int> bnd_ptr(d_boundaries);
+        thrust::device_ptr<int> pos_ptr(d_pos);
+        thrust::inclusive_scan_by_key(bins_ptr, bins_ptr + critical_count, bnd_ptr, pos_ptr);
+        scatter_sort_positions_3d_kernel<<<grid, tpb>>>(d_cp, d_keys, d_pos, critical_count);
+        CUDA_CHECK(cudaGetLastError());
+        cudaFree(d_bins);
+        cudaFree(d_pos);
+    }
 
     /* Copy results back */
     CUDA_CHECK(cudaMemcpy(critical_points, d_cp, critical_count * sizeof(CriticalPoint3D), cudaMemcpyDeviceToHost));
@@ -602,79 +586,6 @@ __global__ static void quantize_3d_kernel_double(
 }
 
 /**
- * Pre-quantization perturbation: adjust FLOAT data at saddle neighbors
- * to ensure the saddle condition survives quantization.
- *
- * For each saddle, identify which axes are HIGH (center > both neighbors)
- * and which are LOW (center < both neighbors) in the ORIGINAL data.
- * Then perturb NON-CRITICAL neighbors by ±0.5*eb:
- *   - High-axis neighbors: decrease by 0.5*eb (so they quantize lower)
- *   - Low-axis neighbors:  increase by 0.5*eb (so they quantize higher)
- *
- * This creates a quantization-level gap that preserves the saddle pattern.
- * Only modifies neighbors that are REGULAR points (type 0).
- * Max added error per element: 0.5*eb (well within the 2*eb budget).
- */
-__global__ static void perturb_saddle_neighbors_3d_kernel(
-    float *data, const unsigned char *critical_type,
-    int d1, int d2, int d3, float absErrBound)
-{
-    unsigned int total_interior = (unsigned int)(d1-2) * (unsigned int)(d2-2) * (unsigned int)(d3-2);
-    unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx >= total_interior) return;
-
-    unsigned int d2m2 = (unsigned int)(d2-2);
-    unsigned int d3m2 = (unsigned int)(d3-2);
-    int x = 1 + (int)(idx / (d2m2 * d3m2));
-    int rem = (int)(idx % (d2m2 * d3m2));
-    int y = 1 + rem / (int)d3m2;
-    int z = 1 + rem % (int)d3m2;
-
-    size_t flat = (size_t)x * d2 * d3 + (size_t)y * d3 + z;
-    if (critical_type[flat] != 3) return;  /* only process saddles */
-
-    float center = data[flat];
-    float half_eb = 0.5f * absErrBound;
-
-    /* 6 neighbors: indices and values */
-    size_t nb[6];
-    nb[0] = (size_t)(x-1)*d2*d3 + y*d3 + z;  /* x- */
-    nb[1] = (size_t)(x+1)*d2*d3 + y*d3 + z;  /* x+ */
-    nb[2] = (size_t)x*d2*d3 + (y-1)*d3 + z;  /* y- */
-    nb[3] = (size_t)x*d2*d3 + (y+1)*d3 + z;  /* y+ */
-    nb[4] = (size_t)x*d2*d3 + y*d3 + (z-1);  /* z- */
-    nb[5] = (size_t)x*d2*d3 + y*d3 + (z+1);  /* z+ */
-
-    /* Determine which axes are high/low in original data */
-    /* Axis 0 (x): neighbors nb[0], nb[1] */
-    /* Axis 1 (y): neighbors nb[2], nb[3] */
-    /* Axis 2 (z): neighbors nb[4], nb[5] */
-    for (int axis = 0; axis < 3; axis++) {
-        size_t n0 = nb[axis*2];
-        size_t n1 = nb[axis*2+1];
-        float v0 = data[n0];
-        float v1 = data[n1];
-
-        int is_high = (center > v0) && (center > v1);  /* center above both */
-        int is_low  = (center < v0) && (center < v1);  /* center below both */
-
-        if (is_high) {
-            /* Decrease high-axis neighbors (if they're regular points) */
-            if (critical_type[n0] == 0)
-                atomicAdd(&data[n0], -half_eb);
-            if (critical_type[n1] == 0)
-                atomicAdd(&data[n1], -half_eb);
-        } else if (is_low) {
-            /* Increase low-axis neighbors (if they're regular points) */
-            if (critical_type[n0] == 0)
-                atomicAdd(&data[n0], half_eb);
-            if (critical_type[n1] == 0)
-                atomicAdd(&data[n1], half_eb);
-        }
-    }
-}
-
-/**
  * Fix saddle quantized values to preserve saddle condition.
  * For each saddle point, check if the 6-connected neighborhood
  * still has the saddle property in quantized space. If not,
@@ -685,7 +596,7 @@ __global__ static void perturb_saddle_neighbors_3d_kernel(
  */
 __global__ static void fix_saddles_3d_kernel(
     int *qdata, const unsigned char *critical_type,
-    int d1, int d2, int d3, size_t nbEle)
+    int d1, int d2, int d3, size_t nbEle, int parity)
 {
     size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
     /* Map to interior voxel */
@@ -698,6 +609,11 @@ __global__ static void fix_saddles_3d_kernel(
     int rem = (int)(idx % (d2m2 * d3m2));
     int y = 1 + rem / (int)d3m2;
     int z = 1 + rem % (int)d3m2;
+
+    /* Red-black passes: face neighbours have the other parity, so a voxel
+       changed in this launch never reads a value changed in the same
+       launch. The result is the same on every run. */
+    if (((x + y + z) & 1) != parity) return;
 
     size_t flat = (size_t)x * d2 * d3 + (size_t)y * d3 + z;
     if (critical_type[flat] != 3) return;  /* only fix saddles */
@@ -1062,8 +978,10 @@ unsigned char *szp_cuda_double_compress_topology_3d(
         int stpb = 256;
         int sgrid = ((int)total_interior + stpb - 1) / stpb;
         for (int pass = 0; pass < 3; pass++) {
-            fix_saddles_3d_kernel<<<sgrid, stpb>>>(d_qdata, d_ct, d1, d2, d3, nbEle);
-            CUDA_CHECK(cudaGetLastError());
+            for (int parity = 0; parity < 2; parity++) {
+                fix_saddles_3d_kernel<<<sgrid, stpb>>>(d_qdata, d_ct, d1, d2, d3, nbEle, parity);
+                CUDA_CHECK(cudaGetLastError());
+            }
         }
     }
 

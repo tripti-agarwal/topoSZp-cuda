@@ -1,11 +1,24 @@
 /**
  *  @file szp_detect_threads.h
- *  @brief Auto-detect nbThreads from compressed data offset table.
+ *  @brief Auto-detect nbThreads from the per-thread offset table of an SZp
+ *         stream, and the block-to-thread layout shared by all encoders.
  *
- *  The SZp compressed format stores per-thread byte offsets at the beginning
- *  of the compressed buffer, but does NOT store how many threads were used.
- *  This helper detects nbThreads by trying candidates and validating that
- *  all blocks can be walked without going out of bounds.
+ *  The SZp compressed format stores one byte offset per compressing thread at
+ *  the start of the buffer but does NOT store how many threads were used.
+ *  A candidate thread count T is accepted only if, walking the blocks that
+ *  each thread t < T owns, the walk ends exactly where offset t+1 says the
+ *  next thread's data starts (and, when the stream size is known, the last
+ *  thread ends exactly at the end of the stream). Byte-level coincidences
+ *  that fooled the old "does not run past the buffer" test (common on
+ *  fields with many zeros) do not pass this check.
+ *
+ *  When the stream size is known, use the *_sized variants: they return the
+ *  first T whose walk ends exactly at the end of the stream. Without the size,
+ *  the largest T that passes all internal boundary checks is returned
+ *  (T = 1 has no internal boundaries and always passes, so it is only the
+ *  answer when nothing larger fits).
+ *
+ *  This header is plain C and is shared by the OpenMP and CUDA decoders.
  */
 
 #ifndef _SZP_DETECT_THREADS_H
@@ -18,6 +31,23 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#ifndef SZP_MAX_DETECT_THREADS
+#define SZP_MAX_DETECT_THREADS 1024
+#endif
+
+/**
+ * Read entry k of the offset table. The table is not necessarily 8-byte
+ * aligned (e.g. the sort-position stream follows the topology stream at an
+ * arbitrary byte offset), so it is read with memcpy.
+ */
+static inline size_t
+szp_read_offset(const unsigned char *cmpBytes, size_t k)
+{
+    size_t v;
+    memcpy(&v, cmpBytes + k * sizeof(size_t), sizeof(size_t));
+    return v;
+}
 
 /**
  * Compute the byte length of fixed-length bit-packed data.
@@ -35,262 +65,233 @@ szp_fixed_bits_byte_length(unsigned int totalElements, unsigned int bit_count)
 }
 
 /**
- * Validate a candidate nbThreads for random-access compressed data.
- * Walks ALL blocks for all threads and checks no pointer exceeds bufEnd.
- *
- * @param cmpBytes   compressed buffer starting at offset table
- * @param nbEle      total number of elements
- * @param blockSize  compression block size
- * @param try_nt     candidate nbThreads to validate
- * @param bufLimit   upper bound on valid buffer size (bytes from cmpBytes)
- * @return 1 if valid, 0 if not
+ * Blocks [*start, *end) owned by thread tid out of nt, exactly as the
+ * random-access encoders (plain, topology, sort positions) assign them:
+ * ceil(num_blocks / nt) consecutive blocks per thread, except that with
+ * 16 or more threads and fewer than 8 blocks per thread only
+ * ceil(num_blocks / 8) threads get work and the rest write nothing.
+ */
+static inline void
+szp_thread_block_range(size_t num_blocks, unsigned int nt, unsigned int tid,
+                       size_t *start, size_t *end)
+{
+    size_t s, e;
+    if (nt >= 16 && num_blocks < (size_t)nt * 8) {
+        size_t opt = (num_blocks + 7) / 8;
+        if (opt < 1) opt = 1;
+        size_t bpt = (num_blocks + opt - 1) / opt;
+        size_t eff = (size_t)tid % opt;
+        s = eff * bpt;
+        e = (eff + 1) * bpt;
+        if (e > num_blocks) e = num_blocks;
+        if ((size_t)tid >= opt) s = e;          /* no work for this thread */
+    } else {
+        size_t bpt = (num_blocks + nt - 1) / nt;
+        s = (size_t)tid * bpt;
+        e = s + bpt;
+        if (e > num_blocks) e = num_blocks;
+    }
+    if (s > e) s = e;
+    *start = s;
+    *end = e;
+}
+
+/**
+ * Walk blocks [start_block, end_block) of a random-access stream starting at
+ * ptr. Every block is [int32 anchor][u8 bit_count] then, if bit_count != 0,
+ * the sign bytes and fixed-length magnitudes of the remaining elements; the
+ * topology format appends 2-bit types for every element of the block.
+ * Returns the position after the last block, or NULL if the data is not a
+ * valid block sequence or runs past bufEnd.
+ */
+static inline const unsigned char *
+szp_walk_randomaccess_blocks(const unsigned char *ptr, const unsigned char *bufEnd,
+                             size_t start_block, size_t end_block,
+                             size_t nbEle, int blockSize, int with_types)
+{
+    for (size_t bidx = start_block; bidx < end_block; bidx++) {
+        size_t i = bidx * (size_t)blockSize;
+        if (i >= nbEle) break;
+        size_t cur_bs = ((i + blockSize) > nbEle) ? (nbEle - i) : (size_t)blockSize;
+
+        if ((size_t)(bufEnd - ptr) < sizeof(int) + 1) return NULL;
+        ptr += sizeof(int);                      /* anchor */
+        unsigned int bc = *ptr++;                /* always written by the encoders */
+        if (bc > 32) return NULL;
+        if (bc != 0) {
+            if (cur_bs < 2) return NULL;         /* encoders write 0 for one-element blocks */
+            unsigned int n = (unsigned int)(cur_bs - 1);
+            size_t len = (size_t)(n + 7) / 8 + szp_fixed_bits_byte_length(n, bc);
+            if ((size_t)(bufEnd - ptr) < len) return NULL;
+            ptr += len;
+        }
+        if (with_types) {
+            size_t tb = (2 * cur_bs + 7) / 8;
+            if ((size_t)(bufEnd - ptr) < tb) return NULL;
+            ptr += tb;
+        }
+    }
+    return ptr;
+}
+
+/**
+ * Check candidate try_nt for a random-access stream (plain, topology or sort
+ * positions). bufLimit is the stream size if exact != 0, otherwise an upper
+ * bound on it.
  */
 static inline int
-szp_validate_nbThreads_randomaccess(const unsigned char *cmpBytes,
-                                     size_t nbEle, int blockSize,
-                                     unsigned int try_nt,
-                                     size_t bufLimit)
+szp_validate_nbThreads_ra_generic(const unsigned char *cmpBytes, size_t bufLimit, int exact,
+                                  size_t nbEle, int blockSize, unsigned int try_nt,
+                                  int with_types)
 {
-    const size_t *offs = (const size_t *)cmpBytes;
     size_t hdr_size = (size_t)try_nt * sizeof(size_t);
+    if (hdr_size > bufLimit) return 0;
     const unsigned char *rcp = cmpBytes + hdr_size;
     const unsigned char *bufEnd = cmpBytes + bufLimit;
-
-    /* Use block-based distribution (matches compressor) */
-    size_t num_blocks = ((size_t)nbEle + blockSize - 1) / blockSize;
-    size_t blocks_per_thread = (num_blocks + try_nt - 1) / try_nt;
+    size_t num_blocks = (nbEle + (size_t)blockSize - 1) / (size_t)blockSize;
 
     for (unsigned int tid = 0; tid < try_nt; tid++) {
-        size_t start_block = tid * blocks_per_thread;
-        size_t end_block   = (tid + 1) * blocks_per_thread;
-        if (end_block > num_blocks) end_block = num_blocks;
-
-        const unsigned char *ptr = rcp + offs[tid];
-        if (ptr >= bufEnd || ptr < rcp) return 0;
-
-        for (size_t bidx = start_block; bidx < end_block; bidx++) {
-            size_t i = bidx * blockSize;
-            if (i >= nbEle) break;
-            size_t cur_bs = ((i + blockSize) > nbEle) ? (nbEle - i) : (size_t)blockSize;
-
-            if (ptr + sizeof(int) > bufEnd) return 0;
-            ptr += sizeof(int); /* anchor */
-
-            if (cur_bs > 1) {
-                if (ptr >= bufEnd) return 0;
-                unsigned int bc = ptr[0]; ptr++;
-                if (bc > 32) return 0; /* bit_count sanity */
-                if (bc != 0) {
-                    unsigned int n = (unsigned int)(cur_bs - 1);
-                    unsigned int sb = (n + 7) / 8;
-                    unsigned int mb = szp_fixed_bits_byte_length(n, bc);
-                    ptr += sb + mb;
-                    if (ptr > bufEnd) return 0;
-                }
-            }
+        size_t seg_off = szp_read_offset(cmpBytes, tid);
+        if (seg_off > bufLimit - hdr_size) return 0;
+        size_t sb, eb;
+        szp_thread_block_range(num_blocks, try_nt, tid, &sb, &eb);
+        const unsigned char *end = szp_walk_randomaccess_blocks(rcp + seg_off, bufEnd, sb, eb,
+                                                                nbEle, blockSize, with_types);
+        if (!end) return 0;
+        if (tid + 1 < try_nt) {
+            if (end != rcp + szp_read_offset(cmpBytes, tid + 1)) return 0;   /* must meet the next thread's data exactly */
+        } else if (exact && end != bufEnd) {
+            return 0;
         }
     }
     return 1;
 }
 
 /**
- * Validate a candidate nbThreads for threadblock (non-random-access) data.
- * Each thread's chunk starts with ONE int32 anchor, then blocks carry
- * only [bit_count][signs][magnitudes] with prefix-sum chaining.
+ * Check candidate try_nt for a thread-block (non-random-access) stream:
+ * each thread owns nbEle/T consecutive elements (the last one also gets the
+ * remainder), stored as one int32 anchor followed by blocks of
+ * [u8 bit_count][signs][magnitudes].
  */
 static inline int
-szp_validate_nbThreads_threadblock(const unsigned char *cmpBytes,
-                                    size_t nbEle, int blockSize,
-                                    unsigned int try_nt,
-                                    size_t bufLimit)
+szp_validate_nbThreads_tb_generic(const unsigned char *cmpBytes, size_t bufLimit, int exact,
+                                  size_t nbEle, int blockSize, unsigned int try_nt)
 {
-    const size_t *offs = (const size_t *)cmpBytes;
     size_t hdr_size = (size_t)try_nt * sizeof(size_t);
+    if (hdr_size > bufLimit) return 0;
     const unsigned char *rcp = cmpBytes + hdr_size;
     const unsigned char *bufEnd = cmpBytes + bufLimit;
-
     size_t threadblocksize = nbEle / try_nt;
 
     for (unsigned int tid = 0; tid < try_nt; tid++) {
+        size_t seg_off = szp_read_offset(cmpBytes, tid);
+        if (seg_off > bufLimit - hdr_size) return 0;
         size_t lo = tid * threadblocksize;
         size_t hi = (tid == try_nt - 1) ? nbEle : (tid + 1) * threadblocksize;
-
-        const unsigned char *ptr = rcp + offs[tid];
-        if (ptr >= bufEnd || ptr < rcp) return 0;
+        const unsigned char *ptr = rcp + seg_off;
 
         if (lo < hi) {
-            /* First element: raw anchor */
-            if (ptr + sizeof(int) > bufEnd) return 0;
-            ptr += sizeof(int);
-
+            if ((size_t)(bufEnd - ptr) < sizeof(int)) return 0;
+            ptr += sizeof(int);                  /* first element: raw anchor */
             for (size_t i = lo + 1; i < hi; i += blockSize) {
                 size_t cur_bs = ((i + blockSize) > hi) ? (hi - i) : (size_t)blockSize;
                 if (ptr >= bufEnd) return 0;
-                unsigned int bc = ptr[0]; ptr++;
+                unsigned int bc = *ptr++;
                 if (bc > 32) return 0;
                 if (bc != 0) {
                     unsigned int n = (unsigned int)cur_bs;
-                    unsigned int sb = (n + 7) / 8;
-                    unsigned int mb = szp_fixed_bits_byte_length(n, bc);
-                    ptr += sb + mb;
-                    if (ptr > bufEnd) return 0;
+                    size_t len = (size_t)(n + 7) / 8 + szp_fixed_bits_byte_length(n, bc);
+                    if ((size_t)(bufEnd - ptr) < len) return 0;
+                    ptr += len;
                 }
             }
         }
+        if (tid + 1 < try_nt) {
+            if (ptr != rcp + szp_read_offset(cmpBytes, tid + 1)) return 0;
+        } else if (exact && ptr != bufEnd) {
+            return 0;
+        }
     }
     return 1;
 }
 
-/**
- * Auto-detect nbThreads from random-access compressed data.
- * Tries candidates 1..128 and returns the first that passes full validation.
- *
- * @param cmpBytes   compressed buffer starting at offset table
- * @param nbEle      total number of elements
- * @param blockSize  compression block size
- * @return detected nbThreads (>= 1)
- */
+/* kind: 0 = random access, 1 = random access + 2-bit types, 2 = thread block */
 static inline unsigned int
-szp_detect_nbThreads_randomaccess(const unsigned char *cmpBytes,
-                                   size_t nbEle, int blockSize)
+szp_detect_nbThreads_generic(const unsigned char *cmpBytes, size_t cmpSize,
+                             size_t nbEle, int blockSize, int kind)
 {
-    const size_t *offs = (const size_t *)cmpBytes;
-    size_t maxCmpSize = sizeof(float) * nbEle + sizeof(float);
+    if (!cmpBytes || nbEle == 0 || blockSize <= 0) return 1;
+    int exact = (cmpSize != 0);
+    size_t limit = cmpSize;
+    if (!exact) {
+        /* Loose upper bound on the stream size: worst case ~4.2 bytes per
+           element for the data, 0.25 for 2-bit types, plus the offset table. */
+        limit = 5 * nbEle + (kind == 1 ? nbEle / 4 + 1 : 0) + 1024
+              + (size_t)SZP_MAX_DETECT_THREADS * sizeof(size_t);
+    }
+    if (limit < sizeof(size_t) || szp_read_offset(cmpBytes, 0) != 0) return 1;
 
-    if (offs[0] != 0) return 1;
-
-    for (unsigned int try_nt = 1; try_nt <= 128; try_nt++) {
-        /* Basic offset validity */
-        int valid = 1;
-        for (unsigned int k = 1; k < try_nt; k++) {
-            if (offs[k] > maxCmpSize || offs[k] < offs[k-1]) {
-                valid = 0; break;
-            }
+    unsigned int best = 0;
+    for (unsigned int try_nt = 1; try_nt <= SZP_MAX_DETECT_THREADS; try_nt++) {
+        size_t hdr = (size_t)try_nt * sizeof(size_t);
+        if (hdr > limit) break;
+        /* Offsets must be non-decreasing and point inside the stream. */
+        if (try_nt >= 2) {
+            size_t o = szp_read_offset(cmpBytes, try_nt - 1);
+            if (o < szp_read_offset(cmpBytes, try_nt - 2) || o > limit - hdr) break;
         }
-        if (!valid) break;
-
-        /* Full walk validation */
-        if (szp_validate_nbThreads_randomaccess(cmpBytes, nbEle, blockSize,
-                                                 try_nt, maxCmpSize)) {
-            return try_nt;
+        int ok = (kind == 2)
+            ? szp_validate_nbThreads_tb_generic(cmpBytes, limit, exact, nbEle, blockSize, try_nt)
+            : szp_validate_nbThreads_ra_generic(cmpBytes, limit, exact, nbEle, blockSize, try_nt, kind == 1);
+        if (ok) {
+            best = try_nt;
+            if (exact) break;
         }
     }
-    return 1;
+    return best ? best : 1;
 }
 
-/**
- * Auto-detect nbThreads from threadblock (non-random-access) compressed data.
- */
+/* ---- Entry points (unknown stream size) ---- */
+
 static inline unsigned int
-szp_detect_nbThreads_threadblock(const unsigned char *cmpBytes,
-                                  size_t nbEle, int blockSize)
+szp_detect_nbThreads_randomaccess(const unsigned char *cmpBytes, size_t nbEle, int blockSize)
 {
-    const size_t *offs = (const size_t *)cmpBytes;
-    size_t maxCmpSize = sizeof(float) * nbEle + sizeof(float);
-
-    if (offs[0] != 0) return 1;
-
-    for (unsigned int try_nt = 1; try_nt <= 128; try_nt++) {
-        int valid = 1;
-        for (unsigned int k = 1; k < try_nt; k++) {
-            if (offs[k] > maxCmpSize || offs[k] < offs[k-1]) {
-                valid = 0; break;
-            }
-        }
-        if (!valid) break;
-
-        if (szp_validate_nbThreads_threadblock(cmpBytes, nbEle, blockSize,
-                                                try_nt, maxCmpSize)) {
-            return try_nt;
-        }
-    }
-    return 1;
+    return szp_detect_nbThreads_generic(cmpBytes, 0, nbEle, blockSize, 0);
 }
 
-/**
- * Validate a candidate nbThreads for topology-preserved random-access data.
- * Same as regular random-access but each block also has 2-bit type data
- * appended: (2 * current_block_size + 7) / 8 extra bytes per block.
- */
-static inline int
-szp_validate_nbThreads_randomaccess_topo(const unsigned char *cmpBytes,
-                                          size_t nbEle, int blockSize,
-                                          unsigned int try_nt,
-                                          size_t bufLimit)
-{
-    const size_t *offs = (const size_t *)cmpBytes;
-    size_t hdr_size = (size_t)try_nt * sizeof(size_t);
-    const unsigned char *rcp = cmpBytes + hdr_size;
-    const unsigned char *bufEnd = cmpBytes + bufLimit;
-
-    size_t num_blocks = ((size_t)nbEle + blockSize - 1) / blockSize;
-    size_t blocks_per_thread = (num_blocks + try_nt - 1) / try_nt;
-
-    for (unsigned int tid = 0; tid < try_nt; tid++) {
-        size_t start_block = tid * blocks_per_thread;
-        size_t end_block   = (tid + 1) * blocks_per_thread;
-        if (end_block > num_blocks) end_block = num_blocks;
-
-        const unsigned char *ptr = rcp + offs[tid];
-        if (ptr >= bufEnd || ptr < rcp) return 0;
-
-        for (size_t bidx = start_block; bidx < end_block; bidx++) {
-            size_t i = bidx * blockSize;
-            if (i >= nbEle) break;
-            size_t cur_bs = ((i + blockSize) > nbEle) ? (nbEle - i) : (size_t)blockSize;
-
-            if (ptr + sizeof(int) > bufEnd) return 0;
-            ptr += sizeof(int); /* anchor */
-
-            if (cur_bs > 1) {
-                if (ptr >= bufEnd) return 0;
-                unsigned int bc = ptr[0]; ptr++;
-                if (bc > 32) return 0;
-                if (bc != 0) {
-                    unsigned int n = (unsigned int)(cur_bs - 1);
-                    unsigned int sb = (n + 7) / 8;
-                    unsigned int mb = szp_fixed_bits_byte_length(n, bc);
-                    ptr += sb + mb;
-                    if (ptr > bufEnd) return 0;
-                }
-            }
-
-            /* 2-bit type data */
-            unsigned int type_bytes = (2 * (unsigned int)cur_bs + 7) / 8;
-            ptr += type_bytes;
-            if (ptr > bufEnd) return 0;
-        }
-    }
-    return 1;
-}
-
-/**
- * Auto-detect nbThreads from topology-preserved random-access compressed data.
- */
 static inline unsigned int
-szp_detect_nbThreads_randomaccess_topo(const unsigned char *cmpBytes,
+szp_detect_nbThreads_randomaccess_topo(const unsigned char *cmpBytes, size_t nbEle, int blockSize)
+{
+    return szp_detect_nbThreads_generic(cmpBytes, 0, nbEle, blockSize, 1);
+}
+
+static inline unsigned int
+szp_detect_nbThreads_threadblock(const unsigned char *cmpBytes, size_t nbEle, int blockSize)
+{
+    return szp_detect_nbThreads_generic(cmpBytes, 0, nbEle, blockSize, 2);
+}
+
+/* ---- Entry points (stream size known, preferred) ---- */
+
+static inline unsigned int
+szp_detect_nbThreads_randomaccess_sized(const unsigned char *cmpBytes, size_t cmpSize,
                                         size_t nbEle, int blockSize)
 {
-    const size_t *offs = (const size_t *)cmpBytes;
-    size_t maxCmpSize = 8ull * nbEle + 1024;
+    return szp_detect_nbThreads_generic(cmpBytes, cmpSize, nbEle, blockSize, 0);
+}
 
-    if (offs[0] != 0) return 1;
+static inline unsigned int
+szp_detect_nbThreads_randomaccess_topo_sized(const unsigned char *cmpBytes, size_t cmpSize,
+                                             size_t nbEle, int blockSize)
+{
+    return szp_detect_nbThreads_generic(cmpBytes, cmpSize, nbEle, blockSize, 1);
+}
 
-    for (unsigned int try_nt = 1; try_nt <= 128; try_nt++) {
-        int valid = 1;
-        for (unsigned int k = 1; k < try_nt; k++) {
-            if (offs[k] > maxCmpSize || offs[k] < offs[k-1]) {
-                valid = 0; break;
-            }
-        }
-        if (!valid) break;
-
-        if (szp_validate_nbThreads_randomaccess_topo(cmpBytes, nbEle, blockSize,
-                                                      try_nt, maxCmpSize)) {
-            return try_nt;
-        }
-    }
-    return 1;
+static inline unsigned int
+szp_detect_nbThreads_threadblock_sized(const unsigned char *cmpBytes, size_t cmpSize,
+                                       size_t nbEle, int blockSize)
+{
+    return szp_detect_nbThreads_generic(cmpBytes, cmpSize, nbEle, blockSize, 2);
 }
 
 #ifdef __cplusplus

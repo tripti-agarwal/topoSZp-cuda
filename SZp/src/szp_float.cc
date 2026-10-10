@@ -15,6 +15,7 @@
 #include <math.h>
 #include "szp_TypeManager.h"
 #include "szp_CompressionToolkit.h"
+#include "szp_cp_rank.h"
 
 #ifdef _OPENMP
 #include "omp.h"
@@ -32,87 +33,100 @@ CriticalPoint *szp_find_critical_points(float *data, size_t *outCount, int rows,
         *outCount = 0;
         return NULL;
     }
-    
-    // Allocate space for maximum possible critical points
-    CriticalPoint *results = (CriticalPoint *)malloc(rows * cols * sizeof(CriticalPoint));
+
+    const size_t interior = (size_t)(rows - 2) * (size_t)(cols - 2);
+    CriticalPoint *results = (CriticalPoint *)malloc(interior * sizeof(CriticalPoint));
     if (!results) {
         *outCount = 0;
         return NULL;
     }
-    
-    size_t count = 0;
-        int nbThreads = 0;
-        size_t threadblocksize = 0;
-        int tid = 0;
-        double inver_bound = 1.0 / absErrBound;
-        
+
+    /* Same bin formula as the compressor's quantization, so points that share
+       a bin here also share a decompressed value. */
+    const double inver_bound = 1.0 / absErrBound;
+    int nbThreads = 1;
+    size_t *prefix = NULL;   /* prefix[t] = first output slot of thread t */
+    int failed = 0;
+
     #pragma omp parallel
+    {
+        #pragma omp single
         {
-    #pragma omp single
-            {
-                nbThreads = omp_get_num_threads();
-                threadblocksize = ((rows - 2) * (cols - 2)) / nbThreads;
+            nbThreads = omp_get_num_threads();
+            prefix = (size_t *)calloc((size_t)nbThreads + 1, sizeof(size_t));
+            if (!prefix) failed = 1;
+        }
+
+        /* Each thread scans one contiguous range of the interior in raster
+           order; the ranges are concatenated in thread order below, so the
+           output is in raster order for any thread count. */
+        const int tid = omp_get_thread_num();
+        const size_t chunk = interior / (size_t)nbThreads;
+        const size_t start_idx = (size_t)tid * chunk;
+        const size_t end_idx = (tid == nbThreads - 1) ? interior : start_idx + chunk;
+
+        size_t local_count = 0;
+        CriticalPoint *local_results = NULL;
+        if (!failed && end_idx > start_idx) {
+            local_results = (CriticalPoint *)malloc((end_idx - start_idx) * sizeof(CriticalPoint));
+            if (!local_results) {
+                #pragma omp atomic write
+                failed = 1;
             }
-            
-            tid = omp_get_thread_num();
-            size_t start_idx = tid * threadblocksize;
-            size_t end_idx = (tid == nbThreads - 1) ? (rows - 2) * (cols - 2) : (tid + 1) * threadblocksize;
-            
-            size_t local_count = 0;
-            CriticalPoint *local_results = (CriticalPoint *)malloc(((rows - 2) * (cols - 2)) * sizeof(CriticalPoint));
-            
+        }
+
+        if (local_results) {
             for (size_t idx = start_idx; idx < end_idx; idx++) {
-                int i = 1 + idx / (cols - 2);
-                int j = 1 + idx % (cols - 2);
-                
-            float center = data[i * cols + j];
-            float up = data[(i-1) * cols + j];
-            float down = data[(i+1) * cols + j];
-            float left = data[i * cols + (j-1)];
-            float right = data[i * cols + (j+1)];
-            
-            if (center > up && center > down && 
-                center > left && center > right) {
-                    // Local maximum (type 1) - compute quantized bin using same formula as other functions
-                    int quantized_bin = (int)((center + absErrBound) * inver_bound);
-                    local_results[local_count++] = (CriticalPoint){i, j, 1, quantized_bin};
-            } else if (center < up && center < down && 
-                       center < left && center < right) {
-                    // Local minimum (type 2) - compute quantized bin using same formula as other functions
-                    int quantized_bin = (int)((center + absErrBound) * inver_bound);
-                    local_results[local_count++] = (CriticalPoint){i, j, 2, quantized_bin};
-            } else if ((center < up && center < down && 
-                       center > left && center > right) ||  
-                      (center > up && center > down && 
-                       center < left && center < right)) {
-                    //  saddle (type 3) - compute quantized bin using same formula as other functions
-                    int quantized_bin = (int)((center + absErrBound) * inver_bound);
-                    local_results[local_count++] = (CriticalPoint){i, j, 3, quantized_bin};
+                int i = 1 + (int)(idx / (size_t)(cols - 2));
+                int j = 1 + (int)(idx % (size_t)(cols - 2));
+
+                float center = data[(size_t)i * cols + j];
+                float up = data[(size_t)(i-1) * cols + j];
+                float down = data[(size_t)(i+1) * cols + j];
+                float left = data[(size_t)i * cols + (j-1)];
+                float right = data[(size_t)i * cols + (j+1)];
+
+                int type = 0;
+                if (center > up && center > down && center > left && center > right) {
+                    type = 1;   /* local maximum */
+                } else if (center < up && center < down && center < left && center < right) {
+                    type = 2;   /* local minimum */
+                } else if ((center < up && center < down && center > left && center > right) ||
+                           (center > up && center > down && center < left && center < right)) {
+                    type = 3;   /* saddle */
+                }
+                if (type) {
+                    int quantized_bin = (int)((double)center * inver_bound);
+                    local_results[local_count++] = (CriticalPoint){i, j, type, quantized_bin, 0};
                 }
             }
-            
-            // Use atomic operations for thread-safe updates
-            size_t my_offset;
-    #pragma omp atomic capture
-            {
-                my_offset = count;
-                count += local_count;
-            }
-            
-            memcpy(results + my_offset, local_results, local_count * sizeof(CriticalPoint));
-            free(local_results);
+        }
+
+        if (prefix) prefix[tid + 1] = local_count;
+        #pragma omp barrier
+        #pragma omp single
+        {
+            if (prefix)
+                for (int t = 0; t < nbThreads; t++) prefix[t + 1] += prefix[t];
+        }
+        /* implicit barrier after single */
+
+        if (!failed && local_results)
+            memcpy(results + prefix[tid], local_results, local_count * sizeof(CriticalPoint));
+        free(local_results);
     }
-    
+
+    size_t count = (!failed && prefix) ? prefix[nbThreads] : 0;
+    free(prefix);
     *outCount = count;
-    
+
     if (count == 0) {
         free(results);
         return NULL;
     }
-    
-    // Resize to actual size
-    results = (CriticalPoint *)realloc(results, count * sizeof(CriticalPoint));
-    return results;
+
+    CriticalPoint *shrunk = (CriticalPoint *)realloc(results, count * sizeof(CriticalPoint));
+    return shrunk ? shrunk : results;
     #else
         printf("Error! OpenMP not supported!\n");
         *outCount = 0;
@@ -121,392 +135,22 @@ CriticalPoint *szp_find_critical_points(float *data, size_t *outCount, int rows,
 }
 
 /**
- * Sort critical points by their original data values within each quantized bin independently.
- * Each bin gets its own sorting sequence starting from 0.
- * Uses 32-bit float comparison for sorting by original data values.
- * Points with the same quantized_bin AND same original data value get the same sort_position.
- * Highly optimized with OpenMP threading, hash tables, and efficient algorithms while preserving deterministic output.
- * For example: CP1 in bin 1 with value 0.01 gets sort position 0, CP2 in bin 1 with value 0.02 gets sort position 1,
- * CP3 in bin 2 with value 0.005 gets sort position 0 (since it's the first in bin 2).
- * If CP4 in bin 1 also has value 0.01, it gets sort position 0 (same as CP1).
- * 
- * @param critical_points Array of critical points to sort
+ * Rank critical points by their original value inside each quantization bin.
+ * Ranks start at 0 within each bin and equal values share a rank, e.g. CP1 in
+ * bin 1 with value 0.01 gets 0, CP2 in bin 1 with value 0.02 gets 1, CP3 in
+ * bin 2 gets 0. The ranks depend only on the data, not on the thread count or
+ * on the order of the list.
+ *
+ * @param critical_points Array of critical points to rank
  * @param critical_count Number of critical points
  * @param data Original data array (32-bit float values)
  * @param cols Number of columns in the data grid
  */
-void szp_sort_critical_points_by_original_data(CriticalPoint *critical_points, size_t critical_count, 
+void szp_sort_critical_points_by_original_data(CriticalPoint *critical_points, size_t critical_count,
                                              float *data, int cols) {
-#ifdef _OPENMP
-    if (!critical_points || critical_count == 0 || !data) {
-        return;
-    }
-    
-    // Optimization 1: Use hash table for faster unique bin discovery
-    // Find min/max bin values for efficient hash table sizing
-    int min_bin = critical_points[0].quantized_bin;
-    int max_bin = critical_points[0].quantized_bin;
-    
-    #pragma omp parallel for reduction(min:min_bin) reduction(max:max_bin)
-    for (size_t i = 1; i < critical_count; i++) {
-        int bin = critical_points[i].quantized_bin;
-        if (bin < min_bin) min_bin = bin;
-        if (bin > max_bin) max_bin = bin;
-    }
-    
-    // Create hash table for bin tracking
-    int bin_range = max_bin - min_bin + 1;
-    bool *bin_exists = (bool *)calloc(bin_range, sizeof(bool));
-    int *unique_bins = (int *)malloc(critical_count * sizeof(int));
-    int num_unique_bins = 0;
-    
-    // Parallelize bin collection for better scaling
-    #pragma omp parallel
-    {
-        // Each thread collects unique bins in its local array
-        int *local_unique_bins = (int *)malloc(critical_count * sizeof(int));
-        int local_num_unique = 0;
-        bool *local_bin_exists = (bool *)calloc(bin_range, sizeof(bool));
-        
-        #pragma omp for nowait
-        for (size_t i = 0; i < critical_count; i++) {
-            int bin = critical_points[i].quantized_bin;
-            int hash_idx = bin - min_bin;
-            if (!local_bin_exists[hash_idx]) {
-                local_bin_exists[hash_idx] = true;
-                local_unique_bins[local_num_unique++] = bin;
-            }
-        }
-        
-        // Merge local results atomically
-        #pragma omp critical
-        {
-            for (int i = 0; i < local_num_unique; i++) {
-                int bin = local_unique_bins[i];
-                int hash_idx = bin - min_bin;
-                if (!bin_exists[hash_idx]) {
-                    bin_exists[hash_idx] = true;
-                    unique_bins[num_unique_bins++] = bin;
-                }
-            }
-        }
-        
-        free(local_unique_bins);
-        free(local_bin_exists);
-    }
-    
-    // Optimization 2: Pre-allocate arrays for each thread with cache alignment
-    int num_threads = omp_get_max_threads();
-    size_t **thread_bin_indices = (size_t **)malloc(num_threads * sizeof(size_t *));
-    for (int t = 0; t < num_threads; t++) {
-        // Use cache-aligned allocation for better performance
-        #if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L
-        if (posix_memalign((void**)&thread_bin_indices[t], 64, critical_count * sizeof(size_t)) != 0) {
-            thread_bin_indices[t] = (size_t *)malloc(critical_count * sizeof(size_t));
-        }
-        #else
-        thread_bin_indices[t] = (size_t *)malloc(critical_count * sizeof(size_t));
-        #endif
-    }
-    
-    // Optimization 3: Pre-build index mapping bins to critical point indices for O(1) lookup
-    // This avoids O(n*m) scanning where n=bins and m=critical_count
-    size_t *bin_to_indices = (size_t *)malloc(critical_count * sizeof(size_t));
-    size_t *bin_counts = (size_t *)calloc(bin_range, sizeof(size_t));
-    size_t *bin_offsets = (size_t *)malloc(bin_range * sizeof(size_t));
-    
-    // Count points per bin in parallel
-    #pragma omp parallel for
-    for (size_t i = 0; i < critical_count; i++) {
-        int bin = critical_points[i].quantized_bin;
-        int hash_idx = bin - min_bin;
-        #pragma omp atomic
-        bin_counts[hash_idx]++;
-    }
-    
-    // Calculate offsets
-    bin_offsets[0] = 0;
-    for (int b = 1; b < bin_range; b++) {
-        bin_offsets[b] = bin_offsets[b-1] + bin_counts[b-1];
-    }
-    
-    // Reset counts for use as current position
-    memset(bin_counts, 0, bin_range * sizeof(size_t));
-    
-    // Build index: assign each critical point to its bin's position
-    #pragma omp parallel for
-    for (size_t i = 0; i < critical_count; i++) {
-        int bin = critical_points[i].quantized_bin;
-        int hash_idx = bin - min_bin;
-        size_t pos;
-        #pragma omp atomic capture
-        {
-            pos = bin_counts[hash_idx];
-            bin_counts[hash_idx]++;
-        }
-        bin_to_indices[bin_offsets[hash_idx] + pos] = i;
-    }
-    
-    // Optimization 4: Use static scheduling for lower overhead
-    #pragma omp parallel for schedule(static)
-    for (int bin_idx = 0; bin_idx < num_unique_bins; bin_idx++) {
-        int current_bin = unique_bins[bin_idx];
-        int hash_idx = current_bin - min_bin;
-        int tid = omp_get_thread_num();
-        size_t *bin_indices = thread_bin_indices[tid];
-        
-        // Use pre-built index for O(1) access instead of scanning
-        size_t bin_start = bin_offsets[hash_idx];
-        size_t bin_count = bin_counts[hash_idx];
-        memcpy(bin_indices, &bin_to_indices[bin_start], bin_count * sizeof(size_t));
-        
-        if (bin_count == 0) continue;
-        
-        // Optimization 4: Use quicksort for better performance on larger bins
-        if (bin_count > 32) {
-            // Custom quicksort implementation for stability
-            typedef struct {
-                size_t idx;
-                float value;
-            } SortItem;
-            
-            SortItem *sort_items = (SortItem *)malloc(bin_count * sizeof(SortItem));
-            for (int i = 0; i < bin_count; i++) {
-                sort_items[i].idx = bin_indices[i];
-                sort_items[i].value = data[critical_points[bin_indices[i]].x * cols + critical_points[bin_indices[i]].y];
-            }
-            
-            // Simple quicksort implementation
-            #define SWAP(a, b) do { SortItem temp = (a); (a) = (b); (b) = temp; } while(0)
-            
-            // Quicksort implementation
-            typedef struct { int left, right; } StackItem;
-            StackItem *stack = (StackItem *)malloc(bin_count * sizeof(StackItem));
-            int stack_size = 0;
-            stack[stack_size++] = (StackItem){0, (int)(bin_count - 1)};
-            
-            while (stack_size > 0) {
-                StackItem item = stack[--stack_size];
-                int left = item.left, right = item.right;
-                
-                if (left < right) {
-                    // Partition
-                    float pivot = sort_items[right].value;
-                    int i = left - 1;
-                    
-                    for (int j = left; j < right; j++) {
-                        if (sort_items[j].value <= pivot) {
-                            i++;
-                            SWAP(sort_items[i], sort_items[j]);
-                        }
-                    }
-                    SWAP(sort_items[i + 1], sort_items[right]);
-                    int pivot_idx = i + 1;
-                    
-                    // Push subarrays to stack
-                    if (pivot_idx - 1 > left) {
-                        stack[stack_size++] = (StackItem){left, pivot_idx - 1};
-                    }
-                    if (pivot_idx + 1 < right) {
-                        stack[stack_size++] = (StackItem){pivot_idx + 1, right};
-                    }
-                }
-            }
-            
-            // Copy back sorted indices
-            for (int i = 0; i < bin_count; i++) {
-                bin_indices[i] = sort_items[i].idx;
-            }
-            
-            free(sort_items);
-            free(stack);
-        } else {
-            // Use insertion sort for smaller bins (more stable)
-            for (int i = 1; i < bin_count; i++) {
-                size_t key_idx = bin_indices[i];
-                float key_data = data[critical_points[key_idx].x * cols + critical_points[key_idx].y];
-                
-                int j = i;
-                while (j > 0) {
-                    size_t prev_idx = bin_indices[j - 1];
-                    float prev_data = data[critical_points[prev_idx].x * cols + critical_points[prev_idx].y];
-                    
-                    if (prev_data > key_data) {
-                        bin_indices[j] = bin_indices[j - 1];
-                        j--;
-                    } else {
-                        break;
-                    }
-                }
-                bin_indices[j] = key_idx;
-            }
-        }
-        
-        // Optimization 5: Efficient sort position assignment
-        int current_sort_position = 0;
-        float prev_data_value = data[critical_points[bin_indices[0]].x * cols + critical_points[bin_indices[0]].y];
-        critical_points[bin_indices[0]].sort_position = current_sort_position;
-        
-        for (int i = 1; i < bin_count; i++) {
-            size_t idx = bin_indices[i];
-            float current_data_value = data[critical_points[idx].x * cols + critical_points[idx].y];
-            
-            if (current_data_value != prev_data_value) {
-                current_sort_position++;
-            }
-            critical_points[idx].sort_position = current_sort_position;
-            prev_data_value = current_data_value;
-        }
-    }
-    
-    // Cleanup
-    for (int t = 0; t < num_threads; t++) {
-        free(thread_bin_indices[t]);
-    }
-    free(thread_bin_indices);
-    free(bin_exists);
-    free(unique_bins);
-    free(bin_to_indices);
-    free(bin_counts);
-    free(bin_offsets);
-    
-#else
-    // Fallback to optimized sequential version if OpenMP not available
-    if (!critical_points || critical_count == 0 || !data) {
-        return;
-    }
-    
-    // Use hash table for faster unique bin discovery
-    int min_bin = critical_points[0].quantized_bin;
-    int max_bin = critical_points[0].quantized_bin;
-    
-    for (size_t i = 1; i < critical_count; i++) {
-        int bin = critical_points[i].quantized_bin;
-        if (bin < min_bin) min_bin = bin;
-        if (bin > max_bin) max_bin = bin;
-    }
-    
-    int bin_range = max_bin - min_bin + 1;
-    bool *bin_exists = (bool *)calloc(bin_range, sizeof(bool));
-    int *unique_bins = (int *)malloc(critical_count * sizeof(int));
-    int num_unique_bins = 0;
-    
-    for (size_t i = 0; i < critical_count; i++) {
-        int bin = critical_points[i].quantized_bin;
-        int hash_idx = bin - min_bin;
-        if (!bin_exists[hash_idx]) {
-            bin_exists[hash_idx] = true;
-            unique_bins[num_unique_bins++] = bin;
-        }
-    }
-    
-    size_t *bin_indices = (size_t *)malloc(critical_count * sizeof(size_t));
-    
-    for (int bin_idx = 0; bin_idx < num_unique_bins; bin_idx++) {
-        int current_bin = unique_bins[bin_idx];
-        
-        int bin_count = 0;
-        for (size_t i = 0; i < critical_count; i++) {
-            if (critical_points[i].quantized_bin == current_bin) {
-                bin_indices[bin_count++] = i;
-            }
-        }
-        
-        if (bin_count == 0) continue;
-        
-        // Use quicksort for larger bins, insertion sort for smaller ones
-        if (bin_count > 32) {
-            typedef struct {
-                size_t idx;
-                float value;
-            } SortItem;
-            
-            SortItem *sort_items = (SortItem *)malloc(bin_count * sizeof(SortItem));
-            for (int i = 0; i < bin_count; i++) {
-                sort_items[i].idx = bin_indices[i];
-                sort_items[i].value = data[critical_points[bin_indices[i]].x * cols + critical_points[bin_indices[i]].y];
-            }
-            
-            #define SWAP(a, b) do { SortItem temp = (a); (a) = (b); (b) = temp; } while(0)
-            
-            typedef struct { int left, right; } StackItem;
-            StackItem *stack = (StackItem *)malloc(bin_count * sizeof(StackItem));
-            int stack_size = 0;
-            stack[stack_size++] = (StackItem){0, (int)(bin_count - 1)};
-            
-            while (stack_size > 0) {
-                StackItem item = stack[--stack_size];
-                int left = item.left, right = item.right;
-                
-                if (left < right) {
-                    float pivot = sort_items[right].value;
-                    int i = left - 1;
-                    
-                    for (int j = left; j < right; j++) {
-                        if (sort_items[j].value <= pivot) {
-                            i++;
-                            SWAP(sort_items[i], sort_items[j]);
-                        }
-                    }
-                    SWAP(sort_items[i + 1], sort_items[right]);
-                    int pivot_idx = i + 1;
-                    
-                    if (pivot_idx - 1 > left) {
-                        stack[stack_size++] = (StackItem){left, pivot_idx - 1};
-                    }
-                    if (pivot_idx + 1 < right) {
-                        stack[stack_size++] = (StackItem){pivot_idx + 1, right};
-                    }
-                }
-            }
-            
-            for (int i = 0; i < bin_count; i++) {
-                bin_indices[i] = sort_items[i].idx;
-            }
-            
-            free(sort_items);
-            free(stack);
-        } else {
-            for (int i = 1; i < bin_count; i++) {
-                size_t key_idx = bin_indices[i];
-                float key_data = data[critical_points[key_idx].x * cols + critical_points[key_idx].y];
-                
-                int j = i;
-                while (j > 0) {
-                    size_t prev_idx = bin_indices[j - 1];
-                    float prev_data = data[critical_points[prev_idx].x * cols + critical_points[prev_idx].y];
-                    
-                    if (prev_data > key_data) {
-                        bin_indices[j] = bin_indices[j - 1];
-                        j--;
-                    } else {
-                        break;
-                    }
-                }
-                bin_indices[j] = key_idx;
-            }
-        }
-        
-        int current_sort_position = 0;
-        float prev_data_value = data[critical_points[bin_indices[0]].x * cols + critical_points[bin_indices[0]].y];
-        critical_points[bin_indices[0]].sort_position = current_sort_position;
-        
-        for (int i = 1; i < bin_count; i++) {
-            size_t idx = bin_indices[i];
-            float current_data_value = data[critical_points[idx].x * cols + critical_points[idx].y];
-            
-            if (current_data_value != prev_data_value) {
-                current_sort_position++;
-            }
-            critical_points[idx].sort_position = current_sort_position;
-            prev_data_value = current_data_value;
-        }
-    }
-    
-    free(bin_indices);
-    free(bin_exists);
-    free(unique_bins);
-#endif
+    const size_t c = (size_t)cols;
+    szp_assign_sort_positions(critical_points, critical_count, data,
+        [c](const CriticalPoint &p) { return (size_t)p.x * c + (size_t)p.y; });
 }
 
 /**
@@ -547,49 +191,24 @@ szp_compress_sort_positions(CriticalPoint *critical_points, size_t critical_coun
         return NULL;
     }
     
-    // Copy sort_position values for extrema only (parallelized for better scaling)
-    // First pass: count extrema per thread
-    int num_threads = omp_get_max_threads();
-    size_t *thread_counts = (size_t *)calloc(num_threads, sizeof(size_t));
-    #pragma omp parallel
+    // Copy sort_position values for extrema only, in list order. The list is
+    // in raster order, which is the order the decoder assigns ranks in.
+    // A single pass is cheap and keeps the order independent of thread count.
     {
-        int tid = omp_get_thread_num();
-        #pragma omp for
+        size_t k = 0;
         for (size_t i = 0; i < critical_count; i++) {
             if (critical_points[i].type == 1 || critical_points[i].type == 2) {
-                thread_counts[tid]++;
+                sort_positions[k++] = critical_points[i].sort_position;
             }
         }
     }
-    
-    // Calculate offsets
-    size_t *thread_offsets = (size_t *)malloc(num_threads * sizeof(size_t));
-    thread_offsets[0] = 0;
-    for (int t = 1; t < num_threads; t++) {
-        thread_offsets[t] = thread_offsets[t-1] + thread_counts[t-1];
-    }
-    
-    // Second pass: extract sort positions in parallel
-    #pragma omp parallel
-    {
-        int tid = omp_get_thread_num();
-        size_t local_idx = thread_offsets[tid];
-        #pragma omp for
-        for (size_t i = 0; i < critical_count; i++) {
-            if (critical_points[i].type == 1 || critical_points[i].type == 2) {
-                sort_positions[local_idx++] = critical_points[i].sort_position;
-            }
-        }
-    }
-    
-    free(thread_counts);
-    free(thread_offsets);
-    
+
     // Allocate output buffer with reasonable size estimate
     // Each sort position is an int, worst case we need: header + offsets + compressed data
     // Estimate: header (sizeof(size_t)) + thread offsets (will be calculated) + 
     // worst case: each element needs sizeof(int) + overhead
     size_t maxPreservedBufferSize = sizeof(size_t) + // header for extrema_count
+                                    (size_t)omp_get_max_threads() * sizeof(size_t) + // per-thread offset table
                                     (extrema_count * (sizeof(int) + 32)) + // worst case compressed size
                                     1024; // safety margin
     // Check for overflow
@@ -782,8 +401,8 @@ szp_compress_sort_positions(CriticalPoint *critical_points, size_t critical_coun
 
                 if (current_block_size > 1)
                 {
-                    // Add vectorization hint for inner loop
-                    #pragma omp simd reduction(max:max)
+                    // No "omp simd" here: prior carries a dependence between
+                    // iterations, which simd is not allowed to assume away.
                     for (j = 0; j < current_block_size - 1; j++)
                     {
                         current = sort_positions[i + j + 1];
@@ -834,11 +453,12 @@ szp_compress_sort_positions(CriticalPoint *critical_points, size_t critical_coun
         }
         } // End of if (outputBytes_perthread && temp_sign_arr && temp_predict_arr)
 
-        outSize_perthread_arr[tid].size = outSize_perthread;
+        if (outSize_perthread_arr) outSize_perthread_arr[tid].size = outSize_perthread;
 #pragma omp barrier
 
         // Sequential prefix sum for offsets (small overhead, done once)
         #pragma omp single
+        if (outSize_perthread_arr && offsets_perthread_arr)
         {
             offsets_perthread_arr[0] = 0;
             for (size_t k = 1; k < nbThreads; k++)
@@ -858,6 +478,10 @@ szp_compress_sort_positions(CriticalPoint *critical_points, size_t critical_coun
         if (outputBytes_perthread) free(outputBytes_perthread);
         if (temp_sign_arr) free(temp_sign_arr);
         if (temp_predict_arr) free(temp_predict_arr);
+        // Every thread must finish its memcpy (which reads offsets_perthread_arr)
+        // before one thread frees the shared arrays. "omp single" has no
+        // barrier on entry, so add one.
+#pragma omp barrier
 #pragma omp single
         {
             if (outSize_perthread_arr) free(outSize_perthread_arr);
@@ -1012,7 +636,8 @@ szp_float_openmp_threadblock_randomaccess_topology_preserved(float *oriData, siz
     size_t maxPreservedBufferSize = 0;
     const size_t max_safe_nbEle = (SIZE_MAX - 1024) / 8;
     if (nbEle > 0 && nbEle <= max_safe_nbEle) {
-        maxPreservedBufferSize = 8ull * nbEle + 1024ull;
+        maxPreservedBufferSize = 8ull * nbEle + 1024ull +
+                                 (size_t)omp_get_max_threads() * sizeof(size_t); // offset table
     } else if (nbEle > max_safe_nbEle) {
         // Fallback for very large arrays - use a reasonable maximum
         maxPreservedBufferSize = (SIZE_MAX / 2 > 1024) ? (SIZE_MAX / 2) : 1024;
@@ -1217,8 +842,7 @@ szp_float_openmp_threadblock_randomaccess_topology_preserved(float *oriData, siz
 
                 if (current_block_size > 1) {
                     unsigned int actual_new_block_size = current_block_size - 1;
-                    // Add vectorization hint for inner loop
-                    #pragma omp simd reduction(max:maxv)
+                    // No "omp simd": prior carries a dependence between iterations.
                     for (j = 0; j < actual_new_block_size; j++) {
                         current = (int)((double)op[i + j + 1] * inver_bound);
                         diff = current - prior;
@@ -1253,11 +877,13 @@ szp_float_openmp_threadblock_randomaccess_topology_preserved(float *oriData, siz
                     }
                 }
 
-                unsigned char *type_output = NULL;
-                // Only save type information (1,2,3), not quantized_bin
-                typebytelength = convertIntArray2ByteArray_fast_2b(temp_type_arr, current_block_size, &type_output);
-                memcpy(block_pointer, type_output, typebytelength);
-                free(type_output);
+                // 2-bit types (1,2,3; 0 = regular), 4 per byte, first element
+                // in the high bits: same bytes as convertIntArray2ByteArray_fast_2b,
+                // packed in place instead of allocating a buffer per block.
+                typebytelength = (unsigned int)((2 * current_block_size + 7) / 8);
+                memset(block_pointer, 0, typebytelength);
+                for (j = 0; j < current_block_size; j++)
+                    block_pointer[j >> 2] |= (unsigned char)((temp_type_arr[j] & 0x3) << (6 - 2 * (j & 3)));
                 block_pointer += typebytelength; outSize_perthread += typebytelength;
             }
         }
@@ -2202,7 +1828,7 @@ szp_float_openmp_threadblock_randomaccess(float *oriData, size_t *outSize, float
             if (current_block_size > 1)
             {
                 // Vectorization hint for inner loop - helps compiler optimize
-                #pragma omp simd reduction(max:max)
+                // No "omp simd": prior carries a dependence between iterations.
                 for (j = 0; j < current_block_size - 1; j++)
                 {
                     current = (op[block_start + j + 1]) * inver_bound;

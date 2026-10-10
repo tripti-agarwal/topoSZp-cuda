@@ -76,7 +76,8 @@ __global__ void find_critical_points_kernel(
     }
 
     if (type != 0) {
-        int quantized_bin = (int)((center + absErrBound) * inver_bound);
+        /* Same bin formula as the compressor's quantization. */
+        int quantized_bin = (int)((double)center * inver_bound);
         unsigned int pos = atomicAdd(d_count, 1u);
         results[pos].x = i;
         results[pos].y = j;
@@ -85,6 +86,15 @@ __global__ void find_critical_points_kernel(
         results[pos].sort_position = 0;
     }
 }
+
+/* Raster order (row, then column). */
+struct CPRasterLess2D {
+    __host__ __device__
+    bool operator()(const CriticalPoint &a, const CriticalPoint &b) const {
+        if (a.x != b.x) return a.x < b.x;
+        return a.y < b.y;
+    }
+};
 
 extern "C"
 CriticalPoint *szp_cuda_find_critical_points(float *data, size_t *outCount,
@@ -122,6 +132,14 @@ CriticalPoint *szp_cuda_find_critical_points(float *data, size_t *outCount,
     /* Copy count back */
     unsigned int h_count = 0;
     CUDA_CHECK(cudaMemcpy(&h_count, d_count, sizeof(unsigned int), cudaMemcpyDeviceToHost));
+
+    /* atomicAdd hands out slots in arbitrary order. Sort into raster order:
+       the stored ranks are read back in raster order, and the output is
+       then the same on every run and identical to the OpenMP list. */
+    if (h_count > 1) {
+        thrust::device_ptr<CriticalPoint> rp(d_results);
+        thrust::sort(rp, rp + h_count, CPRasterLess2D());
+    }
 
     CriticalPoint *results = NULL;
     if (h_count > 0) {
@@ -190,21 +208,20 @@ __global__ void mark_boundaries_kernel(
     }
 }
 
-/* O(n) sequential scan to compute cumulative positions within each bin */
-__global__ void compute_sort_positions_kernel(
-    CriticalPoint *cp, const BinValueKey *sorted_keys,
-    const int *boundaries, size_t n)
+/* Copy the bin of each sorted key into a flat array (scan keys). */
+__global__ static void extract_bins_kernel(
+    const BinValueKey *sorted_keys, int *bins, size_t n)
 {
-    if (blockIdx.x != 0 || threadIdx.x != 0) return;
+    size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < n) bins[idx] = sorted_keys[idx].bin;
+}
 
-    int pos = 0;
-    for (size_t i = 0; i < n; i++) {
-        if (i > 0 && sorted_keys[i].bin != sorted_keys[i - 1].bin)
-            pos = 0;
-        else
-            pos += boundaries[i];
-        cp[sorted_keys[i].original_index].sort_position = pos;
-    }
+/* Write each sorted key's position back to its critical point. */
+__global__ static void scatter_sort_positions_kernel(
+    CriticalPoint *cp, const BinValueKey *sorted_keys, const int *pos, size_t n)
+{
+    size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < n) cp[sorted_keys[idx].original_index].sort_position = pos[idx];
 }
 
 extern "C"
@@ -251,8 +268,24 @@ void szp_cuda_sort_critical_points_by_original_data(CriticalPoint *critical_poin
     mark_boundaries_kernel<<<blocks, threadsPerBlock>>>(d_keys, d_boundaries, critical_count);
     CUDA_CHECK(cudaGetLastError());
 
-    compute_sort_positions_kernel<<<1, 1>>>(d_cp, d_keys, d_boundaries, critical_count);
-    CUDA_CHECK(cudaGetLastError());
+    /* Position = number of value changes so far within the bin: a segmented
+       inclusive scan of the boundary flags, keyed by bin (replaces a
+       single-thread sequential loop). */
+    {
+        int *d_bins = NULL, *d_pos = NULL;
+        CUDA_CHECK(cudaMalloc(&d_bins, critical_count * sizeof(int)));
+        CUDA_CHECK(cudaMalloc(&d_pos, critical_count * sizeof(int)));
+        extract_bins_kernel<<<blocks, threadsPerBlock>>>(d_keys, d_bins, critical_count);
+        CUDA_CHECK(cudaGetLastError());
+        thrust::device_ptr<int> bins_ptr(d_bins);
+        thrust::device_ptr<int> bnd_ptr(d_boundaries);
+        thrust::device_ptr<int> pos_ptr(d_pos);
+        thrust::inclusive_scan_by_key(bins_ptr, bins_ptr + critical_count, bnd_ptr, pos_ptr);
+        scatter_sort_positions_kernel<<<blocks, threadsPerBlock>>>(d_cp, d_keys, d_pos, critical_count);
+        CUDA_CHECK(cudaGetLastError());
+        cudaFree(d_bins);
+        cudaFree(d_pos);
+    }
 
     /* Copy back */
     CUDA_CHECK(cudaMemcpy(critical_points, d_cp, critical_count * sizeof(CriticalPoint), cudaMemcpyDeviceToHost));

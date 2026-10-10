@@ -16,6 +16,8 @@
 #include <float.h>
 #include "szp.h"
 #include "szpd_float.h"
+#include "szp_topo_restore.h"
+#include <vector>
 #ifdef _OPENMP
 #include "omp.h"
 #endif
@@ -39,29 +41,6 @@ void cost_end()
     elapsed = ((costEnd.tv_sec * 1000000 + costEnd.tv_usec) - (costStart.tv_sec * 1000000 + costStart.tv_usec)) / 1000000.0;
     totalCost += elapsed;
 }
-static const int NB4[4][2] = {{-1,0},{1,0},{0,-1},{0,1}};
-float apply_laplacian_maxima_stencil(float *data, int rows, int cols, int i, int j, float error_bound, int sort_pos){
-    (void)rows; (void)error_bound;
-    float max_neighbor=data[i*cols+j];
-    for(int n=0;n<4;n++){
-        int ni=i+NB4[n][0], nj=j+NB4[n][1];
-        float v=data[ni*cols+nj];
-        if(v>max_neighbor) max_neighbor=v;
-    }
-    return max_neighbor * (1+ (sort_pos * FLT_EPSILON));
-}
-float apply_laplacian_minima_stencil(float *data, int rows, int cols, int i, int j, float error_bound, int sort_pos){
-    (void)rows; (void)error_bound;
-    float min_neighbor=data[i*cols+j];
-    for(int n=0;n<4;n++){
-        int ni=i+NB4[n][0], nj=j+NB4[n][1];
-        float v=data[ni*cols+nj];
-        if(v<min_neighbor) min_neighbor=v;
-    }
-    if (sort_pos == 0) return min_neighbor * (1- FLT_EPSILON);
-    return min_neighbor * (1 - ((1/sort_pos)* FLT_EPSILON));
-}
-
 /**
  * Build a mapping from grid positions to sort position indices.
  * This function creates a lookup table that maps (row, col) positions to indices in the sort_positions array.
@@ -161,46 +140,6 @@ int* build_sort_position_mapping(int *critical_points_types, int *sort_positions
     return mapping;
 }
 
-void apply_stencils_on_critical_points(float *data, int *critical_points_types, int *sort_positions, 
-                                     int *sort_position_mapping, int rows, int cols, float error_bound, size_t critical_count){
-    // Safety check: if sort_position_mapping is NULL, skip stencil application
-    // This can happen if extrema_count is 0 or mapping creation failed
-    if (!sort_position_mapping || !sort_positions || critical_count == 0) {
-        // No sort positions available, skip stencil application
-        return;
-    }
-    
-    // Parallelize outer loop for better thread scaling
-    #ifdef _OPENMP
-    #pragma omp parallel for collapse(2) schedule(static)
-    #endif
-    for(int i=1;i<rows-1;i++){
-        for(int j=1;j<cols-1;j++){
-            int idx=i*cols+j;
-            int type = critical_points_types[idx];
-            
-            // Only apply stencils to maxima and minima
-            if(type==1 || type==2) {
-                // Get the sort position for this critical point
-                int sort_idx = sort_position_mapping[idx];
-                int sort_pos = (sort_idx >= 0 && sort_idx < (int)critical_count) ? sort_positions[sort_idx] : 0;
-                
-                // Apply stencil based on type
-                if(type==1) {
-                    data[idx] = apply_laplacian_maxima_stencil(data,rows,cols,i,j,error_bound,sort_pos);
-                    // You can use sort_pos here for additional processing if needed
-                    // printf("Maxima at (%d,%d) has sort position %d\n", i, j, sort_pos);
-                }
-                if(type==2) {
-                    data[idx] = apply_laplacian_minima_stencil(data,rows,cols,i,j,error_bound,sort_pos);
-                    // You can use sort_pos here for additional processing if needed
-                    // printf("Minima at (%d,%d) has sort position %d\n", i, j, sort_pos);
-                }
-            }
-        }
-    }
-}
-
 static inline float clamp_saddle_center(float cand, float n,float s,float w,float e, float eps){
     /* slightly looser clamp to allow saddles to survive */
     float ns_max=fmaxf(n,s), we_max=fmaxf(w,e);
@@ -265,21 +204,29 @@ void estimate_rbf_parameters(const float *data, int rows, int cols, float errBou
     double sum = 0.0, sum_sq = 0.0;
     size_t count = 0;
     
-    // Sample data for efficiency (every 10th point for large datasets)
+    // Sample data for efficiency (every 10th point for large datasets).
+    // Floating-point sums are formed per row and added in row order, so the
+    // result (and the RBF parameters derived from it) does not depend on the
+    // number of threads.
     int sample_step = (rows * cols > 1000000) ? 10 : 1;
+    std::vector<double> row_sum(rows, 0.0), row_sq(rows, 0.0);
     #ifdef _OPENMP
-    #pragma omp parallel for collapse(2) schedule(static) reduction(min:min_val) reduction(max:max_val) reduction(+:sum,sum_sq,count)
+    #pragma omp parallel for schedule(static) reduction(min:min_val) reduction(max:max_val) reduction(+:count)
     #endif
     for (int i = 1; i < rows - 1; i += sample_step) {
+        double rs = 0.0, rq = 0.0;
         for (int j = 1; j < cols - 1; j += sample_step) {
             float val = data[i * cols + j];
             if (val < min_val) min_val = val;
             if (val > max_val) max_val = val;
-            sum += val;
-            sum_sq += val * val;
+            rs += val;
+            rq += val * val;
             count++;
         }
+        row_sum[i] = rs;
+        row_sq[i] = rq;
     }
+    for (int i = 0; i < rows; i++) { sum += row_sum[i]; sum_sq += row_sq[i]; }
     
     double mean = sum / count;
     double variance = (sum_sq / count) - (mean * mean);
@@ -294,10 +241,12 @@ void estimate_rbf_parameters(const float *data, int rows, int cols, float errBou
     // Sample neighbor differences
     int sample_i_step = (rows > 1000) ? 5 : 1;
     int sample_j_step = (cols > 1000) ? 5 : 1;
+    std::vector<double> row_diff(rows, 0.0);
     #ifdef _OPENMP
-    #pragma omp parallel for collapse(2) schedule(static) reduction(+:avg_neighbor_diff,neighbor_count) reduction(max:max_neighbor_diff)
+    #pragma omp parallel for schedule(static) reduction(+:neighbor_count) reduction(max:max_neighbor_diff)
     #endif
     for (int i = 1; i < rows - 1; i += sample_i_step) {
+        double rd = 0.0;
         for (int j = 1; j < cols - 1; j += sample_j_step) {
             float center = data[i * cols + j];
             float n = data[(i-1) * cols + j];
@@ -311,11 +260,13 @@ void estimate_rbf_parameters(const float *data, int rows, int cols, float errBou
             double diff_e = fabs(center - e);
             
             double max_diff = fmax(fmax(diff_n, diff_s), fmax(diff_w, diff_e));
-            avg_neighbor_diff += (diff_n + diff_s + diff_w + diff_e) / 4.0;
+            rd += (diff_n + diff_s + diff_w + diff_e) / 4.0;
             if (max_diff > max_neighbor_diff) max_neighbor_diff = max_diff;
             neighbor_count++;
         }
+        row_diff[i] = rd;
     }
+    for (int i = 0; i < rows; i++) avg_neighbor_diff += row_diff[i];
     if (neighbor_count > 0) {
         avg_neighbor_diff /= neighbor_count;
     }
@@ -434,17 +385,33 @@ void rbf_smooth_saddle_points_safe_extrema_aware_targeted(
     int restored_count = 0;
     int failed_count = 0;
 
-    // Only process false negative saddles (target_mask[idx]==1) - parallelized
-    // Note: RBF smoothing modifies data, but each saddle point is processed independently
-    // Each thread processes different grid points, avoiding race conditions
-    #ifdef _OPENMP
-    #pragma omp parallel for collapse(2) schedule(static) reduction(+:restored_count,failed_count)
-    #endif
+    // Only process false negative saddles (target_mask[idx]==1).
+    // A target reads values up to max(r, 2) cells away (kernel window, and the
+    // 4-neighbour classification of its neighbours) and writes only itself.
+    // Targets whose row and column indices agree modulo D+1 are more than D
+    // apart, so each such colour class can be processed in parallel without
+    // races; the classes run one after another in a fixed order. The result
+    // is the same for any thread count.
+    const int D = (r > 2) ? r : 2;
+    const int P = D + 1;
+    // Collect the targets once, bucketed by colour (i mod P, j mod P).
+    std::vector<std::vector<int> > buckets((size_t)P * P);
     for(int i=1; i<rows-1; i++){
         for(int j=1; j<cols-1; j++){
             int idx = i*cols+j;
-            // Only process if this is a false negative saddle
-            if(!target_mask[idx] || types0[idx] != 3) continue;
+            if(target_mask[idx] && types0[idx] == 3)
+                buckets[(size_t)(i % P) * P + (j % P)].push_back(idx);
+        }
+    }
+    for (size_t b = 0; b < buckets.size(); b++) {
+    const std::vector<int> &bucket = buckets[b];
+    #ifdef _OPENMP
+    #pragma omp parallel for schedule(dynamic, 64) reduction(+:restored_count,failed_count)
+    #endif
+    for(long long t=0; t<(long long)bucket.size(); t++){
+        {
+            const int idx = bucket[(size_t)t];
+            const int i = idx / cols, j = idx % cols;
 
         /* do NOT skip near locks; just reduce influence of locked neighbors */
         double num=0,den=0;
@@ -531,8 +498,9 @@ void rbf_smooth_saddle_points_safe_extrema_aware_targeted(
             // Failed to restore after all iterations
             failed_count++;
         }
-        } // End of inner for loop (j)
-    } // End of outer for loop (i)
+        } // End of target
+    } // End of targets in this colour
+    } // End of colour classes
     
     // printf("RBF restoration results: restored=%d, failed=%d\n", restored_count, failed_count);
     
@@ -564,72 +532,6 @@ void rbf_smooth_saddle_points_safe_extrema_aware(
         data, types0, locks, all_saddles_mask, rows, cols, sigma, ksize, eps, errBound);
     
     free(all_saddles_mask);
-}
-void restore_extrema_from_types(const int *types,
-    float *data, const float *orig_decomp, int rows, int cols, float eps, float errBound){
-    float eps_soft = 0.25f * eps;   /* softer margin so nearby saddles survive */
-    
-    // Safety margin to ensure we stay within error bound
-    // The original decompressed value is quantized, so the original data could be
-    // anywhere in [orig_decomp - errBound, orig_decomp + errBound)
-    // To ensure the modified value stays within errBound of the original data:
-    // Using triangle inequality: |modified - orig_data| <= |modified - orig_decomp| + |orig_decomp - orig_data|
-    // Since |orig_decomp - orig_data| <= errBound, to ensure |modified - orig_data| <= errBound,
-    // we need |modified - orig_decomp| to be very small. However, this is too restrictive.
-    // A practical approach: constrain modified to be within a small fraction of errBound from orig_decomp.
-    // This ensures that even in worst case, |modified - orig_data| <= errBound + small_margin.
-    // Use a tight constraint: allow modification within 10% of errBound to preserve extrema while staying close to error bound.
-    float safety_margin = 0.01f;  // Use 10% of error bound - very tight to preserve error bound
-    float effective_bound = errBound * safety_margin;
-    
-    // Parallelize outer loop for better thread scaling
-    #ifdef _OPENMP
-    #pragma omp parallel for collapse(2) schedule(static)
-    #endif
-    for(int i=1;i<rows-1;i++){
-        for(int j=1;j<cols-1;j++){
-            int idx=i*cols+j;
-            if(types[idx]==1){ /* maxima */
-                float n=data[(i-1)*cols+j], s=data[(i+1)*cols+j];
-                float w=data[i*cols+(j-1)], e=data[i*cols+(j+1)];
-                float m = fmaxf(fmaxf(n,s), fmaxf(w,e));
-                float target = m + eps_soft;      /* minimal raise to be strict */
-                
-                // Clamp target to preserve error bound
-                if (orig_decomp) {
-                    float orig_val = orig_decomp[idx];
-                    float max_allowed = orig_val + effective_bound;
-                    float min_allowed = orig_val - effective_bound;
-                    // For maxima, we need data[idx] >= target to maintain maximum property
-                    // But we also need data[idx] within [min_allowed, max_allowed]
-                    // So take the maximum of target and min_allowed, then clamp to max_allowed
-                    target = fmaxf(target, min_allowed);
-                    if (target > max_allowed) target = max_allowed;
-                }
-                
-                if (data[idx] < target) data[idx] = target;
-            }else if(types[idx]==2){ /* minima */
-                float n=data[(i-1)*cols+j], s=data[(i+1)*cols+j];
-                float w=data[i*cols+(j-1)], e=data[i*cols+(j+1)];
-                float m = fminf(fminf(n,s), fminf(w,e));
-                float target = m - eps_soft;      /* minimal lower to be strict */
-                
-                // Clamp target to preserve error bound
-                if (orig_decomp) {
-                    float orig_val = orig_decomp[idx];
-                    float max_allowed = orig_val + effective_bound;
-                    float min_allowed = orig_val - effective_bound;
-                    // For minima, we need data[idx] <= target to maintain minimum property
-                    // But we also need data[idx] within [min_allowed, max_allowed]
-                    // So take the minimum of target and max_allowed, then clamp to min_allowed
-                    target = fminf(target, max_allowed);
-                    if (target < min_allowed) target = min_allowed;
-                }
-                
-                if (data[idx] > target) data[idx] = target;
-            }
-        }
-    }
 }
 static unsigned char* build_extrema_locks_from_types(const int *types, int rows, int cols){
     size_t N=(size_t)rows*(size_t)cols;
@@ -732,8 +634,10 @@ int main(int argc, char *argv[])
         
         // Validate sizes
         size_t calculated_total = topology_size + sort_positions_size + footer_size;
-        if (topology_size > 0 && sort_positions_size >= 0 && 
-            calculated_total <= byteLength + 16 && topology_size < byteLength) { // Allow small margin
+        // The compressor writes [topology][sort positions][footer], so the
+        // sizes must add up to the file size exactly.
+        if (topology_size > 0 && calculated_total == byteLength &&
+            topology_size < byteLength) {
             // Sizes are valid - use them
         } else {
             // Fallback: assume entire buffer is topology data (old format)
@@ -768,9 +672,11 @@ int main(int argc, char *argv[])
     memcpy(padded_topology, bytes, topology_size);
     memset(padded_topology + topology_size, 0, padding_size); // Zero padding
     
-    // Decompress using padded buffer
-    szp_float_decompress_openmp_threadblock_randomaccess_topology_preserved(
-        &data, nbEle, errBound, blockSize, padded_topology, &critical_points_types);
+    // Decompress using padded buffer. Passing the exact stream size (when the
+    // footer gave one) makes the thread-count detection exact.
+    szp_float_decompress_openmp_threadblock_randomaccess_topology_preserved_sized(
+        &data, nbEle, errBound, blockSize, padded_topology,
+        (sort_positions_size > 0) ? topology_size : 0, &critical_points_types);
     
     free(padded_topology);
     
@@ -801,8 +707,9 @@ int main(int argc, char *argv[])
         if (sort_positions_size >= sizeof(size_t)) {
             memcpy(&extrema_count, sort_start, sizeof(size_t));
             // Decompress into a freshly allocated array
-            int *decomp_sort_positions = szp_decompress_sort_positions(
-                sort_start + sizeof(size_t), extrema_count, blockSize);
+            int *decomp_sort_positions = szp_decompress_sort_positions_sized(
+                sort_start + sizeof(size_t), sort_positions_size - sizeof(size_t),
+                extrema_count, blockSize);
             if (decomp_sort_positions) {
                 // Copy into caller's buffer up to available space
                 
@@ -852,14 +759,9 @@ int main(int argc, char *argv[])
     }
     memcpy(orig_decomp, data, (size_t)rows*(size_t)cols*sizeof(float));
     
-    // Build mapping from grid positions to sort position indices
+    // Ranks are matched to extrema in raster order inside
+    // szp_restore_extrema_ranked_2d, so no position-to-rank map is built here.
     int *sort_position_mapping = NULL;
-    if (extrema_count > 0) {
-        sort_position_mapping = build_sort_position_mapping(types_orig, sort_positions, extrema_count, rows, cols);
-        if (!sort_position_mapping) {
-            printf("Warning: Failed to build sort position mapping\n");
-        }
-    }
     
     // Find critical points in decompressed data to identify false negatives
     // False negatives = saddles that exist in types_orig but are missing in decompressed data
@@ -957,13 +859,16 @@ int main(int argc, char *argv[])
     
     // printf("Applying stencils to critical points...\n");
     // fflush(stdout);
-    apply_stencils_on_critical_points(data, types_orig, sort_positions, sort_position_mapping, rows, cols, errBound, extrema_count);
+    // Restore minima/maxima and their order within each bin (additive,
+    // bounded by errBound around the dequantized value; see szp_topo_restore.h).
+    szp_restore_extrema_ranked_2d(data, orig_decomp, types_orig, sort_positions,
+                                  extrema_count, rows, cols, errBound);
     // printf("Stencils applied.\n");
     // fflush(stdout);
     
     // printf("Restoring extrema from types...\n");
     // fflush(stdout);
-    restore_extrema_from_types(types_orig, data, orig_decomp, rows, cols, eps, errBound);
+    (void)sort_position_mapping;
     // printf("Extrema restoration completed.\n");
     // fflush(stdout);
     
@@ -1074,6 +979,8 @@ int main(int argc, char *argv[])
 
     free(data);
     free(critical_points_types);
+    free(types_orig);
+    free(sort_positions);
     free(ori_data);
     return 0;
 }

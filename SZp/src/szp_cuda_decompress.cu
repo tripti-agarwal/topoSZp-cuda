@@ -41,6 +41,7 @@
 
 #include "szp_cuda_decompress.cuh"
 #include "szp_defines.h"
+#include "szp_detect_threads.h"
 
 /* ================================================================== */
 /*  CUDA helpers                                                       */
@@ -180,344 +181,113 @@ host_fixed_bits_byte_length(unsigned int totalElements, unsigned int bit_count)
 /* ================================================================== */
 /*  Host-side block-offset scanner                                     */
 /*                                                                     */
-/*  The OMP compressor records per-OMP-thread offsets.  We need to     */
-/*  walk through each thread's compressed stream to find individual    */
-/*  compression-block byte offsets.  This is O(num_blocks) on CPU     */
-/*  and very fast (just arithmetic, no decompression).                 */
+/*  The OMP compressor records one byte offset per OMP thread. We walk */
+/*  each thread's segment to find the byte offset of every            */
+/*  compression block. Thread-count detection and the block-to-thread */
+/*  layout come from szp_detect_threads.h, shared with the OpenMP     */
+/*  decoder, so both backends read the same streams the same way.     */
+/*  The walk is O(num_blocks) on the host (arithmetic only).          */
 /* ================================================================== */
 
 /**
- * Try to walk ALL blocks for a candidate nbThreads.
- * Returns 1 if the walk succeeds (no out-of-bounds), 0 otherwise.
+ * Build the per-block byte offsets (relative to rcp) of a random-access
+ * stream, with or without 2-bit type data after each block.
+ *
+ * Blocks are indexed globally (block b holds elements [b*blockSize, ...)),
+ * which is what the decode kernels assume. A one-element block (only ever
+ * the very last block) is parsed without a bit-count byte: the GPU encoder
+ * omits it, the OMP encoder writes it, and nothing follows that block, so
+ * both are handled.
+ *
+ * @param[out] numBlocks     total number of compression blocks
+ * @param[out] outNbThreads  detected number of OMP threads (1 for GPU streams)
+ * @param[out] outEnd        bytes from cmpBytes to the end of the last block
+ * @return host-allocated offsets, caller must free()
  */
-static int
-validate_nbThreads_randomaccess(const unsigned char *cmpBytes,
-                                 size_t nbEle, int blockSize,
-                                 unsigned int try_nt,
-                                 size_t bufferLimit)
+static size_t *
+scan_ra_block_offsets_common(const unsigned char *cmpBytes,
+                             size_t nbEle, int blockSize, int with_types,
+                             size_t *numBlocks, unsigned int *outNbThreads,
+                             size_t *outEnd)
 {
-    const size_t *offs = (const size_t *)cmpBytes;
-    size_t hdr_size = try_nt * sizeof(size_t);
+    unsigned int nbThreads = with_types
+        ? szp_detect_nbThreads_randomaccess_topo(cmpBytes, nbEle, blockSize)
+        : szp_detect_nbThreads_randomaccess(cmpBytes, nbEle, blockSize);
+    if (nbThreads == 0) nbThreads = 1;
+    *outNbThreads = nbThreads;
+
+    size_t hdr_size = (size_t)nbThreads * sizeof(size_t);
     const unsigned char *rcp = cmpBytes + hdr_size;
-    const unsigned char *bufEnd = cmpBytes + bufferLimit;
 
-    size_t threadblocksize = nbEle / try_nt;
+    size_t total_blocks = (nbEle + blockSize - 1) / blockSize;
+    *numBlocks = total_blocks;
 
-    for (unsigned int tid = 0; tid < try_nt; tid++) {
-        size_t lo = tid * threadblocksize;
-        size_t hi = (tid == try_nt - 1) ? nbEle : (tid + 1) * threadblocksize;
+    size_t *block_offsets = (size_t *)calloc(total_blocks ? total_blocks : 1, sizeof(size_t));
+    if (!block_offsets) return NULL;
 
-        const unsigned char *ptr = rcp + offs[tid];
-        if (ptr >= bufEnd) return 0;
+    const unsigned char *maxPtr = rcp;
+    for (unsigned int tid = 0; tid < nbThreads; tid++) {
+        size_t start_block, end_block;
+        szp_thread_block_range(total_blocks, nbThreads, tid, &start_block, &end_block);
+        const unsigned char *ptr = rcp + szp_read_offset(cmpBytes, tid);
 
-        for (size_t i = lo; i < hi; i += blockSize) {
-            size_t cur_bs = ((i + blockSize) > hi) ? (hi - i) : (size_t)blockSize;
-            if (ptr + sizeof(int) > bufEnd) return 0;
-            ptr += sizeof(int); /* anchor */
+        for (size_t bidx = start_block; bidx < end_block; bidx++) {
+            size_t i = bidx * (size_t)blockSize;
+            if (i >= nbEle) break;
+            size_t cur_bs = ((i + blockSize) > nbEle) ? (nbEle - i) : (size_t)blockSize;
+
+            block_offsets[bidx] = (size_t)(ptr - rcp);
+            ptr += sizeof(int);                         /* anchor */
             if (cur_bs > 1) {
-                if (ptr >= bufEnd) return 0;
-                unsigned int bc = ptr[0]; ptr++;
-                if (bc > 32) return 0; /* bit_count should be small */
+                unsigned int bc = *ptr++;               /* bit_count */
                 if (bc != 0) {
                     unsigned int n = (unsigned int)(cur_bs - 1);
-                    unsigned int sb = (n + 7) / 8;
-                    ptr += sb;
+                    ptr += (n + 7) / 8;                 /* signs */
                     ptr += host_fixed_bits_byte_length(n, bc);
-                    if (ptr > bufEnd) return 0;
                 }
             }
+            if (with_types)
+                ptr += (2 * cur_bs + 7) / 8;            /* 2-bit types */
         }
+        if (ptr > maxPtr) maxPtr = ptr;
     }
-    return 1;
+    *outEnd = (size_t)(maxPtr - cmpBytes);
+    return block_offsets;
 }
 
-/**
- * Scan random-access compressed data to build per-compression-block
- * byte offset table.
- *
- * @param cmpBytes        full compressed buffer (starts with offset table)
- * @param nbEle           total number of elements
- * @param blockSize       compression block size
- * @param[out] numBlocks  total number of compression blocks
- * @param[out] outNbThreads  detected number of OMP threads
- * @return  host-allocated array of byte offsets (relative to rcp)
- *          for each compression block, caller must free()
- */
 static size_t *
 scan_randomaccess_block_offsets(const unsigned char *cmpBytes,
                                 size_t nbEle, int blockSize,
                                 size_t *numBlocks,
-                                unsigned int *outNbThreads)
+                                unsigned int *outNbThreads,
+                                size_t *outEnd)
 {
-    const size_t *offs = (const size_t *)cmpBytes;
-
-    /* Upper bound on total compressed size */
-    size_t maxCmpSize = sizeof(float) * nbEle + sizeof(float);
-
-    /*
-     * Detect nbThreads: try candidates from 1 upward.
-     * For each candidate, check offset table validity AND
-     * verify we can walk ALL blocks without going out of bounds.
-     * Accept the FIRST (smallest) valid candidate.
-     */
-    unsigned int nbThreads = 1; /* default */
-
-    if (offs[0] == 0) {
-        for (unsigned int try_nt = 1; try_nt <= 128; try_nt++) {
-            /* Check basic offset validity */
-            int valid = 1;
-            for (unsigned int k = 1; k < try_nt; k++) {
-                if (offs[k] > maxCmpSize || offs[k] < offs[k-1]) {
-                    valid = 0; break;
-                }
-            }
-            if (!valid) break;
-
-            /* Full validation: walk all blocks */
-            if (validate_nbThreads_randomaccess(cmpBytes, nbEle, blockSize,
-                                                 try_nt, maxCmpSize)) {
-                nbThreads = try_nt;
-                break;  /* Accept first valid candidate */
-            }
-        }
-    }
-
-    *outNbThreads = nbThreads;
-
-    size_t hdr_size = nbThreads * sizeof(size_t);
-    const unsigned char *rcp = cmpBytes + hdr_size;
-
-    /* Count total compression blocks */
-    size_t total_blocks = (nbEle + blockSize - 1) / blockSize;
-    *numBlocks = total_blocks;
-
-    size_t *block_offsets = (size_t *)malloc(total_blocks * sizeof(size_t));
-    if (!block_offsets) return NULL;
-
-    /* Figure out each OMP thread's element range */
-    size_t threadblocksize = nbEle / nbThreads;
-
-    /* Walk through each OMP thread's compressed data */
-    size_t global_block_idx = 0;
-    for (unsigned int tid = 0; tid < nbThreads; tid++) {
-        size_t lo = tid * threadblocksize;
-        size_t hi = (tid == nbThreads - 1) ? nbEle : (tid + 1) * threadblocksize;
-
-        const unsigned char *ptr = rcp + offs[tid];
-
-        /* In random-access mode, each block starts with int32 anchor */
-        for (size_t i = lo; i < hi; i += blockSize) {
-            if (global_block_idx >= total_blocks) break;
-
-            block_offsets[global_block_idx] = (size_t)(ptr - rcp);
-            global_block_idx++;
-
-            size_t current_block_size = ((i + blockSize) > hi)
-                                        ? (hi - i) : (size_t)blockSize;
-
-            /* Skip: int32 anchor */
-            ptr += sizeof(int);
-
-            if (current_block_size > 1) {
-                /* Skip: bit_count */
-                unsigned int bit_count = ptr[0];
-                ptr++;
-
-                if (bit_count == 0) {
-                    /* no sign/magnitude data */
-                } else {
-                    unsigned int n = (unsigned int)(current_block_size - 1);
-                    unsigned int sign_bytes = (n + 7) / 8;
-                    ptr += sign_bytes;
-
-                    unsigned int mag_bytes = host_fixed_bits_byte_length(n, bit_count);
-                    ptr += mag_bytes;
-                }
-            }
-        }
-    }
-
-    return block_offsets;
-}
-
-/**
- * Scan topology-preserved random-access compressed data.
- * Same as scan_randomaccess_block_offsets but accounts for the extra
- * 2-bit type data appended after each block's sign+magnitude.
- */
-/**
- * Validate a candidate nbThreads for topology-preserved format.
- * Walks ALL blocks including the extra 2-bit type data per block.
- */
-static int
-validate_nbThreads_topo(const unsigned char *cmpBytes,
-                         size_t nbEle, int blockSize,
-                         unsigned int try_nt,
-                         size_t bufferLimit)
-{
-    const size_t *offs = (const size_t *)cmpBytes;
-    size_t hdr_size = (size_t)try_nt * sizeof(size_t);
-    const unsigned char *rcp = cmpBytes + hdr_size;
-    const unsigned char *bufEnd = cmpBytes + bufferLimit;
-
-    size_t num_blocks = (nbEle + blockSize - 1) / blockSize;
-    size_t blocks_per_thread = (num_blocks + try_nt - 1) / try_nt;
-
-    for (unsigned int tid = 0; tid < try_nt; tid++) {
-        size_t start_block = tid * blocks_per_thread;
-        size_t end_block   = (tid + 1) * blocks_per_thread;
-        if (end_block > num_blocks) end_block = num_blocks;
-
-        const unsigned char *ptr = rcp + offs[tid];
-        if (ptr >= bufEnd || ptr < rcp) return 0;
-
-        for (size_t bidx = start_block; bidx < end_block; bidx++) {
-            size_t i = bidx * blockSize;
-            if (i >= nbEle) break;
-            size_t cur_bs = ((i + blockSize) > nbEle) ? (nbEle - i) : (size_t)blockSize;
-
-            if (ptr + sizeof(int) > bufEnd) return 0;
-            ptr += sizeof(int); /* anchor */
-
-            if (cur_bs > 1) {
-                if (ptr >= bufEnd) return 0;
-                unsigned int bc = ptr[0]; ptr++;
-                if (bc > 32) return 0;
-                if (bc != 0) {
-                    unsigned int n = (unsigned int)(cur_bs - 1);
-                    unsigned int sb = (n + 7) / 8;
-                    unsigned int mb = host_fixed_bits_byte_length(n, bc);
-                    ptr += sb + mb;
-                    if (ptr > bufEnd) return 0;
-                }
-            }
-
-            /* 2-bit type data */
-            unsigned int type_bytes = (2 * (unsigned int)cur_bs + 7) / 8;
-            ptr += type_bytes;
-            if (ptr > bufEnd) return 0;
-        }
-    }
-    return 1;
+    return scan_ra_block_offsets_common(cmpBytes, nbEle, blockSize, 0,
+                                        numBlocks, outNbThreads, outEnd);
 }
 
 static size_t *
 scan_randomaccess_topo_block_offsets(const unsigned char *cmpBytes,
                                      size_t nbEle, int blockSize,
                                      size_t *numBlocks,
-                                     unsigned int *outNbThreads)
+                                     unsigned int *outNbThreads,
+                                     size_t *outEnd)
 {
-    const size_t *offs = (const size_t *)cmpBytes;
-    size_t maxCmpSize = 8ull * nbEle + 1024;
-
-    /* Robust nbThreads detection: accept FIRST valid candidate */
-    unsigned int nbThreads = 1;
-    if (offs[0] == 0) {
-        for (unsigned int try_nt = 1; try_nt <= 128; try_nt++) {
-            int valid = 1;
-            for (unsigned int k = 1; k < try_nt; k++) {
-                if (offs[k] > maxCmpSize || offs[k] < offs[k-1]) {
-                    valid = 0; break;
-                }
-            }
-            if (!valid) break;
-
-            if (validate_nbThreads_topo(cmpBytes, nbEle, blockSize,
-                                         try_nt, maxCmpSize)) {
-                nbThreads = try_nt;
-                break;
-            }
-        }
-    }
-    *outNbThreads = nbThreads;
-
-    size_t hdr_size = nbThreads * sizeof(size_t);
-    const unsigned char *rcp = cmpBytes + hdr_size;
-
-    size_t total_blocks = (nbEle + blockSize - 1) / blockSize;
-    *numBlocks = total_blocks;
-
-    size_t *block_offsets = (size_t *)malloc(total_blocks * sizeof(size_t));
-    if (!block_offsets) return NULL;
-
-    size_t global_block_idx = 0;
-    (void)global_block_idx;
-
-    for (unsigned int tid = 0; tid < nbThreads; tid++) {
-        /* Use block-based distribution matching the compressor */
-        size_t num_blocks_total = (nbEle + blockSize - 1) / blockSize;
-        size_t blocks_per_thread = (num_blocks_total + nbThreads - 1) / nbThreads;
-        size_t start_block = tid * blocks_per_thread;
-        size_t end_block   = (tid + 1) * blocks_per_thread;
-        if (end_block > num_blocks_total) end_block = num_blocks_total;
-
-        const unsigned char *ptr = rcp + offs[tid];
-
-        for (size_t bidx = start_block; bidx < end_block; bidx++) {
-            size_t i = bidx * blockSize;
-            if (i >= nbEle) break;
-
-            if (global_block_idx < total_blocks)
-                block_offsets[global_block_idx] = (size_t)(ptr - rcp);
-            global_block_idx++;
-
-            size_t current_block_size = ((i + blockSize) > nbEle)
-                                        ? (nbEle - i) : (size_t)blockSize;
-
-            /* int32 anchor */
-            ptr += sizeof(int);
-
-            if (current_block_size > 1) {
-                unsigned int actual_new = (unsigned int)(current_block_size - 1);
-                unsigned int bit_count = ptr[0];
-                ptr++;
-
-                if (bit_count != 0) {
-                    unsigned int sign_bytes = (actual_new + 7) / 8;
-                    ptr += sign_bytes;
-                    unsigned int mag_bytes = host_fixed_bits_byte_length(actual_new, bit_count);
-                    ptr += mag_bytes;
-                }
-            }
-
-            /* 2-bit type data */
-            unsigned int type_bytes = (unsigned int)((2 * current_block_size + 7) / 8);
-            ptr += type_bytes;
-        }
-    }
-
-    return block_offsets;
+    return scan_ra_block_offsets_common(cmpBytes, nbEle, blockSize, 1,
+                                        numBlocks, outNbThreads, outEnd);
 }
 
 /**
- * Scan threadblock (non-random-access) compressed data.
+ * Detect the OMP thread count of threadblock (non-random-access) data.
  * Each OMP thread's chunk starts with ONE int32 anchor, then blocks
  * carry only [bit_count][signs][magnitudes] with prefix-sum chaining.
- *
- * Returns per-OMP-thread information needed for the kernel.
  */
 static void
 scan_threadblock_offsets(const unsigned char *cmpBytes,
                          size_t nbEle, int blockSize,
                          unsigned int *outNbThreads)
 {
-    const size_t *offs = (const size_t *)cmpBytes;
-    unsigned int nbThreads = 0;
-    size_t maxCmpSize = sizeof(float) * nbEle + sizeof(float);
-
-    for (unsigned int try_nt = 1; try_nt <= 256; try_nt++) {
-        if (offs[0] != 0) break;
-        int valid = 1;
-        for (unsigned int k = 1; k < try_nt; k++) {
-            if (offs[k] > maxCmpSize || offs[k] < offs[k-1]) {
-                valid = 0; break;
-            }
-        }
-        if (!valid) break;
-        size_t hdr_size = try_nt * sizeof(size_t);
-        if (hdr_size + 5 <= maxCmpSize)
-            nbThreads = try_nt;
-    }
+    unsigned int nbThreads = szp_detect_nbThreads_threadblock(cmpBytes, nbEle, blockSize);
     if (nbThreads == 0) nbThreads = 1;
     *outNbThreads = nbThreads;
 }
@@ -828,44 +598,15 @@ cuda_decompress_randomaccess_impl(T *hostOut, size_t nbEle,
 {
     if (!cmpBytes || nbEle == 0) return;
 
-    /* 1. Scan compressed data on CPU to build per-block offsets */
+    /* 1. Scan compressed data on CPU to build per-block offsets and find
+          the end of the stream (same block layout as the OMP encoder). */
     size_t numBlocks = 0;
     unsigned int nbOMPThreads = 0;
+    size_t cmpTotalSize = 0;
     size_t *h_block_offsets = scan_randomaccess_block_offsets(
-        cmpBytes, nbEle, blockSize, &numBlocks, &nbOMPThreads);
+        cmpBytes, nbEle, blockSize, &numBlocks, &nbOMPThreads, &cmpTotalSize);
     if (!h_block_offsets) return;
-
-    /* 2. Compute total compressed size by walking ALL threads' blocks */
-    const size_t *offs = (const size_t *)cmpBytes;
     size_t hdr_size = nbOMPThreads * sizeof(size_t);
-    size_t cmpTotalSize = hdr_size;
-    {
-        size_t threadblocksize = nbEle / nbOMPThreads;
-        const unsigned char *rcp = cmpBytes + hdr_size;
-        const unsigned char *maxPtr = rcp;
-
-        for (unsigned int tid = 0; tid < nbOMPThreads; tid++) {
-            size_t lo = tid * threadblocksize;
-            size_t hi = (tid == nbOMPThreads - 1) ? nbEle : (tid + 1) * threadblocksize;
-            const unsigned char *ptr = rcp + offs[tid];
-
-            for (size_t i = lo; i < hi; i += blockSize) {
-                size_t cur_bs = ((i + blockSize) > hi) ? (hi - i) : (size_t)blockSize;
-                ptr += sizeof(int); /* anchor */
-                if (cur_bs > 1) {
-                    unsigned int bc = ptr[0]; ptr++;
-                    if (bc != 0) {
-                        unsigned int n = (unsigned int)(cur_bs - 1);
-                        unsigned int sb = (n + 7) / 8;
-                        ptr += sb;
-                        ptr += host_fixed_bits_byte_length(n, bc);
-                    }
-                }
-            }
-            if (ptr > maxPtr) maxPtr = ptr;
-        }
-        cmpTotalSize = (size_t)(maxPtr - cmpBytes);
-    }
 
     /* 3. Single device allocation for all buffers */
     size_t offsets_bytes = numBlocks * sizeof(size_t);
@@ -1102,36 +843,15 @@ void szp_cuda_float_decompress_randomaccess_topology_preserved(
         return;
     }
 
-    /* Scan block offsets */
+    /* Scan block offsets and the end of the stream */
     size_t numBlocks = 0;
     unsigned int nbOMPThreads = 0;
+    size_t cmpTotalSize = 0;
     size_t *h_block_offsets = scan_randomaccess_topo_block_offsets(
-        cmpBytes, nbEle, blockSize, &numBlocks, &nbOMPThreads);
+        cmpBytes, nbEle, blockSize, &numBlocks, &nbOMPThreads, &cmpTotalSize);
     if (!h_block_offsets) return;
 
     size_t hdr_size = nbOMPThreads * sizeof(size_t);
-
-    /* Compute total compressed size by walking to end of last block */
-    size_t cmpTotalSize = hdr_size;
-    if (numBlocks > 0) {
-        const unsigned char *rcp = cmpBytes + hdr_size;
-        const unsigned char *ptr = rcp + h_block_offsets[numBlocks - 1];
-        size_t last_start = (numBlocks - 1) * blockSize;
-        size_t last_bs = ((last_start + blockSize) > nbEle)
-                         ? (nbEle - last_start) : (size_t)blockSize;
-        /* Skip anchor */
-        ptr += sizeof(int);
-        if (last_bs > 1) {
-            unsigned int actual_n = (unsigned int)(last_bs - 1);
-            unsigned int bc = ptr[0]; ptr++;
-            if (bc != 0) {
-                ptr += (actual_n + 7) / 8;
-                ptr += host_fixed_bits_byte_length(actual_n, bc);
-            }
-        }
-        ptr += (2 * (unsigned int)last_bs + 7) / 8;
-        cmpTotalSize = (size_t)(ptr - cmpBytes);
-    }
 
     /* Allocate device memory */
     unsigned char *d_cmpBytes;
@@ -1186,31 +906,12 @@ int *szp_cuda_decompress_sort_positions(
     /* Scan block offsets — same format as random-access */
     size_t numBlocks = 0;
     unsigned int nbOMPThreads = 0;
+    size_t cmpTotalSize = 0;
     size_t *h_block_offsets = scan_randomaccess_block_offsets(
-        cmpBytes, critical_count, blockSize, &numBlocks, &nbOMPThreads);
+        cmpBytes, critical_count, blockSize, &numBlocks, &nbOMPThreads, &cmpTotalSize);
     if (!h_block_offsets) { free(newData); return NULL; }
 
     size_t hdr_size = nbOMPThreads * sizeof(size_t);
-
-    /* Compute total compressed size */
-    size_t cmpTotalSize = hdr_size;
-    if (numBlocks > 0) {
-        const unsigned char *rcp = cmpBytes + hdr_size;
-        const unsigned char *ptr = rcp + h_block_offsets[numBlocks - 1];
-        size_t last_start = (numBlocks - 1) * blockSize;
-        size_t last_bs = ((last_start + blockSize) > critical_count)
-                         ? (critical_count - last_start) : (size_t)blockSize;
-        ptr += sizeof(int);
-        if (last_bs > 1) {
-            unsigned int bc = ptr[0]; ptr++;
-            if (bc != 0) {
-                unsigned int sb = (unsigned int)((last_bs - 2) / 8 + 1);
-                ptr += sb;
-                ptr += host_fixed_bits_byte_length((unsigned int)(last_bs - 1), bc);
-            }
-        }
-        cmpTotalSize = (size_t)(ptr - cmpBytes);
-    }
 
     /* Device memory */
     unsigned char *d_cmpBytes;

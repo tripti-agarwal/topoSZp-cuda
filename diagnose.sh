@@ -2,13 +2,17 @@
 # TopoSZp diagnostic run: confirms (or rules out) the suspected bugs before fixing.
 #
 # Run from the repo root, inside a GPU job (not on a login node):
-#   ./diagnose.sh <file2d> <rows> <cols>  <file3d> <d1> <d2> <d3>  [eb=rel:1e-3] [blockSize=64]
+#   ./diagnose.sh <file2d> <rows> <cols>  <file3d> <d1> <d2> <d3>  [eb=1e-3] [blockSize=64] [eb3=eb]
 #
-# eb is either absolute (1e-3) or relative to each file's value range (rel:1e-3).
-# Use rel: for fields with tiny values such as CLDICE.
+# eb is an absolute error bound for the 2D file; eb3 (optional) is the absolute
+# bound for the 3D file. rel:X (X times the file's value range) also works.
+# CLDICE values are below 1e-4, so give it its own eb3, e.g. 1e-7.
 #
 # Example (CESM-ATM from SDRBench):
-#   ./diagnose.sh data/CLDHGH_1_1800_3600.dat 1800 3600  data/CLDICE_1_26_1800_3600.f32 26 1800 3600  rel:1e-3 64
+#   ./diagnose.sh data/CLDHGH_1_1800_3600.dat 1800 3600  data/CLDICE_1_26_1800_3600.f32 26 1800 3600  1e-3 64 1e-7
+#
+# Topology (FN/FT/FP per type, before and after correction) is reported by
+# example/topo_check for the CPU output at every thread count and for the GPU output.
 #
 # Env knobs:  THREADS="1 2 4 8 16 32"  REPS=3  TIMEOUT=900  SKIP_GPU=1  SKIP_SANITIZER=1
 #
@@ -19,7 +23,7 @@ if [ $# -lt 7 ]; then sed -n 2,16p "$0"; exit 1; fi
 
 F2=$(realpath "$1"); R=$2; C=$3
 F3=$(realpath "$4"); D1=$5; D2=$6; D3=$7
-EB=${8:-rel:1e-3}; BS=${9:-64}
+EB=${8:-1e-3}; BS=${9:-64}; EB3IN=${10:-$EB}
 NCPU=$(nproc)
 THREADS=${THREADS:-"1 2 4 8 16 32"}
 REPS=${REPS:-3}
@@ -75,6 +79,7 @@ int main(int argc, char **argv) {
 }
 EOF
 g++ -O2 "$B/fieldstats.cc" -o "$B/fieldstats"                     >"$OUT/logs/build.log" 2>&1 &&
+g++ -O2 example/topo_check.cc -o "$B/topo_check"                   >>"$OUT/logs/build.log" 2>&1 &&
 g++ -O2 -fopenmp -ISZp/include -w $SRC $CE -o "$B/comp"            >>"$OUT/logs/build.log" 2>&1 &&
 g++ -O2 -fopenmp -ISZp/include -w $SRC $DE -o "$B/decomp"          >>"$OUT/logs/build.log" 2>&1 &&
 say "CPU build OK" || { say "CPU build FAILED (see logs/build.log)"; exit 1; }
@@ -96,14 +101,14 @@ fi
 
 # ---------------------------------------------------------------- 1b. inputs and error bounds
 say ""; say "=== 1b. Inputs ==="
-case "$EB" in rel:*) RELV=${EB#rel:};; *) RELV=0;; esac
-stats() { "$B/fieldstats" "$1" "$RELV"; }
-read -r N2 MIN2 MAX2 RNG2 Z2 NAN2 REL2 < <(stats "$F2")
-read -r N3 MIN3 MAX3 RNG3 Z3 NAN3 REL3 < <(stats "$F3")
-if [ "$RELV" = 0 ]; then ABS2=$EB; ABS3=$EB; else ABS2=$REL2; ABS3=$REL3; fi
+relv() { case "$1" in rel:*) echo "${1#rel:}";; *) echo 0;; esac; }
+read -r N2 MIN2 MAX2 RNG2 Z2 NAN2 REL2 < <("$B/fieldstats" "$F2" "$(relv "$EB")")
+read -r N3 MIN3 MAX3 RNG3 Z3 NAN3 REL3 < <("$B/fieldstats" "$F3" "$(relv "$EB3IN")")
+if [ "$(relv "$EB")" = 0 ]; then ABS2=$EB; else ABS2=$REL2; fi
+if [ "$(relv "$EB3IN")" = 0 ]; then ABS3=$EB3IN; else ABS3=$REL3; fi
 say "2D: $F2  ${R}x${C}  min=$MIN2 max=$MAX2 zeros=${Z2}% NaN=$NAN2  -> abs eb=$ABS2"
 say "3D: $F3  ${D1}x${D2}x${D3}  min=$MIN3 max=$MAX3 zeros=${Z3}% NaN=$NAN3  -> abs eb=$ABS3"
-say "eb=$EB  blockSize=$BS"
+say "eb (2D)=$EB  eb (3D)=$EB3IN  blockSize=$BS"
 [ "$N2" -eq $((R*C)) ]      || say "WARNING: 2D file has $N2 floats, expected $((R*C))"
 [ "$N3" -eq $((D1*D2*D3)) ] || say "WARNING: 3D file has $N3 floats, expected $((D1*D2*D3))"
 awk -v e="$ABS2" -v r="$RNG2" 'BEGIN{ if (e >= r) exit 1 }' || say "WARNING: 2D eb >= value range; use rel:"
@@ -126,7 +131,7 @@ run_cpu() { # $1=T $2=rep
     e=$(grep -m1 "Max absolute error" "$L.dec.log" | awk '{print $NF}'); e=${e:-NA}
     OMP_NUM_THREADS=1 timeout "$TIMEOUT" "$B/decomp" "$w.SZp" $((R*C)) "$BS" "$ABS2" "$R" "$C" > "$L.dec1.log" 2>&1
     d1=$(grep -m1 "Max absolute error" "$L.dec1.log" | awk '{print $NF}'); d1=${d1:-NA}
-    rm -f "$w.SZp.out"
+    if [ "$r" = 1 ]; then mv -f "$w.SZp.out" "$OUT/work/cpu_T${T}.out"; else rm -f "$w.SZp.out"; fi
   fi
   printf "%-4s %-4s %-5s %-5s %-14s %-8s %-6s %-14s %-8s %s\n" "$T" "$r" "$crc" "$drc" "$e" "$(ratio "$e")" \
          "$(verdict "$e")" "$d1" "$(ratio "$d1")" "$md5" | tee -a "$S"
@@ -135,6 +140,16 @@ for T in $THREADS; do
   [ "$T" -gt "$NCPU" ] && continue
   for r in $(seq 1 "$REPS"); do run_cpu "$T" "$r"; done
 done
+say ""; say "--- Topology of the CPU output (2D, abs eb $ABS2) ---"
+first=""
+for T in $THREADS; do
+  o=$OUT/work/cpu_T${T}.out; [ -f "$o" ] || continue
+  "$B/topo_check" "$F2" "$o" "$ABS2" "$R" "$C" > "$OUT/logs/topo_cpu_T$T.log" 2>&1
+  if [ -z "$first" ]; then first=$T; sed 's/^/    /' "$OUT/logs/topo_cpu_T$T.log" | grep -v '^    TOPO' | tee -a "$S"; fi
+  say "    T=$T: $(grep ^TOPO "$OUT/logs/topo_cpu_T$T.log")  out_md5=$(md5sum < "$o" | cut -c1-8)"
+done
+say "Read: the decompressed output (out_md5) should be identical for every T."
+say ""
 say "Read: rc 139 = segfault (bug 1), 124 = timeout. Different md5 across reps at the same T = non-deterministic output (bugs 1/2/5)."
 say "      FAIL only when T>1 = parallel bugs. d1/eb different from err/eb = decoder thread-count problem (bug 3)."
 
@@ -164,14 +179,29 @@ if [ $GPU = 1 ] && [ $GPUVIS = 1 ]; then
   norm() { grep -E "$KEYS" "$1" | sed -E 's/ in [0-9.]+ ms//g; s/[0-9.]+ ms//g'; }
   for k in 1 2; do
     say "-- test_cuda_topology_3d, run $k (full 3D volume)"
-    OMP_NUM_THREADS=$NCPU timeout "$T3" "$G/test_cuda_topology_3d" "$F3" "$D1" "$D2" "$D3" "$ABS3" "$BS" > "$OUT/logs/gpu3d_$k.log" 2>&1
+    TOPOSZP_DUMP=$OUT/work/gpu3d_$k.out OMP_NUM_THREADS=$NCPU timeout "$T3" "$G/test_cuda_topology_3d" "$F3" "$D1" "$D2" "$D3" "$ABS3" "$BS" > "$OUT/logs/gpu3d_$k.log" 2>&1
     say "    exit=$(rcnote $?)"; grab "$OUT/logs/gpu3d_$k.log"
   done
+  if [ -f "$OUT/work/gpu3d_1.out" ]; then
+    say "    --- Topology of the GPU 3D output (abs eb $ABS3) ---"
+    "$B/topo_check" "$F3" "$OUT/work/gpu3d_1.out" "$ABS3" "$D1" "$D2" "$D3" > "$OUT/logs/topo_gpu3d.log" 2>&1
+    sed 's/^/    /' "$OUT/logs/topo_gpu3d.log" | tee -a "$S"
+    cmp -s "$OUT/work/gpu3d_1.out" "$OUT/work/gpu3d_2.out" && say "    3D outputs of runs 1 and 2 are identical" \
+      || say "    3D outputs of runs 1 and 2 DIFFER"
+  fi
   if diff -q <(norm "$OUT/logs/gpu3d_1.log") <(norm "$OUT/logs/gpu3d_2.log") >/dev/null; then
     say "    3D runs 1 and 2 agree"; else say "    3D runs 1 and 2 DIFFER (non-deterministic GPU path)"; fi
   say "-- test_cuda_topology (2D)"
-  OMP_NUM_THREADS=$NCPU timeout "$TIMEOUT" "$G/test_cuda_topology" "$F2" "$R" "$C" "$ABS2" "$BS" > "$OUT/logs/gpu2d.log" 2>&1
+  TOPOSZP_DUMP=$OUT/work/gpu2d.out OMP_NUM_THREADS=$NCPU timeout "$TIMEOUT" "$G/test_cuda_topology" "$F2" "$R" "$C" "$ABS2" "$BS" > "$OUT/logs/gpu2d.log" 2>&1
   say "    exit=$(rcnote $?)"; grab "$OUT/logs/gpu2d.log"
+  if [ -f "$OUT/work/gpu2d.out" ]; then
+    say "    --- Topology of the GPU 2D output (abs eb $ABS2) ---"
+    "$B/topo_check" "$F2" "$OUT/work/gpu2d.out" "$ABS2" "$R" "$C" > "$OUT/logs/topo_gpu2d.log" 2>&1
+    sed 's/^/    /' "$OUT/logs/topo_gpu2d.log" | tee -a "$S"
+    f1=$OUT/work/cpu_T1.out
+    [ -f "$f1" ] && { cmp -s "$f1" "$OUT/work/gpu2d.out" && say "    GPU 2D output is identical to the CPU output" \
+      || say "    GPU 2D output differs from the CPU output (compare the two topology tables)"; }
+  fi
   for T in 1 4 "$NCPU"; do
     say "-- CPU compress (T=$T) -> GPU decompress: test_cuda_decompress"
     OMP_NUM_THREADS=$T timeout "$TIMEOUT" "$G/test_cuda_decompress" "$F2" $((R*C)) "$ABS2" "$BS" "$R" "$C" > "$OUT/logs/interop_cpu2gpu_T$T.log" 2>&1
@@ -198,5 +228,5 @@ elif [ "${SKIP_GPU:-0}" != 1 ]; then
   say ""; say "=== 4. GPU tests skipped (CUDA build OK: $GPU, GPU visible: $GPUVIS) ==="
 fi
 
-rm -f "$OUT"/work/*.SZp "$OUT"/work/crop3d.f32
+rm -f "$OUT"/work/*.SZp "$OUT"/work/*.out "$OUT"/work/crop3d.f32
 say ""; say "Done. Send me: $S  (and the logs/ folder if anything FAILs or crashes)"
