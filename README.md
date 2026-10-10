@@ -43,6 +43,10 @@ the autotools steps above. Examples:
 # topology report (kept / FN / FT / FP per type, before and after correction)
 g++ -O2 -fopenmp -ISZp/include example/topo_check.cc -o topo_check
 ./topo_check data.f32 data.f32.SZp.out 1e-3 1800 3600          # add d3 for 3D, --f64 for double data
+
+# saddles by the standard PL definition (TTK-style), independent of TopoSZp's own rule
+g++ -O2 -fopenmp -ISZp/include example/pl_topo_check.cc -o pl_topo_check
+./pl_topo_check data.f32 data.f32.SZp.out 1e-3 1800 3600       # add d3 for 3D, --f64, --no-pers; --selftest
 ```
 
 * **Error bound.** `eb` is absolute. Plain quantization keeps every value within
@@ -63,6 +67,14 @@ g++ -O2 -fopenmp -ISZp/include example/topo_check.cc -o topo_check
   neighbours (4 in 2D, 6 in 3D). A saddle has at least one axis where the point
   is above both neighbours and one where it is below both; in 3D this counts
   many points as saddles (on CESM CLDICE about 89% of critical points).
+* **Checking with the standard definition.** `pl_topo_check` classifies points
+  as in TTK (Freudenthal triangulation, 6/14 neighbours, connected pieces of the
+  lower and upper link, ties broken by index) and reports, for raw SZp and the
+  TopoSZp output: kept/FN/FT/FP per PL type (min, max, saddle; 1-, 2- and
+  degenerate saddles in 3D), saddles kept at the same point and within one cell,
+  saddles kept by persistence (join/split trees), and how PL saddles relate to
+  the axis-rule types TopoSZp stores. TopoSZp's no-FP/FT guarantee is for its
+  own rule, so PL false positives can appear.
 * **Same result everywhere.** Output does not depend on the number of OpenMP
   threads, and the CPU (`szp_topo_restore_float_2d/3d`) and GPU
   (`szp_cuda_topo_restore_float_2d/3d`) restorations run the same algorithm.

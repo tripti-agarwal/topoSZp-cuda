@@ -13,13 +13,15 @@
 #
 # Topology (FN/FT/FP per type, before and after correction) is reported by
 # example/topo_check for the CPU output at every thread count and for the GPU output.
+# Section 2c checks saddles with the standard PL (TTK-style) definition instead
+# (example/pl_topo_check): how many true saddles TopoSZp keeps, by persistence.
 #
-# Env knobs:  THREADS="1 2 4 8 16 32"  REPS=3  TIMEOUT=900  SKIP_GPU=1  SKIP_SANITIZER=1
+# Env knobs:  THREADS="1 2 4 8 16 32"  REPS=3  TIMEOUT=900  SKIP_GPU=1  SKIP_SANITIZER=1  SKIP_PL=1
 #
 # Output: diag_<timestamp>/summary.txt (send this) and diag_<timestamp>/logs/ (one log per run).
 
 set -u
-if [ $# -lt 7 ]; then sed -n 2,16p "$0"; exit 1; fi
+if [ $# -lt 7 ]; then sed -n 2,19p "$0"; exit 1; fi
 
 F2=$(realpath "$1"); R=$2; C=$3
 F3=$(realpath "$4"); D1=$5; D2=$6; D3=$7
@@ -81,6 +83,7 @@ int main(int argc, char **argv) {
 EOF
 g++ -O2 "$B/fieldstats.cc" -o "$B/fieldstats"                     >"$OUT/logs/build.log" 2>&1 &&
 g++ -O2 -fopenmp -ISZp/include example/topo_check.cc -o "$B/topo_check"                   >>"$OUT/logs/build.log" 2>&1 &&
+g++ -O2 -fopenmp -ISZp/include example/pl_topo_check.cc -o "$B/pl_topo_check"             >>"$OUT/logs/build.log" 2>&1 &&
 g++ -O2 -fopenmp -ISZp/include -w $SRC $CE -o "$B/comp"            >>"$OUT/logs/build.log" 2>&1 &&
 g++ -O2 -fopenmp -ISZp/include -w $SRC $DE -o "$B/decomp"          >>"$OUT/logs/build.log" 2>&1 &&
 say "CPU build OK" || { say "CPU build FAILED (see logs/build.log)"; exit 1; }
@@ -182,6 +185,30 @@ if [ -f "$OUT/work/cpu3d_T$NCPU.out" ]; then
   sed 's/^/    /' "$OUT/logs/topo_cpu3d.log" | tee -a "$S"
   cmp -s "$OUT/work/cpu3d_T1.out" "$OUT/work/cpu3d_T$NCPU.out" && say "    CPU 3D outputs at T=1 and T=$NCPU are identical" \
     || say "    CPU 3D outputs at T=1 and T=$NCPU DIFFER"
+fi
+
+# ---------------------------------------------------------------- 2c. PL saddle check
+# Saddles found with the standard piecewise-linear definition (Freudenthal
+# triangulation, link components, as in TTK), independent of the axis rule
+# TopoSZp stores, and whether TopoSZp keeps them. See example/pl_topo_check.cc.
+if [ "${SKIP_PL:-0}" != 1 ]; then
+  say ""; say "=== 2c. PL (TTK-style) critical points: are true saddles preserved? ==="
+  "$B/pl_topo_check" --selftest 2>&1 | sed 's/^/    /' | tee -a "$S"
+  o2=$OUT/work/cpu_T1.out; [ -f "$o2" ] || o2=$(ls "$OUT"/work/cpu_T*.out 2>/dev/null | head -1)
+  if [ -n "$o2" ] && [ -f "$o2" ]; then
+    say "-- 2D ($(basename "$o2"))"
+    OMP_NUM_THREADS=$NCPU "$B/pl_topo_check" "$F2" "$o2" "$ABS2" "$R" "$C" > "$OUT/logs/pl_2d.log" 2>&1
+    sed 's/^/    /' "$OUT/logs/pl_2d.log" | tee -a "$S"
+  fi
+  o3=$OUT/work/cpu3d_T$NCPU.out
+  if [ -f "$o3" ]; then
+    say "-- 3D ($(basename "$o3"); the GPU output is checked against it in section 4)"
+    OMP_NUM_THREADS=$NCPU timeout "$T3" "$B/pl_topo_check" "$F3" "$o3" "$ABS3" "$D1" "$D2" "$D3" > "$OUT/logs/pl_3d.log" 2>&1
+    say "    exit=$(rcnote $?)"; sed 's/^/    /' "$OUT/logs/pl_3d.log" | tee -a "$S"
+  fi
+  say "Read: 'kept' = same PL type at the same grid point; '+-1' = same type within one cell (the saddle moved"
+  say "      by at most one cell). FP/FT here are not covered by TopoSZp's guarantee, which is for its axis rule."
+  say "      The 'PL vs axis' table shows how many TopoSZp saddles are real PL saddles and vice versa."
 fi
 
 # ---------------------------------------------------------------- 3. AddressSanitizer
