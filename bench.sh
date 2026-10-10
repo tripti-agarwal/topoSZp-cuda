@@ -147,8 +147,9 @@ for cs in "${CASES[@]}"; do
       TOPOSZP_DUMP=$o OMP_NUM_THREADS=$NCPU timeout "$TIMEOUT" "$exe" "$F" $DIMS "$abs" "$BS" > "$L/gpu_${tag}_$r.log" 2>&1
       rc=$?; [ $rc = 0 ] || WARN+=("$lab GPU $mode $eb: test exit $rc (see $L/gpu_${tag}_$r.log)")
       t=$(grep -m1 '^TIMING' "$L/gpu_${tag}_$r.log")
-      tc=$(minf "$tc" "$(echo "$t" | grep -o 'comp_s=[0-9.e+-]*' | cut -d= -f2)")
-      td=$(minf "$td" "$(echo "$t" | grep -o 'decomp_s=[0-9.e+-]*' | cut -d= -f2)")
+      # TIMING comp_s=<x> decomp_s=<y>  (match whole fields: "comp_s=" is inside "decomp_s=")
+      tc=$(minf "$tc" "$(echo "$t" | awk '{for (i = 2; i <= NF; i++) if ($i ~ /^comp_s=/) {sub(/^comp_s=/, "", $i); print $i}}')")
+      td=$(minf "$td" "$(echo "$t" | awk '{for (i = 2; i <= NF; i++) if ($i ~ /^decomp_s=/) {sub(/^decomp_s=/, "", $i); print $i}}')")
     done
     if [ -f "$o" ]; then
       OMP_NUM_THREADS=$NCPU "$B/topo_check" "$F" "$o" "$abs" $DIMS > "$L/topo_gpu_${tag}.log" 2>&1
