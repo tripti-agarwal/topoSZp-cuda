@@ -92,11 +92,18 @@ GPU=0
 if [ "${SKIP_GPU:-0}" != 1 ] && command -v nvcc >/dev/null; then
   CC_ARCH=$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null | head -1 | tr -d '. ')
   [[ "$CC_ARCH" =~ ^[0-9]+$ ]] || CC_ARCH=80
+  # Use the same GNU compilers as the CPU build (a loaded module may set CXX to
+  # another compiler, e.g. an old Intel icpc that lacks C++17/OpenMP for CMake).
+  HOSTCC=${HOSTCC:-gcc}; HOSTCXX=${HOSTCXX:-g++}
+  say "CUDA host compilers: $(command -v $HOSTCC) / $(command -v $HOSTCXX)"
   cmake -S . -B "$OUT/build_cuda" -DENABLE_CUDA=ON -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_C_COMPILER="$HOSTCC" -DCMAKE_CXX_COMPILER="$HOSTCXX" \
+        -DCMAKE_CUDA_HOST_COMPILER="$HOSTCXX" \
         -DCMAKE_CUDA_ARCHITECTURES="$CC_ARCH" >"$OUT/logs/cmake.log" 2>&1 &&
   cmake --build "$OUT/build_cuda" -j"$NCPU" --target test_cuda_topology test_cuda_topology_3d \
         test_cuda_compress test_cuda_decompress >>"$OUT/logs/cmake.log" 2>&1 && GPU=1
   say "CUDA build (sm_$CC_ARCH): $([ $GPU = 1 ] && echo OK || echo 'FAILED (see logs/cmake.log)')"
+  [ $GPU = 1 ] || grep -m8 -i -A3 "error" "$OUT/logs/cmake.log" | sed 's/^/    /' | tee -a "$S"
 fi
 
 # ---------------------------------------------------------------- 1b. inputs and error bounds
