@@ -92,10 +92,11 @@ static void neighbour_types_3d(const float *data, int d1, int d2, int d3,
 }
 
 /* With the trial value already written at (x,y,z): reject the change if a
-   regular neighbour becomes critical, if a neighbour that currently has its
-   stored type loses it, or if the center is not below every stored maximum
-   and above every stored minimum next to it (those only move further away
-   later, so this keeps the relation the original data has). */
+   neighbour becomes critical with a type other than its stored one (that
+   would be a false positive or a false type), if a neighbour that currently
+   has its stored type loses it, or if the center is not below every stored
+   maximum and above every stored minimum next to it. Extrema are restored
+   before the saddle passes, so these relations are final. */
 static int change_is_safe_3d(const float *data, const int *types0,
                              int d1, int d2, int d3, int x, int y, int z,
                              float trial, const int before[6])
@@ -106,7 +107,7 @@ static int change_is_safe_3d(const float *data, const int *types0,
         size_t nf = IDX(nx, ny, nz, d2, d3);
         int t0 = types0[nf];
         int after = classify_3d(data, d1, d2, d3, nx, ny, nz);
-        if (t0 == 0 && after != 0) return 0;
+        if (after != 0 && after != t0) return 0;            /* no FP, no FT */
         if (t0 != 0 && before[k] == t0 && after != t0) return 0;
         if (t0 == 1 && !(trial < data[nf])) return 0;
         if (t0 == 2 && !(trial > data[nf])) return 0;
@@ -547,8 +548,16 @@ int main(int argc, char *argv[])
     printf("  Sort positions: %zu extrema, decompressed: %s\n",
            extrema_count, sort_positions ? "OK" : "NULL");
 
-    /* Saddles first: exact stencil search, then RBF for the rest. Both
-       reject changes that would change a neighbour's type. */
+    /* Extrema first: ranked additive restoration within eb of the
+       dequantized value (szp_topo_restore.h, same rule as the 2D path). It
+       only creates orderings that hold in the original data, so it cannot
+       create false positives or false types. */
+    szp_restore_extrema_ranked_3d(decompressed, orig_decomp, FN, sort_positions,
+                                  sort_positions ? extrema_count : 0,
+                                  d1, d2, d3, absErrBound);
+
+    /* Then saddles: exact stencil search, then RBF for the rest. Both
+       reject any change that gives a neighbour a wrong critical type. */
     int st_restored = stencil_restore_saddles_3d(decompressed, FN, orig_decomp,
                                                  d1, d2, d3, absErrBound);
     float eps = fmaxf(1e-6f, 0.1f * absErrBound);
@@ -557,11 +566,6 @@ int main(int argc, char *argv[])
     printf("  Saddle stencil restored %d saddles; RBF restored %d saddles\n",
            st_restored, restored);
 
-    /* Extrema last: ranked additive restoration within eb of the
-       dequantized value (szp_topo_restore.h, same rule as the 2D path). */
-    szp_restore_extrema_ranked_3d(decompressed, orig_decomp, FN, sort_positions,
-                                  sort_positions ? extrema_count : 0,
-                                  d1, d2, d3, absErrBound);
 
     double tp1 = get_time_ms();
     printf("  Post-processing done in %.2f ms\n\n", tp1 - tp0);
