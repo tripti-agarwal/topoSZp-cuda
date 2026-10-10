@@ -1,44 +1,51 @@
 #!/usr/bin/env bash
 # TopoSZp diagnostic run: confirms (or rules out) the suspected bugs before fixing.
 #
-# Run from the repo root on the GPU machine:
-#   ./diagnose.sh <file2d.f32> <rows> <cols>  <file3d.f32> <d1> <d2> <d3>  [absEB=1e-3] [blockSize=64]
+# Run from the repo root, inside a GPU job (not on a login node):
+#   ./diagnose.sh <file2d> <rows> <cols>  <file3d> <d1> <d2> <d3>  [eb=rel:1e-3] [blockSize=64]
 #
-# Example (SDRBench):
-#   ./diagnose.sh CLDHGH_1_1800_3600.f32 1800 3600  Uf48.bin.f32 100 500 500  1e-3 64
+# eb is either absolute (1e-3) or relative to each file's value range (rel:1e-3).
+# Use rel: for fields with tiny values such as CLDICE.
 #
-# Env knobs:  THREADS="1 2 4 8 16"  REPS=3  SKIP_GPU=1  SKIP_SANITIZER=1  TIMEOUT=900
+# Example (CESM-ATM from SDRBench):
+#   ./diagnose.sh data/CLDHGH_1_1800_3600.dat 1800 3600  data/CLDICE_1_26_1800_3600.f32 26 1800 3600  rel:1e-3 64
 #
-# Output: diag_<timestamp>/  with summary.txt (send me this) and one log per run.
+# Env knobs:  THREADS="1 2 4 8 16 32"  REPS=3  TIMEOUT=900  SKIP_GPU=1  SKIP_SANITIZER=1
+#
+# Output: diag_<timestamp>/summary.txt (send this) and diag_<timestamp>/logs/ (one log per run).
 
 set -u
-if [ $# -lt 7 ]; then sed -n 2,12p "$0"; exit 1; fi
+if [ $# -lt 7 ]; then sed -n 2,16p "$0"; exit 1; fi
 
 F2=$(realpath "$1"); R=$2; C=$3
 F3=$(realpath "$4"); D1=$5; D2=$6; D3=$7
-EB=${8:-1e-3}; BS=${9:-64}
+EB=${8:-rel:1e-3}; BS=${9:-64}
 NCPU=$(nproc)
 THREADS=${THREADS:-"1 2 4 8 16 32"}
 REPS=${REPS:-3}
 TIMEOUT=${TIMEOUT:-900}
+T3=$((TIMEOUT * 3))                       # 3D runs get a longer limit
 REPO=$(pwd)
 OUT=$REPO/diag_$(date +%Y%m%d_%H%M%S); mkdir -p "$OUT/bin" "$OUT/logs" "$OUT/work"
 S=$OUT/summary.txt
+B=$OUT/bin
 say() { echo "$*" | tee -a "$S"; }
-twoEB=$(python3 -c "print(2*float('$EB'))")
+rcnote() { case $1 in 0) echo "0";; 124) echo "124 (timeout)";; 134) echo "134 (abort)";;
+                      136) echo "136 (FP exception)";; 139) echo "139 (segfault)";; *) echo "$1";; esac; }
 
 # ---------------------------------------------------------------- 0. environment
 say "=== 0. Environment ==="
 say "date: $(date)   host: $(hostname)   cores: $NCPU"
-say "git:  $(git rev-parse --short HEAD 2>/dev/null) $(git status --porcelain | wc -l) modified files"
+say "git:  $(git rev-parse --short HEAD 2>/dev/null) on $(git branch --show-current 2>/dev/null)"
 say "gcc:  $(g++ --version | head -1)"
+say "cmake: $(cmake --version 2>/dev/null | head -1)"
 command -v nvcc >/dev/null && say "nvcc: $(nvcc --version | tail -1)"
-command -v nvidia-smi >/dev/null && say "gpu:  $(nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv,noheader)"
-say "2D: $F2 ${R}x${C}   3D: $F3 ${D1}x${D2}x${D3}   eb=$EB  2eb=$twoEB  bs=$BS"
-for f in "$F2:$((R*C))" "$F3:$((D1*D2*D3))"; do
-  p=${f%:*}; n=${f#*:}; sz=$(stat -c %s "$p")
-  [ "$sz" -eq $((n*4)) ] || say "WARNING: $p is $sz bytes, expected $((n*4)) (float32)"
-done
+GPUVIS=0
+if command -v nvidia-smi >/dev/null && nvidia-smi -L >/dev/null 2>&1; then
+  GPUVIS=1; say "gpu:  $(nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv,noheader | head -1)"
+else
+  say "gpu:  none visible (on a login node? GPU tests will be skipped; run inside a GPU job)"
+fi
 
 # ---------------------------------------------------------------- 1. build
 say ""; say "=== 1. Build ==="
@@ -46,102 +53,150 @@ SRC="SZp/src/szp.cc SZp/src/szp_CompressionToolkit.cc SZp/src/szp_TypeManager.cc
      SZp/src/szp_float.cc SZp/src/szp_helper.cc SZp/src/szp_rw.cc SZp/src/szpd_double.cc SZp/src/szpd_float.cc"
 CE=example/testfloat_compress_fastmode1_topology.cc
 DE=example/testfloat_decompress_fastmode1_topology.cc
-B=$OUT/bin
-g++ -O2 -fopenmp -ISZp/include -w $SRC $CE -o $B/comp            >"$OUT/logs/build.log" 2>&1 &&
-g++ -O2 -fopenmp -ISZp/include -w $SRC $DE -o $B/decomp          >>"$OUT/logs/build.log" 2>&1 &&
+cat > "$B/fieldstats.cc" <<'EOF'
+// fieldstats <float32 file> [rel]  ->  n min max range zero% nan abs_eb
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+#include <vector>
+int main(int argc, char **argv) {
+  FILE *f = fopen(argv[1], "rb"); if (!f) { perror(argv[1]); return 1; }
+  std::vector<float> b(1 << 20); size_t n = 0, z = 0, nan = 0, k;
+  float mn = INFINITY, mx = -INFINITY;
+  while ((k = fread(b.data(), 4, b.size(), f)) > 0) {
+    for (size_t i = 0; i < k; i++) { float v = b[i];
+      if (std::isnan(v)) { nan++; continue; } if (v == 0.0f) z++;
+      if (v < mn) mn = v; if (v > mx) mx = v; }
+    n += k; }
+  fclose(f);
+  float range = mx - mn; if (!(range > 0)) range = 1.1920929e-07f;   // same as szp_rel_to_abs_float
+  float rel = argc > 2 ? strtof(argv[2], 0) : 0;
+  printf("%zu %.9g %.9g %.9g %.2f %zu %.9g\n", n, mn, mx, range, n ? 100.0 * z / n : 0.0, nan, rel > 0 ? rel * range : 0.0f);
+}
+EOF
+g++ -O2 "$B/fieldstats.cc" -o "$B/fieldstats"                     >"$OUT/logs/build.log" 2>&1 &&
+g++ -O2 -fopenmp -ISZp/include -w $SRC $CE -o "$B/comp"            >>"$OUT/logs/build.log" 2>&1 &&
+g++ -O2 -fopenmp -ISZp/include -w $SRC $DE -o "$B/decomp"          >>"$OUT/logs/build.log" 2>&1 &&
 say "CPU build OK" || { say "CPU build FAILED (see logs/build.log)"; exit 1; }
 if [ "${SKIP_SANITIZER:-0}" != 1 ]; then
-  g++ -O1 -g -fopenmp -fsanitize=address -fno-omit-frame-pointer -ISZp/include -w $SRC $CE -o $B/comp_asan   >>"$OUT/logs/build.log" 2>&1
-  g++ -O1 -g -fopenmp -fsanitize=address -fno-omit-frame-pointer -ISZp/include -w $SRC $DE -o $B/decomp_asan >>"$OUT/logs/build.log" 2>&1
-  say "ASan build: $([ -x $B/comp_asan ] && echo OK || echo FAILED)"
+  g++ -O1 -g -fopenmp -fsanitize=address -fno-omit-frame-pointer -ISZp/include -w $SRC $CE -o "$B/comp_asan"   >>"$OUT/logs/build.log" 2>&1
+  g++ -O1 -g -fopenmp -fsanitize=address -fno-omit-frame-pointer -ISZp/include -w $SRC $DE -o "$B/decomp_asan" >>"$OUT/logs/build.log" 2>&1
+  say "ASan build: $([ -x "$B/comp_asan" ] && echo OK || echo FAILED)"
 fi
 GPU=0
 if [ "${SKIP_GPU:-0}" != 1 ] && command -v nvcc >/dev/null; then
-  CC_ARCH=$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader | head -1 | tr -d .)
+  CC_ARCH=$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null | head -1 | tr -d '. ')
+  [[ "$CC_ARCH" =~ ^[0-9]+$ ]] || CC_ARCH=80
   cmake -S . -B "$OUT/build_cuda" -DENABLE_CUDA=ON -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_CUDA_ARCHITECTURES="${CC_ARCH:-80}" >"$OUT/logs/cmake.log" 2>&1 &&
-  cmake --build "$OUT/build_cuda" -j"$NCPU" >>"$OUT/logs/cmake.log" 2>&1 && GPU=1
+        -DCMAKE_CUDA_ARCHITECTURES="$CC_ARCH" >"$OUT/logs/cmake.log" 2>&1 &&
+  cmake --build "$OUT/build_cuda" -j"$NCPU" --target test_cuda_topology test_cuda_topology_3d \
+        test_cuda_compress test_cuda_decompress >>"$OUT/logs/cmake.log" 2>&1 && GPU=1
   say "CUDA build (sm_$CC_ARCH): $([ $GPU = 1 ] && echo OK || echo 'FAILED (see logs/cmake.log)')"
 fi
 
+# ---------------------------------------------------------------- 1b. inputs and error bounds
+say ""; say "=== 1b. Inputs ==="
+case "$EB" in rel:*) RELV=${EB#rel:};; *) RELV=0;; esac
+stats() { "$B/fieldstats" "$1" "$RELV"; }
+read -r N2 MIN2 MAX2 RNG2 Z2 NAN2 REL2 < <(stats "$F2")
+read -r N3 MIN3 MAX3 RNG3 Z3 NAN3 REL3 < <(stats "$F3")
+if [ "$RELV" = 0 ]; then ABS2=$EB; ABS3=$EB; else ABS2=$REL2; ABS3=$REL3; fi
+say "2D: $F2  ${R}x${C}  min=$MIN2 max=$MAX2 zeros=${Z2}% NaN=$NAN2  -> abs eb=$ABS2"
+say "3D: $F3  ${D1}x${D2}x${D3}  min=$MIN3 max=$MAX3 zeros=${Z3}% NaN=$NAN3  -> abs eb=$ABS3"
+say "eb=$EB  blockSize=$BS"
+[ "$N2" -eq $((R*C)) ]      || say "WARNING: 2D file has $N2 floats, expected $((R*C))"
+[ "$N3" -eq $((D1*D2*D3)) ] || say "WARNING: 3D file has $N3 floats, expected $((D1*D2*D3))"
+awk -v e="$ABS2" -v r="$RNG2" 'BEGIN{ if (e >= r) exit 1 }' || say "WARNING: 2D eb >= value range; use rel:"
+awk -v e="$ABS3" -v r="$RNG3" 'BEGIN{ if (e >= r) exit 1 }' || say "WARNING: 3D eb >= value range; use rel:"
+
 # ---------------------------------------------------------------- 2. CPU thread sweep
 # Confirms bugs 1-3: crashes, non-determinism, and >2eb error appearing only when T>1.
-say ""; say "=== 2. CPU thread sweep (2D, compress+decompress with same T; also decompress with T=1) ==="
-printf "%-4s %-4s %-6s %-6s %-14s %-9s %-6s %-14s %-9s %s\n" T rep c_rc d_rc maxerr err/eb ok d1_maxerr d1/eb szp_md5 | tee -a "$S"
+say ""; say "=== 2. CPU thread sweep on 2D (compress+decompress with T threads; d1 = same file decoded with 1 thread) ==="
+printf "%-4s %-4s %-5s %-5s %-14s %-8s %-6s %-14s %-8s %s\n" T rep c_rc d_rc maxerr err/eb ok d1_maxerr d1/eb szp_md5 | tee -a "$S"
+ratio() { awk -v e="$1" -v b="$ABS2" 'BEGIN{ if (e == "NA" || e == "") print "NA"; else printf "%.2f", e / b }'; }
+verdict() { awk -v e="$1" -v b="$ABS2" 'BEGIN{ if (e == "NA" || e == "") print "CRASH"; else print (e <= 2 * b * 1.0001) ? "PASS" : "FAIL" }'; }
 run_cpu() { # $1=T $2=rep
-  local T=$1 r=$2 w=$OUT/work/cpu_T${T}_r${r}.f32 L=$OUT/logs/cpu_T${T}_r${r}
+  local T=$1 r=$2 w=$OUT/work/cpu_T${1}_r${2}.f32 L=$OUT/logs/cpu_T${1}_r${2}
   ln -sf "$F2" "$w"
-  OMP_NUM_THREADS=$T timeout $TIMEOUT $B/comp "$w" $BS $EB $R $C > $L.comp.log 2>&1; local crc=$?
+  OMP_NUM_THREADS=$T timeout "$TIMEOUT" "$B/comp" "$w" "$BS" "$ABS2" "$R" "$C" > "$L.comp.log" 2>&1; local crc=$?
   local drc=NA e=NA d1=NA md5=NA
   if [ $crc = 0 ] && [ -f "$w.SZp" ]; then
     md5=$(md5sum "$w.SZp" | cut -c1-8)
-    OMP_NUM_THREADS=$T timeout $TIMEOUT $B/decomp "$w.SZp" $((R*C)) $BS $EB $R $C > $L.dec.log 2>&1; drc=$?
-    e=$(grep -m1 "Max absolute error" $L.dec.log | awk '{print $NF}')
-    OMP_NUM_THREADS=1 timeout $TIMEOUT $B/decomp "$w.SZp" $((R*C)) $BS $EB $R $C > $L.dec1.log 2>&1
-    d1=$(grep -m1 "Max absolute error" $L.dec1.log | awk '{print $NF}')
+    OMP_NUM_THREADS=$T timeout "$TIMEOUT" "$B/decomp" "$w.SZp" $((R*C)) "$BS" "$ABS2" "$R" "$C" > "$L.dec.log" 2>&1; drc=$?
+    e=$(grep -m1 "Max absolute error" "$L.dec.log" | awk '{print $NF}'); e=${e:-NA}
+    OMP_NUM_THREADS=1 timeout "$TIMEOUT" "$B/decomp" "$w.SZp" $((R*C)) "$BS" "$ABS2" "$R" "$C" > "$L.dec1.log" 2>&1
+    d1=$(grep -m1 "Max absolute error" "$L.dec1.log" | awk '{print $NF}'); d1=${d1:-NA}
     rm -f "$w.SZp.out"
   fi
-  local ratio=$(python3 -c "print('%.2f'%(float('$e')/float('$EB')))" 2>/dev/null || echo NA)
-  local r1=$(python3 -c "print('%.2f'%(float('$d1')/float('$EB')))" 2>/dev/null || echo NA)
-  local ok=$(python3 -c "print('PASS' if float('$e')<=2*float('$EB')*1.0001 else 'FAIL')" 2>/dev/null || echo CRASH)
-  printf "%-4s %-4s %-6s %-6s %-14s %-9s %-6s %-14s %-9s %s\n" $T $r $crc $drc $e $ratio $ok $d1 $r1 $md5 | tee -a "$S"
+  printf "%-4s %-4s %-5s %-5s %-14s %-8s %-6s %-14s %-8s %s\n" "$T" "$r" "$crc" "$drc" "$e" "$(ratio "$e")" \
+         "$(verdict "$e")" "$d1" "$(ratio "$d1")" "$md5" | tee -a "$S"
 }
 for T in $THREADS; do
   [ "$T" -gt "$NCPU" ] && continue
-  for r in $(seq 1 $REPS); do run_cpu $T $r; done
+  for r in $(seq 1 "$REPS"); do run_cpu "$T" "$r"; done
 done
-say "Read: c_rc=139 -> segfault (bug 1). Different md5 across reps at same T -> non-deterministic (bugs 1/2/5)."
-say "      FAIL only for T>1 -> parallel bugs. d1/eb differs from err/eb -> decoder thread-count issue (bug 3)."
+say "Read: rc 139 = segfault (bug 1), 124 = timeout. Different md5 across reps at the same T = non-deterministic output (bugs 1/2/5)."
+say "      FAIL only when T>1 = parallel bugs. d1/eb different from err/eb = decoder thread-count problem (bug 3)."
 
 # ---------------------------------------------------------------- 3. AddressSanitizer
 if [ -x "$B/comp_asan" ]; then
-  say ""; say "=== 3. AddressSanitizer (compress+decompress, T=8) ==="
+  say ""; say "=== 3. AddressSanitizer on 2D (T=8) ==="
   w=$OUT/work/asan.f32; ln -sf "$F2" "$w"
   for k in 1 2 3; do
-    OMP_NUM_THREADS=8 ASAN_OPTIONS=halt_on_error=1 timeout $TIMEOUT $B/comp_asan "$w" $BS $EB $R $C > $OUT/logs/asan_comp_$k.log 2>&1
-    hit=$(grep -m1 -o "ERROR: AddressSanitizer: [a-z-]*" $OUT/logs/asan_comp_$k.log)
-    loc=$(grep -m1 -o "szp_float.cc:[0-9]*" $OUT/logs/asan_comp_$k.log)
+    OMP_NUM_THREADS=8 ASAN_OPTIONS=halt_on_error=1 timeout "$TIMEOUT" "$B/comp_asan" "$w" "$BS" "$ABS2" "$R" "$C" > "$OUT/logs/asan_comp_$k.log" 2>&1
+    hit=$(grep -m1 -o "ERROR: AddressSanitizer: [a-z-]*" "$OUT/logs/asan_comp_$k.log")
+    loc=$(grep -m1 -o "szp[a-z_]*\.cc:[0-9]*" "$OUT/logs/asan_comp_$k.log")
     say "compress try $k: ${hit:-clean} ${loc}"
   done
   if [ -f "$w.SZp" ]; then
-    OMP_NUM_THREADS=8 ASAN_OPTIONS=halt_on_error=1 timeout $TIMEOUT $B/decomp_asan "$w.SZp" $((R*C)) $BS $EB $R $C > $OUT/logs/asan_dec.log 2>&1
-    hit=$(grep -m1 -o "ERROR: AddressSanitizer: [a-z-]*" $OUT/logs/asan_dec.log)
-    say "decompress: ${hit:-clean} $(grep -m1 -o '[a-z_]*\.cc:[0-9]*' $OUT/logs/asan_dec.log)"
+    OMP_NUM_THREADS=8 ASAN_OPTIONS=halt_on_error=1 timeout "$TIMEOUT" "$B/decomp_asan" "$w.SZp" $((R*C)) "$BS" "$ABS2" "$R" "$C" > "$OUT/logs/asan_dec.log" 2>&1
+    hit=$(grep -m1 -o "ERROR: AddressSanitizer: [a-z-]*" "$OUT/logs/asan_dec.log")
+    say "decompress: ${hit:-clean} $(grep -m1 -o '[a-z_]*\.cc:[0-9]*' "$OUT/logs/asan_dec.log")"
   fi
 fi
 
 # ---------------------------------------------------------------- 4. GPU tests
-if [ $GPU = 1 ]; then
+if [ $GPU = 1 ] && [ $GPUVIS = 1 ]; then
   G=$OUT/build_cuda
   say ""; say "=== 4. GPU tests ==="
-  grab() { grep -E "MATCH|DIFFER|Raw max error|Preserved|Lost:|Max error:|Status:|ratio|Match:|RBF restored|mismatch|PASS|FAIL|ERROR" "$1" | sed 's/^/    /' | tee -a "$S"; }
+  KEYS="Found|MATCH|DIFFER|Raw max error|Raw CP|Compressed:|Preserved|Lost:|Non-zero|Max error:|Status:|RBF restored|mismatch|PASS|FAIL|ERROR|Error"
+  grab() { grep -E "$KEYS" "$1" | sed 's/^/    /' | tee -a "$S"; }
+  norm() { grep -E "$KEYS" "$1" | sed -E 's/ in [0-9.]+ ms//g; s/[0-9.]+ ms//g'; }
   for k in 1 2; do
-    say "-- test_cuda_topology_3d run $k (3D)"
-    OMP_NUM_THREADS=$NCPU timeout $TIMEOUT $G/test_cuda_topology_3d "$F3" $D1 $D2 $D3 $EB $BS > $OUT/logs/gpu3d_$k.log 2>&1
-    say "    exit=$?"; grab $OUT/logs/gpu3d_$k.log
+    say "-- test_cuda_topology_3d, run $k (full 3D volume)"
+    OMP_NUM_THREADS=$NCPU timeout "$T3" "$G/test_cuda_topology_3d" "$F3" "$D1" "$D2" "$D3" "$ABS3" "$BS" > "$OUT/logs/gpu3d_$k.log" 2>&1
+    say "    exit=$(rcnote $?)"; grab "$OUT/logs/gpu3d_$k.log"
   done
+  if diff -q <(norm "$OUT/logs/gpu3d_1.log") <(norm "$OUT/logs/gpu3d_2.log") >/dev/null; then
+    say "    3D runs 1 and 2 agree"; else say "    3D runs 1 and 2 DIFFER (non-deterministic GPU path)"; fi
   say "-- test_cuda_topology (2D)"
-  OMP_NUM_THREADS=$NCPU timeout $TIMEOUT $G/test_cuda_topology "$F2" $R $C $EB $BS > $OUT/logs/gpu2d.log 2>&1
-  say "    exit=$?"; grab $OUT/logs/gpu2d.log
-  for T in 1 4 $NCPU; do
-    say "-- CPU->GPU interop, test_cuda_decompress, OMP T=$T"
-    OMP_NUM_THREADS=$T timeout $TIMEOUT $G/test_cuda_decompress "$F2" $((R*C)) $EB $BS $R $C > $OUT/logs/interop_cpu2gpu_T$T.log 2>&1
-    say "    exit=$?"; grab $OUT/logs/interop_cpu2gpu_T$T.log
-    say "-- GPU->CPU interop, test_cuda_compress, OMP T=$T"
-    OMP_NUM_THREADS=$T timeout $TIMEOUT $G/test_cuda_compress "$F2" $((R*C)) $EB $BS > $OUT/logs/interop_gpu2cpu_T$T.log 2>&1
-    say "    exit=$?"; grab $OUT/logs/interop_gpu2cpu_T$T.log
+  OMP_NUM_THREADS=$NCPU timeout "$TIMEOUT" "$G/test_cuda_topology" "$F2" "$R" "$C" "$ABS2" "$BS" > "$OUT/logs/gpu2d.log" 2>&1
+  say "    exit=$(rcnote $?)"; grab "$OUT/logs/gpu2d.log"
+  for T in 1 4 "$NCPU"; do
+    say "-- CPU compress (T=$T) -> GPU decompress: test_cuda_decompress"
+    OMP_NUM_THREADS=$T timeout "$TIMEOUT" "$G/test_cuda_decompress" "$F2" $((R*C)) "$ABS2" "$BS" "$R" "$C" > "$OUT/logs/interop_cpu2gpu_T$T.log" 2>&1
+    say "    exit=$(rcnote $?)"; grab "$OUT/logs/interop_cpu2gpu_T$T.log"
+    say "-- GPU compress -> CPU decompress (T=$T): test_cuda_compress"
+    OMP_NUM_THREADS=$T timeout "$TIMEOUT" "$G/test_cuda_compress" "$F2" $((R*C)) "$ABS2" "$BS" > "$OUT/logs/interop_gpu2cpu_T$T.log" 2>&1
+    say "    exit=$(rcnote $?)"; grab "$OUT/logs/interop_gpu2cpu_T$T.log"
   done
   if [ "${SKIP_SANITIZER:-0}" != 1 ] && command -v compute-sanitizer >/dev/null; then
-    say "-- compute-sanitizer memcheck on test_cuda_topology_3d (slow)"
-    timeout $((TIMEOUT*4)) compute-sanitizer --tool memcheck --print-limit 20 \
-      $G/test_cuda_topology_3d "$F3" $D1 $D2 $D3 $EB $BS > $OUT/logs/memcheck3d.log 2>&1
-    say "    $(grep -m1 'ERROR SUMMARY' $OUT/logs/memcheck3d.log)"
-    say "-- compute-sanitizer racecheck"
-    timeout $((TIMEOUT*4)) compute-sanitizer --tool racecheck --print-limit 20 \
-      $G/test_cuda_topology_3d "$F3" $D1 $D2 $D3 $EB $BS > $OUT/logs/racecheck3d.log 2>&1
-    say "    $(grep -m1 -E 'RACECHECK SUMMARY|ERROR SUMMARY' $OUT/logs/racecheck3d.log)"
+    # The sanitizer is 10-100x slower, so check a 3-level slab from the middle of the volume.
+    CROP=$F3; CD1=$D1
+    if [ "$D1" -gt 3 ]; then
+      CROP=$OUT/work/crop3d.f32; CD1=3
+      dd if="$F3" of="$CROP" bs=$((D2*D3*4)) skip=$((D1/2 - 1)) count=3 status=none
+    fi
+    for tool in memcheck racecheck; do
+      say "-- compute-sanitizer $tool on 3D slab ${CD1}x${D2}x${D3} (slow)"
+      timeout $((TIMEOUT*4)) compute-sanitizer --tool $tool --print-limit 20 \
+        "$G/test_cuda_topology_3d" "$CROP" "$CD1" "$D2" "$D3" "$ABS3" "$BS" > "$OUT/logs/${tool}3d.log" 2>&1
+      say "    exit=$(rcnote $?)  $(grep -m1 -E 'ERROR SUMMARY|RACECHECK SUMMARY' "$OUT/logs/${tool}3d.log")"
+    done
   fi
+elif [ "${SKIP_GPU:-0}" != 1 ]; then
+  say ""; say "=== 4. GPU tests skipped (CUDA build OK: $GPU, GPU visible: $GPUVIS) ==="
 fi
 
-rm -f $OUT/work/*.SZp
+rm -f "$OUT"/work/*.SZp "$OUT"/work/crop3d.f32
 say ""; say "Done. Send me: $S  (and the logs/ folder if anything FAILs or crashes)"
