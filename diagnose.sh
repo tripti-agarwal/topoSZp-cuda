@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
 }
 EOF
 g++ -O2 "$B/fieldstats.cc" -o "$B/fieldstats"                     >"$OUT/logs/build.log" 2>&1 &&
-g++ -O2 example/topo_check.cc -o "$B/topo_check"                   >>"$OUT/logs/build.log" 2>&1 &&
+g++ -O2 -fopenmp -ISZp/include example/topo_check.cc -o "$B/topo_check"                   >>"$OUT/logs/build.log" 2>&1 &&
 g++ -O2 -fopenmp -ISZp/include -w $SRC $CE -o "$B/comp"            >>"$OUT/logs/build.log" 2>&1 &&
 g++ -O2 -fopenmp -ISZp/include -w $SRC $DE -o "$B/decomp"          >>"$OUT/logs/build.log" 2>&1 &&
 say "CPU build OK" || { say "CPU build FAILED (see logs/build.log)"; exit 1; }

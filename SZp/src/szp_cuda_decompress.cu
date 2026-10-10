@@ -33,6 +33,7 @@
  *    encoding critical-point type (0=regular,1=max,2=min,3=saddle).
  */
 
+#include "szp_quant.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -327,7 +328,7 @@ kernel_decompress_randomaccess(T            *newData,
     memcpy(&prior, ptr, sizeof(int));
     ptr += sizeof(int);
 
-    T ori_prior = (T)prior * absErrBound;
+    T ori_prior = szp_dequantize<T>(prior, (double)absErrBound);
     dst[0] = ori_prior;
 
     if (current_block_size <= 1) return;
@@ -367,7 +368,7 @@ kernel_decompress_randomaccess(T            *newData,
 
         int diff = sign ? -(int)mag : (int)mag;
         current = prior + diff;
-        dst[1 + j] = (T)current * absErrBound;
+        dst[1 + j] = szp_dequantize<T>(current, (double)absErrBound);
         prior = current;
     }
 }
@@ -404,7 +405,7 @@ kernel_decompress_threadblock(T            *newData,
     memcpy(&prior, ptr, sizeof(int));
     ptr += sizeof(int);
 
-    T ori_prior = (T)prior * absErrBound;
+    T ori_prior = szp_dequantize<T>(prior, (double)absErrBound);
     *dst++ = ori_prior;
 
     int block_size = compBlockSize;
@@ -417,7 +418,7 @@ kernel_decompress_threadblock(T            *newData,
         ptr++;
 
         if (bit_count == 0) {
-            ori_prior = (T)prior * absErrBound;
+            ori_prior = szp_dequantize<T>(prior, (double)absErrBound);
             for (size_t j = 0; j < cur_bs; j++)
                 *dst++ = ori_prior;
         } else {
@@ -440,7 +441,7 @@ kernel_decompress_threadblock(T            *newData,
 
                 diff = sign ? -(int)mag : (int)mag;
                 current = prior + diff;
-                *dst++ = (T)current * absErrBound;
+                *dst++ = szp_dequantize<T>(current, (double)absErrBound);
                 prior = current;
             }
         }
@@ -479,7 +480,7 @@ kernel_decompress_randomaccess_topo(float        *newData,
     ptr += sizeof(int);
 
     float scale = absErrBound;
-    float ori = (float)prior * scale;
+    float ori = szp_dequantize<float>(prior, (double)scale);
     dst[0] = ori;
 
     unsigned int actual_n = (current_block_size > 1)
@@ -512,7 +513,7 @@ kernel_decompress_randomaccess_topo(float        *newData,
                                                              actual_n, bit_count);
                 int diff = sign ? -(int)mag : (int)mag;
                 current = prior + diff;
-                dst[1 + j] = (float)current * scale;
+                dst[1 + j] = szp_dequantize<float>(current, (double)scale);
                 prior = current;
             }
         }

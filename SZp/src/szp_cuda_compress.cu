@@ -14,6 +14,7 @@
  *  sequentially by a single CUDA thread (same serial dependency as the OpenMP version).
  */
 
+#include "szp_quant.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -131,8 +132,9 @@ save_fixed_length_bits(unsigned int *values, unsigned int n,
 template <typename T>
 __global__ void
 ra_compress_sizing_kernel(const T *data, size_t nbEle, int blockSize,
-                          double inver_bound, size_t *blockSizes)
+                          double eb_d, size_t *blockSizes)
 {
+    const double inver_bound = 1.0 / eb_d;
     size_t bid = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
     size_t numBlocks = (nbEle + blockSize - 1) / blockSize;
     if (bid >= numBlocks) return;
@@ -153,10 +155,10 @@ ra_compress_sizing_kernel(const T *data, size_t nbEle, int blockSize,
     unsigned int n = (unsigned int)(current_block_size - 1);
 
     /* Quantize + delta + find max */
-    int prior = (int)(data[block_start] * inver_bound);
+    int prior = szp_quantize<T>(data[block_start], eb_d, inver_bound);
     unsigned int maxv = 0;
     for (unsigned int j = 0; j < n; j++) {
-        int cur = (int)(data[block_start + j + 1] * inver_bound);
+        int cur = szp_quantize<T>(data[block_start + j + 1], eb_d, inver_bound);
         int diff = cur - prior;
         prior = cur;
         unsigned int ad = (diff < 0) ? (unsigned int)(-diff) : (unsigned int)diff;
@@ -184,9 +186,10 @@ ra_compress_sizing_kernel(const T *data, size_t nbEle, int blockSize,
 template <typename T>
 __global__ void
 ra_compress_packing_kernel(const T *data, size_t nbEle, int blockSize,
-                           double inver_bound, const size_t *blockOffsets,
+                           double eb_d, const size_t *blockOffsets,
                            unsigned char *output)
 {
+    const double inver_bound = 1.0 / eb_d;
     size_t bid = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
     size_t numBlocks = (nbEle + blockSize - 1) / blockSize;
     if (bid >= numBlocks) return;
@@ -199,7 +202,7 @@ ra_compress_packing_kernel(const T *data, size_t nbEle, int blockSize,
     unsigned char *bp = output + blockOffsets[bid];
 
     /* Write quantized first value */
-    int prior = (int)(data[block_start] * inver_bound);
+    int prior = szp_quantize<T>(data[block_start], eb_d, inver_bound);
     memcpy(bp, &prior, sizeof(int));
     bp += sizeof(int);
 
@@ -211,7 +214,7 @@ ra_compress_packing_kernel(const T *data, size_t nbEle, int blockSize,
     unsigned int maxv = 0;
 
     for (unsigned int j = 0; j < n; j++) {
-        int cur = (int)(data[block_start + j + 1] * inver_bound);
+        int cur = szp_quantize<T>(data[block_start + j + 1], eb_d, inver_bound);
         int diff = cur - prior;
         prior = cur;
         if (diff == 0) {
@@ -253,9 +256,10 @@ ra_compress_packing_kernel(const T *data, size_t nbEle, int blockSize,
 template <typename T>
 __global__ void
 tb_compress_sizing_kernel(const T *data, size_t nbEle, int blockSize,
-                          double inver_bound, unsigned int nChunks,
+                          double eb_d, unsigned int nChunks,
                           size_t *chunkSizes)
 {
+    const double inver_bound = 1.0 / eb_d;
     unsigned int cid = blockIdx.x * blockDim.x + threadIdx.x;
     if (cid >= nChunks) return;
 
@@ -267,7 +271,7 @@ tb_compress_sizing_kernel(const T *data, size_t nbEle, int blockSize,
     size_t sz = 0;
 
     /* First element stored raw */
-    int prior = (int)(data[lo] * inver_bound);
+    int prior = szp_quantize<T>(data[lo], eb_d, inver_bound);
     sz += sizeof(int);
 
     for (size_t i = lo + 1; i < hi; i += blockSize) {
@@ -275,7 +279,7 @@ tb_compress_sizing_kernel(const T *data, size_t nbEle, int blockSize,
         unsigned int maxv = 0;
         int p = prior;
         for (size_t j = 0; j < bsz; j++) {
-            int c = (int)(data[i + j] * inver_bound);
+            int c = szp_quantize<T>(data[i + j], eb_d, inver_bound);
             int d = c - p; p = c;
             unsigned int ad = (d < 0) ? (unsigned int)(-d) : (unsigned int)d;
             if (ad > maxv) maxv = ad;
@@ -304,9 +308,10 @@ tb_compress_sizing_kernel(const T *data, size_t nbEle, int blockSize,
 template <typename T>
 __global__ void
 tb_compress_packing_kernel(const T *data, size_t nbEle, int blockSize,
-                           double inver_bound, unsigned int nChunks,
+                           double eb_d, unsigned int nChunks,
                            const size_t *chunkOffsets, unsigned char *output)
 {
+    const double inver_bound = 1.0 / eb_d;
     unsigned int cid = blockIdx.x * blockDim.x + threadIdx.x;
     if (cid >= nChunks) return;
 
@@ -317,7 +322,7 @@ tb_compress_packing_kernel(const T *data, size_t nbEle, int blockSize,
 
     unsigned char *bp = output + chunkOffsets[cid];
 
-    int prior = (int)(data[lo] * inver_bound);
+    int prior = szp_quantize<T>(data[lo], eb_d, inver_bound);
     memcpy(bp, &prior, sizeof(int));
     bp += sizeof(int);
 
@@ -330,7 +335,7 @@ tb_compress_packing_kernel(const T *data, size_t nbEle, int blockSize,
         unsigned int maxv = 0;
 
         for (unsigned int j = 0; j < n; j++) {
-            int cur = (int)(data[i + j] * inver_bound);
+            int cur = szp_quantize<T>(data[i + j], eb_d, inver_bound);
             int diff = cur - prior;
             prior = cur;
             if (diff == 0) {
@@ -368,11 +373,12 @@ tb_compress_packing_kernel(const T *data, size_t nbEle, int blockSize,
 
 template <typename T>
 __global__ void
-quantize_kernel(const T *data, int *qArr, size_t nbEle, double inver_bound)
+quantize_kernel(const T *data, int *qArr, size_t nbEle, double eb_d)
 {
+    const double inver_bound = 1.0 / eb_d;
     size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < nbEle)
-        qArr[idx] = (int)(data[idx] * inver_bound);
+        qArr[idx] = szp_quantize<T>(data[idx], eb_d, inver_bound);
 }
 
 __global__ void
@@ -395,6 +401,7 @@ cuda_compress_randomaccess_impl(T *oriData, size_t *outSize, T absErrBound,
                                 size_t nbEle, int blockSize)
 {
     if (nbEle == 0 || absErrBound <= 0) { *outSize = 0; return NULL; }
+    if (szp_check_errbound<T>(oriData, nbEle, (double)absErrBound, "SZp CUDA compress") < 0) { *outSize = 0; return NULL; }
 
     double inver_bound = 1.0 / (double)absErrBound;
     size_t numBlocks = (nbEle + blockSize - 1) / blockSize;
@@ -420,7 +427,7 @@ cuda_compress_randomaccess_impl(T *oriData, size_t *outSize, T absErrBound,
     int tpb = 256;
     int gpb = (int)((numBlocks + tpb - 1) / tpb);
     ra_compress_sizing_kernel<T><<<gpb, tpb, 0, stream>>>(
-        d_data, nbEle, blockSize, inver_bound, d_blockSizes);
+        d_data, nbEle, blockSize, (double)absErrBound, d_blockSizes);
     CUDA_CHECK(cudaGetLastError());
 
     /* --- prefix sum (Thrust needs default stream; sync stream first) --- */
@@ -443,7 +450,7 @@ cuda_compress_randomaccess_impl(T *oriData, size_t *outSize, T absErrBound,
 
     /* --- Pass 2: packing --- */
     ra_compress_packing_kernel<T><<<gpb, tpb, 0, stream>>>(
-        d_data, nbEle, blockSize, inver_bound, d_blockOffsets, d_output);
+        d_data, nbEle, blockSize, (double)absErrBound, d_blockOffsets, d_output);
     CUDA_CHECK(cudaGetLastError());
 
     /* --- Assemble host output --- */
@@ -505,7 +512,7 @@ cuda_compress_randomaccess_arg_impl(unsigned char *output, T *oriData,
     int tpb = 256;
     int gpb = (int)((numBlocks + tpb - 1) / tpb);
     ra_compress_sizing_kernel<T><<<gpb, tpb, 0, stream>>>(
-        d_data, nbEle, blockSize, inver_bound, d_blockSizes);
+        d_data, nbEle, blockSize, (double)absErrBound, d_blockSizes);
     CUDA_CHECK(cudaGetLastError());
 
     cudaStreamSynchronize(stream);
@@ -523,7 +530,7 @@ cuda_compress_randomaccess_arg_impl(unsigned char *output, T *oriData,
     unsigned char *d_output = NULL;
     CUDA_CHECK(cudaMalloc(&d_output, totalBody));
     ra_compress_packing_kernel<T><<<gpb, tpb, 0, stream>>>(
-        d_data, nbEle, blockSize, inver_bound, d_blockOffsets, d_output);
+        d_data, nbEle, blockSize, (double)absErrBound, d_blockOffsets, d_output);
     CUDA_CHECK(cudaGetLastError());
 
     size_t nChunks  = 1;
@@ -551,6 +558,7 @@ cuda_compress_threadblock_impl(T *oriData, size_t *outSize, T absErrBound,
                                size_t nbEle, int blockSize)
 {
     if (nbEle == 0 || absErrBound <= 0) { *outSize = 0; return NULL; }
+    if (szp_check_errbound<T>(oriData, nbEle, (double)absErrBound, "SZp CUDA compress") < 0) { *outSize = 0; return NULL; }
 
     double inver_bound = 1.0 / (double)absErrBound;
     unsigned int nChunks = 1;     /* single chunk — serial within */
@@ -566,7 +574,7 @@ cuda_compress_threadblock_impl(T *oriData, size_t *outSize, T absErrBound,
     CUDA_CHECK(cudaMalloc(&d_chunkOffsets,  nChunks * sizeof(size_t)));
 
     tb_compress_sizing_kernel<T><<<1, 1>>>(d_data, nbEle, blockSize,
-                                            inver_bound, nChunks, d_chunkSizes);
+                                            (double)absErrBound, nChunks, d_chunkSizes);
     CUDA_CHECK(cudaGetLastError());
 
     thrust::device_ptr<size_t> sz_ptr(d_chunkSizes);
@@ -584,7 +592,7 @@ cuda_compress_threadblock_impl(T *oriData, size_t *outSize, T absErrBound,
 
     CUDA_CHECK(cudaMalloc(&d_output, totalBody));
     tb_compress_packing_kernel<T><<<1, 1>>>(d_data, nbEle, blockSize,
-                                             inver_bound, nChunks,
+                                             (double)absErrBound, nChunks,
                                              d_chunkOffsets, d_output);
     CUDA_CHECK(cudaGetLastError());
     CUDA_CHECK(cudaDeviceSynchronize());
@@ -623,7 +631,7 @@ cuda_compress_threadblock_arg_impl(unsigned char *output, T *oriData,
     CUDA_CHECK(cudaMalloc(&d_chunkOffsets, nChunks * sizeof(size_t)));
 
     tb_compress_sizing_kernel<T><<<1, 1>>>(d_data, nbEle, blockSize,
-                                            inver_bound, nChunks, d_chunkSizes);
+                                            (double)absErrBound, nChunks, d_chunkSizes);
     CUDA_CHECK(cudaGetLastError());
 
     thrust::device_ptr<size_t> sz_ptr(d_chunkSizes);
@@ -642,7 +650,7 @@ cuda_compress_threadblock_arg_impl(unsigned char *output, T *oriData,
 
     CUDA_CHECK(cudaMalloc(&d_output, totalBody));
     tb_compress_packing_kernel<T><<<1, 1>>>(d_data, nbEle, blockSize,
-                                             inver_bound, nChunks,
+                                             (double)absErrBound, nChunks,
                                              d_chunkOffsets, d_output);
     CUDA_CHECK(cudaGetLastError());
     CUDA_CHECK(cudaDeviceSynchronize());
@@ -675,7 +683,7 @@ cuda_direct_predict_quantization_impl(float *oriData, size_t * /*outSize*/,
     int tpb = 256;
     int gpb = (int)((nbEle + tpb - 1) / tpb);
 
-    quantize_kernel<float><<<gpb, tpb>>>(d_data, d_qArr, nbEle, inver_bound);
+    quantize_kernel<float><<<gpb, tpb>>>(d_data, d_qArr, nbEle, (double)absErrBound);
     CUDA_CHECK(cudaGetLastError());
 
     diff_kernel<<<gpb, tpb>>>(d_qArr, d_diffArr, nbEle);

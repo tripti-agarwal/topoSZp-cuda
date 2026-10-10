@@ -12,6 +12,7 @@
 #include <assert.h>
 #include <math.h>
 #include "szp_TypeManager.h"
+#include "szp_quant.h"
 #include "szp_CompressionToolkit.h"
 
 #ifdef _OPENMP
@@ -64,7 +65,7 @@ double *szp_double_decompress_openmp_threadblock(size_t nbEle, double absErrBoun
             memcpy(&prior, block_pointer, sizeof(int));
             block_pointer += sizeof(unsigned int);
 
-            ori_prior = (double)prior * absErrBound;
+            ori_prior = szp_dequantize<double>(prior, (double)absErrBound);
             memcpy(newData_perthread, &ori_prior, sizeof(double));
             newData_perthread += 1;
         }
@@ -83,7 +84,7 @@ double *szp_double_decompress_openmp_threadblock(size_t nbEle, double absErrBoun
             
             if (bit_count == 0)
             {
-                ori_prior = (double)prior * absErrBound;
+                ori_prior = szp_dequantize<double>(prior, (double)absErrBound);
                 
                 for (j = 0; j < current_block_size; j++)
                 {
@@ -109,7 +110,7 @@ double *szp_double_decompress_openmp_threadblock(size_t nbEle, double absErrBoun
                         diff = 0 - temp_predict_arr[j];
                     }
                     current = prior + diff;
-                    ori_current = (double)current * absErrBound;
+                    ori_current = szp_dequantize<double>(current, (double)absErrBound);
                     prior = current;
                     memcpy(newData_perthread, &ori_current, sizeof(double));
                     newData_perthread++;
@@ -158,7 +159,7 @@ void szp_double_decompress_single_thread_arg(double *newData, size_t nbEle, doub
         memcpy(&prior, block_pointer, sizeof(int));
         block_pointer += sizeof(unsigned int);
 
-        ori_prior = (double)prior * absErrBound;
+        ori_prior = szp_dequantize<double>(prior, (double)absErrBound);
         memcpy(newData_perthread, &ori_prior, sizeof(double)); 
         newData_perthread += 1;
     }
@@ -177,7 +178,7 @@ void szp_double_decompress_single_thread_arg(double *newData, size_t nbEle, doub
         
         if (bit_count == 0)
         {
-            ori_prior = (double)prior * absErrBound;
+            ori_prior = szp_dequantize<double>(prior, (double)absErrBound);
             
             for (j = 0; j < current_block_size; j++)
             {
@@ -203,7 +204,7 @@ void szp_double_decompress_single_thread_arg(double *newData, size_t nbEle, doub
                     diff = 0 - temp_predict_arr[j];
                 }
                 current = prior + diff;
-                ori_current = (double)current * absErrBound;
+                ori_current = szp_dequantize<double>(current, (double)absErrBound);
                 prior = current;
                 memcpy(newData_perthread, &ori_current, sizeof(double));
                 newData_perthread++;
@@ -249,7 +250,7 @@ size_t szp_double_decompress_single_thread_arg_record(double *newData, size_t nb
         total_memaccess += sizeof(int) * 2; // read from block_pointer and write to prior
         block_pointer += sizeof(unsigned int);
 
-        ori_prior = (double)prior * absErrBound;
+        ori_prior = szp_dequantize<double>(prior, (double)absErrBound);
         memcpy(newData_perthread, &ori_prior, sizeof(double)); 
         total_memaccess += sizeof(double) * 2; // read from ori_prior and write to newData_perthread
         newData_perthread += 1;
@@ -271,7 +272,7 @@ size_t szp_double_decompress_single_thread_arg_record(double *newData, size_t nb
         
         if (bit_count == 0)
         {
-            ori_prior = (double)prior * absErrBound;
+            ori_prior = szp_dequantize<double>(prior, (double)absErrBound);
             for (j = 0; j < current_block_size; j++)
             {
                 memcpy(newData_perthread, &ori_prior, sizeof(double));
@@ -306,7 +307,7 @@ size_t szp_double_decompress_single_thread_arg_record(double *newData, size_t nb
                 total_memaccess += sizeof(unsigned int);  // Reading from temp_predict_arr
 
                 current = prior + diff;
-                ori_current = (double)current * absErrBound;
+                ori_current = szp_dequantize<double>(current, (double)absErrBound);
                 prior = current;
                 memcpy(newData_perthread, &ori_current, sizeof(double));
                 total_memaccess += sizeof(double) * 2;     // read from ori_current and write to newData_perthread
@@ -362,7 +363,7 @@ void szp_double_decompress_openmp_threadblock_arg(double *newData, size_t nbEle,
             memcpy(&prior, block_pointer, sizeof(int));
             block_pointer += sizeof(unsigned int);
 
-            ori_prior = (double)prior * absErrBound;
+            ori_prior = szp_dequantize<double>(prior, (double)absErrBound);
             memcpy(newData_perthread, &ori_prior, sizeof(double));
             newData_perthread += 1;
         }
@@ -382,7 +383,7 @@ void szp_double_decompress_openmp_threadblock_arg(double *newData, size_t nbEle,
             
             if (bit_count == 0)
             {
-                ori_prior = (double)prior * absErrBound;
+                ori_prior = szp_dequantize<double>(prior, (double)absErrBound);
                 
                 for (j = 0; j < current_block_size; j++)
                 {
@@ -408,7 +409,7 @@ void szp_double_decompress_openmp_threadblock_arg(double *newData, size_t nbEle,
                         diff = 0 - temp_predict_arr[j];
                     }
                     current = prior + diff;
-                    ori_current = (double)current * absErrBound;
+                    ori_current = szp_dequantize<double>(current, (double)absErrBound);
                     prior = current;
                     memcpy(newData_perthread, &ori_current, sizeof(double));
                     newData_perthread++;
@@ -470,7 +471,7 @@ double *szp_double_decompress_openmp_threadblock_randomaccess(size_t nbEle, doub
 
             memcpy(&prior, block_pointer, sizeof(int));
             block_pointer += sizeof(unsigned int);
-            ori_prior = (double)prior * absErrBound;
+            ori_prior = szp_dequantize<double>(prior, (double)absErrBound);
             dst[0] = ori_prior;
 
             if (current_block_size > 1)
@@ -494,7 +495,7 @@ double *szp_double_decompress_openmp_threadblock_randomaccess(size_t nbEle, doub
                     {
                         diff = (temp_sign_arr[j] == 0) ? (int)temp_predict_arr[j] : -(int)temp_predict_arr[j];
                         current = prior + diff;
-                        ori_current = (double)current * absErrBound;
+                        ori_current = szp_dequantize<double>(current, (double)absErrBound);
                         prior = current;
                         dst[1 + j] = ori_current;
                     }
@@ -553,7 +554,7 @@ void szp_double_decompress_openmp_threadblock_randomaccess_arg(double *newData, 
 
             memcpy(&prior, block_pointer, sizeof(int));
             block_pointer += sizeof(unsigned int);
-            ori_prior = (double)prior * absErrBound;
+            ori_prior = szp_dequantize<double>(prior, (double)absErrBound);
             dst[0] = ori_prior;
 
             if (current_block_size > 1)
@@ -576,7 +577,7 @@ void szp_double_decompress_openmp_threadblock_randomaccess_arg(double *newData, 
                     {
                         diff = (temp_sign_arr[j] == 0) ? (int)temp_predict_arr[j] : -(int)temp_predict_arr[j];
                         current = prior + diff;
-                        ori_current = (double)current * absErrBound;
+                        ori_current = szp_dequantize<double>(current, (double)absErrBound);
                         prior = current;
                         dst[1 + j] = ori_current;
                     }

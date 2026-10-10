@@ -7,6 +7,7 @@
  *  and topology-preserved random-access compression.
  */
 
+#include "szp_quant.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -49,9 +50,10 @@
  * Writes to a global counter via atomicAdd for stream compaction.
  */
 __global__ void find_critical_points_kernel(
-    const float *data, int rows, int cols, double inver_bound, float absErrBound,
+    const float *data, int rows, int cols, double eb_d, float absErrBound,
     CriticalPoint *results, unsigned int *d_count)
 {
+    const double inver_bound = 1.0 / eb_d;
     unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned int total_interior = (unsigned int)(rows - 2) * (unsigned int)(cols - 2);
     if (idx >= total_interior) return;
@@ -77,7 +79,7 @@ __global__ void find_critical_points_kernel(
 
     if (type != 0) {
         /* Same bin formula as the compressor's quantization. */
-        int quantized_bin = (int)((double)center * inver_bound);
+        int quantized_bin = szp_quantize<float>(center, (double)absErrBound, inver_bound);
         unsigned int pos = atomicAdd(d_count, 1u);
         results[pos].x = i;
         results[pos].y = j;
@@ -552,9 +554,10 @@ __global__ void mark_critical_types_kernel(
 /* Sizing kernel: compute output bytes per compression block.
    Same as random-access, plus 2-bit type bytes. */
 __global__ void compress_topo_sizing_kernel(
-    const float *data, size_t nbEle, unsigned int blockSize, double inver_bound,
+    const float *data, size_t nbEle, unsigned int blockSize, double eb_d,
     size_t *block_sizes)
 {
+    const double inver_bound = 1.0 / eb_d;
     size_t block_id = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
     size_t num_blocks = (nbEle + blockSize - 1) / blockSize;
     if (block_id >= num_blocks) return;
@@ -566,9 +569,9 @@ __global__ void compress_topo_sizing_kernel(
 
     unsigned int max_val = 0;
     if (current_block_size > 1) {
-        int prior = (int)((double)data[block_start] * inver_bound);
+        int prior = szp_quantize<float>(data[block_start], eb_d, inver_bound);
         for (size_t j = 1; j < current_block_size; j++) {
-            int current = (int)((double)data[block_start + j] * inver_bound);
+            int current = szp_quantize<float>(data[block_start + j], eb_d, inver_bound);
             int diff = current - prior;
             prior = current;
             unsigned int abs_diff = (diff < 0) ? (unsigned int)(-diff) : (unsigned int)diff;
@@ -597,10 +600,11 @@ __global__ void compress_topo_sizing_kernel(
 
 /* Packing kernel for topology-preserved compression */
 __global__ void compress_topo_packing_kernel(
-    const float *data, size_t nbEle, unsigned int blockSize, double inver_bound,
+    const float *data, size_t nbEle, unsigned int blockSize, double eb_d,
     const unsigned char *critical_type,
     const size_t *block_offsets, unsigned char *output)
 {
+    const double inver_bound = 1.0 / eb_d;
     size_t block_id = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
     size_t num_blocks = (nbEle + blockSize - 1) / blockSize;
     if (block_id >= num_blocks) return;
@@ -611,7 +615,7 @@ __global__ void compress_topo_packing_kernel(
     unsigned char *ptr = output + block_offsets[block_id];
 
     /* First value */
-    int prior = (int)((double)data[block_start] * inver_bound);
+    int prior = szp_quantize<float>(data[block_start], eb_d, inver_bound);
     memcpy(ptr, &prior, sizeof(int));
     ptr += sizeof(int);
 
@@ -622,7 +626,7 @@ __global__ void compress_topo_packing_kernel(
         unsigned int  max_val = 0;
 
         for (unsigned int j = 0; j < n; j++) {
-            int current = (int)((double)data[block_start + j + 1] * inver_bound);
+            int current = szp_quantize<float>(data[block_start + j + 1], eb_d, inver_bound);
             int diff = current - prior;
             prior = current;
             if (diff < 0) {
@@ -712,6 +716,10 @@ unsigned char *szp_cuda_float_compress_randomaccess_topology_preserved(
         *outSize = 0;
         return NULL;
     }
+    if (szp_check_errbound<float>(oriData, nbEle, (double)absErrBound, "TopoSZp CUDA compress (2D)") < 0) {
+        *outSize = 0;
+        return NULL;
+    }
 
     double inver_bound = 1.0 / absErrBound;
     unsigned int block_size = (unsigned int)blockSize;
@@ -746,7 +754,7 @@ unsigned char *szp_cuda_float_compress_randomaccess_topology_preserved(
 
     int tpb = 256;
     int grid = ((int)num_blocks + tpb - 1) / tpb;
-    compress_topo_sizing_kernel<<<grid, tpb>>>(d_data, nbEle, block_size, inver_bound, d_block_sizes);
+    compress_topo_sizing_kernel<<<grid, tpb>>>(d_data, nbEle, block_size, (double)absErrBound, d_block_sizes);
     CUDA_CHECK(cudaGetLastError());
 
     /* Prefix sum */
@@ -773,7 +781,7 @@ unsigned char *szp_cuda_float_compress_randomaccess_topology_preserved(
     unsigned char *d_output;
     CUDA_CHECK(cudaMalloc(&d_output, totalCompressed));
     compress_topo_packing_kernel<<<grid, tpb>>>(
-        d_data, nbEle, block_size, inver_bound, d_critical_type, d_block_offsets, d_output);
+        d_data, nbEle, block_size, (double)absErrBound, d_critical_type, d_block_offsets, d_output);
     CUDA_CHECK(cudaGetLastError());
 
     CUDA_CHECK(cudaMemcpy(output + headerSize, d_output, totalCompressed, cudaMemcpyDeviceToHost));

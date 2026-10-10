@@ -11,6 +11,7 @@
  *    saddle: high along some axes and low along others
  */
 
+#include "szp_quant.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -49,9 +50,10 @@
  */
 __global__ void find_critical_points_3d_kernel(
     const float *data, int d1, int d2, int d3,
-    double inver_bound, float absErrBound,
+    double eb_d, float absErrBound,
     CriticalPoint3D *results, unsigned int *d_count)
 {
+    const double inver_bound = 1.0 / eb_d;
     unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned int d1m2 = (unsigned int)(d1 - 2);
     unsigned int d2m2 = (unsigned int)(d2 - 2);
@@ -108,7 +110,7 @@ __global__ void find_critical_points_3d_kernel(
 
     if (type != 0) {
         /* Same bin formula as the compressor's quantization. */
-        int quantized_bin = (int)((double)center * inver_bound);
+        int quantized_bin = szp_quantize<float>(center, (double)absErrBound, inver_bound);
         unsigned int pos = atomicAdd(d_count, 1u);
         results[pos].x = x;
         results[pos].y = y;
@@ -568,21 +570,23 @@ __global__ void mark_critical_types_3d_kernel(
 /* ================================================================== */
 
 /**
- * Quantize all data to integers: q[i] = (int)((double)data[i] * inver_bound)
+ * Quantize all data to integers with the shared rule (szp_quant.h)
  * Uses double precision arithmetic to avoid float rounding errors.
  */
 __global__ static void quantize_3d_kernel_float(
-    const float *data, int *qdata, size_t nbEle, double inver_bound)
+    const float *data, int *qdata, size_t nbEle, double eb_d)
 {
+    const double inver_bound = 1.0 / eb_d;
     size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < nbEle) qdata[idx] = (int)((double)data[idx] * inver_bound);
+    if (idx < nbEle) qdata[idx] = szp_quantize<float>(data[idx], eb_d, inver_bound);
 }
 
 __global__ static void quantize_3d_kernel_double(
-    const double *data, int *qdata, size_t nbEle, double inver_bound)
+    const double *data, int *qdata, size_t nbEle, double eb_d)
 {
+    const double inver_bound = 1.0 / eb_d;
     size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < nbEle) qdata[idx] = (int)(data[idx] * inver_bound);
+    if (idx < nbEle) qdata[idx] = szp_quantize<double>(data[idx], eb_d, inver_bound);
 }
 
 /**
@@ -828,6 +832,10 @@ unsigned char *szp_cuda_float_compress_topology_3d(
         *outSize = 0;
         return NULL;
     }
+    if (szp_check_errbound<float>(oriData, nbEle, (double)absErrBound, "TopoSZp CUDA compress (3D)") < 0) {
+        *outSize = 0;
+        return NULL;
+    }
 
     double inver_bound = 1.0 / absErrBound;
     unsigned int bsz = (unsigned int)blockSize;
@@ -865,7 +873,7 @@ unsigned char *szp_cuda_float_compress_topology_3d(
     {
         int qtpb = 256;
         int qgrid = ((int)nbEle + qtpb - 1) / qtpb;
-        quantize_3d_kernel_float<<<qgrid, qtpb>>>(d_data, d_qdata, nbEle, inver_bound);
+        quantize_3d_kernel_float<<<qgrid, qtpb>>>(d_data, d_qdata, nbEle, (double)absErrBound);
         CUDA_CHECK(cudaGetLastError());
     }
 
@@ -931,6 +939,10 @@ unsigned char *szp_cuda_double_compress_topology_3d(
         *outSize = 0;
         return NULL;
     }
+    if (szp_check_errbound<double>(oriData, nbEle, (double)absErrBound, "TopoSZp CUDA compress (3D)") < 0) {
+        *outSize = 0;
+        return NULL;
+    }
 
     double inver_bound = 1.0 / absErrBound;
     unsigned int bsz = (unsigned int)blockSize;
@@ -968,7 +980,7 @@ unsigned char *szp_cuda_double_compress_topology_3d(
     {
         int qtpb = 256;
         int qgrid = ((int)nbEle + qtpb - 1) / qtpb;
-        quantize_3d_kernel_double<<<qgrid, qtpb>>>(d_data, d_qdata, nbEle, inver_bound);
+        quantize_3d_kernel_double<<<qgrid, qtpb>>>(d_data, d_qdata, nbEle, (double)absErrBound);
         CUDA_CHECK(cudaGetLastError());
     }
 

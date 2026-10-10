@@ -15,6 +15,7 @@
 #include <limits.h>
 #include "szp_topology_3d.h"
 #include "szp_TypeManager.h"
+#include "szp_quant.h"
 #include "szp_CompressionToolkit.h"
 #include "szp_defines.h"
 #include "szp_cp_rank.h"
@@ -114,7 +115,7 @@ CriticalPoint3D *szp_find_critical_points_3d(float *data, size_t *outCount,
             }
 
             if (type != 0) {
-                int qbin = (int)((double)center * inver_bound);
+                int qbin = szp_quantize<float>(center, (double)absErrBound, inver_bound);
                 local_results[local_count].x = x;
                 local_results[local_count].y = y;
                 local_results[local_count].z = z;
@@ -367,6 +368,10 @@ unsigned char *szp_float_compress_topology_3d(
     int d1, int d2, int d3)
 {
 #ifdef _OPENMP
+    if (oriData && nbEle && szp_check_errbound<float>(oriData, nbEle, (double)absErrBound, "TopoSZp compress (3D)") < 0) {
+        *outSize = 0;
+        return NULL;
+    }
     if (absErrBound <= 0.0 || !oriData || nbEle == 0) {
         *outSize = 0;
         return NULL;
@@ -455,7 +460,7 @@ unsigned char *szp_float_compress_topology_3d(
                 if (current_block_size == 0) continue;
 
                 maxv = 0;
-                prior = (int)((double)op[i] * inver_bound);
+                prior = szp_quantize<float>(op[i], (double)absErrBound, inver_bound);
                 memcpy(block_pointer, &prior, sizeof(int));
                 block_pointer += sizeof(int);
                 outSize_perthread += sizeof(int);
@@ -463,7 +468,7 @@ unsigned char *szp_float_compress_topology_3d(
                 if (current_block_size > 1) {
                     unsigned int actual_new = current_block_size - 1;
                     for (j = 0; j < actual_new; j++) {
-                        current = (int)((double)op[i + j + 1] * inver_bound);
+                        current = szp_quantize<float>(op[i + j + 1], (double)absErrBound, inver_bound);
                         diff = current - prior;
                         prior = current;
                         if (diff == 0) { temp_sign_arr[j] = 0; temp_predict_arr[j] = 0; }

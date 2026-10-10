@@ -11,6 +11,7 @@
 #ifndef SZP_CUDA_COMMON_CUH
 #define SZP_CUDA_COMMON_CUH
 
+#include "szp_quant.h"
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 #include <cstdio>
@@ -683,15 +684,16 @@ __device__ __forceinline__
 unsigned int device_compress_block(const T      *data,
                                    unsigned int  block_start,
                                    unsigned int  block_len,   // elements in this block
-                                   double        inver_bound,
+                                   double        eb_d,
                                    unsigned char *out,
                                    unsigned char *tmp_sign,    // scratch [block_len-1]
                                    unsigned int  *tmp_mag)     // scratch [block_len-1]
 {
+    const double inver_bound = 1.0 / eb_d;
     unsigned int bytes_written = 0;
 
     // First element — raw quantised value
-    int prior = (int)((double)data[block_start] * inver_bound);
+    int prior = szp_quantize<T>(data[block_start], eb_d, inver_bound);
     // Store as native-endian int (matches CPU memcpy)
     *((int *)out) = prior;
     out += sizeof(int);
@@ -703,7 +705,7 @@ unsigned int device_compress_block(const T      *data,
     unsigned int max_mag = 0;
 
     for (unsigned int j = 0; j < n; j++) {
-        int current = (int)((double)data[block_start + j + 1] * inver_bound);
+        int current = szp_quantize<T>(data[block_start + j + 1], eb_d, inver_bound);
         int diff    = current - prior;
         prior       = current;
         if (diff < 0) {
@@ -742,7 +744,7 @@ __device__ __forceinline__
 unsigned int device_compress_block_topology(const T             *data,
                                             unsigned int         block_start,
                                             unsigned int         block_len,
-                                            double               inver_bound,
+                                            double               eb_d,
                                             const unsigned char *critical_type,
                                             unsigned int         nbEle,
                                             unsigned char       *out,
@@ -750,10 +752,11 @@ unsigned int device_compress_block_topology(const T             *data,
                                             unsigned int        *tmp_mag,
                                             unsigned char       *tmp_type)
 {
+    const double inver_bound = 1.0 / eb_d;
     unsigned int bytes_written = 0;
 
     // First element — raw quantised value
-    int prior = (int)((double)data[block_start] * inver_bound);
+    int prior = szp_quantize<T>(data[block_start], eb_d, inver_bound);
     *((int *)out) = prior;
     out += sizeof(int);
     bytes_written += sizeof(int);
@@ -762,7 +765,7 @@ unsigned int device_compress_block_topology(const T             *data,
     unsigned int max_mag = 0;
 
     for (unsigned int j = 0; j < n; j++) {
-        int current = (int)((double)data[block_start + j + 1] * inver_bound);
+        int current = szp_quantize<T>(data[block_start + j + 1], eb_d, inver_bound);
         int diff    = current - prior;
         prior       = current;
         if (diff < 0) {
@@ -832,7 +835,7 @@ unsigned int device_decompress_block(const unsigned char *in,
     in += sizeof(int);
     bytes_read += sizeof(int);
 
-    out_data[0] = (T)prior * scale;
+    out_data[0] = szp_dequantize<T>(prior, (double)scale);
 
     if (block_len <= 1) return bytes_read;
 
@@ -861,7 +864,7 @@ unsigned int device_decompress_block(const unsigned char *in,
             int diff = tmp_sign[j] ? -(int)tmp_mag[j] : (int)tmp_mag[j];
             int current = prior + diff;
             prior = current;
-            out_data[1 + j] = (T)current * scale;
+            out_data[1 + j] = szp_dequantize<T>(current, (double)scale);
         }
     }
 
@@ -887,7 +890,7 @@ unsigned int device_decompress_block_topology(const unsigned char *in,
     in += sizeof(int);
     bytes_read += sizeof(int);
 
-    out_data[0] = (T)prior * scale;
+    out_data[0] = szp_dequantize<T>(prior, (double)scale);
 
     unsigned int n = (block_len > 1) ? (block_len - 1) : 0;
 
@@ -915,7 +918,7 @@ unsigned int device_decompress_block_topology(const unsigned char *in,
                 int diff = tmp_sign[j] ? -(int)tmp_mag[j] : (int)tmp_mag[j];
                 int current = prior + diff;
                 prior = current;
-                out_data[1 + j] = (T)current * scale;
+                out_data[1 + j] = szp_dequantize<T>(current, (double)scale);
             }
         }
     }
