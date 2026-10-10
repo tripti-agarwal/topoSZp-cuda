@@ -275,8 +275,10 @@ int main(int argc, char *argv[]) {
 
     /* Compress sort positions and decompress them (same as OpenMP pipeline) */
     size_t sort_outSize = 0;
+    double ts0 = get_time_ms();   /* sort positions: compressor side */
     unsigned char *sort_compressed = szp_cuda_compress_sort_positions(
         orig_cps, orig_cp_count, &sort_outSize, blockSize);
+    double ts1 = get_time_ms();
 
     /* Count extrema */
     size_t extrema_count = 0;
@@ -317,6 +319,11 @@ int main(int argc, char *argv[]) {
 
     double t7c = get_time_ms();
     printf("  Post-processing done in %.2f ms\n\n", t7c - t7b);
+    /* Compression = CP detection + ranking + compression + rank stream;
+       decompression = decoding + rank decoding + topology restoration. */
+    printf("TIMING comp_s=%.6f decomp_s=%.6f\n",
+           ((t1 - t0) + (t3 - t2) + (t5 - t4) + (ts1 - ts0)) / 1000.0,
+           ((t7 - t6) + (t7c - ts1)) / 1000.0);
 
     /* Optional: write the post-processed field for external checks
        (example/topo_check), e.g. TOPOSZP_DUMP=out.f32 ./test_cuda_topology ... */

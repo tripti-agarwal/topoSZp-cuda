@@ -101,5 +101,10 @@ g++ -O2 -fopenmp -ISZp/include example/pl_topo_check.cc -o pl_topo_check
 * **Stream format.** Slot 0 of each per-thread offset table stores
   `"SZPT" | thread count`. Streams from older versions (slot 0 = 0) are still
   decoded, using thread-count detection.
+* `bench.sh` runs the method on CPU (OpenMP) and GPU, 2D and 3D, for absolute
+  and relative error bounds, and writes one table (`bench_<time>/results.md`,
+  `results.csv`): compression and decompression time, maxima/minima/saddles kept,
+  FP, FN and FT before (plain SZp) and after (TopoSZp). Example:
+  `ABS2=1e-3 ABS3=1e-7 REL="1e-3 1e-4" ./bench.sh data/CLDHGH_1_1800_3600.dat 1800 3600 data/CLDICE_1_26_1800_3600.f32 26 1800 3600`
 * `diagnose.sh` builds everything and runs the thread-count, sanitizer,
   CPU/GPU and topology checks on a 2D and a 3D file.

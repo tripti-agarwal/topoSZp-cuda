@@ -142,6 +142,14 @@ static int run(const char *orig_path, const char *dec_path, double eb, const Gri
                sf.kept[t], sf.fn[t], sf.ft[t], sf.fp[t], pct(sf.kept[t], sf.orig[t]));
     }
     printf("extrema order violations within a bin (final): maxima %ld, minima %ld\n", ov_max, ov_min);
+    /* One row per stage for scripts (bench.sh):
+       TOPOROW stage max_orig max_kept min_orig min_kept sad_orig sad_kept FP FN FT err/eb */
+    for (int w = 0; w < 2; w++) {
+        const Stats &st = w ? sf : sr;
+        printf("TOPOROW %s %ld %ld %ld %ld %ld %ld %ld %ld %ld %.4f\n", w ? "after" : "before",
+               st.orig[1], st.kept[1], st.orig[2], st.kept[2], st.orig[3], st.kept[3],
+               st.fp[0], st.fn[0], st.ft[0], (w ? err_fin : err_raw) / eb);
+    }
     printf("TOPO err/eb=%.3f raw_err/eb=%.3f orig=%ld kept=%ld FN=%ld(max %ld,min %ld,sad %ld) FT=%ld FP=%ld ordviol=%ld raw_kept=%ld\n",
            err_fin / eb, err_raw / eb, sf.orig[0], sf.kept[0], sf.fn[0], sf.fn[1], sf.fn[2], sf.fn[3], sf.ft[0], sf.fp[0],
            ov_max + ov_min, sr.kept[0]);
