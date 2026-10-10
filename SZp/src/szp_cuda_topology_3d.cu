@@ -159,12 +159,11 @@ CriticalPoint3D *szp_cuda_find_critical_points_3d(
     CUDA_CHECK(cudaMalloc(&d_count, sizeof(unsigned int)));
     CUDA_CHECK(cudaMemset(d_count, 0, sizeof(unsigned int)));
 
-    double inver_bound = 1.0 / absErrBound;
 
     int tpb = 256;
     int blocks = ((int)total_interior + tpb - 1) / tpb;
     find_critical_points_3d_kernel<<<blocks, tpb>>>(
-        d_data, d1, d2, d3, inver_bound, absErrBound,
+        d_data, d1, d2, d3, (double)absErrBound, absErrBound,
         d_results, d_count);
     CUDA_CHECK(cudaGetLastError());
 

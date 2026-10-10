@@ -124,12 +124,11 @@ CriticalPoint *szp_cuda_find_critical_points(float *data, size_t *outCount,
     CUDA_CHECK(cudaMalloc(&d_count, sizeof(unsigned int)));
     CUDA_CHECK(cudaMemset(d_count, 0, sizeof(unsigned int)));
 
-    double inver_bound = 1.0 / absErrBound;
 
     int threadsPerBlock = 256;
     int blocks = ((int)total_interior + threadsPerBlock - 1) / threadsPerBlock;
     find_critical_points_kernel<<<blocks, threadsPerBlock>>>(
-        d_data, rows, cols, inver_bound, absErrBound, d_results, d_count);
+        d_data, rows, cols, (double)absErrBound, absErrBound, d_results, d_count);
     CUDA_CHECK(cudaGetLastError());
 
     /* Copy count back */
