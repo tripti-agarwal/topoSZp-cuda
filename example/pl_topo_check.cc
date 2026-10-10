@@ -297,9 +297,13 @@ static int run(const char *orig_path, const char *dec_path, double eb, const Gri
     std::vector<T> a = read_raw<T>(orig_path, N), fin = read_raw<T>(dec_path, N), raw(N);
     szp_check_errbound<T>(a.data(), N, eb, "pl_topo_check");
     const double inv = 1.0 / eb;
-    #pragma omp parallel for
-    for (long long k = 0; k < (long long)N; k++)
+    double err_raw = 0, err_fin = 0;
+    #pragma omp parallel for reduction(max:err_raw, err_fin)
+    for (long long k = 0; k < (long long)N; k++) {
         raw[k] = szp_dequantize<T>(szp_quantize<T>(a[k], eb, inv), eb);
+        err_raw = std::max(err_raw, fabs((double)a[k] - (double)raw[k]));
+        err_fin = std::max(err_fin, fabs((double)a[k] - (double)fin[k]));
+    }
 
     std::vector<signed char> t0 = classify_all(a.data(), g, s);
     std::vector<signed char> tr = classify_all(raw.data(), g, s);
@@ -358,6 +362,8 @@ static int run(const char *orig_path, const char *dec_path, double eb, const Gri
     std::string dims = std::to_string(g.d1) + "x" + std::to_string(g.d2) + (g.nd == 3 ? "x" + std::to_string(g.d3) : "");
     printf("PL critical points (Freudenthal triangulation, %d neighbours, ties by index), %s grid %s, %s, abs eb %.6g\n",
            s.nb, g.nd == 3 ? "3D" : "2D", dims.c_str(), tname, eb);
+    printf("max error: raw %.6g (%.3f eb), final %.6g (%.3f eb) %s\n", err_raw, err_raw / eb, err_fin, err_fin / eb,
+           err_fin <= 2.0 * eb ? "PASS (<= 2 eb)" : "FAIL (> 2 eb)");
     printf("%-10s %10s | %-38s | %-38s\n", "", "original", "raw SZp (before topology correction)", "final TopoSZp output");
     printf("%-10s %10s | %9s %8s %8s %8s %3s| %9s %8s %8s %8s %3s\n", "type", "count",
            "kept", "FN", "FT", "FP", "", "kept", "FN", "FT", "FP", "");
@@ -428,9 +434,9 @@ static int run(const char *orig_path, const char *dec_path, double eb, const Gri
         row("unpaired", [](double p) { return p < 0; });
     }
 
-    printf("PLTOPO saddles=%ld kept_raw=%.1f%% kept_final=%.1f%% kept_final_1cell=%.1f%% kept_final_pers>=2eb=%.1f%% axis_saddles=%ld axis_saddles_that_are_PL=%.1f%% "
+    printf("PLTOPO err/eb=%.3f saddles=%ld kept_raw=%.1f%% kept_final=%.1f%% kept_final_1cell=%.1f%% kept_final_pers>=2eb=%.1f%% axis_saddles=%ld axis_saddles_that_are_PL=%.1f%% "
            "extrema=%ld extrema_kept_final=%.1f%% FP_final=%ld FT_final=%ld\n",
-           nsad, pct(ksad[0], nsad), pct(ksad[1], nsad), pct(nf_near, nsad), kept_sig, axis_sad_total, pct(axis_sad_pl_sad, axis_sad_total),
+           err_fin / eb, nsad, pct(ksad[0], nsad), pct(ksad[1], nsad), pct(nf_near, nsad), kept_sig, axis_sad_total, pct(axis_sad_pl_sad, axis_sad_total),
            orig[PL_MAX] + orig[PL_MIN], pct(kept[1][PL_MAX] + kept[1][PL_MIN], orig[PL_MAX] + orig[PL_MIN]),
            tot[4][1], tot[3][1]);
     return 0;

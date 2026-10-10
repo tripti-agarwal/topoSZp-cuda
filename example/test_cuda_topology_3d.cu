@@ -545,20 +545,6 @@ int main(int argc, char *argv[])
            (double)(nbEle*sizeof(float))/topo_outSize);
     printf("====================================================\n");
 
-    /* Cleanup */
-    free(data);
-    free(orig_cps);
-    if (omp_cps) free(omp_cps);
-    free(topo_compressed);
-    free(decompressed);
-    free(FN);
-    free(decomp_type_map);
-    free(orig_type_map);
-    free(orig_t_arr);
-    free(orig_decomp);
-    if (sort_compressed) free(sort_compressed);
-    if (sort_positions)  free(sort_positions);
-
     /* PL mode: strict comparison of the PL codes (saddle kinds included). */
     size_t pl_fp = 0, pl_ft = 0, pl_sad = 0, pl_sad_kept = 0;
     if (g_pl) {
@@ -574,6 +560,20 @@ int main(int argc, char *argv[])
                pl_sad_kept, pl_sad, pl_sad ? 100.0 * pl_sad_kept / pl_sad : 100.0, pl_fp, pl_ft);
         free(pl_codes);
     }
+
+    /* Cleanup */
+    free(data);
+    free(orig_cps);
+    if (omp_cps) free(omp_cps);
+    free(topo_compressed);
+    free(decompressed);
+    free(FN);
+    free(decomp_type_map);
+    free(orig_type_map);
+    free(orig_t_arr);
+    free(orig_decomp);
+    if (sort_compressed) free(sort_compressed);
+    if (sort_positions)  free(sort_positions);
 
     /* Exit code: 0 only if every guarantee holds. Lost saddles are reported
        above but are not a failure (the method does not guarantee them). In
