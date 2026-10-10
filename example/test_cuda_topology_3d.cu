@@ -33,6 +33,7 @@
 #include "szp_cuda_decompress.cuh"
 #include "szp_errbound.h"
 #include "szp_cuda_topology_3d.cuh"
+#include "szp_cuda_topo_restore.cuh"
 #include "szp_topology_3d.h"
 #include "szp_topo_restore.h"
 
@@ -75,294 +76,8 @@ static int classify_3d(const float *data, int d1, int d2, int d3,
     return 0;
 }
 
-/* ---- Neighbour safety check shared by the saddle passes ---- */
-
-static const int NB6[6][3] = {{-1,0,0},{1,0,0},{0,-1,0},{0,1,0},{0,0,-1},{0,0,1}};
-
-/* Current type of each face neighbour (-1 for boundary voxels, which are
-   never classified). Call before changing the center. */
-static void neighbour_types_3d(const float *data, int d1, int d2, int d3,
-                               int x, int y, int z, int out[6])
-{
-    for (int k = 0; k < 6; k++) {
-        int nx = x + NB6[k][0], ny = y + NB6[k][1], nz = z + NB6[k][2];
-        if (nx < 1 || nx >= d1-1 || ny < 1 || ny >= d2-1 || nz < 1 || nz >= d3-1) { out[k] = -1; continue; }
-        out[k] = classify_3d(data, d1, d2, d3, nx, ny, nz);
-    }
-}
-
-/* With the trial value already written at (x,y,z): reject the change if a
-   neighbour becomes critical with a type other than its stored one (that
-   would be a false positive or a false type), if a neighbour that currently
-   has its stored type loses it, or if the center is not below every stored
-   maximum and above every stored minimum next to it. Extrema are restored
-   before the saddle passes, so these relations are final. */
-static int change_is_safe_3d(const float *data, const int *types0,
-                             int d1, int d2, int d3, int x, int y, int z,
-                             float trial, const int before[6])
-{
-    for (int k = 0; k < 6; k++) {
-        if (before[k] < 0) continue;
-        int nx = x + NB6[k][0], ny = y + NB6[k][1], nz = z + NB6[k][2];
-        size_t nf = IDX(nx, ny, nz, d2, d3);
-        int t0 = types0[nf];
-        int after = classify_3d(data, d1, d2, d3, nx, ny, nz);
-        if (after != 0 && after != t0) return 0;            /* no FP, no FT */
-        if (t0 != 0 && before[k] == t0 && after != t0) return 0;
-        if (t0 == 1 && !(trial < data[nf])) return 0;
-        if (t0 == 2 && !(trial > data[nf])) return 0;
-    }
-    return 1;
-}
-
-/* ---- Saddle stencil: try all 6 axis patterns to restore saddles ---- */
-
-/**
- * For each false-negative saddle, try 6 axis patterns to find a valid
- * center value that satisfies the saddle condition within error bound.
- *
- * 6 patterns (which axes are high vs low):
- *   0: x-high, y-low, z-low    3: x-high, y-high, z-low
- *   1: y-high, x-low, z-low    4: x-high, z-high, y-low
- *   2: z-high, x-low, y-low    5: y-high, z-high, x-low
- *
- * For each pattern:
- *   high_threshold = max of both neighbors on each high axis
- *   low_threshold  = min of both neighbors on each low axis
- *   target = midpoint between thresholds (if valid gap exists)
- *
- * Validates: saddle condition holds, no false CPs created at neighbors.
- */
-static int stencil_restore_saddles_3d(float *data, const int *types0,
-                                       const float *orig_decomp,
-                                       int d1, int d2, int d3,
-                                       float errBound)
-{
-    size_t s = (size_t)d2 * d3;
-    int restored = 0;
-
-    /* Axis patterns: each has a bitmask of which axes are HIGH (1) vs LOW (0)
-       bit 0 = x-axis, bit 1 = y-axis, bit 2 = z-axis
-       Valid saddle: at least 1 high AND at least 1 low → patterns 1-6
-       (skip 0=all-low and 7=all-high) */
-    for (int x = 1; x < d1 - 1; x++) {
-        for (int y = 1; y < d2 - 1; y++) {
-            for (int z = 1; z < d3 - 1; z++) {
-                size_t flat = x * s + y * d3 + z;
-                if (types0[flat] != 3) continue;  /* only saddles */
-
-                /* Already a saddle? skip */
-                if (classify_3d(data, d1, d2, d3, x, y, z) == 3) continue;
-
-                float orig_val = orig_decomp[flat];
-                float max_a = orig_val + errBound * 0.999f;
-                float min_a = orig_val - errBound * 0.999f;
-
-                /* Read 6 neighbors */
-                float nb[6];
-                nb[0] = data[(x-1)*s + y*d3 + z];  /* x- */
-                nb[1] = data[(x+1)*s + y*d3 + z];  /* x+ */
-                nb[2] = data[x*s + (y-1)*d3 + z];  /* y- */
-                nb[3] = data[x*s + (y+1)*d3 + z];  /* y+ */
-                nb[4] = data[x*s + y*d3 + (z-1)];  /* z- */
-                nb[5] = data[x*s + y*d3 + (z+1)];  /* z+ */
-
-                int fixed = 0;
-
-                /* Try 6 valid axis patterns (bitmask 1-6, skip 0 and 7) */
-                for (int pattern = 1; pattern <= 6 && !fixed; pattern++) {
-                    int x_high = (pattern >> 0) & 1;
-                    int y_high = (pattern >> 1) & 1;
-                    int z_high = (pattern >> 2) & 1;
-                    int num_high = x_high + y_high + z_high;
-                    if (num_high == 0 || num_high == 3) continue;  /* need mixed */
-
-                    /* Compute thresholds:
-                       high_threshold = max of max(pair) for each HIGH axis
-                       low_threshold  = min of min(pair) for each LOW axis
-                       Need: center > high_threshold AND center < low_threshold */
-                    float high_thresh = -1e30f;
-                    float low_thresh  =  1e30f;
-
-                    /* X axis */
-                    float x_pair_max = fmaxf(nb[0], nb[1]);
-                    float x_pair_min = fminf(nb[0], nb[1]);
-                    if (x_high) {
-                        if (x_pair_max > high_thresh) high_thresh = x_pair_max;
-                    } else {
-                        if (x_pair_min < low_thresh) low_thresh = x_pair_min;
-                    }
-
-                    /* Y axis */
-                    float y_pair_max = fmaxf(nb[2], nb[3]);
-                    float y_pair_min = fminf(nb[2], nb[3]);
-                    if (y_high) {
-                        if (y_pair_max > high_thresh) high_thresh = y_pair_max;
-                    } else {
-                        if (y_pair_min < low_thresh) low_thresh = y_pair_min;
-                    }
-
-                    /* Z axis */
-                    float z_pair_max = fmaxf(nb[4], nb[5]);
-                    float z_pair_min = fminf(nb[4], nb[5]);
-                    if (z_high) {
-                        if (z_pair_max > high_thresh) high_thresh = z_pair_max;
-                    } else {
-                        if (z_pair_min < low_thresh) low_thresh = z_pair_min;
-                    }
-
-                    /* Is there a valid gap? Need: high_thresh < low_thresh */
-                    if (high_thresh >= low_thresh) continue;
-
-                    /* Target: midpoint, nudged slightly to ensure strict inequality */
-                    float target = 0.5f * (high_thresh + low_thresh);
-                    float nudge = (low_thresh - high_thresh) * 0.01f;
-                    if (nudge < FLT_EPSILON) nudge = FLT_EPSILON;
-
-                    /* Ensure strict > and < */
-                    if (target <= high_thresh) target = high_thresh + nudge;
-                    if (target >= low_thresh)  target = low_thresh - nudge;
-                    if (target <= high_thresh || target >= low_thresh) continue;
-
-                    /* Clamp to error bound */
-                    if (target > max_a || target < min_a) continue;
-
-                    /* Validate: set temporarily and check */
-                    int before[6];
-                    neighbour_types_3d(data, d1, d2, d3, x, y, z, before);
-                    float saved = data[flat];
-                    data[flat] = target;
-
-                    int bad = 0;
-                    /* Must be classified as saddle */
-                    if (classify_3d(data, d1, d2, d3, x, y, z) != 3) bad = 1;
-                    /* Must not change any neighbour's type */
-                    if (!bad && !change_is_safe_3d(data, types0, d1, d2, d3, x, y, z, target, before)) bad = 1;
-
-                    if (bad) {
-                        data[flat] = saved;
-                    } else {
-                        restored++;
-                        fixed = 1;
-                    }
-                }
-            }
-        }
-    }
-    return restored;
-}
-
-/* RBF saddle restoration with 3×3×3 Gaussian kernel */
-static int rbf_restore_saddles_3d(float *data, const int *types0,
-                                    const float *orig_decomp,
-                                    int d1, int d2, int d3,
-                                    float eps, float errBound)
-{
-    size_t N = (size_t)d1 * d2 * d3;
-    size_t s = (size_t)d2 * d3;
-
-    /* Lock mask: 3×3×3 neighbourhood of every extremum */
-    unsigned char *locks = (unsigned char *)calloc(N, 1);
-    for (int x = 1; x < d1 - 1; x++)
-        for (int y = 1; y < d2 - 1; y++)
-            for (int z = 1; z < d3 - 1; z++) {
-                size_t flat = x * s + y * d3 + z;
-                if (types0[flat] == 1 || types0[flat] == 2)
-                    for (int di = -1; di <= 1; di++)
-                        for (int dj = -1; dj <= 1; dj++)
-                            for (int dk = -1; dk <= 1; dk++) {
-                                int ii = x + di, jj = y + dj, kk = z + dk;
-                                if (ii >= 1 && ii < d1-1 &&
-                                    jj >= 1 && jj < d2-1 &&
-                                    kk >= 1 && kk < d3-1)
-                                    locks[ii * s + jj * d3 + kk] = 1;
-                            }
-            }
-
-    /* Identify false-negative saddles */
-    unsigned char *fn_mask = (unsigned char *)calloc(N, 1);
-    int fn_count = 0;
-    for (int x = 1; x < d1 - 1; x++)
-        for (int y = 1; y < d2 - 1; y++)
-            for (int z = 1; z < d3 - 1; z++) {
-                size_t flat = x * s + y * d3 + z;
-                if (types0[flat] == 3 &&
-                    classify_3d(data, d1, d2, d3, x, y, z) != 3) {
-                    fn_mask[flat] = 1;
-                    fn_count++;
-                }
-            }
-
-    if (fn_count == 0) { free(locks); free(fn_mask); return 0; }
-
-    /* 3×3×3 Gaussian kernel */
-    double sigma = 0.8, s2 = sigma * sigma;
-    int ksize = 3, r = ksize / 2;
-    double w[27];
-    for (int di = -r; di <= r; di++)
-        for (int dj = -r; dj <= r; dj++)
-            for (int dk = -r; dk <= r; dk++)
-                w[(di+r)*9 + (dj+r)*3 + (dk+r)] =
-                    exp(-(double)(di*di + dj*dj + dk*dk) / (2.0 * s2));
-
-    int restored = 0;
-    for (int x = 1; x < d1 - 1; x++) {
-        for (int y = 1; y < d2 - 1; y++) {
-            for (int z = 1; z < d3 - 1; z++) {
-                size_t flat = x * s + y * d3 + z;
-                if (!fn_mask[flat] || types0[flat] != 3) continue;
-
-                double num = 0, den = 0;
-                for (int di = -r; di <= r; di++) {
-                    int ii = x + di; if (ii < 0 || ii >= d1) continue;
-                    for (int dj = -r; dj <= r; dj++) {
-                        int jj = y + dj; if (jj < 0 || jj >= d2) continue;
-                        for (int dk = -r; dk <= r; dk++) {
-                            int kk = z + dk; if (kk < 0 || kk >= d3) continue;
-                            double ww = w[(di+r)*9 + (dj+r)*3 + (dk+r)];
-                            if (locks[ii*s + jj*d3 + kk]) ww *= 0.4;
-                            num += ww * data[ii*s + jj*d3 + kk];
-                            den += ww;
-                        }
-                    }
-                }
-                if (den <= 0) continue;
-
-                float oldc = data[flat];
-                float orig_val = orig_decomp[flat];
-                float min_a = orig_val - errBound * 0.999f;
-                float max_a = orig_val + errBound * 0.999f;
-                float cand = (float)(num / den);
-                if (cand < min_a) cand = min_a;
-                if (cand > max_a) cand = max_a;
-
-                float step = cand - oldc, alpha = 1.0f;
-                for (int it = 0; it < 10; it++) {
-                    float trial = oldc + alpha * step;
-                    if (trial < min_a) trial = min_a;
-                    if (trial > max_a) trial = max_a;
-
-                    int before[6];
-                    neighbour_types_3d(data, d1, d2, d3, x, y, z, before);
-                    float saved = data[flat];
-                    data[flat] = trial;
-                    int bad = 0;
-
-                    /* Center must become a saddle without changing any
-                       neighbour's type */
-                    if (classify_3d(data,d1,d2,d3,x,y,z) != 3) bad = 1;
-                    if (!bad && !change_is_safe_3d(data, types0, d1, d2, d3, x, y, z, trial, before)) bad = 1;
-
-                    if (bad) { data[flat] = saved; alpha *= 0.5f; }
-                    else     { restored++; break; }
-                }
-            }
-        }
-    }
-    free(locks);
-    free(fn_mask);
-    return restored;
-}
+/* Topology restoration comes from the library (szp_cuda_topo_restore.cuh,
+   szp_topo_restore.h), the same algorithm as the CPU path. */
 
 /* ================================================================ */
 /*  main                                                             */
@@ -548,24 +263,18 @@ int main(int argc, char *argv[])
     printf("  Sort positions: %zu extrema, decompressed: %s\n",
            extrema_count, sort_positions ? "OK" : "NULL");
 
-    /* Extrema first: ranked additive restoration within eb of the
-       dequantized value (szp_topo_restore.h, same rule as the 2D path). It
-       only creates orderings that hold in the original data, so it cannot
-       create false positives or false types. */
-    szp_restore_extrema_ranked_3d(decompressed, orig_decomp, FN, sort_positions,
-                                  sort_positions ? extrema_count : 0,
-                                  d1, d2, d3, absErrBound);
-
-    /* Then saddles: exact stencil search, then RBF for the rest. Both
-       reject any change that gives a neighbour a wrong critical type. */
-    int st_restored = stencil_restore_saddles_3d(decompressed, FN, orig_decomp,
-                                                 d1, d2, d3, absErrBound);
-    float eps = fmaxf(1e-6f, 0.1f * absErrBound);
-    int restored = rbf_restore_saddles_3d(decompressed, FN, orig_decomp,
-                                           d1, d2, d3, eps, absErrBound);
-    printf("  Saddle stencil restored %d saddles; RBF restored %d saddles\n",
-           st_restored, restored);
-
+    /* Library restoration on the GPU: ranked extrema, then saddle stencil
+       and RBF passes (szp_cuda_topo_restore.cuh). */
+    szp_topo_restore_stats rs;
+    if (szp_cuda_topo_restore_float_3d(decompressed, FN, sort_positions,
+                                       sort_positions ? extrema_count : 0,
+                                       d1, d2, d3, absErrBound, &rs) != 0)
+        printf("  ERROR: GPU topology restoration failed\n");
+    printf("  Extrema lost %zu -> %zu of %zu; saddles lost %zu -> %zu of %zu\n",
+           rs.extrema_lost_before, rs.extrema_lost_after, rs.extrema,
+           rs.saddles_lost_before, rs.saddles_lost_after, rs.saddles);
+    printf("  Saddle stencil restored %zu saddles; RBF restored %zu saddles\n",
+           rs.saddles_by_stencil, rs.saddles_by_rbf);
 
     double tp1 = get_time_ms();
     printf("  Post-processing done in %.2f ms\n\n", tp1 - tp0);
@@ -784,5 +493,13 @@ int main(int argc, char *argv[])
     if (sort_compressed) free(sort_compressed);
     if (sort_positions)  free(sort_positions);
 
-    return (e2 == 0 && preserved > orig_cp_count * 0.9) ? 0 : 1;
+    /* Exit code: 0 only if every guarantee holds. Lost saddles are reported
+       above but are not a failure (the method does not guarantee them). */
+    int fail_eb = e2 != 0, fail_fp = new_cps != 0, fail_ft = changed != 0;
+    int fail_ext = (l_max + l_min) != 0, fail_fnarr = fn_match != nbEle;
+    int overall = (fail_eb || fail_fp || fail_ft || fail_ext || fail_fnarr) ? 1 : 0;
+    printf("Result: %s%s%s%s%s%s\n", overall ? "FAIL:" : "PASS (error <= 2 eb, no FP, no FT, all extrema kept)",
+           fail_eb ? " error>2eb" : "", fail_fp ? " false-positives" : "", fail_ft ? " false-types" : "",
+           fail_ext ? " extrema-lost" : "", fail_fnarr ? " type-array-mismatch" : "");
+    return overall;
 }

@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include "szp.h"
+#include "szp_topology_3d.h"
 #ifdef _OPENMP
 #include "omp.h"
 #endif
@@ -36,8 +37,10 @@ int main(int argc, char *argv[])
   char oriFilePath[640], outputFilePath[645];
   if (argc < 6)
   {
-    printf("Usage: testfloat_compress_fastmode1 [srcFilePath] [block size] [err bound] [rows] [cols]\n");
+    printf("Usage: testfloat_compress_fastmode1 [srcFilePath] [block size] [err bound] [rows] [cols] [depth]\n");
+    printf("  2D: rows cols; 3D: d1 d2 d3 (slowest dimension first, flat index x*d2*d3 + y*d3 + z)\n");
     printf("Example: testfloat_compress_fastmode1 testfloat_8_8_128.dat 64 1E-3 500 500\n");
+    printf("Example: testfloat_compress_fastmode1 CLDICE_1_26_1800_3600.f32 64 1E-7 26 1800 3600\n");
     exit(0);
   }
 
@@ -46,6 +49,7 @@ int main(int argc, char *argv[])
   float errBound = atof(argv[3]);
   int rows = atoi(argv[4]);
   int cols = atoi(argv[5]);
+  int depth = (argc > 6) ? atoi(argv[6]) : 0;   /* > 0: 3D field rows x cols x depth */
   sprintf(outputFilePath, "%s.SZp", oriFilePath);
 
   int status = 0;
@@ -58,11 +62,11 @@ int main(int argc, char *argv[])
   }
 
   // Validate dimensions match file size
-  size_t expected_nbEle = (size_t)rows * (size_t)cols;
+  size_t expected_nbEle = (size_t)rows * (size_t)cols * (size_t)(depth > 0 ? depth : 1);
   if (nbEle != expected_nbEle) {
     printf("Error: Dimension mismatch!\n");
     printf("  File contains: %zu elements\n", nbEle);
-    printf("  Expected from dimensions (%d x %d): %zu elements\n", rows, cols, expected_nbEle);
+    printf("  Expected from dimensions (%d x %d x %d): %zu elements\n", rows, cols, depth > 0 ? depth : 1, expected_nbEle);
     printf("  This will cause a segmentation fault. Please check your dimensions.\n");
     free(data);
     exit(1);
@@ -73,26 +77,42 @@ int main(int argc, char *argv[])
   size_t outSize;
   size_t sort_positions_size;
   cost_start();
-  CriticalPoint *critical_points = szp_find_critical_points(data, &critical_count, rows, cols, errBound);
+  void *critical_points = NULL;
+  unsigned char *bytes_sort_positions = NULL, *bytes_topology = NULL;
+  if (depth > 0) {
+    CriticalPoint3D *cps = szp_find_critical_points_3d(data, &critical_count, rows, cols, depth, errBound);
+    critical_points = cps;
+    if (cps && critical_count > 0) {
+      // rank critical points by original value within each quantization bin
+      szp_sort_critical_points_3d(cps, critical_count, data, cols, depth);
+      bytes_sort_positions = szp_compress_sort_positions_3d(cps, critical_count, &sort_positions_size, blockSize);
+      bytes_topology = szp_float_compress_topology_3d(data, &outSize, errBound, nbEle, blockSize,
+                                                      cps, (int)critical_count, rows, cols, depth);
+    }
+  } else {
+    CriticalPoint *cps = szp_find_critical_points(data, &critical_count, rows, cols, errBound);
+    critical_points = cps;
+    if (cps && critical_count > 0) {
+      // rank critical points by original value within each quantization bin
+      szp_sort_critical_points_by_original_data(cps, critical_count, data, cols);
+      bytes_sort_positions = szp_compress_sort_positions(cps, critical_count, &sort_positions_size, blockSize);
+      bytes_topology = szp_float_openmp_threadblock_randomaccess_topology_preserved(
+        data, &outSize, errBound, nbEle, blockSize, cps, critical_count, rows, cols);
+    }
+  }
   if (!critical_points || critical_count == 0) {
     printf("Error: No critical points found!\n");
     free(data);
     exit(1);
   }
-  //critical points have a quantized bin value. for each critical point falling in the same bin, we sort them by their original data values
-  szp_sort_critical_points_by_original_data(critical_points, critical_count, data, cols);
-
-  unsigned char *bytes_sort_positions = szp_compress_sort_positions(critical_points, critical_count, &sort_positions_size, blockSize);
   if (!bytes_sort_positions || sort_positions_size == 0) {
     printf("Error: Failed to compress sort positions or size is zero!\n");
     free(critical_points);
     free(data);
     if (bytes_sort_positions) free(bytes_sort_positions);
+    if (bytes_topology) free(bytes_topology);
     exit(1);
   }
-  
-  unsigned char *bytes_topology = szp_float_openmp_threadblock_randomaccess_topology_preserved(
-    data, &outSize, errBound, nbEle, blockSize, critical_points, critical_count, rows, cols);
   if (!bytes_topology || outSize == 0) {
     printf("Error: Failed to compress topology or size is zero!\n");
     free(critical_points);
@@ -101,7 +121,7 @@ int main(int argc, char *argv[])
     if (bytes_topology) free(bytes_topology);
     exit(1);
   }
-  
+
   // Append sort positions to topology bytes + footer with sizes
   // Footer format: [topology_size (size_t)] [sort_positions_size (size_t)]
   size_t footer_size = 2 * sizeof(size_t);

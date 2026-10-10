@@ -30,6 +30,7 @@
 #include "szp.h"
 #include "szp_cuda_compress.cuh"
 #include "szp_cuda_decompress.cuh"
+#include "szp_cuda_topo_restore.cuh"
 #include "szp_cuda_topology.cuh"
 #include "szp_errbound.h"
 #include "szpd_float.h"
@@ -50,12 +51,15 @@ static const char *type_name(int t) {
     }
 }
 
-/* ---- Post-processing stencils (ported from OpenMP decompressor) ---- */
+/* Topology restoration comes from the library (szp_cuda_topo_restore.cuh,
+   szp_topo_restore.h): the GPU and CPU calls below run the same algorithm. */
 
-static const int NB4[4][2] = {{-1,0},{1,0},{0,-1},{0,1}};
+/* -1: not compared, 1: CPU and GPU restored fields identical, 0: they differ */
+static int g_cpu_gpu_same = -1;
 
 /* Classify a point as max(1)/min(2)/saddle(3)/regular(0) using 4-connectivity */
 static int classify_point(const float *data, int rows, int cols, int i, int j) {
+    (void)rows;
     float center = data[i * cols + j];
     float up     = data[(i-1) * cols + j];
     float down   = data[(i+1) * cols + j];
@@ -67,132 +71,6 @@ static int classify_point(const float *data, int rows, int cols, int i, int j) {
     if ((center < up && center < down && center > left && center > right) ||
         (center > up && center > down && center < left && center < right)) return 3;
     return 0;
-}
-
-static inline float clamp_saddle_center(float cand, float n, float s, float w, float e, float eps) {
-    float ns_max = fmaxf(n,s), we_max = fmaxf(w,e);
-    float ns_min = fminf(n,s), we_min = fminf(w,e);
-    float lo = fminf(ns_max, we_max) - 0.25f*eps;
-    float hi = fmaxf(ns_min, we_min) + 0.25f*eps;
-    if (lo > hi) { float mid = 0.5f*(lo+hi); lo = mid - 0.25f*eps; hi = mid + 0.25f*eps; }
-    if (cand < lo) cand = lo;
-    if (cand > hi) cand = hi;
-    return cand;
-}
-
-static inline int cls4(float c, float n, float s, float w, float e, float eps) {
-    if (c > n+eps && c > s+eps && c > w+eps && c > e+eps) return 1;
-    if (c < n-eps && c < s-eps && c < w-eps && c < e-eps) return 2;
-    int vh = (c > n+eps) && (c > s+eps), vl = (c < n-eps) && (c < s-eps);
-    int hh = (c > w+eps) && (c > e+eps), hl = (c < w-eps) && (c < e-eps);
-    if ((vh && hl) || (vl && hh)) return 3;
-    return 0;
-}
-
-static inline int cls_idx(const float *a, int r, int c, int i, int j, float eps) {
-    (void)r;
-    return cls4(a[i*c+j], a[(i-1)*c+j], a[(i+1)*c+j], a[i*c+(j-1)], a[i*c+(j+1)], eps);
-}
-
-static int rbf_restore_saddles(float *data, const int *types0, const float *orig_decomp,
-                                int rows, int cols, float eps, float errBound) {
-    /* Build lock mask around extrema */
-    size_t N = (size_t)rows * cols;
-    unsigned char *locks = (unsigned char *)calloc(N, 1);
-    for (int i = 1; i < rows-1; i++)
-        for (int j = 1; j < cols-1; j++) {
-            int idx = i*cols+j;
-            if (types0[idx] == 1 || types0[idx] == 2)
-                for (int di = -1; di <= 1; di++)
-                    for (int dj = -1; dj <= 1; dj++) {
-                        int ii = i+di, jj = j+dj;
-                        if (ii > 0 && ii < rows-1 && jj > 0 && jj < cols-1)
-                            locks[ii*cols+jj] = 1;
-                    }
-        }
-
-    /* Identify false-negative saddles */
-    unsigned char *fn_mask = (unsigned char *)calloc(N, 1);
-    int fn_count = 0;
-    for (int i = 1; i < rows-1; i++)
-        for (int j = 1; j < cols-1; j++) {
-            int idx = i*cols+j;
-            if (types0[idx] == 3 && classify_point(data, rows, cols, i, j) != 3) {
-                fn_mask[idx] = 1;
-                fn_count++;
-            }
-        }
-
-    if (fn_count == 0) { free(locks); free(fn_mask); return 0; }
-
-    /* Gaussian RBF kernel */
-    double sigma = 0.8;
-    int ksize = 3, r = ksize/2;
-    double s2 = sigma*sigma;
-    double w[9];
-    for (int di = -r; di <= r; di++)
-        for (int dj = -r; dj <= r; dj++)
-            w[(di+r)*ksize+(dj+r)] = exp(-((double)di*di + dj*dj) / (2.0*s2));
-
-    int restored = 0;
-    for (int i = 1; i < rows-1; i++) {
-        for (int j = 1; j < cols-1; j++) {
-            int idx = i*cols+j;
-            if (!fn_mask[idx] || types0[idx] != 3) continue;
-
-            /* RBF weighted average */
-            double num = 0, den = 0;
-            for (int di = -r; di <= r; di++) {
-                int ii = i+di; if (ii < 0 || ii >= rows) continue;
-                for (int dj = -r; dj <= r; dj++) {
-                    int jj = j+dj; if (jj < 0 || jj >= cols) continue;
-                    double ww = w[(di+r)*ksize+(dj+r)];
-                    if (locks[ii*cols+jj]) ww *= 0.4;
-                    num += ww * data[ii*cols+jj];
-                    den += ww;
-                }
-            }
-            if (den <= 0) continue;
-
-            float oldc = data[idx];
-            float orig_val = orig_decomp[idx];
-            float n = data[(i-1)*cols+j], s = data[(i+1)*cols+j];
-            float wv = data[i*cols+(j-1)], ev = data[i*cols+(j+1)];
-            float cand = (float)(num/den);
-            cand = clamp_saddle_center(cand, n, s, wv, ev, eps);
-
-            /* Strict error bound clamping */
-            float min_a = orig_val - errBound * 0.999f;
-            float max_a = orig_val + errBound * 0.999f;
-            if (cand < min_a) cand = min_a;
-            if (cand > max_a) cand = max_a;
-
-            /* Iterative alpha reduction with validation */
-            float step = cand - oldc, alpha = 1.0f;
-            for (int it = 0; it < 10; it++) {
-                float trial = oldc + alpha*step;
-                if (trial < min_a) trial = min_a;
-                if (trial > max_a) trial = max_a;
-
-                float saved = data[idx]; data[idx] = trial;
-                int bad = 0;
-                /* Check we don't create new CPs at regular points */
-                if (types0[idx] == 0 && cls_idx(data,rows,cols,i,j,eps) != 0) bad = 1;
-                if (!bad && i-1 >= 1 && types0[(i-1)*cols+j] == 0 && cls_idx(data,rows,cols,i-1,j,eps) != 0) bad = 1;
-                if (!bad && i+1 < rows-1 && types0[(i+1)*cols+j] == 0 && cls_idx(data,rows,cols,i+1,j,eps) != 0) bad = 1;
-                if (!bad && j-1 >= 1 && types0[i*cols+(j-1)] == 0 && cls_idx(data,rows,cols,i,j-1,eps) != 0) bad = 1;
-                if (!bad && j+1 < cols-1 && types0[i*cols+(j+1)] == 0 && cls_idx(data,rows,cols,i,j+1,eps) != 0) bad = 1;
-                if (!bad && cls_idx(data,rows,cols,i,j,eps) != 3) bad = 1;
-
-                if (bad) { data[idx] = saved; alpha *= 0.5f; }
-                else { restored++; break; }
-            }
-        }
-    }
-
-    free(locks);
-    free(fn_mask);
-    return restored;
 }
 
 int main(int argc, char *argv[]) {
@@ -384,17 +262,19 @@ int main(int argc, char *argv[]) {
     printf("  Sort positions: %zu extrema, compressed %zu bytes, decompressed: %s\n",
            extrema_count, sort_outSize, sort_positions ? "OK" : "NULL");
 
-    /* Same order as the OpenMP decompressor: RBF for lost saddles, then
-       ranked extrema restoration (szp_topo_restore.h). */
-    float eps = fmaxf(1e-6f, 0.1f * absErrBound);
-    int restored_saddles = rbf_restore_saddles(decompressed, FN, orig_decomp,
-                                               rows, cols, eps, absErrBound);
-    printf("  RBF restored %d saddles\n", restored_saddles);
-
-    szp_restore_extrema_ranked_2d(decompressed, orig_decomp, FN, sort_positions,
-                                  sort_positions ? extrema_count : 0,
-                                  rows, cols, absErrBound);
-    printf("  Restored %zu extrema (ranked, within eb of dequantized value)\n", extrema_count);
+    /* Library restoration on the GPU: ranked extrema, then saddle stencil
+       and RBF passes (szp_cuda_topo_restore.cuh). */
+    szp_topo_restore_stats rs;
+    if (szp_cuda_topo_restore_float_2d(decompressed, FN, sort_positions,
+                                       sort_positions ? extrema_count : 0,
+                                       rows, cols, absErrBound, &rs) != 0)
+        printf("  ERROR: GPU topology restoration failed\n");
+    printf("  Extrema lost %zu -> %zu of %zu; saddles lost %zu -> %zu of %zu "
+           "(stencil %zu, RBF %zu)\n",
+           rs.extrema_lost_before, rs.extrema_lost_after, rs.extrema,
+           rs.saddles_lost_before, rs.saddles_lost_after, rs.saddles,
+           rs.saddles_by_stencil, rs.saddles_by_rbf);
+    printf("  RBF restored %zu saddles\n", rs.saddles_by_rbf);
 
     double t7c = get_time_ms();
     printf("  Post-processing done in %.2f ms\n\n", t7c - t7b);
@@ -836,27 +716,15 @@ int main(int argc, char *argv[]) {
                 omp_sort_compressed + sizeof(size_t), omp_sort_outSize - sizeof(size_t),
                 omp_extrema_count, blockSize);
 
-        /* RBF — guard against crash by validating FN has reasonable values */
-        int omp_fn_valid = 1;
-        for (size_t i = 0; i < nbEle && omp_fn_valid; i++) {
-            if (omp_FN[i] < 0 || omp_FN[i] > 3) omp_fn_valid = 0;
-        }
-
-        int omp_restored = 0;
-        if (omp_fn_valid) {
-            omp_restored = rbf_restore_saddles(omp_decompressed, omp_FN, omp_orig_decomp,
-                                                rows, cols, eps, absErrBound);
-        } else {
-            printf("  WARNING: OMP FN array has invalid values, skipping RBF\n");
-        }
-        printf("  RBF restored %d saddles\n\n", omp_restored);
-
-        /* Ranked extrema restoration, as in the CUDA path above */
-        szp_restore_extrema_ranked_2d(omp_decompressed, omp_orig_decomp, omp_FN,
-                                      omp_sort_positions,
-                                      omp_sort_positions ? omp_extrema_count : 0,
-                                      rows, cols, absErrBound);
+        /* Library restoration on the CPU: same algorithm as the GPU call above. */
+        szp_topo_restore_stats ors;
+        szp_topo_restore_float_2d(omp_decompressed, omp_FN, omp_sort_positions,
+                                  omp_sort_positions ? omp_extrema_count : 0,
+                                  rows, cols, absErrBound, &ors);
+        printf("  RBF restored %zu saddles (stencil %zu)\n", ors.saddles_by_rbf, ors.saddles_by_stencil);
         if (omp_sort_positions) free(omp_sort_positions);
+        g_cpu_gpu_same = memcmp(omp_decompressed, decompressed, nbEle * sizeof(float)) == 0;
+        printf("  CPU and GPU restored fields: %s\n\n", g_cpu_gpu_same ? "IDENTICAL" : "DIFFER");
 
         /* Find CPs in OpenMP post-processed data */
         size_t omp_decomp_cp_count = 0;
@@ -935,8 +803,18 @@ int main(int argc, char *argv[]) {
     if (omp_FN) free(omp_FN);
     if (omp_topo_compressed) free(omp_topo_compressed);
 
-    int overall = (cuda_max_err <= absErrBound * 2.0 && cuda_preserved > orig_cp_count * 0.9) ? 0 : 1;
-    printf("\nOverall: %s\n", overall == 0 ? "TOPOLOGY PRESERVED WITHIN 2×eb ✓" : "NEEDS INVESTIGATION");
+    /* Exit code: 0 only if every guarantee holds. Lost saddles are reported
+       above but are not a failure (the method does not guarantee them). */
+    (void)cuda_preserved;
+    int fail_eb = !(cuda_max_err <= absErrBound * 2.0);
+    int fail_fp = new_cps != 0, fail_ft = type_changed != 0;
+    int fail_ext = (lost_max + lost_min) != 0, fail_fnarr = fn_mismatch != 0;
+    int fail_same = g_cpu_gpu_same == 0;
+    int overall = (fail_eb || fail_fp || fail_ft || fail_ext || fail_fnarr || fail_same) ? 1 : 0;
+    printf("\nResult: %s%s%s%s%s%s%s\n", overall ? "FAIL:" : "PASS (error <= 2 eb, no FP, no FT, all extrema kept)",
+           fail_eb ? " error>2eb" : "", fail_fp ? " false-positives" : "", fail_ft ? " false-types" : "",
+           fail_ext ? " extrema-lost" : "", fail_fnarr ? " type-array-mismatch" : "",
+           fail_same ? " CPU/GPU-outputs-differ" : "");
 
     /* Cleanup */
     free(data);

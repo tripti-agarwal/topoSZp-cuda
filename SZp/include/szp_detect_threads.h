@@ -18,6 +18,12 @@
  *  (T = 1 has no internal boundaries and always passes, so it is only the
  *  answer when nothing larger fits).
  *
+ *  Streams written by this version store the thread count: slot 0 of the
+ *  offset table (always offset 0) holds SZP_STREAM_TAG | nbThreads. Decoders
+ *  read the count from there and fall back to the detection above only for
+ *  older streams, whose slot 0 is 0. szp_read_offset() returns 0 for slot 0
+ *  in both cases.
+ *
  *  This header is plain C and is shared by the OpenMP and CUDA decoders.
  */
 
@@ -36,14 +42,39 @@ extern "C" {
 #define SZP_MAX_DETECT_THREADS 1024
 #endif
 
+/* "SZPT" in the high 32 bits of slot 0; the thread count in the low 32 bits. */
+#define SZP_STREAM_TAG 0x535A505400000000ULL
+
+/** Write the thread count into slot 0 of an offset table (encoders). */
+static inline void
+szp_stream_write_tag(unsigned char *cmpBytes, unsigned int nbThreads)
+{
+    unsigned long long v = SZP_STREAM_TAG | (unsigned long long)nbThreads;
+    size_t s = (size_t)v;
+    memcpy(cmpBytes, &s, sizeof(size_t));
+}
+
+/** Thread count stored in the stream, or 0 for an older untagged stream. */
+static inline unsigned int
+szp_stream_tagged_threads(const unsigned char *cmpBytes)
+{
+    size_t s;
+    memcpy(&s, cmpBytes, sizeof(size_t));
+    unsigned long long v = (unsigned long long)s;
+    if ((v & 0xFFFFFFFF00000000ULL) != SZP_STREAM_TAG) return 0;
+    return (unsigned int)(v & 0xFFFFFFFFULL);
+}
+
 /**
- * Read entry k of the offset table. The table is not necessarily 8-byte
- * aligned (e.g. the sort-position stream follows the topology stream at an
- * arbitrary byte offset), so it is read with memcpy.
+ * Read entry k of the offset table (slot 0 is always offset 0, whether or
+ * not it carries the tag). The table is not necessarily 8-byte aligned (e.g.
+ * the sort-position stream follows the topology stream at an arbitrary byte
+ * offset), so it is read with memcpy.
  */
 static inline size_t
 szp_read_offset(const unsigned char *cmpBytes, size_t k)
 {
+    if (k == 0) return 0;
     size_t v;
     memcpy(&v, cmpBytes + k * sizeof(size_t), sizeof(size_t));
     return v;
@@ -221,6 +252,10 @@ szp_detect_nbThreads_generic(const unsigned char *cmpBytes, size_t cmpSize,
                              size_t nbEle, int blockSize, int kind)
 {
     if (!cmpBytes || nbEle == 0 || blockSize <= 0) return 1;
+    {
+        unsigned int tagged = szp_stream_tagged_threads(cmpBytes);
+        if (tagged >= 1) return tagged;
+    }
     int exact = (cmpSize != 0);
     size_t limit = cmpSize;
     if (!exact) {
@@ -229,7 +264,11 @@ szp_detect_nbThreads_generic(const unsigned char *cmpBytes, size_t cmpSize,
         limit = 5 * nbEle + (kind == 1 ? nbEle / 4 + 1 : 0) + 1024
               + (size_t)SZP_MAX_DETECT_THREADS * sizeof(size_t);
     }
-    if (limit < sizeof(size_t) || szp_read_offset(cmpBytes, 0) != 0) return 1;
+    {
+        size_t slot0;
+        memcpy(&slot0, cmpBytes, sizeof(size_t));
+        if (limit < sizeof(size_t) || slot0 != 0) return 1;
+    }
 
     unsigned int best = 0;
     for (unsigned int try_nt = 1; try_nt <= SZP_MAX_DETECT_THREADS; try_nt++) {

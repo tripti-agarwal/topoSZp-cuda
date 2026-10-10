@@ -51,6 +51,34 @@ static SZP_QHD double szp_qmul(double a, double b)
 #endif
 }
 
+/* Arithmetic that rounds every operation on both host and device, so the
+   compiler cannot fuse a multiply and an add on the GPU (which would change
+   results compared with the CPU). */
+static SZP_QHD double szp_dadd(double a, double b)
+{
+#if defined(__CUDA_ARCH__)
+    return __dadd_rn(a, b);
+#else
+    return a + b;
+#endif
+}
+static SZP_QHD float szp_fmul(float a, float b)
+{
+#if defined(__CUDA_ARCH__)
+    return __fmul_rn(a, b);
+#else
+    return a * b;
+#endif
+}
+static SZP_QHD float szp_fadd(float a, float b)
+{
+#if defined(__CUDA_ARCH__)
+    return __fadd_rn(a, b);
+#else
+    return a + b;
+#endif
+}
+
 /** Reconstruction of bin q (eb is the absolute bound, as double). */
 template <typename T>
 SZP_QHD T szp_dequantize(int q, double eb)

@@ -50,6 +50,7 @@ if(OpenMP_CXX_FOUND)
       SZp/src/szpd_double.cc
       SZp/src/szpd_float.cc
       SZp/src/szp_topology_3d.cc
+      SZp/src/szp_topo_restore.cc
   )
   target_compile_features(SZp PUBLIC c_std_99 cxx_std_14)
   target_link_libraries(SZp PUBLIC OpenMP::OpenMP_CXX)
@@ -73,6 +74,7 @@ if(ENABLE_CUDA)
       SZp/src/szp_cuda_decompress.cu
       SZp/src/szp_cuda_topology.cu
       SZp/src/szp_cuda_topology_3d.cu
+      SZp/src/szp_cuda_topo_restore.cu
   )
   target_compile_features(SZp_cuda PUBLIC cxx_std_17)
   target_link_libraries(SZp_cuda PUBLIC CUDA::cudart)

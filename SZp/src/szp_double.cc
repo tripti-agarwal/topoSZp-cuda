@@ -14,6 +14,7 @@
 #include <math.h>
 #include "szp_TypeManager.h"
 #include "szp_quant.h"
+#include "szp_detect_threads.h"
 #include "szp_CompressionToolkit.h"
 
 #ifdef _OPENMP
@@ -290,7 +291,7 @@ szp_double_openmp_threadblock(double *oriData, size_t *outSize, double absErrBou
                 
             }
             (*outSize) += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1];
-            memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
+            memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t)); szp_stream_write_tag(outputBytes, nbThreads);
             
         }
 #pragma omp barrier
@@ -458,7 +459,7 @@ void szp_double_openmp_threadblock_arg(unsigned char *output, double *oriData, s
                 
             }
             (*outSize) += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1];
-            memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
+            memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t)); szp_stream_write_tag(outputBytes, nbThreads);
             
         }
 #pragma omp barrier
@@ -597,7 +598,7 @@ void szp_double_single_thread_arg(unsigned char *output, double *oriData, size_t
     offsets_perthread_arr[0] = 0;
 
     (*outSize) += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1];
-    memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
+    memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t)); szp_stream_write_tag(outputBytes, nbThreads);
     
     memcpy(real_outputBytes + offsets_perthread_arr[tid], outputBytes_perthread, outSize_perthread);
     
@@ -740,7 +741,7 @@ size_t szp_double_single_thread_arg_record(unsigned char *output, double *oriDat
 
     (*outSize) += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1];
     total_memaccess += (sizeof(size_t) * 3);
-    memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
+    memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t)); szp_stream_write_tag(outputBytes, nbThreads);
     total_memaccess += (sizeof(unsigned char) * nbThreads * sizeof(size_t)) * 2; // read and write
     
     memcpy(real_outputBytes + offsets_perthread_arr[tid], outputBytes_perthread, outSize_perthread);
@@ -898,7 +899,7 @@ unsigned char *szp_double_openmp_threadblock_randomaccess(double *oriData, size_
                 offsets_perthread_arr[i] = offsets_perthread_arr[i - 1] + outSize_perthread_arr[i - 1];
             }
             (*outSize) += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1];
-            memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
+            memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t)); szp_stream_write_tag(outputBytes, nbThreads);
         }
 #pragma omp barrier
         memcpy(real_outputBytes + offsets_perthread_arr[tid], outputBytes_perthread, outSize_perthread);
@@ -1069,7 +1070,7 @@ szp_double_openmp_threadblock_randomaccess_arg(unsigned char* output, double *or
                 
             }
             (*outSize) += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1];
-            memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
+            memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t)); szp_stream_write_tag(outputBytes, nbThreads);
             
         }
 #pragma omp barrier

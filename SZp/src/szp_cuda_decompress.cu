@@ -669,7 +669,6 @@ cuda_decompress_threadblock_impl(T *hostOut, size_t nbEle,
     scan_threadblock_offsets(cmpBytes, nbEle, blockSize, &nbOMPThreads);
 
     size_t hdr_size = nbOMPThreads * sizeof(size_t);
-    const size_t *offs = (const size_t *)cmpBytes;
 
     /* Compute total compressed data size (same conservative scan) */
     size_t cmpTotalSize = hdr_size;
@@ -679,7 +678,7 @@ cuda_decompress_threadblock_impl(T *hostOut, size_t nbEle,
             size_t lo = tid * threadblocksize;
             size_t hi = (tid == nbOMPThreads - 1) ? nbEle : (tid + 1) * threadblocksize;
             const unsigned char *rcp = cmpBytes + hdr_size;
-            const unsigned char *ptr = rcp + offs[tid];
+            const unsigned char *ptr = rcp + szp_read_offset(cmpBytes, tid);
 
             if (lo < hi) {
                 ptr += sizeof(int); /* anchor */
@@ -711,8 +710,15 @@ cuda_decompress_threadblock_impl(T *hostOut, size_t nbEle,
     /* Copy to device */
     CUDA_CHECK(cudaMemcpy(d_cmpBytes, cmpBytes, cmpTotalSize,
                           cudaMemcpyHostToDevice));
-    CUDA_CHECK(cudaMemcpy(d_offsets, offs, nbOMPThreads * sizeof(size_t),
-                          cudaMemcpyHostToDevice));
+    {
+        /* Slot 0 may carry the thread-count tag; the kernel needs plain offsets. */
+        size_t *h_offs = (size_t *)malloc(nbOMPThreads * sizeof(size_t));
+        if (!h_offs) return;
+        for (unsigned int t = 0; t < nbOMPThreads; t++) h_offs[t] = szp_read_offset(cmpBytes, t);
+        cudaError_t e_ = cudaMemcpy(d_offsets, h_offs, nbOMPThreads * sizeof(size_t), cudaMemcpyHostToDevice);
+        free(h_offs);
+        CUDA_CHECK(e_);
+    }
 
     /* Launch kernel: one CUDA thread per OMP thread */
     unsigned char *d_rcp = d_cmpBytes + hdr_size;

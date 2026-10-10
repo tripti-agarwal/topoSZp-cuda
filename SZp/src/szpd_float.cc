@@ -59,7 +59,7 @@ float *szp_float_decompress_openmp_threadblock(size_t nbEle, float absErrBound, 
         int diff = 0;
 
         unsigned int bit_count = 0;
-        unsigned char *block_pointer = rcp + offsets[tid];
+        unsigned char *block_pointer = rcp + szp_read_offset((const unsigned char *)offsets, tid);
 
         float ori_prior = 0.0;
         float ori_current = 0.0;
@@ -151,7 +151,7 @@ void szp_float_decompress_single_thread_arg(float *newData, size_t nbEle, float 
     int diff = 0;
 
     unsigned int bit_count = 0;
-    unsigned char *block_pointer = rcp + offsets[0];
+    unsigned char *block_pointer = rcp + szp_read_offset((const unsigned char *)offsets, 0);
 
     float ori_prior = 0.0;
     float ori_current = 0.0;
@@ -239,7 +239,7 @@ size_t szp_float_decompress_single_thread_arg_record(float *newData, size_t nbEl
     int diff = 0;
 
     unsigned int bit_count = 0;
-    unsigned char *block_pointer = rcp + offsets[0]; 
+    unsigned char *block_pointer = rcp + szp_read_offset((const unsigned char *)offsets, 0); 
     total_memaccess += sizeof(size_t); // Reading from offsets array
 
     float ori_prior = 0.0;
@@ -354,7 +354,7 @@ void szp_float_decompress_openmp_threadblock_arg(float *newData, size_t nbEle, f
         int diff = 0;
 
         unsigned int bit_count = 0;
-        unsigned char *block_pointer = rcp + offsets[tid];
+        unsigned char *block_pointer = rcp + szp_read_offset((const unsigned char *)offsets, tid);
 
         float ori_prior = 0.0;
         float ori_current = 0.0;
@@ -456,7 +456,7 @@ float *szp_float_decompress_openmp_threadblock_randomaccess(size_t nbEle, float 
         int diff = 0;
 
         unsigned int bit_count = 0;
-        unsigned char *block_pointer = rcp + offsets[tid];
+        unsigned char *block_pointer = rcp + szp_read_offset((const unsigned char *)offsets, tid);
 
         float ori_prior = 0.0;
         float ori_current = 0.0;
@@ -547,7 +547,7 @@ void szp_float_decompress_openmp_threadblock_randomaccess_arg(float *newData, si
         int current = 0;
         int diff = 0;
         unsigned int bit_count = 0;
-        unsigned char *block_pointer = rcp + offsets[tid];
+        unsigned char *block_pointer = rcp + szp_read_offset((const unsigned char *)offsets, tid);
         float ori_prior = 0.0;
         float ori_current = 0.0;
 

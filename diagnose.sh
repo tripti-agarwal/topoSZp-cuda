@@ -54,7 +54,8 @@ fi
 # ---------------------------------------------------------------- 1. build
 say ""; say "=== 1. Build ==="
 SRC="SZp/src/szp.cc SZp/src/szp_CompressionToolkit.cc SZp/src/szp_TypeManager.cc SZp/src/szp_double.cc
-     SZp/src/szp_float.cc SZp/src/szp_helper.cc SZp/src/szp_rw.cc SZp/src/szpd_double.cc SZp/src/szpd_float.cc"
+     SZp/src/szp_float.cc SZp/src/szp_helper.cc SZp/src/szp_rw.cc SZp/src/szpd_double.cc SZp/src/szpd_float.cc
+     SZp/src/szp_topology_3d.cc SZp/src/szp_topo_restore.cc"
 CE=example/testfloat_compress_fastmode1_topology.cc
 DE=example/testfloat_decompress_fastmode1_topology.cc
 cat > "$B/fieldstats.cc" <<'EOF'
@@ -160,6 +161,29 @@ say ""
 say "Read: rc 139 = segfault (bug 1), 124 = timeout. Different md5 across reps at the same T = non-deterministic output (bugs 1/2/5)."
 say "      FAIL only when T>1 = parallel bugs. d1/eb different from err/eb = decoder thread-count problem (bug 3)."
 
+# ---------------------------------------------------------------- 2b. CPU 3D pipeline
+# Compress + decompress the 3D file on the CPU (OpenMP) with all cores, check its
+# topology, and compare it with the GPU 3D output later (should be identical).
+say ""; say "=== 2b. CPU 3D pipeline (OpenMP, T=$NCPU and T=1) ==="
+for T in 1 "$NCPU"; do
+  w=$OUT/work/cpu3d_T$T.f32; ln -sf "$F3" "$w"
+  OMP_NUM_THREADS=$T timeout "$T3" "$B/comp" "$w" "$BS" "$ABS3" "$D1" "$D2" "$D3" > "$OUT/logs/cpu3d_T$T.comp.log" 2>&1; crc=$?
+  drc=NA
+  if [ $crc = 0 ]; then
+    OMP_NUM_THREADS=$T timeout "$T3" "$B/decomp" "$w.SZp" $((D1*D2*D3)) "$BS" "$ABS3" "$D1" "$D2" "$D3" > "$OUT/logs/cpu3d_T$T.dec.log" 2>&1; drc=$?
+    [ -f "$w.SZp.out" ] && mv -f "$w.SZp.out" "$OUT/work/cpu3d_T$T.out"
+  fi
+  say "  T=$T: compress rc=$(rcnote $crc), decompress rc=$drc; $(grep -h -m1 'compression time' "$OUT/logs/cpu3d_T$T.comp.log") $(grep -h -m1 'decompression time' "$OUT/logs/cpu3d_T$T.dec.log" 2>/dev/null)"
+  grep -h "topology restoration\|warning" "$OUT/logs/cpu3d_T$T.comp.log" "$OUT/logs/cpu3d_T$T.dec.log" 2>/dev/null | sed 's/^/    /' | tee -a "$S"
+  rm -f "$w.SZp"
+done
+if [ -f "$OUT/work/cpu3d_T$NCPU.out" ]; then
+  "$B/topo_check" "$F3" "$OUT/work/cpu3d_T$NCPU.out" "$ABS3" "$D1" "$D2" "$D3" > "$OUT/logs/topo_cpu3d.log" 2>&1
+  sed 's/^/    /' "$OUT/logs/topo_cpu3d.log" | tee -a "$S"
+  cmp -s "$OUT/work/cpu3d_T1.out" "$OUT/work/cpu3d_T$NCPU.out" && say "    CPU 3D outputs at T=1 and T=$NCPU are identical" \
+    || say "    CPU 3D outputs at T=1 and T=$NCPU DIFFER"
+fi
+
 # ---------------------------------------------------------------- 3. AddressSanitizer
 if [ -x "$B/comp_asan" ]; then
   say ""; say "=== 3. AddressSanitizer on 2D (T=8) ==="
@@ -181,7 +205,7 @@ fi
 if [ $GPU = 1 ] && [ $GPUVIS = 1 ]; then
   G=$OUT/build_cuda
   say ""; say "=== 4. GPU tests ==="
-  KEYS="Found|MATCH|DIFFER|Raw max error|Raw CP|Compressed:|Preserved|Lost:|Non-zero|Max error:|Status:|RBF restored|mismatch|PASS|FAIL|ERROR|Error"
+  KEYS="Found|MATCH|DIFFER|IDENTICAL|Raw max error|Raw CP|Compressed:|Preserved|Lost:|lost|Non-zero|Max error:|Status:|RBF restored|mismatch|Result:|PASS|FAIL|ERROR|Error|warning"
   grab() { grep -E "$KEYS" "$1" | sed 's/^/    /' | tee -a "$S"; }
   norm() { grep -E "$KEYS" "$1" | sed -E 's/ in [0-9.]+ ms//g; s/[0-9.]+ ms//g'; }
   for k in 1 2; do
@@ -195,6 +219,9 @@ if [ $GPU = 1 ] && [ $GPUVIS = 1 ]; then
     sed 's/^/    /' "$OUT/logs/topo_gpu3d.log" | tee -a "$S"
     cmp -s "$OUT/work/gpu3d_1.out" "$OUT/work/gpu3d_2.out" && say "    3D outputs of runs 1 and 2 are identical" \
       || say "    3D outputs of runs 1 and 2 DIFFER"
+    [ -f "$OUT/work/cpu3d_T$NCPU.out" ] && { cmp -s "$OUT/work/cpu3d_T$NCPU.out" "$OUT/work/gpu3d_1.out" \
+      && say "    GPU 3D output is identical to the CPU 3D output" \
+      || say "    GPU 3D output differs from the CPU 3D output (compare the two topology tables)"; }
   fi
   if diff -q <(norm "$OUT/logs/gpu3d_1.log") <(norm "$OUT/logs/gpu3d_2.log") >/dev/null; then
     say "    3D runs 1 and 2 agree"; else say "    3D runs 1 and 2 DIFFER (non-deterministic GPU path)"; fi

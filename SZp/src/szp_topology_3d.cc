@@ -327,7 +327,7 @@ unsigned char *szp_compress_sort_positions_3d(CriticalPoint3D *critical_points,
             for (unsigned int k = 1; k < nbThreads; k++)
                 offsets_perthread_arr[k] = offsets_perthread_arr[k-1] + outSize_perthread_arr[k-1].size;
             *outSize += offsets_perthread_arr[nbThreads-1] + outSize_perthread_arr[nbThreads-1].size;
-            memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
+            memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t)); szp_stream_write_tag(outputBytes, nbThreads);
         }
 #pragma omp barrier
         if (outputBytes_perthread && real_outputBytes)
@@ -532,7 +532,7 @@ unsigned char *szp_float_compress_topology_3d(
                 for (i = 1; i < nbThreads; i++)
                     offsets_perthread_arr[i] = offsets_perthread_arr[i-1] + outSize_perthread_arr[i-1].size;
                 *outSize += offsets_perthread_arr[nbThreads-1] + outSize_perthread_arr[nbThreads-1].size;
-                memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
+                memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t)); szp_stream_write_tag(outputBytes, nbThreads);
             }
         }
 #pragma omp barrier

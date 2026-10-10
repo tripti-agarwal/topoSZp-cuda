@@ -8,6 +8,7 @@
  */
 
 #include "szp_quant.h"
+#include "szp_detect_threads.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -507,8 +508,7 @@ unsigned char *szp_cuda_compress_sort_positions(CriticalPoint *critical_points,
     *outSize = headerSize + totalCompressed;
 
     unsigned char *output = (unsigned char *)malloc(*outSize);
-    size_t zero_off = 0;
-    memcpy(output, &zero_off, sizeof(size_t));
+    szp_stream_write_tag(output, 1u);   /* one segment */
 
     /* Packing pass */
     unsigned char *d_output;
@@ -721,7 +721,6 @@ unsigned char *szp_cuda_float_compress_randomaccess_topology_preserved(
         return NULL;
     }
 
-    double inver_bound = 1.0 / absErrBound;
     unsigned int block_size = (unsigned int)blockSize;
     size_t num_blocks = (nbEle + block_size - 1) / block_size;
 
@@ -774,8 +773,7 @@ unsigned char *szp_cuda_float_compress_randomaccess_topology_preserved(
     *outSize = headerSize + totalCompressed;
 
     unsigned char *output = (unsigned char *)malloc(*outSize);
-    size_t zero_off = 0;
-    memcpy(output, &zero_off, sizeof(size_t));
+    szp_stream_write_tag(output, 1u);   /* one segment */
 
     /* Packing pass */
     unsigned char *d_output;

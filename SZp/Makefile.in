@@ -141,7 +141,9 @@ am_libszp_la_OBJECTS = src/libszp_la-szp.lo src/libszp_la-szp_rw.lo \
 	src/libszp_la-szp_CompressionToolkit.lo \
 	src/libszp_la-szp_float.lo src/libszp_la-szpd_float.lo \
 	src/libszp_la-szp_helper.lo src/libszp_la-szp_double.lo \
-	src/libszp_la-szpd_double.lo
+	src/libszp_la-szpd_double.lo \
+	src/libszp_la-szp_topology_3d.lo \
+	src/libszp_la-szp_topo_restore.lo
 libszp_la_OBJECTS = $(am_libszp_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -173,6 +175,8 @@ am__depfiles_remade = src/$(DEPDIR)/libszp_la-szp.Plo \
 	src/$(DEPDIR)/libszp_la-szp_helper.Plo \
 	src/$(DEPDIR)/libszp_la-szp_rw.Plo \
 	src/$(DEPDIR)/libszp_la-szpd_double.Plo \
+	src/$(DEPDIR)/libszp_la-szp_topology_3d.Plo \
+	src/$(DEPDIR)/libszp_la-szp_topo_restore.Plo \
 	src/$(DEPDIR)/libszp_la-szpd_float.Plo
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -352,11 +356,11 @@ top_srcdir = @top_srcdir@
 AM_CXXFLAGS = @OPENMP_CXXFLAGS@
 AM_LDFLAGS = @OPENMP_CXXFLAGS@
 AUTOMAKE_OPTIONS = foreign
-include_HEADERS = include/szp.h include/szp_rw.h include/szp_defines.h include/szp_TypeManager.h include/szp_CompressionToolkit.h include/szp_float.h include/szpd_float.h include/szp_helper.h include/szp_double.h include/szpd_double.h
+include_HEADERS = include/szp.h include/szp_rw.h include/szp_defines.h include/szp_TypeManager.h include/szp_CompressionToolkit.h include/szp_float.h include/szpd_float.h include/szp_helper.h include/szp_double.h include/szpd_double.h include/szp_quant.h include/szp_topo_restore.h include/szp_topology_3d.h include/szp_detect_threads.h include/szp_cp_rank.h
 lib_LTLIBRARIES = libszp.la
 libszp_la_CXXFLAGS = -I./include $(am__append_1)
 libszp_la_LDFLAGS = -version-info  1:2:0
-libszp_la_SOURCES = src/szp.cc src/szp_rw.cc src/szp_TypeManager.cc src/szp_CompressionToolkit.cc src/szp_float.cc src/szpd_float.cc src/szp_helper.cc src/szp_double.cc src/szpd_double.cc
+libszp_la_SOURCES = src/szp.cc src/szp_rw.cc src/szp_TypeManager.cc src/szp_CompressionToolkit.cc src/szp_float.cc src/szpd_float.cc src/szp_helper.cc src/szp_double.cc src/szpd_double.cc src/szp_topology_3d.cc src/szp_topo_restore.cc
 all: all-am
 
 .SUFFIXES:
@@ -449,6 +453,10 @@ src/libszp_la-szp_double.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/libszp_la-szpd_double.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
+src/libszp_la-szp_topology_3d.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libszp_la-szp_topo_restore.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
 
 libszp.la: $(libszp_la_OBJECTS) $(libszp_la_DEPENDENCIES) $(EXTRA_libszp_la_DEPENDENCIES) 
 	$(AM_V_CXXLD)$(libszp_la_LINK) -rpath $(libdir) $(libszp_la_OBJECTS) $(libszp_la_LIBADD) $(LIBS)
@@ -469,6 +477,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libszp_la-szp_helper.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libszp_la-szp_rw.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libszp_la-szpd_double.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libszp_la-szp_topology_3d.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libszp_la-szp_topo_restore.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libszp_la-szpd_float.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -563,6 +573,20 @@ src/libszp_la-szpd_double.lo: src/szpd_double.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/szpd_double.cc' object='src/libszp_la-szpd_double.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CXXFLAGS) $(CXXFLAGS) -c -o src/libszp_la-szpd_double.lo `test -f 'src/szpd_double.cc' || echo '$(srcdir)/'`src/szpd_double.cc
+
+src/libszp_la-szp_topology_3d.lo: src/szp_topology_3d.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CXXFLAGS) $(CXXFLAGS) -MT src/libszp_la-szp_topology_3d.lo -MD -MP -MF src/$(DEPDIR)/libszp_la-szp_topology_3d.Tpo -c -o src/libszp_la-szp_topology_3d.lo `test -f 'src/szp_topology_3d.cc' || echo '$(srcdir)/'`src/szp_topology_3d.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libszp_la-szp_topology_3d.Tpo src/$(DEPDIR)/libszp_la-szp_topology_3d.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/szp_topology_3d.cc' object='src/libszp_la-szp_topology_3d.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CXXFLAGS) $(CXXFLAGS) -c -o src/libszp_la-szp_topology_3d.lo `test -f 'src/szp_topology_3d.cc' || echo '$(srcdir)/'`src/szp_topology_3d.cc
+
+src/libszp_la-szp_topo_restore.lo: src/szp_topo_restore.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CXXFLAGS) $(CXXFLAGS) -MT src/libszp_la-szp_topo_restore.lo -MD -MP -MF src/$(DEPDIR)/libszp_la-szp_topo_restore.Tpo -c -o src/libszp_la-szp_topo_restore.lo `test -f 'src/szp_topo_restore.cc' || echo '$(srcdir)/'`src/szp_topo_restore.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libszp_la-szp_topo_restore.Tpo src/$(DEPDIR)/libszp_la-szp_topo_restore.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/szp_topo_restore.cc' object='src/libszp_la-szp_topo_restore.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CXXFLAGS) $(CXXFLAGS) -c -o src/libszp_la-szp_topo_restore.lo `test -f 'src/szp_topo_restore.cc' || echo '$(srcdir)/'`src/szp_topo_restore.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -730,6 +754,8 @@ distclean: distclean-am
 	-rm -f src/$(DEPDIR)/libszp_la-szp_helper.Plo
 	-rm -f src/$(DEPDIR)/libszp_la-szp_rw.Plo
 	-rm -f src/$(DEPDIR)/libszp_la-szpd_double.Plo
+	-rm -f src/$(DEPDIR)/libszp_la-szp_topology_3d.Plo
+	-rm -f src/$(DEPDIR)/libszp_la-szp_topo_restore.Plo
 	-rm -f src/$(DEPDIR)/libszp_la-szpd_float.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -784,6 +810,8 @@ maintainer-clean: maintainer-clean-am
 	-rm -f src/$(DEPDIR)/libszp_la-szp_helper.Plo
 	-rm -f src/$(DEPDIR)/libszp_la-szp_rw.Plo
 	-rm -f src/$(DEPDIR)/libszp_la-szpd_double.Plo
+	-rm -f src/$(DEPDIR)/libszp_la-szp_topology_3d.Plo
+	-rm -f src/$(DEPDIR)/libszp_la-szp_topo_restore.Plo
 	-rm -f src/$(DEPDIR)/libszp_la-szpd_float.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic

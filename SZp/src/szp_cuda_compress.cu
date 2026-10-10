@@ -15,6 +15,7 @@
  */
 
 #include "szp_quant.h"
+#include "szp_detect_threads.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -403,7 +404,6 @@ cuda_compress_randomaccess_impl(T *oriData, size_t *outSize, T absErrBound,
     if (nbEle == 0 || absErrBound <= 0) { *outSize = 0; return NULL; }
     if (szp_check_errbound<T>(oriData, nbEle, (double)absErrBound, "SZp CUDA compress") < 0) { *outSize = 0; return NULL; }
 
-    double inver_bound = 1.0 / (double)absErrBound;
     size_t numBlocks = (nbEle + blockSize - 1) / blockSize;
 
     /* --- Single device allocation for input + metadata --- */
@@ -467,7 +467,7 @@ cuda_compress_randomaccess_impl(T *oriData, size_t *outSize, T absErrBound,
     }
 
     memcpy(output, &absErrBound, sizeof(T));
-    { size_t zero = 0; memcpy(output + sizeof(T), &zero, sizeof(size_t)); }
+    szp_stream_write_tag(output + sizeof(T), 1u);
 
     /* Async copy body from device */
     cudaMemcpyAsync(output + headerSz, d_output, totalBody,
@@ -490,7 +490,6 @@ cuda_compress_randomaccess_arg_impl(unsigned char *output, T *oriData,
 {
     if (!output || nbEle == 0 || absErrBound <= 0) { *outSize = 0; return; }
 
-    double inver_bound = 1.0 / (double)absErrBound;
     size_t numBlocks = (nbEle + blockSize - 1) / blockSize;
 
     /* Single device allocation for input + metadata */
@@ -538,7 +537,7 @@ cuda_compress_randomaccess_arg_impl(unsigned char *output, T *oriData,
     *outSize = headerSz + totalBody;
 
     memcpy(output, &absErrBound, sizeof(T));
-    { size_t zero = 0; memcpy(output + sizeof(T), &zero, sizeof(size_t)); }
+    szp_stream_write_tag(output + sizeof(T), 1u);
     cudaMemcpyAsync(output + headerSz, d_output, totalBody,
                     cudaMemcpyDeviceToHost, stream);
     cudaStreamSynchronize(stream);
@@ -560,7 +559,6 @@ cuda_compress_threadblock_impl(T *oriData, size_t *outSize, T absErrBound,
     if (nbEle == 0 || absErrBound <= 0) { *outSize = 0; return NULL; }
     if (szp_check_errbound<T>(oriData, nbEle, (double)absErrBound, "SZp CUDA compress") < 0) { *outSize = 0; return NULL; }
 
-    double inver_bound = 1.0 / (double)absErrBound;
     unsigned int nChunks = 1;     /* single chunk — serial within */
 
     T *d_data = NULL;
@@ -598,7 +596,7 @@ cuda_compress_threadblock_impl(T *oriData, size_t *outSize, T absErrBound,
     CUDA_CHECK(cudaDeviceSynchronize());
 
     memcpy(output, &absErrBound, sizeof(T));
-    { size_t zero = 0; memcpy(output + sizeof(T), &zero, sizeof(size_t)); }
+    szp_stream_write_tag(output + sizeof(T), 1u);
     CUDA_CHECK(cudaMemcpy(output + headerSz, d_output, totalBody, cudaMemcpyDeviceToHost));
 
 cleanup:
@@ -617,7 +615,6 @@ cuda_compress_threadblock_arg_impl(unsigned char *output, T *oriData,
 {
     if (!output || nbEle == 0 || absErrBound <= 0) { *outSize = 0; return; }
 
-    double inver_bound = 1.0 / (double)absErrBound;
     unsigned int nChunks = 1;
 
     T *d_data = NULL;
@@ -646,7 +643,7 @@ cuda_compress_threadblock_arg_impl(unsigned char *output, T *oriData,
     *outSize = headerSz + totalBody;
 
     memcpy(output, &absErrBound, sizeof(T));
-    { size_t zero = 0; memcpy(output + sizeof(T), &zero, sizeof(size_t)); }
+    szp_stream_write_tag(output + sizeof(T), 1u);
 
     CUDA_CHECK(cudaMalloc(&d_output, totalBody));
     tb_compress_packing_kernel<T><<<1, 1>>>(d_data, nbEle, blockSize,
@@ -670,7 +667,6 @@ cuda_direct_predict_quantization_impl(float *oriData, size_t * /*outSize*/,
                                       int /*blockSize*/)
 {
     if (nbEle == 0) return NULL;
-    double inver_bound = 1.0 / (double)absErrBound;
 
     float *d_data = NULL;
     int   *d_qArr = NULL, *d_diffArr = NULL;

@@ -56,7 +56,7 @@ double *szp_double_decompress_openmp_threadblock(size_t nbEle, double absErrBoun
         int diff = 0;
 
         unsigned int bit_count = 0;
-        unsigned char *block_pointer = rcp + offsets[tid];
+        unsigned char *block_pointer = rcp + szp_read_offset((const unsigned char *)offsets, tid);
 
         double ori_prior = 0.0;
         double ori_current = 0.0;
@@ -150,7 +150,7 @@ void szp_double_decompress_single_thread_arg(double *newData, size_t nbEle, doub
     int diff = 0;
 
     unsigned int bit_count = 0;
-    unsigned char *block_pointer = rcp + offsets[0];
+    unsigned char *block_pointer = rcp + szp_read_offset((const unsigned char *)offsets, 0);
 
     double ori_prior = 0.0;
     double ori_current = 0.0;
@@ -239,7 +239,7 @@ size_t szp_double_decompress_single_thread_arg_record(double *newData, size_t nb
     int diff = 0;
 
     unsigned int bit_count = 0;
-    unsigned char *block_pointer = rcp + offsets[0]; 
+    unsigned char *block_pointer = rcp + szp_read_offset((const unsigned char *)offsets, 0); 
     total_memaccess += sizeof(size_t); // Reading from offsets array
 
     double ori_prior = 0.0;
@@ -355,7 +355,7 @@ void szp_double_decompress_openmp_threadblock_arg(double *newData, size_t nbEle,
 
         int max = 0;
         int bit_count = 0;
-        unsigned char *block_pointer = rcp + offsets[tid];
+        unsigned char *block_pointer = rcp + szp_read_offset((const unsigned char *)offsets, tid);
         double ori_prior = 0.0;
         double ori_current = 0.0;
 
@@ -453,7 +453,7 @@ double *szp_double_decompress_openmp_threadblock_randomaccess(size_t nbEle, doub
         size_t j = 0;
         int prior = 0, current = 0, diff = 0;
         unsigned int bit_count = 0;
-        unsigned char *block_pointer = rcp + offsets[tid];
+        unsigned char *block_pointer = rcp + szp_read_offset((const unsigned char *)offsets, tid);
         double ori_prior = 0.0, ori_current = 0.0;
 
         unsigned char *temp_sign_arr = (unsigned char *)malloc((block_size-1) * sizeof(unsigned char));
@@ -536,7 +536,7 @@ void szp_double_decompress_openmp_threadblock_randomaccess_arg(double *newData, 
         size_t j = 0;
         int prior = 0, current = 0, diff = 0;
         unsigned int bit_count = 0;
-        unsigned char *block_pointer = rcp + offsets[tid];
+        unsigned char *block_pointer = rcp + szp_read_offset((const unsigned char *)offsets, tid);
         double ori_prior = 0.0, ori_current = 0.0;
 
         unsigned char *temp_sign_arr = (unsigned char *)malloc((block_size - 1) * sizeof(unsigned char));

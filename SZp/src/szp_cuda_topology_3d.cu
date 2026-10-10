@@ -12,6 +12,7 @@
  */
 
 #include "szp_quant.h"
+#include "szp_detect_threads.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -521,8 +522,7 @@ unsigned char *szp_cuda_compress_sort_positions_3d(
     size_t hdr = sizeof(size_t);
     *outSize = hdr + total;
     unsigned char *out = (unsigned char *)malloc(*outSize);
-    size_t zero = 0;
-    memcpy(out, &zero, sizeof(size_t));
+    szp_stream_write_tag(out, 1u);   /* one segment */
 
     unsigned char *d_out;
     CUDA_CHECK(cudaMalloc(&d_out, total));
@@ -837,7 +837,6 @@ unsigned char *szp_cuda_float_compress_topology_3d(
         return NULL;
     }
 
-    double inver_bound = 1.0 / absErrBound;
     unsigned int bsz = (unsigned int)blockSize;
     size_t num_blocks = (nbEle + bsz - 1) / bsz;
 
@@ -904,8 +903,7 @@ unsigned char *szp_cuda_float_compress_topology_3d(
     size_t hdr = sizeof(size_t);
     *outSize = hdr + total;
     unsigned char *output = (unsigned char *)malloc(*outSize);
-    size_t zero = 0;
-    memcpy(output, &zero, sizeof(size_t));
+    szp_stream_write_tag(output, 1u);   /* one segment */
 
     /* Packing pass */
     unsigned char *d_out;
@@ -944,7 +942,6 @@ unsigned char *szp_cuda_double_compress_topology_3d(
         return NULL;
     }
 
-    double inver_bound = 1.0 / absErrBound;
     unsigned int bsz = (unsigned int)blockSize;
     size_t num_blocks = (nbEle + bsz - 1) / bsz;
 
@@ -1021,8 +1018,7 @@ unsigned char *szp_cuda_double_compress_topology_3d(
     size_t hdr = sizeof(size_t);
     *outSize = hdr + total;
     unsigned char *output = (unsigned char *)malloc(*outSize);
-    size_t zero = 0;
-    memcpy(output, &zero, sizeof(size_t));
+    szp_stream_write_tag(output, 1u);   /* one segment */
 
     unsigned char *d_out;
     CUDA_CHECK(cudaMalloc(&d_out, total));
