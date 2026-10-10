@@ -27,6 +27,13 @@ int szp_cuda_topo_restore_float_3d(float *data, const int *types, const int *sor
                                    size_t extrema_count, int d1, int d2, int d3, float errBound,
                                    szp_topo_restore_stats *stats);
 
+/* PL mode (szp_pl_topology.h): same algorithm and results as
+   szp_topo_restore_float_pl / szp_pl_classify_float. */
+int szp_cuda_topo_restore_float_pl(float *data, const int *codes, const int *sort_positions,
+                                   size_t extrema_count, int nd, int d1, int d2, int d3,
+                                   float errBound, szp_topo_restore_stats *stats);
+int szp_cuda_pl_classify_float(const float *data, int nd, int d1, int d2, int d3, signed char *codes);
+
 #ifdef __cplusplus
 }
 #endif

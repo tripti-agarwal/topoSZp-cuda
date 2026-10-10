@@ -62,6 +62,12 @@ typedef struct {
     size_t saddles_by_stencil;   /* restored by the stencil passes */
     size_t saddles_by_rbf;       /* restored by the RBF passes */
     size_t saddles_lost_after;   /* still not saddles at the end */
+    /* PL mode only (szp_pl_topology.h); 0 in axis mode, where the
+       restoration guarantees no false positives and no false types. */
+    size_t fp_before, fp_after;  /* points stored regular that are critical */
+    size_t ft_before, ft_after;  /* critical points with another code than stored */
+    size_t other_fixes;          /* points other than saddles fixed (FP/FT/extrema) */
+    size_t rounds;               /* fix rounds run */
 } szp_topo_restore_stats;
 
 /**

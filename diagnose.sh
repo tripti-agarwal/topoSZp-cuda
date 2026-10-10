@@ -15,13 +15,15 @@
 # example/topo_check for the CPU output at every thread count and for the GPU output.
 # Section 2c checks saddles with the standard PL (TTK-style) definition instead
 # (example/pl_topo_check): how many true saddles TopoSZp keeps, by persistence.
+# Section 2d runs TopoSZp in PL mode (--pl, stores and restores PL types) on the
+# CPU; section 4 runs the GPU tests in PL mode and compares them with the CPU.
 #
 # Env knobs:  THREADS="1 2 4 8 16 32"  REPS=3  TIMEOUT=900  SKIP_GPU=1  SKIP_SANITIZER=1  SKIP_PL=1
 #
 # Output: diag_<timestamp>/summary.txt (send this) and diag_<timestamp>/logs/ (one log per run).
 
 set -u
-if [ $# -lt 7 ]; then sed -n 2,19p "$0"; exit 1; fi
+if [ $# -lt 7 ]; then sed -n 2,21p "$0"; exit 1; fi
 
 F2=$(realpath "$1"); R=$2; C=$3
 F3=$(realpath "$4"); D1=$5; D2=$6; D3=$7
@@ -211,6 +213,39 @@ if [ "${SKIP_PL:-0}" != 1 ]; then
   say "      The 'PL vs axis' table shows how many TopoSZp saddles are real PL saddles and vice versa."
 fi
 
+# ---------------------------------------------------------------- 2d. PL mode
+# TopoSZp with PL critical points (--pl): the compressor stores PL types and the
+# decoder restores them (szp_pl_topology.h). Checked with pl_topo_check, at two
+# thread counts (outputs must be identical), and against the GPU in section 4.
+if [ "${SKIP_PL:-0}" != 1 ]; then
+  say ""; say "=== 2d. TopoSZp in PL mode (--pl): stores and restores PL critical points ==="
+  for dim in 2 3; do
+    if [ $dim = 2 ]; then F=$F2; A=$ABS2; DIMS="$R $C"; NE=$((R*C)); TL=$TIMEOUT
+    else F=$F3; A=$ABS3; DIMS="$D1 $D2 $D3"; NE=$((D1*D2*D3)); TL=$T3; fi
+    for T in 1 "$NCPU"; do
+      w=$OUT/work/pl${dim}d_T$T.f32; ln -sf "$F" "$w"
+      OMP_NUM_THREADS=$T timeout "$TL" "$B/comp" --pl "$w" "$BS" "$A" $DIMS > "$OUT/logs/pl${dim}d_T$T.comp.log" 2>&1; crc=$?
+      drc=NA
+      if [ $crc = 0 ]; then
+        OMP_NUM_THREADS=$T timeout "$TL" "$B/decomp" "$w.SZp" "$NE" "$BS" "$A" $DIMS > "$OUT/logs/pl${dim}d_T$T.dec.log" 2>&1; drc=$?
+        [ -f "$w.SZp.out" ] && mv -f "$w.SZp.out" "$OUT/work/pl${dim}d_T$T.out"
+      fi
+      say "  ${dim}D T=$T: compress rc=$(rcnote $crc), decompress rc=$drc; $(grep -h -m1 'compression size' "$OUT/logs/pl${dim}d_T$T.comp.log"); $(grep -h -m1 'compression time' "$OUT/logs/pl${dim}d_T$T.comp.log" | cut -d, -f1); $(grep -h -m1 'decompression time' "$OUT/logs/pl${dim}d_T$T.dec.log" 2>/dev/null)"
+      grep -h "topology restoration\|warning\|Warning" "$OUT/logs/pl${dim}d_T$T.comp.log" "$OUT/logs/pl${dim}d_T$T.dec.log" 2>/dev/null | sed 's/^/    /' | tee -a "$S"
+      rm -f "$w.SZp"
+    done
+    o=$OUT/work/pl${dim}d_T$NCPU.out
+    if [ -f "$o" ]; then
+      cmp -s "$OUT/work/pl${dim}d_T1.out" "$o" && say "    ${dim}D outputs at T=1 and T=$NCPU are identical" \
+        || say "    ${dim}D outputs at T=1 and T=$NCPU DIFFER"
+      OMP_NUM_THREADS=$NCPU timeout "$T3" "$B/pl_topo_check" "$F" "$o" "$A" $DIMS > "$OUT/logs/pl${dim}d_check.log" 2>&1
+      sed 's/^/    /' "$OUT/logs/pl${dim}d_check.log" | tee -a "$S"
+    fi
+  done
+  say "Read: compare with section 2c (axis mode). In PL mode the 'final' column should keep far more saddles"
+  say "      and have far fewer FP/FT; the axis-rule table (topo_check) no longer applies to this output."
+fi
+
 # ---------------------------------------------------------------- 3. AddressSanitizer
 if [ -x "$B/comp_asan" ]; then
   say ""; say "=== 3. AddressSanitizer on 2D (T=8) ==="
@@ -232,7 +267,7 @@ fi
 if [ $GPU = 1 ] && [ $GPUVIS = 1 ]; then
   G=$OUT/build_cuda
   say ""; say "=== 4. GPU tests ==="
-  KEYS="Found|MATCH|DIFFER|IDENTICAL|Raw max error|Raw CP|Compressed:|Preserved|Lost:|lost|Non-zero|Max error:|Status:|RBF restored|mismatch|Result:|PASS|FAIL|ERROR|Error|warning"
+  KEYS="PL fixes|PL check|Saddle kinds|1-saddles:|Found|MATCH|DIFFER|IDENTICAL|Raw max error|Raw CP|Compressed:|Preserved|Lost:|lost|Non-zero|Max error:|Status:|RBF restored|mismatch|Result:|PASS|FAIL|ERROR|Error|warning"
   grab() { grep -E "$KEYS" "$1" | sed 's/^/    /' | tee -a "$S"; }
   norm() { grep -E "$KEYS" "$1" | sed -E 's/ in [0-9.]+ ms//g; s/[0-9.]+ ms//g'; }
   for k in 1 2; do
@@ -263,6 +298,20 @@ if [ $GPU = 1 ] && [ $GPUVIS = 1 ]; then
     [ -f "$f1" ] && { cmp -s "$f1" "$OUT/work/gpu2d.out" && say "    GPU 2D output is identical to the CPU output" \
       || say "    GPU 2D output differs from the CPU output (compare the two topology tables)"; }
   fi
+  if [ "${SKIP_PL:-0}" != 1 ]; then
+    for dim in 2 3; do
+      if [ $dim = 2 ]; then exe=test_cuda_topology; args="$F2 $R $C $ABS2 $BS"; TL=$TIMEOUT
+      else exe=test_cuda_topology_3d; args="$F3 $D1 $D2 $D3 $ABS3 $BS"; TL=$T3; fi
+      say "-- $exe --pl (PL mode)"
+      TOPOSZP_DUMP=$OUT/work/gpu_pl${dim}d.out OMP_NUM_THREADS=$NCPU timeout "$TL" "$G/$exe" --pl $args > "$OUT/logs/gpu_pl${dim}d.log" 2>&1
+      say "    exit=$(rcnote $?)"; grab "$OUT/logs/gpu_pl${dim}d.log"
+      c=$OUT/work/pl${dim}d_T$NCPU.out
+      if [ -f "$OUT/work/gpu_pl${dim}d.out" ] && [ -f "$c" ]; then
+        cmp -s "$c" "$OUT/work/gpu_pl${dim}d.out" && say "    GPU PL ${dim}D output is identical to the CPU PL output" \
+          || say "    GPU PL ${dim}D output DIFFERS from the CPU PL output"
+      fi
+    done
+  fi
   for T in 1 4 "$NCPU"; do
     say "-- CPU compress (T=$T) -> GPU decompress: test_cuda_decompress"
     OMP_NUM_THREADS=$T timeout "$TIMEOUT" "$G/test_cuda_decompress" "$F2" $((R*C)) "$ABS2" "$BS" "$R" "$C" > "$OUT/logs/interop_cpu2gpu_T$T.log" 2>&1
@@ -278,11 +327,13 @@ if [ $GPU = 1 ] && [ $GPUVIS = 1 ]; then
       CROP=$OUT/work/crop3d.f32; CD1=3
       dd if="$F3" of="$CROP" bs=$((D2*D3*4)) skip=$((D1/2 - 1)) count=3 status=none
     fi
-    for tool in memcheck racecheck; do
-      say "-- compute-sanitizer $tool on 3D slab ${CD1}x${D2}x${D3} (slow)"
-      timeout $((TIMEOUT*4)) compute-sanitizer --tool $tool --print-limit 20 \
-        "$G/test_cuda_topology_3d" "$CROP" "$CD1" "$D2" "$D3" "$ABS3" "$BS" > "$OUT/logs/${tool}3d.log" 2>&1
-      say "    exit=$(rcnote $?)  $(grep -m1 -E 'ERROR SUMMARY|RACECHECK SUMMARY' "$OUT/logs/${tool}3d.log")"
+    for mode in "" --pl; do
+      for tool in memcheck racecheck; do
+        say "-- compute-sanitizer $tool on 3D slab ${CD1}x${D2}x${D3} ${mode:-axis mode} (slow)"
+        timeout $((TIMEOUT*4)) compute-sanitizer --tool $tool --print-limit 20 \
+          "$G/test_cuda_topology_3d" $mode "$CROP" "$CD1" "$D2" "$D3" "$ABS3" "$BS" > "$OUT/logs/${tool}3d${mode}.log" 2>&1
+        say "    exit=$(rcnote $?)  $(grep -m1 -E 'ERROR SUMMARY|RACECHECK SUMMARY' "$OUT/logs/${tool}3d${mode}.log")"
+      done
     done
   fi
 elif [ "${SKIP_GPU:-0}" != 1 ]; then

@@ -17,6 +17,7 @@
 #include "szp.h"
 #include "szpd_float.h"
 #include "szp_topo_restore.h"
+#include "szp_pl_topology.h"
 #ifdef _OPENMP
 #include "omp.h"
 #endif
@@ -83,9 +84,21 @@ int main(int argc, char *argv[])
     // compressor writes [topology][sort positions][footer], so the sizes
     // must add up to the file size exactly; otherwise the whole file is
     // treated as the topology stream (old format).
-    size_t topology_size = byteLength, sort_positions_size = 0;
+    // In PL mode the compressor writes the v2 container (szp_pl_topology.h):
+    // [topology][sort positions][saddle kinds][sizes x3][flags][magic].
+    size_t topology_size = byteLength, sort_positions_size = 0, kinds_size = 0;
+    int pl = 0;
     const size_t footer_size = 2 * sizeof(size_t);
-    if (byteLength >= footer_size) {
+    if (byteLength >= 5 * sizeof(size_t)) {
+        size_t f[5];
+        memcpy(f, bytes + byteLength - sizeof(f), sizeof(f));
+        if (f[4] == (size_t)SZP_CONTAINER_MAGIC_V2 && f[0] > 0 &&
+            f[0] + f[1] + f[2] + sizeof(f) == byteLength) {
+            topology_size = f[0]; sort_positions_size = f[1]; kinds_size = f[2];
+            pl = (f[3] & SZP_CONTAINER_FLAG_PL) != 0;
+        }
+    }
+    if (topology_size == byteLength && byteLength >= footer_size) {
         size_t ts = 0, ss = 0;
         memcpy(&ts, bytes + byteLength - footer_size, sizeof(size_t));
         memcpy(&ss, bytes + byteLength - sizeof(size_t), sizeof(size_t));
@@ -135,7 +148,16 @@ int main(int argc, char *argv[])
     // ranks, then saddles. Every value stays within errBound of its
     // dequantized value.
     szp_topo_restore_stats rs;
-    if (depth > 0)
+    if (pl) {
+        // Stored types are 2-bit (3 = saddle); the 3D saddle kinds follow
+        // the sort positions.
+        if (depth > 0 &&
+            szp_pl_apply_saddle_kinds(critical_points_types, nbEle,
+                                      bytes + topology_size + sort_positions_size, kinds_size) != 0)
+            printf("Warning: saddle kinds missing or inconsistent; 3D saddles are restored as 1-saddles\n");
+        szp_topo_restore_float_pl(data, critical_points_types, sort_positions, extrema_count,
+                                  depth > 0 ? 3 : 2, rows, cols, depth, errBound, &rs);
+    } else if (depth > 0)
         szp_topo_restore_float_3d(data, critical_points_types, sort_positions, extrema_count,
                                   rows, cols, depth, errBound, &rs);
     else
@@ -145,11 +167,19 @@ int main(int argc, char *argv[])
     cost_end();
     free(bytes);
     printf("decompression time=%f\n", totalCost);
-    printf("topology restoration: extrema lost %zu -> %zu of %zu; saddles lost %zu -> %zu of %zu "
-           "(stencil %zu, RBF %zu)\n",
-           rs.extrema_lost_before, rs.extrema_lost_after, rs.extrema,
-           rs.saddles_lost_before, rs.saddles_lost_after, rs.saddles,
-           rs.saddles_by_stencil, rs.saddles_by_rbf);
+    if (pl)
+        printf("topology restoration (PL): extrema lost %zu -> %zu of %zu; saddles lost %zu -> %zu of %zu; "
+               "false positives %zu -> %zu, false types %zu -> %zu (saddles fixed %zu, other fixes %zu, %zu rounds)\n",
+               rs.extrema_lost_before, rs.extrema_lost_after, rs.extrema,
+               rs.saddles_lost_before, rs.saddles_lost_after, rs.saddles,
+               rs.fp_before, rs.fp_after, rs.ft_before, rs.ft_after,
+               rs.saddles_by_stencil, rs.other_fixes, rs.rounds);
+    else
+        printf("topology restoration: extrema lost %zu -> %zu of %zu; saddles lost %zu -> %zu of %zu "
+               "(stencil %zu, RBF %zu)\n",
+               rs.extrema_lost_before, rs.extrema_lost_after, rs.extrema,
+               rs.saddles_lost_before, rs.saddles_lost_after, rs.saddles,
+               rs.saddles_by_stencil, rs.saddles_by_rbf);
     szp_writeFloatData_inBytes(data, nbEle, outputFilePath, &status);
     if (status != SZ_SCES)
     {

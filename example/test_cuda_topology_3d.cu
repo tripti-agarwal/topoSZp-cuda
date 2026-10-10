@@ -17,7 +17,10 @@
  *    7. Find critical points in post-processed data
  *    8. Verify preservation, FN array, error bound
  *
- *  Usage: test_cuda_topology_3d <input_file> <d1> <d2> <d3> <absErrBound> <blockSize>
+ *  Usage: test_cuda_topology_3d [--pl] <input_file> <d1> <d2> <d3> <absErrBound> <blockSize>
+ *  --pl: standard PL critical points (szp_pl_topology.h, 14 neighbours) instead
+ *        of the 6-neighbour axis rule; the counts below then use the PL types
+ *        (saddle kinds compared in the "PL check" line).
  */
 
 #include <cstdio>
@@ -36,6 +39,7 @@
 #include "szp_cuda_topo_restore.cuh"
 #include "szp_topology_3d.h"
 #include "szp_topo_restore.h"
+#include "szp_pl_topology.h"
 
 /* ================================================================ */
 /*  Helpers                                                          */
@@ -52,10 +56,20 @@ static inline size_t IDX(int x, int y, int z, int d2, int d3) {
     return (size_t)x * d2 * d3 + (size_t)y * d3 + z;
 }
 
-/* Classify a voxel with 6-connected neighborhood */
+/* PL mode (--pl) */
+static int g_pl = 0;
+static SzpGrid g_grid;
+static SzpPL g_plt;
+
+/* Classify a voxel with 6-connected neighborhood (PL mode: PL type, saddle
+   kinds folded into 3) */
 static int classify_3d(const float *data, int d1, int d2, int d3,
                         int x, int y, int z)
 {
+    if (g_pl) {
+        int c = szp_pl_classify(data, g_grid, g_plt, (long long)IDX(x, y, z, d2, d3));
+        return c > 3 ? 3 : c;
+    }
     size_t s = (size_t)d2 * d3;
     float c  = data[x * s + y * d3 + z];
     float xm = data[(x - 1) * s + y * d3 + z];
@@ -85,9 +99,10 @@ static int classify_3d(const float *data, int d1, int d2, int d3,
 
 int main(int argc, char *argv[])
 {
+    if (argc > 1 && strcmp(argv[1], "--pl") == 0) { g_pl = 1; argv++; argc--; }
     if (argc < 7) {
         fprintf(stderr,
-            "Usage: %s <input_file> <d1> <d2> <d3> <errBound> <blockSize>\n",
+            "Usage: %s [--pl] <input_file> <d1> <d2> <d3> <errBound> <blockSize>\n",
             argv[0]);
         fprintf(stderr, "  errBound: 1e-3 for absolute, rel:1e-4 for relative (fraction of data range)\n");
         return 1;
@@ -120,7 +135,10 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    printf("=== TopoSZp 3D Critical Point Preservation Test ===\n");
+    g_grid = szp_grid_3d(d1, d2, d3);
+    szp_pl_init(g_grid, g_plt);
+    printf("=== TopoSZp 3D Critical Point Preservation Test%s ===\n",
+           g_pl ? " (PL critical points)" : "");
     printf("Input: %s  (%d × %d × %d = %zu elements)\n",
            input_file, d1, d2, d3, nbEle);
     if (strcmp(eb_mode, "REL") == 0) {
@@ -140,9 +158,18 @@ int main(int argc, char *argv[])
     /* ============================================================ */
     printf("--- Step 1: Find 3D critical points in original data ---\n");
     size_t orig_cp_count = 0;
+    signed char *pl_codes = NULL;
     double t0 = get_time_ms();
-    CriticalPoint3D *orig_cps = szp_cuda_find_critical_points_3d(
-        data, &orig_cp_count, d1, d2, d3, absErrBound);
+    CriticalPoint3D *orig_cps = NULL;
+    if (g_pl) {
+        pl_codes = (signed char *)malloc(nbEle);
+        if (szp_cuda_pl_classify_float(data, 3, d1, d2, d3, pl_codes) != 0) {
+            printf("ERROR: GPU PL classification failed\n"); return 1;
+        }
+        orig_cps = szp_pl_critical_points_3d(pl_codes, data, d1, d2, d3, absErrBound, &orig_cp_count);
+    } else {
+        orig_cps = szp_cuda_find_critical_points_3d(data, &orig_cp_count, d1, d2, d3, absErrBound);
+    }
     double t1 = get_time_ms();
 
     size_t om = 0, omin = 0, os = 0;
@@ -156,11 +183,26 @@ int main(int argc, char *argv[])
 
     /* Cross-check with OpenMP */
     size_t omp_count = 0;
-    CriticalPoint3D *omp_cps = szp_find_critical_points_3d(
-        data, &omp_count, d1, d2, d3, absErrBound);
-    printf("OpenMP found %zu (CUDA %zu — %s)\n\n",
-           omp_count, orig_cp_count,
-           omp_count == orig_cp_count ? "MATCH" : "DIFFER");
+    CriticalPoint3D *omp_cps = NULL;
+    if (g_pl) {
+        signed char *cpu_codes = (signed char *)malloc(nbEle);
+        szp_pl_classify_float(data, 3, d1, d2, d3, cpu_codes);
+        int same = memcmp(cpu_codes, pl_codes, nbEle) == 0;
+        size_t k1 = 0, k2 = 0, kx = 0;
+        for (size_t i = 0; i < nbEle; i++) {
+            omp_count += cpu_codes[i] != 0;
+            k1 += pl_codes[i] == SZP_PL_SAD1; k2 += pl_codes[i] == SZP_PL_SAD2; kx += pl_codes[i] == SZP_PL_SADX;
+        }
+        free(cpu_codes);
+        printf("  1-saddles: %zu  2-saddles: %zu  degenerate: %zu\n", k1, k2, kx);
+        printf("OpenMP found %zu (CUDA %zu — %s)\n\n", omp_count, orig_cp_count,
+               same ? "MATCH" : "DIFFER");
+    } else {
+        omp_cps = szp_find_critical_points_3d(data, &omp_count, d1, d2, d3, absErrBound);
+        printf("OpenMP found %zu (CUDA %zu — %s)\n\n",
+               omp_count, orig_cp_count,
+               omp_count == orig_cp_count ? "MATCH" : "DIFFER");
+    }
 
     if (!orig_cps || orig_cp_count == 0) {
         printf("No critical points. Nothing to test.\n");
@@ -266,15 +308,39 @@ int main(int argc, char *argv[])
     /* Library restoration on the GPU: ranked extrema, then saddle stencil
        and RBF passes (szp_cuda_topo_restore.cuh). */
     szp_topo_restore_stats rs;
-    if (szp_cuda_topo_restore_float_3d(decompressed, FN, sort_positions,
-                                       sort_positions ? extrema_count : 0,
-                                       d1, d2, d3, absErrBound, &rs) != 0)
-        printf("  ERROR: GPU topology restoration failed\n");
-    printf("  Extrema lost %zu -> %zu of %zu; saddles lost %zu -> %zu of %zu\n",
-           rs.extrema_lost_before, rs.extrema_lost_after, rs.extrema,
-           rs.saddles_lost_before, rs.saddles_lost_after, rs.saddles);
-    printf("  Saddle stencil restored %zu saddles; RBF restored %zu saddles\n",
-           rs.saddles_by_stencil, rs.saddles_by_rbf);
+    if (g_pl) {
+        /* Stored codes as the decoder sees them: 2-bit types from the stream
+           plus the packed saddle kinds. */
+        int *codes = (int *)malloc(nbEle * sizeof(int));
+        memcpy(codes, FN, nbEle * sizeof(int));
+        size_t kinds_size = 0;
+        unsigned char *kinds = szp_pl_pack_saddle_kinds(pl_codes, nbEle, &kinds_size);
+        if (szp_pl_apply_saddle_kinds(codes, nbEle, kinds, kinds_size) != 0)
+            printf("  ERROR: saddle kinds do not match the stored types\n");
+        printf("  Saddle kinds: %zu bytes\n", kinds_size);
+        if (szp_cuda_topo_restore_float_pl(decompressed, codes, sort_positions,
+                                           sort_positions ? extrema_count : 0,
+                                           3, d1, d2, d3, absErrBound, &rs) != 0)
+            printf("  ERROR: GPU topology restoration failed\n");
+        printf("  Extrema lost %zu -> %zu of %zu; saddles lost %zu -> %zu of %zu\n",
+               rs.extrema_lost_before, rs.extrema_lost_after, rs.extrema,
+               rs.saddles_lost_before, rs.saddles_lost_after, rs.saddles);
+        printf("  PL fixes: saddles %zu, other %zu, %zu rounds; false positives %zu -> %zu, false types %zu -> %zu\n",
+               rs.saddles_by_stencil, rs.other_fixes, rs.rounds, rs.fp_before, rs.fp_after,
+               rs.ft_before, rs.ft_after);
+        free(codes);
+        free(kinds);
+    } else {
+        if (szp_cuda_topo_restore_float_3d(decompressed, FN, sort_positions,
+                                           sort_positions ? extrema_count : 0,
+                                           d1, d2, d3, absErrBound, &rs) != 0)
+            printf("  ERROR: GPU topology restoration failed\n");
+        printf("  Extrema lost %zu -> %zu of %zu; saddles lost %zu -> %zu of %zu\n",
+               rs.extrema_lost_before, rs.extrema_lost_after, rs.extrema,
+               rs.saddles_lost_before, rs.saddles_lost_after, rs.saddles);
+        printf("  Saddle stencil restored %zu saddles; RBF restored %zu saddles\n",
+               rs.saddles_by_stencil, rs.saddles_by_rbf);
+    }
 
     double tp1 = get_time_ms();
     printf("  Post-processing done in %.2f ms\n\n", tp1 - tp0);
@@ -493,12 +559,30 @@ int main(int argc, char *argv[])
     if (sort_compressed) free(sort_compressed);
     if (sort_positions)  free(sort_positions);
 
+    /* PL mode: strict comparison of the PL codes (saddle kinds included). */
+    size_t pl_fp = 0, pl_ft = 0, pl_sad = 0, pl_sad_kept = 0;
+    if (g_pl) {
+        signed char *after = (signed char *)malloc(nbEle);
+        szp_pl_classify_float(decompressed, 3, d1, d2, d3, after);
+        for (size_t i = 0; i < nbEle; i++) {
+            int o = pl_codes[i], a = after[i];
+            if (o >= 3) { pl_sad++; pl_sad_kept += a == o; }
+            if (a != o && a != 0) { if (o == 0) pl_fp++; else pl_ft++; }
+        }
+        free(after);
+        printf("PL check: saddles kept %zu / %zu (%.2f%%, kinds compared), false positives %zu, false types %zu\n",
+               pl_sad_kept, pl_sad, pl_sad ? 100.0 * pl_sad_kept / pl_sad : 100.0, pl_fp, pl_ft);
+        free(pl_codes);
+    }
+
     /* Exit code: 0 only if every guarantee holds. Lost saddles are reported
-       above but are not a failure (the method does not guarantee them). */
-    int fail_eb = e2 != 0, fail_fp = new_cps != 0, fail_ft = changed != 0;
+       above but are not a failure (the method does not guarantee them). In
+       PL mode false positives/types are reported, not guaranteed. */
+    int fail_eb = e2 != 0, fail_fp = !g_pl && new_cps != 0, fail_ft = !g_pl && changed != 0;
     int fail_ext = (l_max + l_min) != 0, fail_fnarr = fn_match != nbEle;
     int overall = (fail_eb || fail_fp || fail_ft || fail_ext || fail_fnarr) ? 1 : 0;
-    printf("Result: %s%s%s%s%s%s\n", overall ? "FAIL:" : "PASS (error <= 2 eb, no FP, no FT, all extrema kept)",
+    printf("Result: %s%s%s%s%s%s\n", overall ? "FAIL:" : g_pl ? "PASS (PL mode: error <= 2 eb, all extrema kept)"
+                                                       : "PASS (error <= 2 eb, no FP, no FT, all extrema kept)",
            fail_eb ? " error>2eb" : "", fail_fp ? " false-positives" : "", fail_ft ? " false-types" : "",
            fail_ext ? " extrema-lost" : "", fail_fnarr ? " type-array-mismatch" : "");
     return overall;

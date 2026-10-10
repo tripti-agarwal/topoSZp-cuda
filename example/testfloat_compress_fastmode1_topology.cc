@@ -9,6 +9,8 @@
 #include <sys/time.h>
 #include "szp.h"
 #include "szp_topology_3d.h"
+#include "szp_pl_topology.h"
+#include <string.h>
 #ifdef _OPENMP
 #include "omp.h"
 #endif
@@ -35,9 +37,14 @@ void cost_end()
 int main(int argc, char *argv[])
 {
   char oriFilePath[640], outputFilePath[645];
+  /* --pl: critical points with the standard PL definition (szp_pl_topology.h)
+     instead of the axis rule; the decoder reads the mode from the file. */
+  int pl = 0;
+  if (argc > 1 && strcmp(argv[1], "--pl") == 0) { pl = 1; argv++; argc--; }
   if (argc < 6)
   {
-    printf("Usage: testfloat_compress_fastmode1 [srcFilePath] [block size] [err bound] [rows] [cols] [depth]\n");
+    printf("Usage: testfloat_compress_fastmode1 [--pl] [srcFilePath] [block size] [err bound] [rows] [cols] [depth]\n");
+    printf("  --pl: standard PL (TTK-style) critical points instead of the axis rule\n");
     printf("  2D: rows cols; 3D: d1 d2 d3 (slowest dimension first, flat index x*d2*d3 + y*d3 + z)\n");
     printf("Example: testfloat_compress_fastmode1 testfloat_8_8_128.dat 64 1E-3 500 500\n");
     printf("Example: testfloat_compress_fastmode1 CLDICE_1_26_1800_3600.f32 64 1E-7 26 1800 3600\n");
@@ -78,9 +85,18 @@ int main(int argc, char *argv[])
   size_t sort_positions_size;
   cost_start();
   void *critical_points = NULL;
-  unsigned char *bytes_sort_positions = NULL, *bytes_topology = NULL;
+  unsigned char *bytes_sort_positions = NULL, *bytes_topology = NULL, *bytes_kinds = NULL;
+  size_t kinds_size = 0;
+  signed char *pl_codes = NULL;
+  if (pl) {
+    pl_codes = (signed char *)malloc(nbEle);
+    if (!pl_codes) { printf("Error: out of memory\n"); exit(1); }
+    szp_pl_classify_float(data, depth > 0 ? 3 : 2, rows, cols, depth, pl_codes);
+    if (depth > 0) bytes_kinds = szp_pl_pack_saddle_kinds(pl_codes, nbEle, &kinds_size);
+  }
   if (depth > 0) {
-    CriticalPoint3D *cps = szp_find_critical_points_3d(data, &critical_count, rows, cols, depth, errBound);
+    CriticalPoint3D *cps = pl ? szp_pl_critical_points_3d(pl_codes, data, rows, cols, depth, errBound, &critical_count)
+                              : szp_find_critical_points_3d(data, &critical_count, rows, cols, depth, errBound);
     critical_points = cps;
     if (cps && critical_count > 0) {
       // rank critical points by original value within each quantization bin
@@ -90,7 +106,8 @@ int main(int argc, char *argv[])
                                                       cps, (int)critical_count, rows, cols, depth);
     }
   } else {
-    CriticalPoint *cps = szp_find_critical_points(data, &critical_count, rows, cols, errBound);
+    CriticalPoint *cps = pl ? szp_pl_critical_points_2d(pl_codes, data, rows, cols, errBound, &critical_count)
+                            : szp_find_critical_points(data, &critical_count, rows, cols, errBound);
     critical_points = cps;
     if (cps && critical_count > 0) {
       // rank critical points by original value within each quantization bin
@@ -123,9 +140,11 @@ int main(int argc, char *argv[])
   }
 
   // Append sort positions to topology bytes + footer with sizes
-  // Footer format: [topology_size (size_t)] [sort_positions_size (size_t)]
-  size_t footer_size = 2 * sizeof(size_t);
-  size_t total_size = outSize + sort_positions_size + footer_size;
+  // Footer format: [topology_size (size_t)] [sort_positions_size (size_t)];
+  // in PL mode the v2 container of szp_pl_topology.h (adds saddle kinds,
+  // flags and a magic number).
+  size_t footer_size = pl ? 5 * sizeof(size_t) : 2 * sizeof(size_t);
+  size_t total_size = outSize + sort_positions_size + kinds_size + footer_size;
   if (total_size < outSize || total_size < sort_positions_size) {
     printf("Error: Integer overflow in size calculation!\n");
     free(critical_points);
@@ -140,9 +159,18 @@ int main(int argc, char *argv[])
   if (combined_bytes) {
     memcpy(combined_bytes, bytes_topology, outSize);
     memcpy(combined_bytes + outSize, bytes_sort_positions, sort_positions_size);
-    // Footer: write topology_size and sort_positions_size at the very end
-    memcpy(combined_bytes + outSize + sort_positions_size, &outSize, sizeof(size_t));
-    memcpy(combined_bytes + outSize + sort_positions_size + sizeof(size_t), &sort_positions_size, sizeof(size_t));
+    unsigned char *foot = combined_bytes + outSize + sort_positions_size;
+    if (pl) {
+      if (kinds_size) memcpy(foot, bytes_kinds, kinds_size);
+      foot += kinds_size;
+      size_t f[5] = {outSize, sort_positions_size, kinds_size, (size_t)SZP_CONTAINER_FLAG_PL,
+                     (size_t)SZP_CONTAINER_MAGIC_V2};
+      memcpy(foot, f, sizeof(f));
+    } else {
+      // Footer: write topology_size and sort_positions_size at the very end
+      memcpy(foot, &outSize, sizeof(size_t));
+      memcpy(foot + sizeof(size_t), &sort_positions_size, sizeof(size_t));
+    }
     
     // Free original topology bytes before reassigning pointer
     original_bytes_topology = bytes_topology;
@@ -161,7 +189,7 @@ int main(int argc, char *argv[])
   cost_end();
   //print the quantized bins
   
-  printf("\ncompression time=%f, total fastmode1 topology\n", totalCost);
+  printf("\ncompression time=%f, total fastmode1 topology%s\n", totalCost, pl ? " (PL critical points)" : "");
   printf("compression size = %zu, CR = %f\n", outSize, 1.0f * nbEle * sizeof(float) / outSize);
   
   szp_writeByteData(bytes_topology, outSize, outputFilePath, &status);
@@ -175,6 +203,8 @@ int main(int argc, char *argv[])
   
   free(critical_points);
   free(data);
+  free(pl_codes);
+  free(bytes_kinds);
   if (bytes_topology) {
     free(bytes_topology);  // This points to combined_bytes (if allocation succeeded) or original bytes_topology
   }

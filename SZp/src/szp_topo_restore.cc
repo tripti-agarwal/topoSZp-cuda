@@ -6,6 +6,8 @@
 #include <string.h>
 #include <vector>
 #include "szp_topo_restore.h"
+#include "szp_pl_topology.h"
+#include "szp_quant.h"
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -78,4 +80,167 @@ extern "C" void szp_topo_restore_float_3d(float *data, const int *types, const i
 {
     if (!data || !types || d1 < 3 || d2 < 3 || d3 < 3 || !(errBound > 0)) return;
     restore_cpu(data, types, sort_positions, extrema_count, szp_grid_3d(d1, d2, d3), errBound, stats);
+}
+
+/* ===================================================================== */
+/*  PL mode (szp_pl_topology.h)                                          */
+/* ===================================================================== */
+
+extern "C" void szp_pl_classify_float(const float *data, int nd, int d1, int d2, int d3, signed char *codes)
+{
+    const SzpGrid g = nd == 3 ? szp_grid_3d(d1, d2, d3) : szp_grid_2d(d1, d2);
+    const long long N = (long long)g.n[0] * g.n[1] * g.n[2];
+    SzpPL p;
+    szp_pl_init(g, p);
+#ifdef _OPENMP
+    #pragma omp parallel for schedule(static)
+#endif
+    for (long long k = 0; k < N; k++)
+        codes[k] = szp_is_interior(g, k) ? (signed char)szp_pl_classify(data, g, p, k) : 0;
+}
+
+extern "C" unsigned char *szp_pl_pack_saddle_kinds(const signed char *codes, size_t n, size_t *outSize)
+{
+    size_t cnt = 0;
+    for (size_t k = 0; k < n; k++) cnt += codes[k] >= 3;
+    const size_t bytes = sizeof(size_t) + (2 * cnt + 7) / 8;
+    unsigned char *out = (unsigned char *)calloc(bytes, 1);
+    if (!out) { *outSize = 0; return NULL; }
+    memcpy(out, &cnt, sizeof(size_t));
+    unsigned char *b = out + sizeof(size_t);
+    size_t j = 0;
+    for (size_t k = 0; k < n; k++)
+        if (codes[k] >= 3) {
+            unsigned int kind = (unsigned int)(codes[k] - 3) & 3u;   /* 0 1-saddle, 1 2-saddle, 2 degenerate */
+            b[j >> 2] |= (unsigned char)(kind << (6 - 2 * (j & 3)));
+            j++;
+        }
+    *outSize = bytes;
+    return out;
+}
+
+extern "C" int szp_pl_apply_saddle_kinds(int *types, size_t n, const unsigned char *buf, size_t size)
+{
+    if (!buf || size < sizeof(size_t)) return -1;
+    size_t cnt = 0, have = 0;
+    memcpy(&cnt, buf, sizeof(size_t));
+    for (size_t k = 0; k < n; k++) have += types[k] == 3;
+    if (have != cnt || size < sizeof(size_t) + (2 * cnt + 7) / 8) return -1;
+    const unsigned char *b = buf + sizeof(size_t);
+    size_t j = 0;
+    for (size_t k = 0; k < n; k++)
+        if (types[k] == 3) {
+            unsigned int kind = (b[j >> 2] >> (6 - 2 * (j & 3))) & 3u;
+            types[k] = 3 + (int)(kind > 2 ? 2 : kind);
+            j++;
+        }
+    return 0;
+}
+
+extern "C" CriticalPoint *szp_pl_critical_points_2d(const signed char *codes, const float *data,
+                                                    int rows, int cols, float errBound, size_t *count)
+{
+    const size_t N = (size_t)rows * cols;
+    const double eb = (double)errBound, inv = 1.0 / eb;
+    size_t n = 0;
+    for (size_t k = 0; k < N; k++) n += codes[k] != 0;
+    *count = n;
+    if (!n) return NULL;
+    CriticalPoint *cp = (CriticalPoint *)malloc(n * sizeof(CriticalPoint));
+    if (!cp) { *count = 0; return NULL; }
+    size_t j = 0;
+    for (size_t k = 0; k < N; k++)
+        if (codes[k]) {
+            CriticalPoint c;
+            c.x = (int)(k / (size_t)cols); c.y = (int)(k % (size_t)cols);
+            c.type = codes[k] > 3 ? 3 : codes[k];
+            c.quantized_bin = szp_quantize<float>(data[k], eb, inv);
+            c.sort_position = 0;
+            cp[j++] = c;
+        }
+    return cp;
+}
+
+extern "C" CriticalPoint3D *szp_pl_critical_points_3d(const signed char *codes, const float *data,
+                                                      int d1, int d2, int d3, float errBound, size_t *count)
+{
+    const size_t P = (size_t)d2 * d3, N = (size_t)d1 * P;
+    const double eb = (double)errBound, inv = 1.0 / eb;
+    size_t n = 0;
+    for (size_t k = 0; k < N; k++) n += codes[k] != 0;
+    *count = n;
+    if (!n) return NULL;
+    CriticalPoint3D *cp = (CriticalPoint3D *)malloc(n * sizeof(CriticalPoint3D));
+    if (!cp) { *count = 0; return NULL; }
+    size_t j = 0;
+    for (size_t k = 0; k < N; k++)
+        if (codes[k]) {
+            CriticalPoint3D c;
+            c.x = (int)(k / P); c.y = (int)((k / (size_t)d3) % (size_t)d2); c.z = (int)(k % (size_t)d3);
+            c.type = codes[k] > 3 ? 3 : codes[k];
+            c.quantized_bin = szp_quantize<float>(data[k], eb, inv);
+            c.sort_position = 0;
+            cp[j++] = c;
+        }
+    return cp;
+}
+
+/* One PL fix pass over all colour classes; returns fixes of stored saddles
+   and of other points. */
+static void pl_fix_pass_cpu(float *data, const int *codes, const float *orig, const SzpGrid &g,
+                            float eb, size_t *sad_fixed, size_t *other_fixed)
+{
+    std::vector<long long> list;
+    std::vector<size_t> start;
+    szp_pl_candidates(data, codes, g, list, start);
+    SzpPL p;
+    szp_pl_init(g, p);
+    const int ncol = g.nd == 3 ? 27 : 9;
+    size_t sf = 0, of = 0;
+    for (int c = 0; c < ncol; c++) {
+        const long long lo = (long long)start[c], hi = (long long)start[c + 1];
+#ifdef _OPENMP
+        #pragma omp parallel for schedule(dynamic, 256) reduction(+:sf, of)
+#endif
+        for (long long i = lo; i < hi; i++) {
+            long long k = list[(size_t)i];
+            if (szp_pl_fix_point(data, codes, orig, g, p, k, eb)) {
+                if (codes[k] >= 3) sf++; else of++;
+            }
+        }
+    }
+    *sad_fixed = sf;
+    *other_fixed = of;
+}
+
+extern "C" void szp_topo_restore_float_pl(float *data, const int *codes, const int *sort_positions,
+                                          size_t extrema_count, int nd, int d1, int d2, int d3,
+                                          float errBound, szp_topo_restore_stats *stats)
+{
+    if (!data || !codes || d1 < 3 || d2 < 3 || (nd == 3 && d3 < 3) || !(errBound > 0)) return;
+    const SzpGrid g = nd == 3 ? szp_grid_3d(d1, d2, d3) : szp_grid_2d(d1, d2);
+    const size_t N = (size_t)g.n[0] * g.n[1] * g.n[2];
+    szp_topo_restore_stats st;
+    memset(&st, 0, sizeof(st));
+    std::vector<float> orig(data, data + N);
+
+    SzpPLCounts c0 = szp_pl_count(data, codes, g);
+    st.extrema = c0.ext; st.extrema_lost_before = c0.ext_lost; st.saddles = c0.sad;
+    st.fp_before = c0.fp; st.ft_before = c0.ft;
+
+    szp_pl_restore_extrema(data, orig.data(), codes, sort_positions, extrema_count, g, errBound);
+    st.saddles_lost_before = szp_pl_count(data, codes, g).sad_lost;
+
+    for (int round = 0; round < SZP_PL_ROUNDS; round++) {
+        size_t sf = 0, of = 0;
+        pl_fix_pass_cpu(data, codes, orig.data(), g, errBound, &sf, &of);
+        st.saddles_by_stencil += sf;
+        st.other_fixes += of;
+        st.rounds = (size_t)round + 1;
+        if (sf + of == 0) break;
+    }
+    SzpPLCounts c1 = szp_pl_count(data, codes, g);
+    st.extrema_lost_after = c1.ext_lost; st.saddles_lost_after = c1.sad_lost;
+    st.fp_after = c1.fp; st.ft_after = c1.ft;
+    if (stats) *stats = st;
 }

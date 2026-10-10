@@ -5,7 +5,7 @@ AM_CXXFLAGS = @OPENMP_CXXFLAGS@
 AM_LDFLAGS = @OPENMP_CXXFLAGS@
 
 AUTOMAKE_OPTIONS=foreign
-include_HEADERS=include/szp.h include/szp_rw.h include/szp_defines.h include/szp_TypeManager.h include/szp_CompressionToolkit.h include/szp_float.h include/szpd_float.h include/szp_helper.h include/szp_double.h include/szpd_double.h include/szp_quant.h include/szp_topo_restore.h include/szp_topology_3d.h include/szp_detect_threads.h include/szp_cp_rank.h
+include_HEADERS=include/szp.h include/szp_rw.h include/szp_defines.h include/szp_TypeManager.h include/szp_CompressionToolkit.h include/szp_float.h include/szpd_float.h include/szp_helper.h include/szp_double.h include/szpd_double.h include/szp_quant.h include/szp_topo_restore.h include/szp_pl_topology.h include/szp_topology_3d.h include/szp_detect_threads.h include/szp_cp_rank.h
 
 lib_LTLIBRARIES=libszp.la
 libszp_la_CXXFLAGS=-I./include

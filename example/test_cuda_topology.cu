@@ -35,6 +35,7 @@
 #include "szp_errbound.h"
 #include "szpd_float.h"
 #include "szp_topo_restore.h"
+#include "szp_pl_topology.h"
 
 static double get_time_ms() {
     struct timeval tv;
@@ -57,9 +58,27 @@ static const char *type_name(int t) {
 /* -1: not compared, 1: CPU and GPU restored fields identical, 0: they differ */
 static int g_cpu_gpu_same = -1;
 
-/* Classify a point as max(1)/min(2)/saddle(3)/regular(0) using 4-connectivity */
+/* PL mode (--pl): standard PL critical points (szp_pl_topology.h) */
+static int g_pl = 0;
+static SzpGrid g_grid;
+static SzpPL g_plt;
+
+/* Critical points of a field: axis rule on the GPU, or PL codes (GPU) */
+static CriticalPoint *find_cps(const float *d, size_t *count, int rows, int cols, float eb) {
+    if (!g_pl) return szp_cuda_find_critical_points((float *)d, count, rows, cols, eb);
+    size_t n = (size_t)rows * cols;
+    signed char *codes = (signed char *)malloc(n);
+    if (szp_cuda_pl_classify_float(d, 2, rows, cols, 0, codes) != 0) { free(codes); *count = 0; return NULL; }
+    CriticalPoint *cp = szp_pl_critical_points_2d(codes, d, rows, cols, eb, count);
+    free(codes);
+    return cp;
+}
+
+/* Classify a point as max(1)/min(2)/saddle(3)/regular(0) using 4-connectivity
+   (PL mode: PL type) */
 static int classify_point(const float *data, int rows, int cols, int i, int j) {
     (void)rows;
+    if (g_pl) return szp_pl_classify(data, g_grid, g_plt, (long long)i * cols + j);
     float center = data[i * cols + j];
     float up     = data[(i-1) * cols + j];
     float down   = data[(i+1) * cols + j];
@@ -74,8 +93,9 @@ static int classify_point(const float *data, int rows, int cols, int i, int j) {
 }
 
 int main(int argc, char *argv[]) {
+    if (argc > 1 && strcmp(argv[1], "--pl") == 0) { g_pl = 1; argv++; argc--; }
     if (argc < 6) {
-        fprintf(stderr, "Usage: %s <input_file> <rows> <cols> <errBound> <blockSize>\n", argv[0]);
+        fprintf(stderr, "Usage: %s [--pl] <input_file> <rows> <cols> <errBound> <blockSize>\n", argv[0]);
         fprintf(stderr, "  errBound: 1e-3 for absolute, rel:1e-4 for relative (fraction of data range)\n");
         return 1;
     }
@@ -131,7 +151,10 @@ int main(int argc, char *argv[]) {
     printf("--- Step 1: Find critical points in original data ---\n");
     size_t orig_cp_count = 0;
     double t0 = get_time_ms();
-    CriticalPoint *orig_cps = szp_cuda_find_critical_points(data, &orig_cp_count, rows, cols, absErrBound);
+    g_grid = szp_grid_2d(rows, cols);
+    szp_pl_init(g_grid, g_plt);
+    if (g_pl) printf("(PL critical points: 6 neighbours, ties by index)\n");
+    CriticalPoint *orig_cps = find_cps(data, &orig_cp_count, rows, cols, absErrBound);
     double t1 = get_time_ms();
 
     size_t orig_max = 0, orig_min = 0, orig_saddle = 0;
@@ -145,7 +168,15 @@ int main(int argc, char *argv[]) {
 
     /* Also find with OpenMP for cross-validation */
     size_t omp_cp_count = 0;
-    CriticalPoint *omp_cps = szp_find_critical_points(data, &omp_cp_count, rows, cols, absErrBound);
+    CriticalPoint *omp_cps = NULL;
+    if (g_pl) {
+        signed char *cc = (signed char *)malloc(nbEle);
+        szp_pl_classify_float(data, 2, rows, cols, 0, cc);
+        omp_cps = szp_pl_critical_points_2d(cc, data, rows, cols, absErrBound, &omp_cp_count);
+        free(cc);
+    } else {
+        omp_cps = szp_find_critical_points(data, &omp_cp_count, rows, cols, absErrBound);
+    }
     printf("OpenMP found %zu critical points (CUDA: %zu — %s)\n\n",
            omp_cp_count, orig_cp_count,
            orig_cp_count == omp_cp_count ? "MATCH" : "DIFFER");
@@ -265,10 +296,18 @@ int main(int argc, char *argv[]) {
     /* Library restoration on the GPU: ranked extrema, then saddle stencil
        and RBF passes (szp_cuda_topo_restore.cuh). */
     szp_topo_restore_stats rs;
-    if (szp_cuda_topo_restore_float_2d(decompressed, FN, sort_positions,
-                                       sort_positions ? extrema_count : 0,
-                                       rows, cols, absErrBound, &rs) != 0)
+    int rrc = g_pl ? szp_cuda_topo_restore_float_pl(decompressed, FN, sort_positions,
+                                                    sort_positions ? extrema_count : 0,
+                                                    2, rows, cols, 0, absErrBound, &rs)
+                   : szp_cuda_topo_restore_float_2d(decompressed, FN, sort_positions,
+                                                    sort_positions ? extrema_count : 0,
+                                                    rows, cols, absErrBound, &rs);
+    if (rrc != 0)
         printf("  ERROR: GPU topology restoration failed\n");
+    if (g_pl)
+        printf("  PL fixes: saddles %zu, other %zu, %zu rounds; false positives %zu -> %zu, false types %zu -> %zu\n",
+               rs.saddles_by_stencil, rs.other_fixes, rs.rounds, rs.fp_before, rs.fp_after,
+               rs.ft_before, rs.ft_after);
     printf("  Extrema lost %zu -> %zu of %zu; saddles lost %zu -> %zu of %zu "
            "(stencil %zu, RBF %zu)\n",
            rs.extrema_lost_before, rs.extrema_lost_after, rs.extrema,
@@ -294,7 +333,7 @@ int main(int argc, char *argv[]) {
     /* ============================================================ */
     printf("--- Step 5: Find critical points in post-processed data ---\n");
     size_t decomp_cp_count = 0;
-    CriticalPoint *decomp_cps = szp_cuda_find_critical_points(decompressed, &decomp_cp_count, rows, cols, absErrBound);
+    CriticalPoint *decomp_cps = find_cps(decompressed, &decomp_cp_count, rows, cols, absErrBound);
 
     size_t decomp_max = 0, decomp_min = 0, decomp_saddle = 0;
     for (size_t i = 0; i < decomp_cp_count; i++) {
@@ -718,9 +757,14 @@ int main(int argc, char *argv[]) {
 
         /* Library restoration on the CPU: same algorithm as the GPU call above. */
         szp_topo_restore_stats ors;
-        szp_topo_restore_float_2d(omp_decompressed, omp_FN, omp_sort_positions,
-                                  omp_sort_positions ? omp_extrema_count : 0,
-                                  rows, cols, absErrBound, &ors);
+        if (g_pl)
+            szp_topo_restore_float_pl(omp_decompressed, omp_FN, omp_sort_positions,
+                                      omp_sort_positions ? omp_extrema_count : 0,
+                                      2, rows, cols, 0, absErrBound, &ors);
+        else
+            szp_topo_restore_float_2d(omp_decompressed, omp_FN, omp_sort_positions,
+                                      omp_sort_positions ? omp_extrema_count : 0,
+                                      rows, cols, absErrBound, &ors);
         printf("  RBF restored %zu saddles (stencil %zu)\n", ors.saddles_by_rbf, ors.saddles_by_stencil);
         if (omp_sort_positions) free(omp_sort_positions);
         g_cpu_gpu_same = memcmp(omp_decompressed, decompressed, nbEle * sizeof(float)) == 0;
@@ -728,7 +772,7 @@ int main(int argc, char *argv[]) {
 
         /* Find CPs in OpenMP post-processed data */
         size_t omp_decomp_cp_count = 0;
-        CriticalPoint *omp_decomp_cps = szp_cuda_find_critical_points(
+        CriticalPoint *omp_decomp_cps = find_cps(
             omp_decompressed, &omp_decomp_cp_count, rows, cols, absErrBound);
 
         /* Count preservation */
@@ -807,11 +851,13 @@ int main(int argc, char *argv[]) {
        above but are not a failure (the method does not guarantee them). */
     (void)cuda_preserved;
     int fail_eb = !(cuda_max_err <= absErrBound * 2.0);
-    int fail_fp = new_cps != 0, fail_ft = type_changed != 0;
+    /* PL mode: false positives/types are reported, not guaranteed. */
+    int fail_fp = !g_pl && new_cps != 0, fail_ft = !g_pl && type_changed != 0;
     int fail_ext = (lost_max + lost_min) != 0, fail_fnarr = fn_mismatch != 0;
     int fail_same = g_cpu_gpu_same == 0;
     int overall = (fail_eb || fail_fp || fail_ft || fail_ext || fail_fnarr || fail_same) ? 1 : 0;
-    printf("\nResult: %s%s%s%s%s%s%s\n", overall ? "FAIL:" : "PASS (error <= 2 eb, no FP, no FT, all extrema kept)",
+    printf("\nResult: %s%s%s%s%s%s%s\n", overall ? "FAIL:" : g_pl ? "PASS (PL mode: error <= 2 eb, all extrema kept)"
+                                                         : "PASS (error <= 2 eb, no FP, no FT, all extrema kept)",
            fail_eb ? " error>2eb" : "", fail_fp ? " false-positives" : "", fail_ft ? " false-types" : "",
            fail_ext ? " extrema-lost" : "", fail_fnarr ? " type-array-mismatch" : "",
            fail_same ? " CPU/GPU-outputs-differ" : "");

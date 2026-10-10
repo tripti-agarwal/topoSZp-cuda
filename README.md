@@ -44,6 +44,11 @@ the autotools steps above. Examples:
 g++ -O2 -fopenmp -ISZp/include example/topo_check.cc -o topo_check
 ./topo_check data.f32 data.f32.SZp.out 1e-3 1800 3600          # add d3 for 3D, --f64 for double data
 
+# PL mode: store and restore critical points with the standard PL definition
+./testfloat_compress_fastmode1   --pl CLDICE_1_26_1800_3600.f32 64 1e-7 26 1800 3600
+./testfloat_decompress_fastmode1 CLDICE_1_26_1800_3600.f32.SZp 168480000 64 1e-7 26 1800 3600   # mode read from the file
+./test_cuda_topology_3d --pl CLDICE_1_26_1800_3600.f32 26 1800 3600 1e-7 64                     # GPU, same result
+
 # saddles by the standard PL definition (TTK-style), independent of TopoSZp's own rule
 g++ -O2 -fopenmp -ISZp/include example/pl_topo_check.cc -o pl_topo_check
 ./pl_topo_check data.f32 data.f32.SZp.out 1e-3 1800 3600       # add d3 for 3D, --f64, --no-pers; --selftest
@@ -67,6 +72,21 @@ g++ -O2 -fopenmp -ISZp/include example/pl_topo_check.cc -o pl_topo_check
   neighbours (4 in 2D, 6 in 3D). A saddle has at least one axis where the point
   is above both neighbours and one where it is below both; in 3D this counts
   many points as saddles (on CESM CLDICE about 89% of critical points).
+* **PL mode (`--pl`, `szp_pl_topology.h`).** The compressor classifies points
+  with the standard PL definition (as in TTK: Freudenthal triangulation,
+  6/14 neighbours, link components, ties broken by index) and stores those
+  types; 3D saddle kinds (1-, 2-, degenerate) are stored in 2 bits per saddle
+  after the extrema ranks (file footer v2 with a mode flag; axis-mode files are
+  unchanged). The decoder restores extrema with the ranked step over the PL
+  neighbours, then fixes every point whose PL type differs from the stored one
+  (lost saddles, false positives from quantization ties, wrong types) with an
+  exhaustive single-point search: one value per gap between the sorted
+  neighbour values, nearest first, kept only if no neighbour that had its
+  stored type loses it. Rounds repeat until nothing changes (at most 8). Error
+  stays within 2 eb, extrema are all kept, CPU and GPU
+  (`szp_topo_restore_float_pl`, `szp_cuda_topo_restore_float_pl`) give the
+  same output for any thread count. False positives/types are reduced, not
+  guaranteed to be zero (the restoration statistics report them).
 * **Checking with the standard definition.** `pl_topo_check` classifies points
   as in TTK (Freudenthal triangulation, 6/14 neighbours, connected pieces of the
   lower and upper link, ties broken by index) and reports, for raw SZp and the
