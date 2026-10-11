@@ -4,15 +4,16 @@
 # correction, for absolute and relative error bounds, 2D and 3D, CPU (OpenMP)
 # and GPU (CUDA).
 #
-# Run from the repo root, inside a GPU job:
-#   ./bench.sh <file2d> <rows> <cols>  <file3d> <d1> <d2> <d3>
-# Example (CESM-ATM from SDRBench):
-#   ./bench.sh data/CLDHGH_1_1800_3600.dat 1800 3600  data/CLDICE_1_26_1800_3600.f32 26 1800 3600
+# Run from the repo root, inside a GPU job. Each dataset is file:dims (dims
+# d1xd2 for 2D, d1xd2xd3 for 3D, slowest first); a file without :dims uses $DIMS.
+#   ./bench.sh data/CLDHGH_1_1800_3600.dat:1800x3600 data/CLDICE_1_26_1800_3600.f32:26x1800x3600
+#   DIMS=1800x3600 ./bench.sh data/*_1800_3600.dat           # all 2D CESM fields
+#   ./bench.sh <file2d> <rows> <cols> <file3d> <d1> <d2> <d3> # older form, still accepted
 #
 # Env knobs (defaults):
-#   ABS2="1e-3"     absolute bounds for the 2D file (space-separated list)
-#   ABS3="1e-7"     absolute bounds for the 3D file
-#   REL="1e-3 1e-4" relative bounds (fraction of each file's value range), both files
+#   ABS2="1e-3"     absolute bounds for 2D files (space-separated list)
+#   ABS3="1e-7"     absolute bounds for 3D files
+#   REL="1e-3 1e-4" relative bounds (fraction of each file's value range), all files
 #   THREADS="<nproc>" CPU thread counts      REPS=1 runs per case (times: minimum)
 #   BS=64 block size   SKIP_GPU=1 CPU only   SKIP_CPU=1 GPU only   TIMEOUT=1800 seconds per run
 #
@@ -24,20 +25,27 @@
 #   comp time = critical points + ranks + compression; decomp time = decoding +
 #   topology restoration (CPU: timers of the example programs; GPU: test_cuda_topology*).
 #
-# Output: bench_<timestamp>/results.md (table), results.csv, logs/.
+# Output: bench_<timestamp>/results.md (table and summary), results.csv,
+# bench.log (progress, table and summary in one file), logs/ (one log per run).
 
 set -u
-if [ $# -lt 7 ]; then sed -n 2,27p "$0"; exit 1; fi
-F2=$(realpath "$1"); R=$2; C=$3
-F3=$(realpath "$4"); D1=$5; D2=$6; D3=$7
+if [ $# -lt 1 ]; then sed -n 2,31p "$0"; exit 1; fi
+SPECS=()
+if [ $# = 7 ] && [[ "$2" =~ ^[0-9]+$ ]] && [[ "$6" =~ ^[0-9]+$ ]]; then
+  SPECS=("$1:$2x$3" "$4:$5x$6x$7")
+else
+  for a in "$@"; do
+    if [[ "$a" == *:* ]]; then SPECS+=("$a"); else SPECS+=("$a:${DIMS:?set DIMS (e.g. DIMS=1800x3600) or give file:dims}"); fi
+  done
+fi
 NCPU=$(nproc)
 ABS2=${ABS2:-1e-3}; ABS3=${ABS3:-1e-7}; REL=${REL:-"1e-3 1e-4"}
 THREADS=${THREADS:-$NCPU}; REPS=${REPS:-1}; BS=${BS:-64}; TIMEOUT=${TIMEOUT:-1800}
 REPO=$(pwd)
 OUT=$REPO/bench_$(date +%Y%m%d_%H%M%S); B=$OUT/bin; L=$OUT/logs; W=$OUT/work
 mkdir -p "$B" "$L" "$W"
-MD=$OUT/results.md; CSV=$OUT/results.csv
-say() { echo "$*" | tee -a "$OUT/run.log"; }
+MD=$OUT/results.md; CSV=$OUT/results.csv; LOG=$OUT/bench.log
+say() { echo "$*" | tee -a "$LOG"; }
 
 say "TopoSZp benchmark  $(date)  host $(hostname)  cores $NCPU  git $(git rev-parse --short HEAD 2>/dev/null) ($(git branch --show-current 2>/dev/null))"
 
@@ -88,94 +96,122 @@ else
   say "GPU: skipped (no nvcc / no visible GPU / SKIP_GPU=1)"
 fi
 
-# ---------------------------------------------------------------- cases
-RNG2=$("$B/range" "$F2"); RNG3=$("$B/range" "$F3")
-CASES=()   # "dim|mode|eb as given|absolute eb"
-for e in $ABS2; do CASES+=("2|abs|$e|$e"); done
-for e in $REL;  do CASES+=("2|rel|$e|$(awk -v r="$e" -v g="$RNG2" 'BEGIN{printf "%.9g", r*g}')"); done
-for e in $ABS3; do CASES+=("3|abs|$e|$e"); done
-for e in $REL;  do CASES+=("3|rel|$e|$(awk -v r="$e" -v g="$RNG3" 'BEGIN{printf "%.9g", r*g}')"); done
-say "2D: $F2 (${R}x${C}, value range $RNG2)"
-say "3D: $F3 (${D1}x${D2}x${D3}, value range $RNG3)"
-
-echo "data,dims,platform,eb_mode,eb,abs_eb,comp_s,decomp_s,max_orig,max_before,max_after,min_orig,min_before,min_after,sad_orig,sad_before,sad_after,FP_before,FP_after,FN_before,FN_after,FT_before,FT_after,err_eb_before,err_eb_after" > "$CSV"
+# ---------------------------------------------------------------- runs
+echo "data,dims,range,platform,eb_mode,eb,abs_eb,comp_s,decomp_s,max_orig,max_before,max_after,min_orig,min_before,min_after,sad_orig,sad_before,sad_after,FP_before,FP_after,FN_before,FN_after,FT_before,FT_after,err_eb_before,err_eb_after" > "$CSV"
 WARN=()
 
 minf() { awk -v a="$1" -v b="$2" 'BEGIN{ if (a == "") print b; else if (b == "" || a + 0 <= b + 0) print a; else print b }'; }
 
-# record <label> <dim> <platform> <mode> <eb> <abs> <comp> <decomp> <topo_check log>
+# record <label> <dims> <range> <platform> <mode> <eb> <abs> <comp> <decomp> <topo_check log>
 record() {
-  local lab=$1 dim=$2 plat=$3 mode=$4 eb=$5 abs=$6 tc=$7 td=$8 log=$9
+  local lab=$1 dims=$2 rng=$3 plat=$4 mode=$5 eb=$6 abs=$7 tc=$8 td=$9 log=${10}
   local b a
   b=$(grep '^TOPOROW before' "$log"); a=$(grep '^TOPOROW after' "$log")
   if [ -z "$b" ] || [ -z "$a" ]; then WARN+=("$lab $plat $mode $eb: no topology result (see $log)"); return; fi
   read -r _ _ mo mb no nb so sb fpb fnb ftb eeb <<< "$b"
   read -r _ _ _ ma _ na _ sa fpa fna fta eea <<< "$a"
-  echo "$lab,$( [ $dim = 2 ] && echo "${R}x${C}" || echo "${D1}x${D2}x${D3}"),$plat,$mode,$eb,$abs,$tc,$td,$mo,$mb,$ma,$no,$nb,$na,$so,$sb,$sa,$fpb,$fpa,$fnb,$fna,$ftb,$fta,$eeb,$eea" >> "$CSV"
+  echo "$lab,$dims,$rng,$plat,$mode,$eb,$abs,$tc,$td,$mo,$mb,$ma,$no,$nb,$na,$so,$sb,$sa,$fpb,$fpa,$fnb,$fna,$ftb,$fta,$eeb,$eea" >> "$CSV"
   awk -v e="$eea" 'BEGIN{exit !(e > 2.0)}' && WARN+=("$lab $plat $mode $eb: max error $eea eb > 2 eb")
   awk -v e="$eeb" 'BEGIN{exit !(e > 1.0)}' && WARN+=("$lab $plat $mode $eb: plain quantization error $eeb eb > 1 eb")
-  say "  $lab $plat $mode $eb: comp ${tc}s decomp ${td}s  max $mb->$ma/$mo  min $nb->$na/$no  sad $sb->$sa/$so  FP $fpb->$fpa  FN $fnb->$fna  FT $ftb->$fta"
+  say "    $plat $mode $eb (abs $abs): comp ${tc}s decomp ${td}s  max $mb->$ma/$mo  min $nb->$na/$no  sad $sb->$sa/$so  FP $fpb->$fpa  FN $fnb->$fna  FT $ftb->$fta"
 }
 
-for cs in "${CASES[@]}"; do
-  IFS='|' read -r dim mode eb abs <<< "$cs"
-  if [ "$dim" = 2 ]; then F=$F2; DIMS="$R $C"; N=$((R*C)); lab=$(basename "$F2")
-  else F=$F3; DIMS="$D1 $D2 $D3"; N=$((D1*D2*D3)); lab=$(basename "$F3"); fi
-  tag=${dim}d_${mode}_${eb}
+nspec=${#SPECS[@]}; ispec=0
+for spec in "${SPECS[@]}"; do
+  ispec=$((ispec + 1))
+  F=$(realpath "${spec%:*}" 2>/dev/null); DSTR=${spec##*:}; lab=$(basename "${spec%:*}")
+  IFS=x read -r -a DA <<< "$DSTR"; dim=${#DA[@]}
+  if [ -z "$F" ] || [ ! -f "$F" ]; then WARN+=("$lab: file not found"); say "[$ispec/$nspec] $lab: file not found"; continue; fi
+  if [ "$dim" != 2 ] && [ "$dim" != 3 ]; then WARN+=("$lab: dims $DSTR must be d1xd2 or d1xd2xd3"); continue; fi
+  N=1; for d in "${DA[@]}"; do N=$((N * d)); done
+  if [ "$(stat -c %s "$F")" != $((N * 4)) ]; then
+    WARN+=("$lab: file size $(stat -c %s "$F") bytes is not $DSTR float32 values"); say "[$ispec/$nspec] $lab: size mismatch, skipped"; continue
+  fi
+  DIMSA="${DA[*]}"; RNG=$("$B/range" "$F")
+  say "[$ispec/$nspec] $lab ($DSTR, value range $RNG)"
+  CASES=()   # "mode|eb as given|absolute eb"
+  if [ "$dim" = 2 ]; then ABSL=$ABS2; else ABSL=$ABS3; fi
+  for e in $ABSL; do CASES+=("abs|$e|$e"); done
+  for e in $REL;  do CASES+=("rel|$e|$(awk -v r="$e" -v g="$RNG" 'BEGIN{printf "%.9g", r*g}')"); done
+  base=${lab%.*}
 
-  if [ $CPU = 1 ]; then
-    for T in $THREADS; do
-      tc=""; td=""; w=$W/cpu_${tag}_T$T.f32; ln -sf "$F" "$w"
-      for r in $(seq 1 "$REPS"); do
-        OMP_NUM_THREADS=$T timeout "$TIMEOUT" "$B/comp" "$w" "$BS" "$abs" $DIMS > "$L/cpu_${tag}_T${T}_c$r.log" 2>&1 || { WARN+=("$lab CPU T=$T $mode $eb: compress rc $?"); break; }
-        OMP_NUM_THREADS=$T timeout "$TIMEOUT" "$B/decomp" "$w.SZp" "$N" "$BS" "$abs" $DIMS > "$L/cpu_${tag}_T${T}_d$r.log" 2>&1 || { WARN+=("$lab CPU T=$T $mode $eb: decompress rc $?"); break; }
-        tc=$(minf "$tc" "$(grep -m1 -o 'compression time=[0-9.e+-]*' "$L/cpu_${tag}_T${T}_c$r.log" | cut -d= -f2)")
-        td=$(minf "$td" "$(grep -m1 -o 'decompression time=[0-9.e+-]*' "$L/cpu_${tag}_T${T}_d$r.log" | cut -d= -f2)")
+  for cs in "${CASES[@]}"; do
+    IFS='|' read -r mode eb abs <<< "$cs"
+    tag=${base}_${mode}_${eb}
+
+    if [ $CPU = 1 ]; then
+      for T in $THREADS; do
+        tc=""; td=""; w=$W/cpu_${tag}_T$T.f32; ln -sf "$F" "$w"
+        for r in $(seq 1 "$REPS"); do
+          OMP_NUM_THREADS=$T timeout "$TIMEOUT" "$B/comp" "$w" "$BS" "$abs" $DIMSA > "$L/cpu_${tag}_T${T}_c$r.log" 2>&1 || { WARN+=("$lab CPU-${T}t $mode $eb: compress failed, rc $? (see $L/cpu_${tag}_T${T}_c$r.log)"); break; }
+          OMP_NUM_THREADS=$T timeout "$TIMEOUT" "$B/decomp" "$w.SZp" "$N" "$BS" "$abs" $DIMSA > "$L/cpu_${tag}_T${T}_d$r.log" 2>&1 || { WARN+=("$lab CPU-${T}t $mode $eb: decompress failed, rc $? (see $L/cpu_${tag}_T${T}_d$r.log)"); break; }
+          tc=$(minf "$tc" "$(grep -m1 -o 'compression time=[0-9.e+-]*' "$L/cpu_${tag}_T${T}_c$r.log" | cut -d= -f2)")
+          td=$(minf "$td" "$(grep -m1 -o 'decompression time=[0-9.e+-]*' "$L/cpu_${tag}_T${T}_d$r.log" | cut -d= -f2)")
+        done
+        if [ -f "$w.SZp.out" ]; then
+          OMP_NUM_THREADS=$NCPU "$B/topo_check" "$F" "$w.SZp.out" "$abs" $DIMSA > "$L/topo_cpu_${tag}_T$T.log" 2>&1
+          record "$lab" "$DSTR" "$RNG" "CPU-${T}t" "$mode" "$eb" "$abs" "$tc" "$td" "$L/topo_cpu_${tag}_T$T.log"
+        fi
+        rm -f "$w" "$w.SZp" "$w.SZp.out"
       done
-      if [ -f "$w.SZp.out" ]; then
-        OMP_NUM_THREADS=$NCPU "$B/topo_check" "$F" "$w.SZp.out" "$abs" $DIMS > "$L/topo_cpu_${tag}_T$T.log" 2>&1
-        record "$lab" "$dim" "CPU-${T}t" "$mode" "$eb" "$abs" "$tc" "$td" "$L/topo_cpu_${tag}_T$T.log"
-      fi
-      rm -f "$w.SZp" "$w.SZp.out"
-    done
-  fi
-
-  if [ $GPU = 1 ]; then
-    exe=$OUT/build_cuda/test_cuda_topology; [ "$dim" = 3 ] && exe=$OUT/build_cuda/test_cuda_topology_3d
-    tc=""; td=""; o=$W/gpu_${tag}.out
-    for r in $(seq 1 "$REPS"); do
-      TOPOSZP_DUMP=$o OMP_NUM_THREADS=$NCPU timeout "$TIMEOUT" "$exe" "$F" $DIMS "$abs" "$BS" > "$L/gpu_${tag}_$r.log" 2>&1
-      rc=$?; [ $rc = 0 ] || WARN+=("$lab GPU $mode $eb: test exit $rc (see $L/gpu_${tag}_$r.log)")
-      t=$(grep -m1 '^TIMING' "$L/gpu_${tag}_$r.log")
-      # TIMING comp_s=<x> decomp_s=<y>  (match whole fields: "comp_s=" is inside "decomp_s=")
-      tc=$(minf "$tc" "$(echo "$t" | awk '{for (i = 2; i <= NF; i++) if ($i ~ /^comp_s=/) {sub(/^comp_s=/, "", $i); print $i}}')")
-      td=$(minf "$td" "$(echo "$t" | awk '{for (i = 2; i <= NF; i++) if ($i ~ /^decomp_s=/) {sub(/^decomp_s=/, "", $i); print $i}}')")
-    done
-    if [ -f "$o" ]; then
-      OMP_NUM_THREADS=$NCPU "$B/topo_check" "$F" "$o" "$abs" $DIMS > "$L/topo_gpu_${tag}.log" 2>&1
-      record "$lab" "$dim" "GPU" "$mode" "$eb" "$abs" "$tc" "$td" "$L/topo_gpu_${tag}.log"
-      rm -f "$o"
     fi
-  fi
+
+    if [ $GPU = 1 ]; then
+      exe=$OUT/build_cuda/test_cuda_topology; [ "$dim" = 3 ] && exe=$OUT/build_cuda/test_cuda_topology_3d
+      tc=""; td=""; o=$W/gpu_${tag}.out
+      for r in $(seq 1 "$REPS"); do
+        TOPOSZP_DUMP=$o OMP_NUM_THREADS=$NCPU timeout "$TIMEOUT" "$exe" "$F" $DIMSA "$abs" "$BS" > "$L/gpu_${tag}_$r.log" 2>&1
+        rc=$?; [ $rc = 0 ] || WARN+=("$lab GPU $mode $eb: test exit $rc (see $L/gpu_${tag}_$r.log)")
+        t=$(grep -m1 '^TIMING' "$L/gpu_${tag}_$r.log")
+        # TIMING comp_s=<x> decomp_s=<y>  (match whole fields: "comp_s=" is inside "decomp_s=")
+        tc=$(minf "$tc" "$(echo "$t" | awk '{for (i = 2; i <= NF; i++) if ($i ~ /^comp_s=/) {sub(/^comp_s=/, "", $i); print $i}}')")
+        td=$(minf "$td" "$(echo "$t" | awk '{for (i = 2; i <= NF; i++) if ($i ~ /^decomp_s=/) {sub(/^decomp_s=/, "", $i); print $i}}')")
+      done
+      if [ -f "$o" ]; then
+        OMP_NUM_THREADS=$NCPU "$B/topo_check" "$F" "$o" "$abs" $DIMSA > "$L/topo_gpu_${tag}.log" 2>&1
+        record "$lab" "$DSTR" "$RNG" "GPU" "$mode" "$eb" "$abs" "$tc" "$td" "$L/topo_gpu_${tag}.log"
+        rm -f "$o"
+      else
+        WARN+=("$lab GPU $mode $eb: no output (see $L/gpu_${tag}_1.log)")
+      fi
+    fi
+  done
 done
 
-# ---------------------------------------------------------------- table
+# ---------------------------------------------------------------- table and summary
 {
   echo "# TopoSZp benchmark"
   echo
   echo "$(date), $(hostname), $NCPU cores$( [ $GPU = 1 ] && echo ", $(nvidia-smi --query-gpu=name --format=csv,noheader | head -1)"), git $(git rev-parse --short HEAD 2>/dev/null), block size $BS, times = minimum of $REPS run(s)."
   echo
   echo "Before = plain SZp quantization (no topology correction); after = TopoSZp output. Kept counts are \"before → after / original\"."
-  echo "Relative bounds are the fraction of the file's value range (2D range $RNG2, 3D range $RNG3)."
+  echo "Relative bounds are a fraction of each file's value range (column Range); Abs. bound is the absolute bound used."
   echo
-  echo "| Data | Platform | Error bound | Abs. bound | Comp. (s) | Decomp. (s) | Maxima kept | Minima kept | Saddles kept | FP | FN | FT |"
-  echo "|---|---|---|---|---:|---:|---|---|---|---|---|---|"
-  tail -n +2 "$CSV" | while IFS=, read -r d dims p m e a tc td mo mb ma no nb na so sb sa fpb fpa fnb fna ftb fta eeb eea; do
-    echo "| $d ($dims) | $p | $m $e | $a | $tc | $td | $mb → $ma / $mo | $nb → $na / $no | $sb → $sa / $so | $fpb → $fpa | $fnb → $fna | $ftb → $fta |"
+  echo "## Summary over datasets"
+  echo
+  echo "| Platform | Error bound | Datasets | All extrema kept | FP = 0 | FT = 0 | Error ≤ 2 eb | Saddles kept before | Saddles kept after | Comp. total (s) | Decomp. total (s) |"
+  echo "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|"
+  tail -n +2 "$CSV" | awk -F, '
+    { k = $4 SUBSEP $5 " " $6; if (!(k in n)) order[++no] = k; n[k]++
+      ext[k] += ($12 == $10 && $15 == $13); fp[k] += ($20 == 0); ft[k] += ($24 == 0); eb[k] += ($26 <= 2.0)
+      so[k] += $16; sb[k] += $17; sa[k] += $18; tc[k] += $8; td[k] += $9 }
+    END { for (i = 1; i <= no; i++) { k = order[i]; split(k, p, SUBSEP)
+            printf "| %s | %s | %d | %d | %d | %d | %d | %.1f%% | %.1f%% | %.3f | %.3f |\n", p[1], p[2], n[k], ext[k], fp[k], ft[k], eb[k],
+                   so[k] ? 100 * sb[k] / so[k] : 100, so[k] ? 100 * sa[k] / so[k] : 100, tc[k], td[k] } }'
+  echo
+  echo "Saddles kept = all saddles of the datasets together (sum of kept / sum of original)."
+  echo
+  echo "## All runs"
+  echo
+  echo "| Data | Range | Platform | Error bound | Abs. bound | Comp. (s) | Decomp. (s) | Maxima kept | Minima kept | Saddles kept | FP | FN | FT | Max err (eb) |"
+  echo "|---|---|---|---|---|---:|---:|---|---|---|---|---|---|---:|"
+  tail -n +2 "$CSV" | while IFS=, read -r d dims rng p m e a tc td mo mb ma no nb na so sb sa fpb fpa fnb fna ftb fta eeb eea; do
+    echo "| $d ($dims) | $rng | $p | $m $e | $a | $tc | $td | $mb → $ma / $mo | $nb → $na / $no | $sb → $sa / $so | $fpb → $fpa | $fnb → $fna | $ftb → $fta | $eea |"
   done
   echo
   if [ ${#WARN[@]} -gt 0 ]; then echo "Warnings:"; for x in "${WARN[@]}"; do echo "- $x"; done
   else echo "All runs finished; plain quantization within 1 eb and TopoSZp output within 2 eb in every case."; fi
 } > "$MD"
+echo >> "$LOG"; cat "$MD" >> "$LOG"
 echo; cat "$MD"
-echo; echo "Files: $MD  $CSV  $L/"
+echo; echo "Files: $LOG (everything)  $MD  $CSV  $L/"
