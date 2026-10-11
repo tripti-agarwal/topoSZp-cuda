@@ -14,6 +14,7 @@
 #   ABS2="1e-3"     absolute bounds for 2D files (space-separated list)
 #   ABS3="1e-7"     absolute bounds for 3D files
 #   REL="1e-3 1e-4" relative bounds (fraction of each file's value range), all files
+#                   (set a list to "" to skip it, e.g. ABS3="" for relative bounds only)
 #   THREADS="<nproc>" CPU thread counts      REPS=1 runs per case (times: minimum)
 #   BS=64 block size   SKIP_GPU=1 CPU only   SKIP_CPU=1 GPU only   TIMEOUT=1800 seconds per run
 #
@@ -39,7 +40,7 @@ else
   done
 fi
 NCPU=$(nproc)
-ABS2=${ABS2:-1e-3}; ABS3=${ABS3:-1e-7}; REL=${REL:-"1e-3 1e-4"}
+ABS2=${ABS2-1e-3}; ABS3=${ABS3-1e-7}; REL=${REL-"1e-3 1e-4"}   # an empty list skips that kind
 THREADS=${THREADS:-$NCPU}; REPS=${REPS:-1}; BS=${BS:-64}; TIMEOUT=${TIMEOUT:-1800}
 REPO=$(pwd)
 OUT=$REPO/bench_$(date +%Y%m%d_%H%M%S); B=$OUT/bin; L=$OUT/logs; W=$OUT/work
