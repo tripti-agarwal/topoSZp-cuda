@@ -96,14 +96,12 @@ run_compressor() {
     case "$compressor" in
         SZ3)
             if [ -f "$SZ3_BIN" ]; then
-                # SZ3 compress
                 local t0=$(date +%s%N)
-                "$SZ3_BIN" -f -i "$input" -z "$comp_file" -M ABS -A $eb -2 $rows $cols 2>/dev/null || return 1
+                "$SZ3_BIN" -f -i "$input" -z "$comp_file" -2 $cols $rows -M ABS $eb 2>/dev/null || return 1
                 local t1=$(date +%s%N)
                 comp_time=$(echo "scale=6; ($t1 - $t0) / 1000000000" | bc)
                 comp_size=$(stat -c%s "$comp_file" 2>/dev/null || stat -f%z "$comp_file")
-                # SZ3 decompress
-                "$SZ3_BIN" -f -s "$comp_file" -o "$decomp_file" -2 $rows $cols 2>/dev/null || return 1
+                "$SZ3_BIN" -f -z "$comp_file" -o "$decomp_file" -2 $cols $rows 2>/dev/null || return 1
             else
                 return 1
             fi
@@ -111,13 +109,11 @@ run_compressor() {
         ZFP)
             if [ -f "$ZFP_BIN" ]; then
                 local t0=$(date +%s%N)
-                "$ZFP_BIN" -f -i "$input" -z "$comp_file" -a $eb -2 $rows $cols 2>/dev/null || \
-                "$ZFP_BIN" -f -i "$input" -z "$comp_file" -t float -a $eb -2 $cols $rows 2>/dev/null || return 1
+                "$ZFP_BIN" -t float -2 $cols $rows -a $eb -i "$input" -z "$comp_file" 2>/dev/null || return 1
                 local t1=$(date +%s%N)
                 comp_time=$(echo "scale=6; ($t1 - $t0) / 1000000000" | bc)
                 comp_size=$(stat -c%s "$comp_file" 2>/dev/null || stat -f%z "$comp_file")
-                "$ZFP_BIN" -f -z "$comp_file" -o "$decomp_file" -a $eb -2 $rows $cols 2>/dev/null || \
-                "$ZFP_BIN" -f -z "$comp_file" -o "$decomp_file" -t float -a $eb -2 $cols $rows 2>/dev/null || return 1
+                "$ZFP_BIN" -t float -2 $cols $rows -z "$comp_file" -o "$decomp_file" 2>/dev/null || return 1
             else
                 return 1
             fi

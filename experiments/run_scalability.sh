@@ -68,21 +68,28 @@ for field in $FIELDS_2D; do
         if [ "${USE_CUDA_BIN:-0}" = "1" ]; then
             # Parse OpenMP timing from CUDA test output
             OUT=$("$TOPO_BIN" "$FILE" 1800 3600 $EB $BLOCK 2>&1) || true
-            # Get OpenMP compression time
-            comp_s=$(echo "$OUT" | grep 'OpenMP.*Compressed' | sed -n 's/.*in \([0-9.]*\).*/\1/p' | head -1)
-            decomp_s=$(echo "$OUT" | grep 'OpenMP.*Decompressed' | sed -n 's/.*in \([0-9.]*\).*/\1/p' | head -1)
+            # Extract OpenMP section (after "OpenMP PIPELINE COMPARISON")
+            omp_section=$(echo "$OUT" | sed -n '/OpenMP PIPELINE/,/SIDE-BY-SIDE/p')
+            # OpenMP compress: "Compressed: XXXXX bytes (ratio: X.XXx) in XX.XX ms"
+            comp_ms=$(echo "$omp_section" | grep 'Compressed:' | sed -n 's/.*in \([0-9.]*\) ms/\1/p' | head -1)
+            # OpenMP decompress: "Decompressed in XX.XX ms"
+            decomp_ms=$(echo "$omp_section" | grep 'Decompressed in' | sed -n 's/.*in \([0-9.]*\) ms/\1/p' | head -1)
+            # Convert ms to seconds
+            if [ -n "$comp_ms" ]; then
+                comp_s=$(echo "scale=6; $comp_ms / 1000" | bc)
+            else
+                comp_s=""
+            fi
+            if [ -n "$decomp_ms" ]; then
+                decomp_s=$(echo "scale=6; $decomp_ms / 1000" | bc)
+            else
+                decomp_s=""
+            fi
             max_err=$(echo "$OUT" | grep 'Max pointwise error' | sed -n 's/.*: \([0-9.e+-]*\).*/\1/p' | head -1)
             pres_rate=$(echo "$OUT" | grep 'Preserved (same type)' | sed -n 's/.*(\([0-9.]*\).*/\1/p' | head -1)
             fn=$(echo "$OUT" | grep 'Lost (became regular)' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
             fp=$(echo "$OUT" | grep 'New CPs' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
             ft=$(echo "$OUT" | grep 'Type changed' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
-            # Fall back to TIMING line
-            if [ -z "$comp_s" ]; then
-                comp_s=$(echo "$OUT" | sed -n 's/.*comp_s=\([0-9.]*\).*/\1/p' | head -1)
-            fi
-            if [ -z "$decomp_s" ]; then
-                decomp_s=$(echo "$OUT" | sed -n 's/.*decomp_s=\([0-9.]*\).*/\1/p' | head -1)
-            fi
         else
             OUT=$("$TOPO_BIN" "$FILE" 1800 3600 $EB $BLOCK 2>&1) || true
             comp_s=$(echo "$OUT" | grep 'Compression' | sed -n 's/.*in \([0-9.]*\).*/\1/p' | head -1)

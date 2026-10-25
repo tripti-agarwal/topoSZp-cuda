@@ -47,29 +47,46 @@ export OMP_NUM_THREADS=$OMP_THREADS
 parse_results() {
     local OUT="$1"
 
-    # CUDA timing
+    # CUDA timing from "TIMING comp_s=X.XXX decomp_s=X.XXX"
     cuda_comp=$(echo "$OUT" | sed -n 's/.*comp_s=\([0-9.]*\).*/\1/p' | head -1)
     cuda_decomp=$(echo "$OUT" | sed -n 's/.*decomp_s=\([0-9.]*\).*/\1/p' | head -1)
 
-    # OpenMP timing
-    omp_comp=$(echo "$OUT" | grep 'OpenMP.*Compressed' | sed -n 's/.*in \([0-9.]*\).*/\1/p' | head -1)
-    if [ -z "$omp_comp" ]; then
-        omp_comp=$(echo "$OUT" | grep 'OpenMP.*ratio' | sed -n 's/.*in \([0-9.]*\).*/\1/p' | head -1)
+    # OpenMP timing from section after "OpenMP PIPELINE COMPARISON"
+    # Compress: "Compressed: XXXXX bytes (ratio: X.XXx) in XX.XX ms"
+    # Decompress: "Decompressed in XX.XX ms"
+    local omp_section
+    omp_section=$(echo "$OUT" | sed -n '/OpenMP PIPELINE/,/SIDE-BY-SIDE/p')
+    local omp_comp_ms omp_decomp_ms
+    omp_comp_ms=$(echo "$omp_section" | grep 'Compressed:' | sed -n 's/.*in \([0-9.]*\) ms/\1/p' | head -1)
+    omp_decomp_ms=$(echo "$omp_section" | grep 'Decompressed in' | sed -n 's/.*in \([0-9.]*\) ms/\1/p' | head -1)
+    # Convert ms to seconds
+    if [ -n "$omp_comp_ms" ]; then
+        omp_comp=$(echo "scale=6; $omp_comp_ms / 1000" | bc)
+    else
+        omp_comp=""
     fi
-    omp_decomp=$(echo "$OUT" | grep 'OpenMP.*Decompressed' | sed -n 's/.*in \([0-9.]*\).*/\1/p' | head -1)
-
-    # Preservation before/after (from Step 4a and Step 6)
-    # Raw preservation
-    raw_pres=$(echo "$OUT" | grep 'Raw CP preservation' | grep -oE '[0-9]+ / [0-9]+' | head -1)
+    if [ -n "$omp_decomp_ms" ]; then
+        omp_decomp=$(echo "scale=6; $omp_decomp_ms / 1000" | bc)
+    else
+        omp_decomp=""
+    fi
 
     # Final preservation
-    fn_before=$(echo "$OUT" | grep -oE 'FN_before=[0-9]+' | sed 's/FN_before=//' || echo "")
-    fn_after=$(echo "$OUT" | grep 'Lost' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
-    fp=$(echo "$OUT" | grep -E 'New CPs|FP' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
-    ft=$(echo "$OUT" | grep -E 'Type changed|FT' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
+    fn_after=$(echo "$OUT" | grep 'Lost (became regular)' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
+    if [ -z "$fn_after" ]; then
+        fn_after=$(echo "$OUT" | grep 'Lost:' | sed -n 's/.*Lost: \([0-9]*\).*/\1/p' | head -1)
+    fi
+    fp=$(echo "$OUT" | grep 'New CPs' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
+    if [ -z "$fp" ]; then
+        fp=$(echo "$OUT" | grep 'New:' | sed -n 's/.*New: \([0-9]*\).*/\1/p' | head -1)
+    fi
+    ft=$(echo "$OUT" | grep 'Type changed' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
+    if [ -z "$ft" ]; then
+        ft=$(echo "$OUT" | grep 'Changed:' | sed -n 's/.*Changed: \([0-9]*\).*/\1/p' | head -1)
+    fi
 
-    # Max error as multiple of eb
-    max_err_eps=$(echo "$OUT" | grep 'Max.*error' | sed -n 's/.*[: ]\([0-9][0-9.e+-]*\).*/\1/p' | tail -1)
+    # Max error
+    max_err_eps=$(echo "$OUT" | grep 'Max pointwise error\|Max error' | sed -n 's/.*: \([0-9.e+-]*\).*/\1/p' | head -1)
 }
 
 ###############################################################################

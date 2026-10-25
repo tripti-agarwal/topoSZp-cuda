@@ -124,6 +124,18 @@ if(ENABLE_CUDA)
   endif()
 endif()
 
+# ---- CPU-only tools (need SZp but not CUDA) ----
+if(OpenMP_CXX_FOUND)
+  add_executable(compare_critical_points example/compare_critical_points.cc)
+  target_link_libraries(compare_critical_points SZp OpenMP::OpenMP_CXX)
+
+  add_executable(topo_check example/topo_check.cc)
+  target_link_libraries(topo_check SZp OpenMP::OpenMP_CXX)
+
+  add_executable(pl_topo_check example/pl_topo_check.cc)
+  target_link_libraries(pl_topo_check SZp OpenMP::OpenMP_CXX)
+endif()
+
 # ---- Install / export (only if at least one target was created) ----
 get_property(_export_targets GLOBAL PROPERTY PACKAGES_FOUND)
 # Check if any installable targets exist

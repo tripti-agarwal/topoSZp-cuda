@@ -102,12 +102,12 @@ for eb in $ERROR_BOUNDS; do
             # Compress
             case "$compressor" in
                 SZ3)
-                    "$SZ3_BIN" -f -i "$f" -z "$comp_file" -M ABS -A $eb -2 $ROWS $COLS 2>/dev/null || continue
-                    "$SZ3_BIN" -f -s "$comp_file" -o "$decomp_file" -2 $ROWS $COLS 2>/dev/null || continue
+                    "$SZ3_BIN" -f -i "$f" -z "$comp_file" -2 $COLS $ROWS -M ABS $eb 2>/dev/null || continue
+                    "$SZ3_BIN" -f -z "$comp_file" -o "$decomp_file" -2 $COLS $ROWS 2>/dev/null || continue
                     ;;
                 ZFP)
-                    "$ZFP_BIN" -f -i "$f" -z "$comp_file" -a $eb -2 $ROWS $COLS 2>/dev/null || continue
-                    "$ZFP_BIN" -f -z "$comp_file" -o "$decomp_file" -a $eb -2 $ROWS $COLS 2>/dev/null || continue
+                    "$ZFP_BIN" -t float -2 $COLS $ROWS -a $eb -i "$f" -z "$comp_file" 2>/dev/null || continue
+                    "$ZFP_BIN" -t float -2 $COLS $ROWS -z "$comp_file" -o "$decomp_file" 2>/dev/null || continue
                     ;;
                 Tthresh)
                     "$TTHRESH_BIN" "$f" -c "$comp_file" -t float -e $eb -s "$ROWS $COLS" 2>/dev/null || continue
