@@ -1,0 +1,69 @@
+#!/bin/bash
+#PBS -N toposzp_all_expts
+#PBS -q backfill
+#PBS -A SDR
+#PBS -l select=1:ngpus=1
+#PBS -l walltime=06:00:00
+#PBS -o /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/all_expts_output.log
+#PBS -e /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/all_expts_error.log
+
+module purge
+module load gcc/11.4.0
+export PATH=/usr/local/cuda/bin:$PATH
+
+cd /lcrc/project/ECP-EZ/tripti/topoSZp-cuda
+
+# Step 1: Install competing compressors (SZ3, ZFP, Tthresh, SZ)
+echo "=== Installing compressors ==="
+bash experiments/install_compressors.sh
+export PATH=/lcrc/project/ECP-EZ/tripti/compressors/bin:$PATH
+export LD_LIBRARY_PATH=/lcrc/project/ECP-EZ/tripti/compressors/lib:$LD_LIBRARY_PATH
+
+# Step 2: Build TopoSZp+
+echo "=== Building TopoSZp+ ==="
+mkdir -p build && cd build
+cmake .. -DENABLE_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES="80"
+make -j$(nproc)
+cd ..
+
+# Step 3: Download SDRBench datasets (if not present)
+echo "=== Downloading datasets ==="
+bash experiments/download_datasets.sh
+
+# Step 4: Run all experiments
+echo ""
+echo "============================================================"
+echo "=== Experiment 1: Scalability (Table 2) ==="
+echo "============================================================"
+bash experiments/run_scalability.sh full
+
+echo ""
+echo "============================================================"
+echo "=== Experiment 2: Compressor Comparison (Table 3) ==="
+echo "============================================================"
+bash experiments/run_compressor_comparison.sh full
+
+echo ""
+echo "============================================================"
+echo "=== Experiment 3: Bit Rate Sweep (Figure 10) ==="
+echo "============================================================"
+bash experiments/run_bitrate_sweep.sh full
+
+echo ""
+echo "============================================================"
+echo "=== Experiment 4: GPU vs CPU (Table 4) ==="
+echo "============================================================"
+bash experiments/run_gpu_vs_cpu.sh full
+
+echo ""
+echo "============================================================"
+echo "=== Experiment 5: Full SDRBench (all datasets) ==="
+echo "============================================================"
+bash experiments/run_sdrbench.sh full
+
+echo ""
+echo "============================================================"
+echo "=== ALL EXPERIMENTS COMPLETE ==="
+echo "============================================================"
+echo "Results in: experiments/results/"
+ls -la experiments/results/
