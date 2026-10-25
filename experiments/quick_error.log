@@ -13,3 +13,18 @@ Also make sure that all modulefiles written in TCL start with the string
 CMake Error: The source directory "/lcrc/project/ECP-EZ/tripti/compressors/src/SZ" does not appear to contain CMakeLists.txt.
 Specify --help for usage, or press the help button on the CMake GUI.
 experiments/run_compressor_comparison.sh: line 204: total_fn + compression ratio = 33.09 : syntax error in expression (error token is "ratio = 33.09 ")
+Lmod has detected the following error: The following module(s) are unknown:
+"gcc/11.2.0"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore-cache load "gcc/11.2.0"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+CMake Error: The source directory "/lcrc/project/ECP-EZ/tripti/compressors/src/SZ" does not appear to contain CMakeLists.txt.
+Specify --help for usage, or press the help button on the CMake GUI.
+experiments/run_compressor_comparison.sh: line 200: total_fn + compression ratio = 178.40 : syntax error in expression (error token is "ratio = 178.40 ")
