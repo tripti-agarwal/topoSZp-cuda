@@ -77,14 +77,26 @@ inline void sz_writeBits_Fast_int8(unsigned char* buffer,uint64_t *bitPosPtr, in
 inline void sz_writeBits_Fast_int32(unsigned char* buffer,uint64_t *bitPosPtr, int numBits, int32_t data)
 {
     uint32_t mask = (1 << numBits)-1;
-    *(uint32_t*)(buffer + ((*bitPosPtr)>>3)) |= ((*(uint32_t*)&data)&mask) << ((*bitPosPtr) & (uint64_t)0x0000000000000007);
+    size_t byteOff = (size_t)((*bitPosPtr) >> 3);
+    uint32_t tmp;
+    memcpy(&tmp, buffer + byteOff, sizeof(tmp));
+    uint32_t udata;
+    memcpy(&udata, &data, sizeof(udata));
+    tmp |= (udata & mask) << ((*bitPosPtr) & (uint64_t)0x0000000000000007);
+    memcpy(buffer + byteOff, &tmp, sizeof(tmp));
     (*bitPosPtr) += numBits;
 }
 
 inline void sz_writeBits_Fast_int64(unsigned char* buffer,uint64_t *bitPosPtr, int numBits, int64_t data)
 {
     uint64_t mask = ((uint64_t)0x0000000000000001<<numBits)-1;
-    *(uint64_t*)(buffer + ((*bitPosPtr)>>3)) |= ((*(uint64_t*)&data)&mask) << ((*bitPosPtr) & (uint64_t)0x0000000000000007);
+    size_t byteOff = (size_t)((*bitPosPtr) >> 3);
+    uint64_t tmp;
+    memcpy(&tmp, buffer + byteOff, sizeof(tmp));
+    uint64_t udata;
+    memcpy(&udata, &data, sizeof(udata));
+    tmp |= (udata & mask) << ((*bitPosPtr) & (uint64_t)0x0000000000000007);
+    memcpy(buffer + byteOff, &tmp, sizeof(tmp));
     (*bitPosPtr) += numBits;
 }
 

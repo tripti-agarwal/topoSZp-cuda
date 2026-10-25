@@ -52,42 +52,51 @@ size_t Jiajun_save_fixed_length_bits(unsigned int *unsignintArray, size_t intArr
 	}
 	if (remainder_bit > 0)
 	{
+		unsigned int *remArray = unsignintArray;
+		unsigned int *localCopy = NULL;
 		if (byte_count > 0)
 		{
-			for (i = 0; i < intArrayLength; i++)
+			/* Work on a local copy to avoid corrupting the caller's array */
+			localCopy = (unsigned int *)malloc(intArrayLength * sizeof(unsigned int));
+			if (localCopy == NULL)
 			{
-				unsignintArray[i] <<= (32 - remainder_bit);
-				unsignintArray[i] >>= (32 - remainder_bit);
+				printf("Error: malloc failed in Jiajun_save_fixed_length_bits\n");
+				return 0;
 			}
+			unsigned int mask = (1u << remainder_bit) - 1;
+			for (i = 0; i < intArrayLength; i++)
+				localCopy[i] = unsignintArray[i] & mask;
+			remArray = localCopy;
 		}
-		
+
 
 		switch (remainder_bit)
 		{
 		case 1:
-			Jiajun_convertUInt2Byte_fast_1b_args(unsignintArray, intArrayLength, result + byte_offset);
+			Jiajun_convertUInt2Byte_fast_1b_args(remArray, intArrayLength, result + byte_offset);
 			break;
 		case 2:
-			Jiajun_convertUInt2Byte_fast_2b_args(unsignintArray, intArrayLength, result + byte_offset);
+			Jiajun_convertUInt2Byte_fast_2b_args(remArray, intArrayLength, result + byte_offset);
 			break;
 		case 3:
-			Jiajun_convertUInt2Byte_fast_3b_args(unsignintArray, intArrayLength, result + byte_offset);
+			Jiajun_convertUInt2Byte_fast_3b_args(remArray, intArrayLength, result + byte_offset);
 			break;
 		case 4:
-			Jiajun_convertUInt2Byte_fast_4b_args(unsignintArray, intArrayLength, result + byte_offset);
+			Jiajun_convertUInt2Byte_fast_4b_args(remArray, intArrayLength, result + byte_offset);
 			break;
 		case 5:
-			Jiajun_convertUInt2Byte_fast_5b_args(unsignintArray, intArrayLength, result + byte_offset);
+			Jiajun_convertUInt2Byte_fast_5b_args(remArray, intArrayLength, result + byte_offset);
 			break;
 		case 6:
-			Jiajun_convertUInt2Byte_fast_6b_args(unsignintArray, intArrayLength, result + byte_offset);
+			Jiajun_convertUInt2Byte_fast_6b_args(remArray, intArrayLength, result + byte_offset);
 			break;
 		case 7:
-			Jiajun_convertUInt2Byte_fast_7b_args(unsignintArray, intArrayLength, result + byte_offset);
+			Jiajun_convertUInt2Byte_fast_7b_args(remArray, intArrayLength, result + byte_offset);
 			break;
 		default:
 			printf("Error: try to save %d bits\n", remainder_bit);
 		}
+		free(localCopy);
 	}
 
 	return byteLength;
@@ -646,8 +655,10 @@ void Jiajun_convertByte2UInt_fast_3b_args(size_t stepLength, unsigned char *byte
 			break;
 		case 7:
 			intArray[n++] = (tmp & 0x07);
-			i++;
-			tmp = byteArray[i];
+			if (n < stepLength) {
+				i++;
+				tmp = byteArray[i];
+			}
 			break;
 		}
 	}
@@ -714,8 +725,10 @@ void Jiajun_convertByte2UInt_fast_5b_args(size_t stepLength, unsigned char *byte
 			break;
 		case 7:
 			intArray[n++] = (tmp & 0x1F);
-			i++;
-			tmp = byteArray[i];
+			if (n < stepLength) {
+				i++;
+				tmp = byteArray[i];
+			}
 			break;
 		}
 	}
@@ -748,8 +761,10 @@ void Jiajun_convertByte2UInt_fast_6b_args(size_t stepLength, unsigned char *byte
 			break;
 		case 3:
 			intArray[n++] = (tmp & 0x3F);
-			i++;
-			tmp = byteArray[i];
+			if (n < stepLength) {
+				i++;
+				tmp = byteArray[i];
+			}
 			break;
 		}
 	}
@@ -810,8 +825,10 @@ void Jiajun_convertByte2UInt_fast_7b_args(size_t stepLength, unsigned char *byte
 			break;
 		case 7:
 			intArray[n++] = (tmp & 0x7F);
-			i++;
-			tmp = byteArray[i];
+			if (n < stepLength) {
+				i++;
+				tmp = byteArray[i];
+			}
 			break;
 		}
 	}
@@ -1263,8 +1280,10 @@ void convertByteArray2IntArray_fast_3b(size_t stepLength, unsigned char *byteArr
 			break;
 		case 7:
 			(*intArray)[n++] = (tmp & 0x07);
-			i++;
-			tmp = byteArray[i];
+			if (n < stepLength) {
+				i++;
+				tmp = byteArray[i];
+			}
 			break;
 		}
 	}
@@ -1440,8 +1459,10 @@ void convertByteArray2IntArray_fast_5b(size_t stepLength, unsigned char *byteArr
 			break;
 		case 7:
 			(*intArray)[n++] = (tmp & 0x1F);
-			i++;
-			tmp = byteArray[i];
+			if (n < stepLength) {
+				i++;
+				tmp = byteArray[i];
+			}
 			break;
 		}
 	}
@@ -1528,8 +1549,10 @@ void convertByteArray2IntArray_fast_6b(size_t stepLength, unsigned char *byteArr
 			break;
 		case 3:
 			(*intArray)[n++] = (tmp & 0x3F);
-			i++;
-			tmp = byteArray[i];
+			if (n < stepLength) {
+				i++;
+				tmp = byteArray[i];
+			}
 			break;
 		}
 	}
@@ -1664,8 +1687,10 @@ void convertByteArray2IntArray_fast_7b(size_t stepLength, unsigned char *byteArr
 			break;
 		case 7:
 			(*intArray)[n++] = (tmp & 0x7F);
-			i++;
-			tmp = byteArray[i];
+			if (n < stepLength) {
+				i++;
+				tmp = byteArray[i];
+			}
 			break;
 		}
 	}

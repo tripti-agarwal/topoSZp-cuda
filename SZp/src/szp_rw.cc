@@ -50,10 +50,10 @@ void szp_free2DArray_float(float** data, size_t m)
 float*** szp_create3DArray_float(size_t p, size_t m, size_t n)
 {
 	size_t i = 0, j = 0;
-	float ***data = (float***)malloc(sizeof(float**)*m);
+	float ***data = (float***)malloc(sizeof(float**)*p);
 	for(i=0;i<p;i++)
 	{
-		data[i] = (float**)malloc(sizeof(float*)*n);
+		data[i] = (float**)malloc(sizeof(float*)*m);
 		for(j=0;j<m;j++)
 			data[i][j] = (float*)malloc(sizeof(float)*n);
 	}
@@ -93,10 +93,10 @@ void szp_free2DArray_double(double** data, size_t m)
 double*** szp_create3DArray_double(size_t p, size_t m, size_t n)
 {
 	size_t i = 0, j = 0;
-	double ***data = (double***)malloc(sizeof(double**)*m);
+	double ***data = (double***)malloc(sizeof(double**)*p);
 	for(i=0;i<p;i++)
 	{
-		data[i] = (double**)malloc(sizeof(double*)*n);
+		data[i] = (double**)malloc(sizeof(double*)*m);
 		for(j=0;j<m;j++)
 			data[i][j] = (double*)malloc(sizeof(double)*n);
 	}
@@ -151,6 +151,7 @@ unsigned char *szp_readByteData(char *srcFilePath, size_t *byteLength, int *stat
     if (pFile == NULL)
     {
         printf("Failed to open input file. 2\n");
+        free(byteBuf);
         *status = SZ_FERR;
         return 0;
     }
@@ -479,6 +480,7 @@ double *szp_readDoubleData_systemEndian(char *srcFilePath, size_t *nbEle, int *s
     if (pFile == NULL)
     {
         printf("Failed to open input file. 2\n");
+        free(daBuf);
         *status = SZ_FERR;
         return NULL;
     }
@@ -508,6 +510,7 @@ int8_t *szp_readInt8Data_systemEndian(char *srcFilePath, size_t *nbEle, int *sta
 	{
 		printf("Error: input file is wrong!\n");
 		*status = SZ_FERR;
+		return NULL;
 	}
 
 	int8_t *daBuf = (int8_t *)malloc(inSize);
@@ -516,6 +519,7 @@ int8_t *szp_readInt8Data_systemEndian(char *srcFilePath, size_t *nbEle, int *sta
 	if (pFile == NULL)
 	{
 		printf("Failed to open input file. 2\n");
+		free(daBuf);
 		*status = SZ_FERR;
 		return NULL;
 	}
@@ -545,6 +549,7 @@ int16_t *szp_readInt16Data_systemEndian(char *srcFilePath, size_t *nbEle, int *s
 	{
 		printf("Error: input file is wrong!\n");
 		*status = SZ_FERR;
+		return NULL;
 	}
 
 	int16_t *daBuf = (int16_t *)malloc(inSize);
@@ -553,13 +558,14 @@ int16_t *szp_readInt16Data_systemEndian(char *srcFilePath, size_t *nbEle, int *s
 	if (pFile == NULL)
 	{
 		printf("Failed to open input file. 2\n");
+		free(daBuf);
 		*status = SZ_FERR;
 		return NULL;
 	}
 	fread(daBuf, 2, *nbEle, pFile);
 	fclose(pFile);
 	*status = SZ_SCES;
-	return daBuf;	
+	return daBuf;
 }
 
 uint16_t *szp_readUInt16Data_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
@@ -581,6 +587,7 @@ uint16_t *szp_readUInt16Data_systemEndian(char *srcFilePath, size_t *nbEle, int 
 	{
 		printf("Error: input file is wrong!\n");
 		*status = SZ_FERR;
+		return NULL;
 	}
 
 	uint16_t *daBuf = (uint16_t *)malloc(inSize);
@@ -589,13 +596,14 @@ uint16_t *szp_readUInt16Data_systemEndian(char *srcFilePath, size_t *nbEle, int 
 	if (pFile == NULL)
 	{
 		printf("Failed to open input file. 2\n");
+		free(daBuf);
 		*status = SZ_FERR;
 		return NULL;
 	}
 	fread(daBuf, 2, *nbEle, pFile);
 	fclose(pFile);
 	*status = SZ_SCES;
-	return daBuf;	
+	return daBuf;
 }
 
 int32_t *szp_readInt32Data_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
@@ -617,6 +625,7 @@ int32_t *szp_readInt32Data_systemEndian(char *srcFilePath, size_t *nbEle, int *s
 	{
 		printf("Error: input file is wrong!\n");
 		*status = SZ_FERR;
+		return NULL;
 	}
 
 	int32_t *daBuf = (int32_t *)malloc(inSize);
@@ -625,13 +634,14 @@ int32_t *szp_readInt32Data_systemEndian(char *srcFilePath, size_t *nbEle, int *s
 	if (pFile == NULL)
 	{
 		printf("Failed to open input file. 2\n");
+		free(daBuf);
 		*status = SZ_FERR;
 		return NULL;
 	}
 	fread(daBuf, 4, *nbEle, pFile);
 	fclose(pFile);
 	*status = SZ_SCES;
-	return daBuf;	
+	return daBuf;
 }
 
 uint32_t *szp_readUInt32Data_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
@@ -653,6 +663,7 @@ uint32_t *szp_readUInt32Data_systemEndian(char *srcFilePath, size_t *nbEle, int 
 	{
 		printf("Error: input file is wrong!\n");
 		*status = SZ_FERR;
+		return NULL;
 	}
 
 	uint32_t *daBuf = (uint32_t *)malloc(inSize);
@@ -661,13 +672,14 @@ uint32_t *szp_readUInt32Data_systemEndian(char *srcFilePath, size_t *nbEle, int 
 	if (pFile == NULL)
 	{
 		printf("Failed to open input file. 2\n");
+		free(daBuf);
 		*status = SZ_FERR;
 		return NULL;
 	}
 	fread(daBuf, 4, *nbEle, pFile);
 	fclose(pFile);
 	*status = SZ_SCES;
-	return daBuf;	
+	return daBuf;
 }
 
 int64_t *szp_readInt64Data_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
@@ -689,6 +701,7 @@ int64_t *szp_readInt64Data_systemEndian(char *srcFilePath, size_t *nbEle, int *s
 	{
 		printf("Error: input file is wrong!\n");
 		*status = SZ_FERR;
+		return NULL;
 	}
 
 	int64_t *daBuf = (int64_t *)malloc(inSize);
@@ -697,6 +710,7 @@ int64_t *szp_readInt64Data_systemEndian(char *srcFilePath, size_t *nbEle, int *s
 	if (pFile == NULL)
 	{
 		printf("Failed to open input file. 2\n");
+		free(daBuf);
 		*status = SZ_FERR;
 		return NULL;
 	}
@@ -725,6 +739,7 @@ uint64_t *szp_readUInt64Data_systemEndian(char *srcFilePath, size_t *nbEle, int 
 	{
 		printf("Error: input file is wrong!\n");
 		*status = SZ_FERR;
+		return NULL;
 	}
 
 	uint64_t *daBuf = (uint64_t *)malloc(inSize);
@@ -761,8 +776,9 @@ float *szp_readFloatData_systemEndian(char *srcFilePath, size_t *nbEle, int *sta
     {
 		printf("Error: input file is wrong!\n");
 		*status = SZ_FERR;
+		return NULL;
 	}
-    
+
     float *daBuf = (float *)malloc(inSize);
     
     pFile = fopen(srcFilePath, "rb");
@@ -1001,7 +1017,7 @@ void szp_writeStrings(int nbStr, char *str[], char *tgtFilePath, int *status)
 
 	for(i = 0;i<nbStr;i++)
 	{
-		sprintf(s,"%s\n",str[i]);
+		snprintf(s, sizeof(s), "%s\n", str[i]);
 		fputs(s, pFile);
 	}
 

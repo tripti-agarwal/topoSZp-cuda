@@ -15,6 +15,14 @@
 #include <string.h>
 #include <math.h>
 
+/* Read a size_t from a byte array without assuming alignment. */
+static inline size_t szp_read_size_t(const unsigned char *p)
+{
+    size_t v;
+    memcpy(&v, p, sizeof(v));
+    return v;
+}
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -51,7 +59,6 @@ szp_validate_nbThreads_randomaccess(const unsigned char *cmpBytes,
                                      unsigned int try_nt,
                                      size_t bufLimit)
 {
-    const size_t *offs = (const size_t *)cmpBytes;
     size_t hdr_size = (size_t)try_nt * sizeof(size_t);
     const unsigned char *rcp = cmpBytes + hdr_size;
     const unsigned char *bufEnd = cmpBytes + bufLimit;
@@ -65,7 +72,8 @@ szp_validate_nbThreads_randomaccess(const unsigned char *cmpBytes,
         size_t end_block   = (tid + 1) * blocks_per_thread;
         if (end_block > num_blocks) end_block = num_blocks;
 
-        const unsigned char *ptr = rcp + offs[tid];
+        size_t off_tid = szp_read_size_t(cmpBytes + tid * sizeof(size_t));
+        const unsigned char *ptr = rcp + off_tid;
         if (ptr >= bufEnd || ptr < rcp) return 0;
 
         for (size_t bidx = start_block; bidx < end_block; bidx++) {
@@ -104,7 +112,6 @@ szp_validate_nbThreads_threadblock(const unsigned char *cmpBytes,
                                     unsigned int try_nt,
                                     size_t bufLimit)
 {
-    const size_t *offs = (const size_t *)cmpBytes;
     size_t hdr_size = (size_t)try_nt * sizeof(size_t);
     const unsigned char *rcp = cmpBytes + hdr_size;
     const unsigned char *bufEnd = cmpBytes + bufLimit;
@@ -115,7 +122,8 @@ szp_validate_nbThreads_threadblock(const unsigned char *cmpBytes,
         size_t lo = tid * threadblocksize;
         size_t hi = (tid == try_nt - 1) ? nbEle : (tid + 1) * threadblocksize;
 
-        const unsigned char *ptr = rcp + offs[tid];
+        size_t off_tid = szp_read_size_t(cmpBytes + tid * sizeof(size_t));
+        const unsigned char *ptr = rcp + off_tid;
         if (ptr >= bufEnd || ptr < rcp) return 0;
 
         if (lo < hi) {
@@ -154,16 +162,17 @@ static inline unsigned int
 szp_detect_nbThreads_randomaccess(const unsigned char *cmpBytes,
                                    size_t nbEle, int blockSize)
 {
-    const size_t *offs = (const size_t *)cmpBytes;
     size_t maxCmpSize = sizeof(float) * nbEle + sizeof(float);
 
-    if (offs[0] != 0) return 1;
+    if (szp_read_size_t(cmpBytes) != 0) return 1;
 
     for (unsigned int try_nt = 1; try_nt <= 128; try_nt++) {
         /* Basic offset validity */
         int valid = 1;
         for (unsigned int k = 1; k < try_nt; k++) {
-            if (offs[k] > maxCmpSize || offs[k] < offs[k-1]) {
+            size_t off_k = szp_read_size_t(cmpBytes + k * sizeof(size_t));
+            size_t off_k1 = szp_read_size_t(cmpBytes + (k-1) * sizeof(size_t));
+            if (off_k > maxCmpSize || off_k < off_k1) {
                 valid = 0; break;
             }
         }
@@ -185,15 +194,16 @@ static inline unsigned int
 szp_detect_nbThreads_threadblock(const unsigned char *cmpBytes,
                                   size_t nbEle, int blockSize)
 {
-    const size_t *offs = (const size_t *)cmpBytes;
     size_t maxCmpSize = sizeof(float) * nbEle + sizeof(float);
 
-    if (offs[0] != 0) return 1;
+    if (szp_read_size_t(cmpBytes) != 0) return 1;
 
     for (unsigned int try_nt = 1; try_nt <= 128; try_nt++) {
         int valid = 1;
         for (unsigned int k = 1; k < try_nt; k++) {
-            if (offs[k] > maxCmpSize || offs[k] < offs[k-1]) {
+            size_t off_k = szp_read_size_t(cmpBytes + k * sizeof(size_t));
+            size_t off_k1 = szp_read_size_t(cmpBytes + (k-1) * sizeof(size_t));
+            if (off_k > maxCmpSize || off_k < off_k1) {
                 valid = 0; break;
             }
         }
@@ -218,7 +228,6 @@ szp_validate_nbThreads_randomaccess_topo(const unsigned char *cmpBytes,
                                           unsigned int try_nt,
                                           size_t bufLimit)
 {
-    const size_t *offs = (const size_t *)cmpBytes;
     size_t hdr_size = (size_t)try_nt * sizeof(size_t);
     const unsigned char *rcp = cmpBytes + hdr_size;
     const unsigned char *bufEnd = cmpBytes + bufLimit;
@@ -231,7 +240,8 @@ szp_validate_nbThreads_randomaccess_topo(const unsigned char *cmpBytes,
         size_t end_block   = (tid + 1) * blocks_per_thread;
         if (end_block > num_blocks) end_block = num_blocks;
 
-        const unsigned char *ptr = rcp + offs[tid];
+        size_t off_tid = szp_read_size_t(cmpBytes + tid * sizeof(size_t));
+        const unsigned char *ptr = rcp + off_tid;
         if (ptr >= bufEnd || ptr < rcp) return 0;
 
         for (size_t bidx = start_block; bidx < end_block; bidx++) {
@@ -271,15 +281,16 @@ static inline unsigned int
 szp_detect_nbThreads_randomaccess_topo(const unsigned char *cmpBytes,
                                         size_t nbEle, int blockSize)
 {
-    const size_t *offs = (const size_t *)cmpBytes;
     size_t maxCmpSize = 8ull * nbEle + 1024;
 
-    if (offs[0] != 0) return 1;
+    if (szp_read_size_t(cmpBytes) != 0) return 1;
 
     for (unsigned int try_nt = 1; try_nt <= 128; try_nt++) {
         int valid = 1;
         for (unsigned int k = 1; k < try_nt; k++) {
-            if (offs[k] > maxCmpSize || offs[k] < offs[k-1]) {
+            size_t off_k = szp_read_size_t(cmpBytes + k * sizeof(size_t));
+            size_t off_k1 = szp_read_size_t(cmpBytes + (k-1) * sizeof(size_t));
+            if (off_k > maxCmpSize || off_k < off_k1) {
                 valid = 0; break;
             }
         }
