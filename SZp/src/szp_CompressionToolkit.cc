@@ -8,10 +8,11 @@
  */
  
 #include <stdlib.h>
-#include "szp_defines.h" 	
+#include "szp_defines.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <unistd.h>
 #include <cstdint>
 #include "szp_CompressionToolkit.h"
@@ -258,7 +259,7 @@ void convertULongArrayToBytes(uint64_t* states, size_t stateLength, unsigned cha
 	}
 }
 
-int computeByteSizePerIntValue(long valueRangeSize)
+int computeByteSizePerIntValue(int64_t valueRangeSize)
 {
 	if(valueRangeSize<=256)
 		return 1;
@@ -272,29 +273,29 @@ int computeByteSizePerIntValue(long valueRangeSize)
 
 
 
-long computeRangeSize_int(void* oriData, int dataType, size_t size, int64_t* valueRangeSize)
+int64_t computeRangeSize_int(void* oriData, int dataType, size_t size, int64_t* valueRangeSize)
 {
-	long max = 0, min = 0;
+	int64_t max = 0, min = 0;
 
 	if(dataType==SZ_UINT8)
 	{
 		unsigned char* data = static_cast<unsigned char*>(oriData);
 
 		unsigned char min_uc = data[0], max_uc = data[0];
-		computeMinMax(data, size, min_uc, max_uc);
+		szp_computeMinMax(data, size, min_uc, max_uc);
 
-		min = static_cast<long>(min_uc);
-		max = static_cast<long>(max_uc);
+		min = static_cast<int64_t>(min_uc);
+		max = static_cast<int64_t>(max_uc);
 	}
 	else if(dataType == SZ_INT8)
 	{
 		char* data = static_cast<char*>(oriData);
 
 		char min_uc = data[0], max_uc = data[0];
-		computeMinMax(data, size, min_uc, max_uc);
+		szp_computeMinMax(data, size, min_uc, max_uc);
 
-		min = static_cast<long>(min_uc);
-		max = static_cast<long>(max_uc);
+		min = static_cast<int64_t>(min_uc);
+		max = static_cast<int64_t>(max_uc);
 
 	}
 	else if(dataType == SZ_UINT16)
@@ -302,74 +303,79 @@ long computeRangeSize_int(void* oriData, int dataType, size_t size, int64_t* val
 		unsigned short* data = static_cast<unsigned short*>(oriData);
 
 		unsigned short min_uc = data[0], max_uc = data[0];
-		computeMinMax(data, size, min_uc, max_uc);
+		szp_computeMinMax(data, size, min_uc, max_uc);
 
-		min = static_cast<long>(min_uc);
-		max = static_cast<long>(max_uc);
+		min = static_cast<int64_t>(min_uc);
+		max = static_cast<int64_t>(max_uc);
 	}
 	else if(dataType == SZ_INT16)
-	{ 
+	{
 		short* data = static_cast<short*>(oriData);
 
 		short min_uc = data[0], max_uc = data[0];
-		computeMinMax(data, size, min_uc, max_uc);
+		szp_computeMinMax(data, size, min_uc, max_uc);
 
-		min = static_cast<long>(min_uc);
-		max = static_cast<long>(max_uc);
+		min = static_cast<int64_t>(min_uc);
+		max = static_cast<int64_t>(max_uc);
 	}
 	else if(dataType == SZ_UINT32)
 	{
 		unsigned int* data = static_cast<unsigned int*>(oriData);
 
 		unsigned int min_uc = data[0], max_uc = data[0];
-		computeMinMax(data, size, min_uc, max_uc);
+		szp_computeMinMax(data, size, min_uc, max_uc);
 
-		min = static_cast<long>(min_uc);
-		max = static_cast<long>(max_uc);
+		min = static_cast<int64_t>(min_uc);
+		max = static_cast<int64_t>(max_uc);
 	}
 	else if(dataType == SZ_INT32)
 	{
 		int* data = static_cast<int*>(oriData);
 
 		int min_uc = data[0], max_uc = data[0];
-		computeMinMax(data, size, min_uc, max_uc);
+		szp_computeMinMax(data, size, min_uc, max_uc);
 
-		min = static_cast<long>(min_uc);
-		max = static_cast<long>(max_uc);
+		min = static_cast<int64_t>(min_uc);
+		max = static_cast<int64_t>(max_uc);
 	}
 	else if(dataType == SZ_UINT64)
 	{
-		unsigned long* data = static_cast<unsigned long*>(oriData);
+		uint64_t* data = static_cast<uint64_t*>(oriData);
 
-		unsigned long min_uc = data[0], max_uc = data[0];
-		computeMinMax(data, size, min_uc, max_uc);
+		uint64_t min_uc = data[0], max_uc = data[0];
+		szp_computeMinMax(data, size, min_uc, max_uc);
 
-		min = static_cast<long>(min_uc);
-		max = static_cast<long>(max_uc);
+		uint64_t range = max_uc - min_uc;
+		*valueRangeSize = (range > (uint64_t)INT64_MAX) ? INT64_MAX : (int64_t)range;
+		return (int64_t)min_uc;
 	}
 	else if(dataType == SZ_INT64)
 	{
-		long* data = static_cast<long*>(oriData);
+		int64_t* data = static_cast<int64_t*>(oriData);
 
-		long min_uc = data[0], max_uc = data[0];
-		computeMinMax(data, size, min_uc, max_uc);
+		int64_t min_uc = data[0], max_uc = data[0];
+		szp_computeMinMax(data, size, min_uc, max_uc);
 
 		min = min_uc;
 		max = max_uc;
 	}
 
 	*valueRangeSize = max - min;
-	return min;	
+	return min;
 }
 
 float computeRangeSize_float(float* oriData, size_t size, float* valueRangeSize, float* medianValue)
 {
 	size_t i = 0;
-	float min = oriData[0];
+	/* Skip leading NaN values to find a valid initial min/max */
+	while(i < size && isnan(oriData[i])) i++;
+	if(i >= size) { *valueRangeSize = 0; *medianValue = 0; return 0; }
+	float min = oriData[i];
 	float max = min;
-	for(i=1;i<size;i++)
+	for(i=i+1;i<size;i++)
 	{
 		float data = oriData[i];
+		if(isnan(data)) continue;
 		if(min>data)
 			min = data;
 		else if(max<data)
@@ -384,17 +390,21 @@ float computeRangeSize_float(float* oriData, size_t size, float* valueRangeSize,
 double computeRangeSize_double(double* oriData, size_t size, double* valueRangeSize, double* medianValue)
 {
 	size_t i = 0;
-	double min = oriData[0];
+	/* Skip leading NaN values to find a valid initial min/max */
+	while(i < size && isnan(oriData[i])) i++;
+	if(i >= size) { *valueRangeSize = 0; *medianValue = 0; return 0; }
+	double min = oriData[i];
 	double max = min;
-	for(i=1;i<size;i++)
+	for(i=i+1;i<size;i++)
 	{
 		double data = oriData[i];
+		if(isnan(data)) continue;
 		if(min>data)
 			min = data;
 		else if(max<data)
 			max = data;
 	}
-	
+
 	*valueRangeSize = max - min;
 	*medianValue = min + *valueRangeSize/2;
 	return min;
@@ -446,7 +456,7 @@ double getRealPrecision_float(float valueRangeSize, int errBoundMode, double abs
 	return precision;
 }
 
-double getRealPrecision_int(long valueRangeSize, int errBoundMode, double absErrBound, double relBoundRatio, int *status)
+double getRealPrecision_int(int64_t valueRangeSize, int errBoundMode, double absErrBound, double relBoundRatio, int *status)
 {
 	int state = SZ_SCES;
 	double precision = 0;

@@ -55,8 +55,8 @@ __global__ void find_critical_points_kernel(
     CriticalPoint *results, unsigned int *d_count)
 {
     const double inver_bound = 1.0 / eb_d;
-    unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    unsigned int total_interior = (unsigned int)(rows - 2) * (unsigned int)(cols - 2);
+    size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    size_t total_interior = (size_t)(rows - 2) * (size_t)(cols - 2);
     if (idx >= total_interior) return;
 
     int i = 1 + (int)(idx / (unsigned int)(cols - 2));
@@ -109,7 +109,7 @@ CriticalPoint *szp_cuda_find_critical_points(float *data, size_t *outCount,
     }
 
     size_t grid_size = (size_t)rows * cols;
-    unsigned int total_interior = (unsigned int)(rows - 2) * (unsigned int)(cols - 2);
+    size_t total_interior = (size_t)(rows - 2) * (size_t)(cols - 2);
 
     /* Allocate device memory */
     float *d_data;
@@ -456,6 +456,11 @@ unsigned char *szp_cuda_compress_sort_positions(CriticalPoint *critical_points,
         *outSize = 0;
         return NULL;
     }
+    if (blockSize > 257) {
+        fprintf(stderr, "szp_cuda_compress_sort_positions: blockSize %d exceeds maximum 257\n", blockSize);
+        *outSize = 0;
+        return NULL;
+    }
 
     /* Extract sort_position values for extrema (type 1 or 2) */
     size_t extrema_count = 0;
@@ -712,6 +717,11 @@ unsigned char *szp_cuda_float_compress_randomaccess_topology_preserved(
     int rows, int cols)
 {
     if (absErrBound <= 0.0 || !oriData || nbEle == 0) {
+        *outSize = 0;
+        return NULL;
+    }
+    if (blockSize > 257) {
+        fprintf(stderr, "szp_cuda_float_compress_randomaccess_topology_preserved: blockSize %d exceeds maximum 257\n", blockSize);
         *outSize = 0;
         return NULL;
     }

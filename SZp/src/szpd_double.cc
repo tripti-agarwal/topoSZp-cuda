@@ -131,10 +131,10 @@ double *szp_double_decompress_openmp_threadblock(size_t nbEle, double absErrBoun
 void szp_double_decompress_single_thread_arg(double *newData, size_t nbEle, double absErrBound, int blockSize, unsigned char *cmpBytes)
 {
 
-    
+
     size_t *offsets = (size_t *)cmpBytes;
     unsigned char *rcp;
-    unsigned int nbThreads = 0;
+    unsigned int nbThreads = 1;
     
     rcp = cmpBytes + nbThreads * sizeof(size_t);
     size_t block_size = blockSize;

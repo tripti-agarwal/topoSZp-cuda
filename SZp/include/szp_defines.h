@@ -10,6 +10,8 @@
 #ifndef _szp_DEFINES_H
 #define _szp_DEFINES_H
 
+#include <stdint.h>
+
 #define szp_VERNUM 0x0200
 #define szp_VER_MAJOR 1
 #define szp_VER_MINOR 0
@@ -80,15 +82,15 @@ typedef union szp_lint32
 
 typedef union szp_lint64
 {
-	long lvalue;
-	unsigned long ulvalue;
+	int64_t lvalue;
+	uint64_t ulvalue;
 	unsigned char byte[8];
 } szp_lint64;
 
 typedef union szp_ldouble
 {
     double value;
-    unsigned long lvalue;
+    uint64_t lvalue;
     unsigned char byte[8];
 } szp_ldouble;
 
@@ -110,7 +112,7 @@ extern int szp_sysEndianType; //*sysEndianType is actually set automatically.
 extern "C" {
 #endif
 
-inline size_t szp_computeDataLength(size_t r5, size_t r4, size_t r3, size_t r2, size_t r1)
+static inline size_t szp_computeDataLength(size_t r5, size_t r4, size_t r3, size_t r2, size_t r1)
 {
 	size_t dataLength;
 	if(r1==0)

@@ -11,7 +11,7 @@
 #define _szp_CompressionToolkit_H
 
 template <typename T>
-void computeMinMax(const T* data, size_t len, T& min, T& max) {
+void szp_computeMinMax(const T* data, size_t len, T& min, T& max) {
     min = data[0];
     max = data[0];
     for (size_t i = 1; i < len; ++i) {
@@ -77,14 +77,24 @@ inline void sz_writeBits_Fast_int8(unsigned char* buffer,uint64_t *bitPosPtr, in
 inline void sz_writeBits_Fast_int32(unsigned char* buffer,uint64_t *bitPosPtr, int numBits, int32_t data)
 {
     uint32_t mask = (1 << numBits)-1;
-    *(uint32_t*)(buffer + ((*bitPosPtr)>>3)) |= ((*(uint32_t*)&data)&mask) << ((*bitPosPtr) & (uint64_t)0x0000000000000007);
+    uint32_t udata;
+    memcpy(&udata, &data, sizeof(uint32_t));
+    uint32_t existing;
+    memcpy(&existing, buffer + ((*bitPosPtr)>>3), sizeof(uint32_t));
+    existing |= (udata & mask) << ((*bitPosPtr) & (uint64_t)0x0000000000000007);
+    memcpy(buffer + ((*bitPosPtr)>>3), &existing, sizeof(uint32_t));
     (*bitPosPtr) += numBits;
 }
 
 inline void sz_writeBits_Fast_int64(unsigned char* buffer,uint64_t *bitPosPtr, int numBits, int64_t data)
 {
     uint64_t mask = ((uint64_t)0x0000000000000001<<numBits)-1;
-    *(uint64_t*)(buffer + ((*bitPosPtr)>>3)) |= ((*(uint64_t*)&data)&mask) << ((*bitPosPtr) & (uint64_t)0x0000000000000007);
+    uint64_t udata;
+    memcpy(&udata, &data, sizeof(uint64_t));
+    uint64_t existing;
+    memcpy(&existing, buffer + ((*bitPosPtr)>>3), sizeof(uint64_t));
+    existing |= (udata & mask) << ((*bitPosPtr) & (uint64_t)0x0000000000000007);
+    memcpy(buffer + ((*bitPosPtr)>>3), &existing, sizeof(uint64_t));
     (*bitPosPtr) += numBits;
 }
 
@@ -128,9 +138,9 @@ inline unsigned int bytesToUInt32_bigEndian(unsigned char* bytes)
 	return res;
 }
 
-inline unsigned long bytesToUInt64_bigEndian(unsigned char* b) {
-	unsigned long temp = 0;
-	unsigned long res = 0;
+inline uint64_t bytesToUInt64_bigEndian(unsigned char* b) {
+	uint64_t temp = 0;
+	uint64_t res = 0;
 
 	res <<= 8;
 	temp = b[0] & 0xff;
@@ -206,9 +216,9 @@ inline int bytesToInt32_bigEndian(unsigned char* bytes)
 	return res;
 }
 
-inline long bytesToInt64_bigEndian(unsigned char* b) {
-	long temp = 0;
-	long res = 0;
+inline int64_t bytesToInt64_bigEndian(unsigned char* b) {
+	int64_t temp = 0;
+	int64_t res = 0;
 
 	res <<= 8;
 	temp = b[0] & 0xff;
@@ -314,9 +324,9 @@ inline void int16ToBytes_bigEndian(unsigned char *b, uint16_t num)
 /**
  * @endianType: refers to the endian_type of unsigned char* b.
  * */
-inline long bytesToLong_bigEndian(unsigned char* b) {
-	long temp = 0;
-	long res = 0;
+inline int64_t bytesToLong_bigEndian(unsigned char* b) {
+	int64_t temp = 0;
+	int64_t res = 0;
 
 	res <<= 8;
 	temp = b[0] & 0xff;
@@ -353,7 +363,7 @@ inline long bytesToLong_bigEndian(unsigned char* b) {
 	return res;
 }
 
-inline void longToBytes_bigEndian(unsigned char *b, unsigned long num) 
+inline void longToBytes_bigEndian(unsigned char *b, uint64_t num)
 {
 	b[0] = (unsigned char)(num>>56);
 	b[1] = (unsigned char)(num>>48);
@@ -368,7 +378,7 @@ inline void longToBytes_bigEndian(unsigned char *b, unsigned long num)
 }
 
 
-inline long doubleToOSEndianLong(double value)
+inline int64_t doubleToOSEndianLong(double value)
 {
 	szp_ldouble buf;
 	buf.value = value;
@@ -416,8 +426,8 @@ inline short getExponent_double(double value)
 	
 	szp_ldouble lbuf;
 	lbuf.value = value;
-	long lvalue = lbuf.lvalue;
-	
+	int64_t lvalue = lbuf.lvalue;
+
 	int expValue = (int)((lvalue & 0x7FF0000000000000) >> 52);
 	expValue -= 1023;
 	return (short)expValue;
@@ -427,7 +437,7 @@ inline short getPrecisionReqLength_double(double precision)
 {
 	szp_ldouble lbuf;
 	lbuf.value = precision;
-	long lvalue = lbuf.lvalue;
+	int64_t lvalue = lbuf.lvalue;
 	
 	int expValue = (int)((lvalue & 0x7FF0000000000000) >> 52);
 	expValue -= 1023;
@@ -449,11 +459,11 @@ inline unsigned char numberOfLeadingZeros_Int(int i) {
 	return n;
 }
 
-inline unsigned char numberOfLeadingZeros_Long(long i) {
+inline unsigned char numberOfLeadingZeros_Long(int64_t i) {
 	 if (i == 0)
 		return 64;
 	unsigned char n = 1;
-	int x = (int)(((unsigned long)i) >> 32);
+	int x = (int)(((uint64_t)i) >> 32);
 	if (x == 0) { n += 32; x = (int)i; }
 	if (((unsigned int)x) >> 16 == 0) { n += 16; x <<= 16; }
 	if (((unsigned int)x) >> 24 == 0) { n +=  8; x <<=  8; }
@@ -469,9 +479,9 @@ inline unsigned char getLeadingNumbers_Int(int v1, int v2)
 	return (unsigned char)numberOfLeadingZeros_Int(v);
 }
 
-inline unsigned char getLeadingNumbers_Long(long v1, long v2)
+inline unsigned char getLeadingNumbers_Long(int64_t v1, int64_t v2)
 {
-	long v = v1 ^ v2;
+	int64_t v = v1 ^ v2;
 	return (unsigned char)numberOfLeadingZeros_Long(v);
 }
 
@@ -500,7 +510,7 @@ inline int bytesToInt(unsigned char* bytes)
 	return buf.ivalue;
 }
 
-inline long bytesToLong(unsigned char* bytes)
+inline int64_t bytesToLong(unsigned char* bytes)
 {
 	szp_ldouble buf;
 	memcpy(buf.byte, bytes, 8);
@@ -631,8 +641,8 @@ void convertIntArrayToBytes(int* states, size_t stateLength, unsigned char* byte
 void convertUIntArrayToBytes(unsigned int* states, size_t stateLength, unsigned char* bytes);
 void convertLongArrayToBytes(int64_t* states, size_t stateLength, unsigned char* bytes);
 void convertULongArrayToBytes(uint64_t* states, size_t stateLength, unsigned char* bytes);
-int computeByteSizePerIntValue(long valueRangeSize);
-long computeRangeSize_int(void* oriData, int dataType, size_t size, int64_t* valueRangeSize);
+int computeByteSizePerIntValue(int64_t valueRangeSize);
+int64_t computeRangeSize_int(void* oriData, int dataType, size_t size, int64_t* valueRangeSize);
 double computeRangeSize_double(double* oriData, size_t size, double* valueRangeSize, double* medianValue);
 float computeRangeSize_float(float* oriData, size_t size, float* valueRangeSize, float* medianValue);
 
@@ -670,7 +680,7 @@ inline float max_f(float a, float b)
 
 double getRealPrecision_double(double valueRangeSize, int errBoundMode, double absErrBound, double relBoundRatio, int *status);
 double getRealPrecision_float(float valueRangeSize, int errBoundMode, double absErrBound, double relBoundRatio, int *status);
-double getRealPrecision_int(long valueRangeSize, int errBoundMode, double absErrBound, double relBoundRatio, int *status);
+double getRealPrecision_int(int64_t valueRangeSize, int errBoundMode, double absErrBound, double relBoundRatio, int *status);
 
 inline void compressInt8Value(int8_t tgtValue, int8_t minValue, int byteSize, unsigned char* bytes)
 {

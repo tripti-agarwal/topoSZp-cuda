@@ -12,6 +12,8 @@
 #define _SZP_ERRBOUND_H
 
 #include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
 #include <float.h>
 
 #ifdef __cplusplus

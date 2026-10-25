@@ -83,6 +83,8 @@ void szp_writebytefile_(unsigned char *bytes, size_t *byteLength, char *tgtFileP
 void szp_writedoublefile_(double *data, size_t *nbEle, char *tgtFilePath, int *len);
 void szp_writefloatfile_(float *data, size_t *nbEle, char *tgtFilePath, int *len);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif /* ----- #ifndef _szp_RW_H  ----- */

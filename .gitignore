@@ -1,14 +1,62 @@
 build-*
+build/
 *.log
 Makefile
 *.o
 *.lo
 *.so
+*.a
+*.la
+*.dylib
 .deps
 .libs
 .dirstamp
 libszp.la
 install
+
+# Python
+__pycache__/
+*.pyc
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+
+# Autotools generated
+autom4te.cache/
+config.h
+config.h.in
+config.h.in~
+config.status
+config.log
+libtool
+ltmain.sh
+stamp-h1
+Makefile.in
+ar-lib
+compile
+depcomp
+install-sh
+missing
+configure
+aclocal.m4
+
+# Archives
+*.zip
+
+# Known example binaries
+example/test_multidim
+example/testfloat_compress_fastmode1
+example/testfloat_decompress_fastmode1
+example/compare_critical_points
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*~
 
 # Exclude large data directories
 example/CESM_output/

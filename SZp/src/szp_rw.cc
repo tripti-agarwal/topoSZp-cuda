@@ -50,10 +50,10 @@ void szp_free2DArray_float(float** data, size_t m)
 float*** szp_create3DArray_float(size_t p, size_t m, size_t n)
 {
 	size_t i = 0, j = 0;
-	float ***data = (float***)malloc(sizeof(float**)*m);
+	float ***data = (float***)malloc(sizeof(float**)*p);
 	for(i=0;i<p;i++)
 	{
-		data[i] = (float**)malloc(sizeof(float*)*n);
+		data[i] = (float**)malloc(sizeof(float*)*m);
 		for(j=0;j<m;j++)
 			data[i][j] = (float*)malloc(sizeof(float)*n);
 	}
@@ -93,10 +93,10 @@ void szp_free2DArray_double(double** data, size_t m)
 double*** szp_create3DArray_double(size_t p, size_t m, size_t n)
 {
 	size_t i = 0, j = 0;
-	double ***data = (double***)malloc(sizeof(double**)*m);
+	double ***data = (double***)malloc(sizeof(double**)*p);
 	for(i=0;i<p;i++)
 	{
-		data[i] = (double**)malloc(sizeof(double*)*n);
+		data[i] = (double**)malloc(sizeof(double*)*m);
 		for(j=0;j<m;j++)
 			data[i][j] = (double*)malloc(sizeof(double)*n);
 	}

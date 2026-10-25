@@ -12,8 +12,10 @@ namespace szp{
 	
 BitArray* createBitArray(size_t size) {
     BitArray* bitArray = (BitArray*)malloc(sizeof(BitArray));
+    if (!bitArray) { fprintf(stderr, "szp_helper: malloc failed\n"); return NULL; }
     size_t numBytes = (size + 7) / 8; // Round up to nearest byte
     bitArray->array = (unsigned char*)calloc(numBytes, sizeof(unsigned char));
+    if (!bitArray->array) { fprintf(stderr, "szp_helper: calloc failed\n"); free(bitArray); return NULL; }
     bitArray->size = size;
     return bitArray;
 }
@@ -43,6 +45,7 @@ int getBit(BitArray* bitArray, size_t index) {
 }
 
 void freeBitArray(BitArray* bitArray) {
+    if (!bitArray) return;
     free(bitArray->array);
     free(bitArray);
 }
