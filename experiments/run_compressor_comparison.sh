@@ -197,9 +197,13 @@ for ds_name in "${!DATASETS[@]}"; do
                 result=$(run_compressor "$compressor" "$f" "$rows" "$cols" "$eb" "$prefix" 2>/dev/null) || continue
 
                 IFS='|' read -r fn fp ft ratio comp_time <<< "$result"
-                total_fn=$((total_fn + ${fn:-0}))
-                total_fp=$((total_fp + ${fp:-0}))
-                total_ft=$((total_ft + ${ft:-0}))
+                # Validate fn/fp/ft are integers
+                case "$fn" in ''|*[!0-9]*) fn=0 ;; esac
+                case "$fp" in ''|*[!0-9]*) fp=0 ;; esac
+                case "$ft" in ''|*[!0-9]*) ft=0 ;; esac
+                total_fn=$((total_fn + fn))
+                total_fp=$((total_fp + fp))
+                total_ft=$((total_ft + ft))
                 field_count=$((field_count + 1))
             done
 

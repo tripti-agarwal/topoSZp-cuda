@@ -68,8 +68,8 @@ echo "" | tee -a "$LOG"
 parse_2d_output() {
     local OUT="$1"
     comp_ratio=$(echo "$OUT" | sed -n 's/.*ratio: \([0-9.]*\).*/\1/p' | head -1)
-    comp_time=$(echo "$OUT" | sed -n 's/.*comp_s=\([0-9.]*\).*/\1/p' | head -1)
-    decomp_time=$(echo "$OUT" | sed -n 's/.*decomp_s=\([0-9.]*\).*/\1/p' | head -1)
+    comp_time=$(echo "$OUT" | grep 'TIMING' | sed -n 's/.*TIMING comp_s=\([0-9.]*\).*/\1/p' | head -1)
+    decomp_time=$(echo "$OUT" | grep 'TIMING' | sed -n 's/.*decomp_s=\([0-9.]*\).*/\1/p' | head -1)
     max_err=$(echo "$OUT" | grep 'Max pointwise error' | sed -n 's/.*: \([0-9.e+-]*\).*/\1/p' | head -1)
     orig_cps=$(echo "$OUT" | grep 'Original CPs:' | sed -n 's/.*CPs: \([0-9]*\).*/\1/p')
     pres_cps=$(echo "$OUT" | grep 'Preserved (same type)' | sed -n 's/.*: \([0-9]*\).*/\1/p')
@@ -93,8 +93,8 @@ parse_2d_output() {
 parse_3d_output() {
     local OUT="$1"
     comp_ratio=$(echo "$OUT" | sed -n 's/.*ratio: \([0-9.]*\).*/\1/p' | head -1)
-    comp_time=$(echo "$OUT" | sed -n 's/.*comp_s=\([0-9.]*\).*/\1/p' | head -1)
-    decomp_time=$(echo "$OUT" | sed -n 's/.*decomp_s=\([0-9.]*\).*/\1/p' | head -1)
+    comp_time=$(echo "$OUT" | grep 'TIMING' | sed -n 's/.*TIMING comp_s=\([0-9.]*\).*/\1/p' | head -1)
+    decomp_time=$(echo "$OUT" | grep 'TIMING' | sed -n 's/.*decomp_s=\([0-9.]*\).*/\1/p' | head -1)
     max_err=$(echo "$OUT" | grep 'Max error' | sed -n 's/.*: \([0-9.e+-]*\).*/\1/p' | head -1)
     orig_cps=$(echo "$OUT" | grep 'Original:' | sed -n 's/.*Original: \([0-9]*\).*/\1/p')
     pres_cps=$(echo "$OUT" | grep 'Preserved:' | sed -n 's/.*Preserved: \([0-9]*\).*/\1/p' | head -1)

@@ -48,8 +48,9 @@ parse_results() {
     local OUT="$1"
 
     # CUDA timing from "TIMING comp_s=X.XXX decomp_s=X.XXX"
-    cuda_comp=$(echo "$OUT" | sed -n 's/.*comp_s=\([0-9.]*\).*/\1/p' | head -1)
-    cuda_decomp=$(echo "$OUT" | sed -n 's/.*decomp_s=\([0-9.]*\).*/\1/p' | head -1)
+    # Note: "comp_s=" also matches inside "decomp_s=", so match "TIMING comp_s=" or use space before
+    cuda_comp=$(echo "$OUT" | grep 'TIMING' | sed -n 's/.*TIMING comp_s=\([0-9.]*\).*/\1/p' | head -1)
+    cuda_decomp=$(echo "$OUT" | grep 'TIMING' | sed -n 's/.*decomp_s=\([0-9.]*\).*/\1/p' | head -1)
 
     # OpenMP timing from section after "OpenMP PIPELINE COMPARISON"
     # Compress: "Compressed: XXXXX bytes (ratio: X.XXx) in XX.XX ms"
