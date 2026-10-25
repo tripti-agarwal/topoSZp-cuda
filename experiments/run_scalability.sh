@@ -69,25 +69,25 @@ for field in $FIELDS_2D; do
             # Parse OpenMP timing from CUDA test output
             OUT=$("$TOPO_BIN" "$FILE" 1800 3600 $EB $BLOCK 2>&1) || true
             # Get OpenMP compression time
-            comp_s=$(echo "$OUT" | grep -oP 'OpenMP.*Compressed.*in \K[0-9.]+' | head -1)
-            decomp_s=$(echo "$OUT" | grep -oP 'OpenMP.*Decompressed in \K[0-9.]+' | head -1)
-            max_err=$(echo "$OUT" | grep -oP 'Max pointwise error: \K[0-9.e+-]+' | head -1)
-            pres_rate=$(echo "$OUT" | grep 'Preserved (same type)' | grep -oP '\(\K[0-9.]+' | head -1)
-            fn=$(echo "$OUT" | grep 'Lost (became regular)' | grep -oP ': \K[0-9]+' | head -1)
-            fp=$(echo "$OUT" | grep 'New CPs' | grep -oP ': \K[0-9]+' | head -1)
-            ft=$(echo "$OUT" | grep 'Type changed' | grep -oP ': \K[0-9]+' | head -1)
+            comp_s=$(echo "$OUT" | grep 'OpenMP.*Compressed' | sed -n 's/.*in \([0-9.]*\).*/\1/p' | head -1)
+            decomp_s=$(echo "$OUT" | grep 'OpenMP.*Decompressed' | sed -n 's/.*in \([0-9.]*\).*/\1/p' | head -1)
+            max_err=$(echo "$OUT" | grep 'Max pointwise error' | sed -n 's/.*: \([0-9.e+-]*\).*/\1/p' | head -1)
+            pres_rate=$(echo "$OUT" | grep 'Preserved (same type)' | sed -n 's/.*(\([0-9.]*\).*/\1/p' | head -1)
+            fn=$(echo "$OUT" | grep 'Lost (became regular)' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
+            fp=$(echo "$OUT" | grep 'New CPs' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
+            ft=$(echo "$OUT" | grep 'Type changed' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
             # Fall back to TIMING line
             if [ -z "$comp_s" ]; then
-                comp_s=$(echo "$OUT" | grep -oP 'comp_s=\K[0-9.]+')
+                comp_s=$(echo "$OUT" | sed -n 's/.*comp_s=\([0-9.]*\).*/\1/p' | head -1)
             fi
             if [ -z "$decomp_s" ]; then
-                decomp_s=$(echo "$OUT" | grep -oP 'decomp_s=\K[0-9.]+')
+                decomp_s=$(echo "$OUT" | sed -n 's/.*decomp_s=\([0-9.]*\).*/\1/p' | head -1)
             fi
         else
             OUT=$("$TOPO_BIN" "$FILE" 1800 3600 $EB $BLOCK 2>&1) || true
-            comp_s=$(echo "$OUT" | grep -oP 'Compression.*in \K[0-9.]+')
-            decomp_s=$(echo "$OUT" | grep -oP 'Decompression.*in \K[0-9.]+')
-            max_err=$(echo "$OUT" | grep -oP 'Max error: \K[0-9.e+-]+')
+            comp_s=$(echo "$OUT" | grep 'Compression' | sed -n 's/.*in \([0-9.]*\).*/\1/p' | head -1)
+            decomp_s=$(echo "$OUT" | grep 'Decompression' | sed -n 's/.*in \([0-9.]*\).*/\1/p' | head -1)
+            max_err=$(echo "$OUT" | grep 'Max error' | sed -n 's/.*: \([0-9.e+-]*\).*/\1/p' | head -1)
             pres_rate="N/A"
             fn="N/A"; fp="N/A"; ft="N/A"
         fi
@@ -118,8 +118,8 @@ if [ "$MODE" = "full" ]; then
             echo -n "  $field threads=$t ... " | tee -a "$LOG"
             export OMP_NUM_THREADS=$t
             OUT=$("$CUDA_3D" "$FILE" 26 1800 3600 $EB $BLOCK 2>&1) || true
-            comp_s=$(echo "$OUT" | grep -oP 'comp_s=\K[0-9.]+')
-            decomp_s=$(echo "$OUT" | grep -oP 'decomp_s=\K[0-9.]+')
+            comp_s=$(echo "$OUT" | sed -n 's/.*comp_s=\([0-9.]*\).*/\1/p' | head -1)
+            decomp_s=$(echo "$OUT" | sed -n 's/.*decomp_s=\([0-9.]*\).*/\1/p' | head -1)
             echo "ATM-3D,$field,26x1800x3600,$t,${comp_s:-N/A},${decomp_s:-N/A},,,,," >> "$CSV"
             echo "comp=${comp_s:-N/A}s" | tee -a "$LOG"
         done

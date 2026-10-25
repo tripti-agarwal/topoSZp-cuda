@@ -48,28 +48,28 @@ parse_results() {
     local OUT="$1"
 
     # CUDA timing
-    cuda_comp=$(echo "$OUT" | grep -oP 'comp_s=\K[0-9.]+')
-    cuda_decomp=$(echo "$OUT" | grep -oP 'decomp_s=\K[0-9.]+')
+    cuda_comp=$(echo "$OUT" | sed -n 's/.*comp_s=\([0-9.]*\).*/\1/p' | head -1)
+    cuda_decomp=$(echo "$OUT" | sed -n 's/.*decomp_s=\([0-9.]*\).*/\1/p' | head -1)
 
     # OpenMP timing
-    omp_comp=$(echo "$OUT" | grep -oP 'OpenMP.*Compressed.*in \K[0-9.]+' | head -1)
+    omp_comp=$(echo "$OUT" | grep 'OpenMP.*Compressed' | sed -n 's/.*in \([0-9.]*\).*/\1/p' | head -1)
     if [ -z "$omp_comp" ]; then
-        omp_comp=$(echo "$OUT" | grep -oP 'OpenMP.*ratio.*in \K[0-9.]+' | head -1)
+        omp_comp=$(echo "$OUT" | grep 'OpenMP.*ratio' | sed -n 's/.*in \([0-9.]*\).*/\1/p' | head -1)
     fi
-    omp_decomp=$(echo "$OUT" | grep -oP 'OpenMP.*Decompressed in \K[0-9.]+' | head -1)
+    omp_decomp=$(echo "$OUT" | grep 'OpenMP.*Decompressed' | sed -n 's/.*in \([0-9.]*\).*/\1/p' | head -1)
 
     # Preservation before/after (from Step 4a and Step 6)
     # Raw preservation
-    raw_pres=$(echo "$OUT" | grep 'Raw CP preservation' | grep -oP '[0-9]+ / [0-9]+' | head -1)
+    raw_pres=$(echo "$OUT" | grep 'Raw CP preservation' | grep -oE '[0-9]+ / [0-9]+' | head -1)
 
     # Final preservation
-    fn_before=$(echo "$OUT" | grep -oP 'FN_before=[0-9]+' | grep -oP '[0-9]+' || echo "")
-    fn_after=$(echo "$OUT" | grep 'Lost' | grep -oP ': \K[0-9]+' | head -1)
-    fp=$(echo "$OUT" | grep 'New CPs\|FP' | grep -oP ': \K[0-9]+' | head -1)
-    ft=$(echo "$OUT" | grep 'Type changed\|FT' | grep -oP ': \K[0-9]+' | head -1)
+    fn_before=$(echo "$OUT" | grep -oE 'FN_before=[0-9]+' | sed 's/FN_before=//' || echo "")
+    fn_after=$(echo "$OUT" | grep 'Lost' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
+    fp=$(echo "$OUT" | grep -E 'New CPs|FP' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
+    ft=$(echo "$OUT" | grep -E 'Type changed|FT' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
 
     # Max error as multiple of eb
-    max_err_eps=$(echo "$OUT" | grep -oP 'Max.*error.*\K[0-9.]+' | tail -1)
+    max_err_eps=$(echo "$OUT" | grep 'Max.*error' | sed -n 's/.*[: ]\([0-9][0-9.e+-]*\).*/\1/p' | tail -1)
 }
 
 ###############################################################################

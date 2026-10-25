@@ -59,10 +59,10 @@ for eb in $ERROR_BOUNDS; do
         total_fn=0; total_fp=0; total_ft=0; total_bits=0; count=0
         for f in $FILES; do
             OUT=$("$TOPOSZP_BIN" "$f" $ROWS $COLS $eb 64 2>&1) || continue
-            ratio=$(echo "$OUT" | grep -oP 'ratio: \K[0-9.]+' | head -1)
-            fn=$(echo "$OUT" | grep 'Lost (became regular)' | grep -oP ': \K[0-9]+' | head -1)
-            fp=$(echo "$OUT" | grep 'New CPs' | grep -oP ': \K[0-9]+' | head -1)
-            ft=$(echo "$OUT" | grep 'Type changed' | grep -oP ': \K[0-9]+' | head -1)
+            ratio=$(echo "$OUT" | sed -n 's/.*ratio: \([0-9.]*\).*/\1/p' | head -1)
+            fn=$(echo "$OUT" | grep 'Lost (became regular)' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
+            fp=$(echo "$OUT" | grep 'New CPs' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
+            ft=$(echo "$OUT" | grep 'Type changed' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
             if [ -n "$ratio" ] && [ "$ratio" != "0" ]; then
                 bits=$(echo "scale=4; 32 / $ratio" | bc)
                 total_bits=$(echo "$total_bits + $bits" | bc)
@@ -128,12 +128,15 @@ for eb in $ERROR_BOUNDS; do
                 total_bits=$(echo "$total_bits + $bits" | bc)
             fi
 
-            # Count FN/FP/FT
+            # Count FN/FP/FT (output: "FN FP FT Total DecompCount")
             if [ -f "$decomp_file" ] && [ -f "$COMPARE_BIN" ]; then
-                result=$("$COMPARE_BIN" "$f" "$decomp_file" $ROWS $COLS $eb 2>&1) || true
-                fn=$(echo "$result" | grep -oP 'FN[= :]+\K[0-9]+' | head -1)
-                fp=$(echo "$result" | grep -oP 'FP[= :]+\K[0-9]+' | head -1)
-                ft=$(echo "$result" | grep -oP 'FT[= :]+\K[0-9]+' | head -1)
+                cmp_out=$("$COMPARE_BIN" "$f" "$decomp_file" $ROWS $COLS $eb 2>/dev/null) || true
+                fn=$(echo "$cmp_out" | tail -1 | awk '{print $1}')
+                fp=$(echo "$cmp_out" | tail -1 | awk '{print $2}')
+                ft=$(echo "$cmp_out" | tail -1 | awk '{print $3}')
+                case "$fn" in ''|*[!0-9]*) fn=0 ;; esac
+                case "$fp" in ''|*[!0-9]*) fp=0 ;; esac
+                case "$ft" in ''|*[!0-9]*) ft=0 ;; esac
                 total_fn=$((total_fn + ${fn:-0}))
                 total_fp=$((total_fp + ${fp:-0}))
                 total_ft=$((total_ft + ${ft:-0}))

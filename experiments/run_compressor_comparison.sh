@@ -48,7 +48,7 @@ if [ "$MODE" = "full" ]; then
         # Try to detect dimensions from filename
         sample=$(ls "$ds_dir/original_data"/*.dat 2>/dev/null | head -1)
         if [ -n "$sample" ]; then
-            dims=$(basename "$sample" | grep -oP '\d+_\d+(?=\.dat)')
+            dims=$(basename "$sample" | sed -n 's/.*_\([0-9]*_[0-9]*\)\.dat/\1/p')
             if [ -n "$dims" ]; then
                 rows=$(echo "$dims" | cut -d_ -f1)
                 cols=$(echo "$dims" | cut -d_ -f2)
@@ -151,11 +151,16 @@ run_compressor() {
     esac
 
     # Count FN/FP/FT using compare_critical_points
+    # Output format: "FN FP FT Total DecompCount" (5 space-separated integers)
     if [ -f "$decomp_file" ] && [ -f "$COMPARE_BIN" ]; then
-        local result=$("$COMPARE_BIN" "$input" "$decomp_file" $rows $cols $eb 2>&1) || true
-        fn=$(echo "$result" | grep -oP 'FN[= :]+\K[0-9]+' | head -1)
-        fp=$(echo "$result" | grep -oP 'FP[= :]+\K[0-9]+' | head -1)
-        ft=$(echo "$result" | grep -oP 'FT[= :]+\K[0-9]+' | head -1)
+        local cmp_out=$("$COMPARE_BIN" "$input" "$decomp_file" $rows $cols $eb 2>/dev/null) || true
+        fn=$(echo "$cmp_out" | tail -1 | awk '{print $1}')
+        fp=$(echo "$cmp_out" | tail -1 | awk '{print $2}')
+        ft=$(echo "$cmp_out" | tail -1 | awk '{print $3}')
+        # Validate they're numbers
+        case "$fn" in ''|*[!0-9]*) fn=0 ;; esac
+        case "$fp" in ''|*[!0-9]*) fp=0 ;; esac
+        case "$ft" in ''|*[!0-9]*) ft=0 ;; esac
     fi
 
     # Compute compression ratio
@@ -219,9 +224,9 @@ for ds_name in "${!DATASETS[@]}"; do
             total_fn=0; total_fp=0; total_ft=0; field_count=0
             for f in $files; do
                 OUT=$("$TOPOSZP_BIN" "$f" $rows $cols $eb 64 2>&1) || continue
-                fn=$(echo "$OUT" | grep 'Lost (became regular)' | grep -oP ': \K[0-9]+' | head -1)
-                fp=$(echo "$OUT" | grep 'New CPs' | grep -oP ': \K[0-9]+' | head -1)
-                ft=$(echo "$OUT" | grep 'Type changed' | grep -oP ': \K[0-9]+' | head -1)
+                fn=$(echo "$OUT" | grep 'Lost (became regular)' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
+                fp=$(echo "$OUT" | grep 'New CPs' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
+                ft=$(echo "$OUT" | grep 'Type changed' | sed -n 's/.*: \([0-9]*\).*/\1/p' | head -1)
                 total_fn=$((total_fn + ${fn:-0}))
                 total_fp=$((total_fp + ${fp:-0}))
                 total_ft=$((total_ft + ${ft:-0}))
