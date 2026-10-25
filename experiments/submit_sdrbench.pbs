@@ -1,0 +1,26 @@
+#!/bin/bash
+#PBS -N toposzp_sdrbench
+#PBS -q backfill
+#PBS -A SDR
+#PBS -l select=1:ngpus=1
+#PBS -l walltime=04:00:00
+#PBS -o /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/sdrbench_output.log
+#PBS -e /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/sdrbench_error.log
+
+module purge
+module load gcc/11.4.0
+export PATH=/usr/local/cuda/bin:$PATH
+
+cd /lcrc/project/ECP-EZ/tripti/topoSZp-cuda
+
+# Step 1: Download datasets if not present
+bash experiments/download_datasets.sh
+
+# Step 2: Rebuild (in case code was updated)
+rm -rf build && mkdir build && cd build
+cmake .. -DENABLE_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES="80"
+make -j$(nproc)
+cd ..
+
+# Step 3: Run full experiments
+bash experiments/run_sdrbench.sh full
