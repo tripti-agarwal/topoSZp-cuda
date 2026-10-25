@@ -1,0 +1,22 @@
+GPU vs CPU Timing Experiment — 20261025_181416
+NVIDIA A100-SXM4-40GB, 40960 MiB
+OMP_NUM_THREADS=32
+
+========== 2D Fields ==========
+  CLDHGH abs 1e-3 ... CUDA=0.382287s OMP=s
+  CLDHGH rel:1e-3 ... CUDA=0.390439s OMP=s
+  CLDHGH rel:1e-4 ... CUDA=0.376748s OMP=s
+
+========== 3D Fields ==========
+  CLDICE abs 1e-7 ... CUDA=12.662547s OMP=s
+  CLDICE rel:1e-3 ... CUDA=12.629354s OMP=s
+  CLDICE rel:1e-4 ... CUDA=12.900738s OMP=s
+
+Results: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/gpu_vs_cpu_20261025_181416/gpu_vs_cpu.csv
+Field   Dims          Bound     BoundType  CUDA_Comp_s  CUDA_Decomp_s  OMP_Comp_s  OMP_Decomp_s  Maxima_Before  Maxima_After  Minima_Before  Minima_After  Saddle_Before  Saddle_After  FN_Before  FN_After  FP  FT            MaxErr_eps
+CLDHGH  1800x3600     1e-3      ABS        0.382287     0.382287                                                                                                                        9676       0         0   1.487494e-03  
+CLDHGH  1800x3600     rel:1e-3  REL        0.390439     0.390439                                                                                                                        8917       0         0   1.380406e-03  
+CLDHGH  1800x3600     rel:1e-4  REL        0.376748     0.376748                                                                                                                        444        0         0   1.378097e-04  
+CLDICE  26x1800x3600  1e-7      ABS        12.662547    12.662547                                                                                                                       0          0         0   0             
+CLDICE  26x1800x3600  rel:1e-3  REL        12.629354    12.629354                                                                                                                       0          0         0   0             
+CLDICE  26x1800x3600  rel:1e-4  REL        12.900738    12.900738                                                                                                                       0          0         0   0             

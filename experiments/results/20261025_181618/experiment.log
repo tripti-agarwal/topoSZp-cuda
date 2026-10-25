@@ -1,0 +1,81 @@
+TopoSZp-CUDA SDRBench Experiments — 20261025_181618
+Mode: quick
+
+NVIDIA A100-SXM4-40GB, 580.95.05, 40960 MiB
+
+========== CESM-ATM 2D (1800x3600) ==========
+  CLDHGH eb=1e-3 ... ratio=4.95x  pres=95.63%  FN=9676 FP=0 FT=0  t=386.96ms
+  CLDHGH eb=1e-4 ... ratio=3.43x  pres=99.79%  FN=466 FP=0 FT=0  t=378.00ms
+  CLDHGH eb=1e-5 ... ratio=2.57x  pres=100.00%  FN=8 FP=0 FT=0  t=380.24ms
+  CLDLOW eb=1e-3 ... ratio=4.88x  pres=94.69%  FN=6046 FP=0 FT=0  t=345.69ms
+  CLDLOW eb=1e-4 ... ratio=3.40x  pres=99.71%  FN=333 FP=0 FT=0  t=339.44ms
+  CLDLOW eb=1e-5 ... ratio=2.57x  pres=99.96%  FN=43 FP=0 FT=0  t=336.02ms
+  FREQSH eb=1e-3 ... ratio=4.45x  pres=96.94%  FN=4301 FP=0 FT=0  t=352.54ms
+  FREQSH eb=1e-4 ... ratio=3.14x  pres=99.85%  FN=212 FP=0 FT=0  t=360.83ms
+  FREQSH eb=1e-5 ... ratio=2.40x  pres=100.00%  FN=5 FP=0 FT=0  t=354.49ms
+
+========== CESM-ATM 3D (26x1800x3600) ==========
+  CLOUD eb=1e-3 ... ratio=6.54x  pres=88.38%  FN=593075 FP=0 FT=0  t=13746.37ms
+  CLOUD eb=1e-4 ... ratio=4.72x  pres=96.64%  FN=171506 FP=0 FT=0  t=13409.13ms
+  CLOUD eb=1e-5 ... ratio=3.59x  pres=99.20%  FN=40656 FP=0 FT=0  t=13271.04ms
+  OMEGA eb=1e-3 ... ratio=6.30x  pres=61.59%  FN=1946149 FP=0 FT=0  t=14437.23ms
+  OMEGA eb=1e-4 ... ratio=4.39x  pres=88.51%  FN=581867 FP=0 FT=0  t=13943.28ms
+  OMEGA eb=1e-5 ... ratio=3.19x  pres=97.88%  FN=107604 FP=0 FT=0  t=13198.36ms
+  T eb=1e-3 ... ratio=3.98x  pres=95.83%  FN=10630 FP=0 FT=0  t=10774.02ms
+  T eb=1e-4 ... ratio=2.88x  pres=99.37%  FN=1607 FP=0 FT=0  t=10824.48ms
+  T eb=1e-5 ... ratio=2.23x  pres=100.00%  FN=0 FP=0 FT=0  t=10747.01ms
+
+========== Hurricane ISABEL (100x500x500) ==========
+
+========== NYX (512x512x512) ==========
+  baryon_density eb=1e-3 ... ratio=2.59x  pres=87.64%  FN=177828 FP=0 FT=0  t=10302.06ms
+  baryon_density eb=1e-4 ... ratio=2.05x  pres=98.39%  FN=23182 FP=0 FT=0  t=10165.90ms
+  baryon_density eb=1e-5 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+  dark_matter_density eb=1e-3 ... ratio=2.08x  pres=99.95%  FN=21301 FP=0 FT=0  t=26090.28ms
+  dark_matter_density eb=1e-4 ... ratio=1.72x  pres=99.99%  FN=2190 FP=0 FT=0  t=26085.20ms
+  dark_matter_density eb=1e-5 ... ratio=1.46x  pres=100.00%  FN=199 FP=0 FT=0  t=26115.41ms
+  temperature eb=1e-3 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+  temperature eb=1e-4 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+  temperature eb=1e-5 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+
+========== SCALE-LETKF (98x1200x1200) ==========
+
+========== Miranda (256x384x384, float64) ==========
+  NOTE: Miranda is float64. Testing if supported...
+
+========== AVERAGES PER DATASET × ERROR BOUND ==========
+  CESM-ATM-2D        eb=1e-3    ratio= 4.76x  pres=  95.75%  FN=6674.3  FP= 0.0  FT= 0.0  (n=3)
+  CESM-ATM-2D        eb=1e-4    ratio= 3.32x  pres=  99.78%  FN= 337.0  FP= 0.0  FT= 0.0  (n=3)
+  CESM-ATM-2D        eb=1e-5    ratio= 2.51x  pres=  99.99%  FN=  18.7  FP= 0.0  FT= 0.0  (n=3)
+  CESM-ATM-3D        eb=1e-3    ratio= 5.61x  pres=  81.93%  FN=849951.3  FP= 0.0  FT= 0.0  (n=3)
+  CESM-ATM-3D        eb=1e-4    ratio= 4.00x  pres=  94.84%  FN=251660.0  FP= 0.0  FT= 0.0  (n=3)
+  CESM-ATM-3D        eb=1e-5    ratio= 3.00x  pres=  99.03%  FN=49420.0  FP= 0.0  FT= 0.0  (n=3)
+  NYX                eb=1e-3    ratio= 1.56x  pres=  62.53%  FN=66376.3  FP= 0.0  FT= 0.0  (n=3)
+  NYX                eb=1e-4    ratio= 1.26x  pres=  66.13%  FN=8457.3  FP= 0.0  FT= 0.0  (n=3)
+  NYX                eb=1e-5    ratio= 0.49x  pres=  33.33%  FN=  66.3  FP= 0.0  FT= 0.0  (n=3)
+
+--- Grand Averages (all datasets) ---
+  ALL                eb=1e-3    ratio= 3.97x  pres=  80.07%  FN=307667.3  FP= 0.0  FT= 0.0  (n=9)
+  ALL                eb=1e-4    ratio= 2.86x  pres=  86.92%  FN=86818.1  FP= 0.0  FT= 0.0  (n=9)
+  ALL                eb=1e-5    ratio= 2.00x  pres=  77.45%  FN=16501.7  FP= 0.0  FT= 0.0  (n=9)
+
+==================== RESULTS ====================
+All results: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/20261025_181618/results_all.csv
+Averages:    /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/20261025_181618/averages.csv
+Full log:    /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/20261025_181618/experiment.log
+Per-run:     /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/20261025_181618/*.log
+
+--- Averages Table ---
+Source       ErrorBound  Avg_CompRatio  Avg_CompTime_ms  Avg_DecompTime_ms  Avg_PreservRate  Avg_FN    Avg_FP  Avg_FT  Num_Fields
+CESM-ATM-2D  1e-3        4.76           361.73           361.73             95.75            6674.3    0.0     0.0     3
+CESM-ATM-2D  1e-4        3.32           359.42           359.42             99.78            337.0     0.0     0.0     3
+CESM-ATM-2D  1e-5        2.51           356.92           356.92             99.99            18.7      0.0     0.0     3
+CESM-ATM-3D  1e-3        5.61           12985.87         12985.87           81.93            849951.3  0.0     0.0     3
+CESM-ATM-3D  1e-4        4.00           12725.63         12725.63           94.84            251660.0  0.0     0.0     3
+CESM-ATM-3D  1e-5        3.00           12405.47         12405.47           99.03            49420.0   0.0     0.0     3
+NYX          1e-3        1.56           12130.78         12130.78           62.53            66376.3   0.0     0.0     3
+NYX          1e-4        1.26           12083.70         12083.70           66.13            8457.3    0.0     0.0     3
+NYX          1e-5        0.49           8705.14          8705.14            33.33            66.3      0.0     0.0     3
+ALL          1e-3        3.97                                               80.07            307667.3  0.0     0.0     9
+ALL          1e-4        2.86                                               86.92            86818.1   0.0     0.0     9
+ALL          1e-5        2.00                                               77.45            16501.7   0.0     0.0     9

@@ -1,0 +1,698 @@
+TopoSZp+ Scalability Experiment — 20261025_180236
+Threads: 1 2 4 8 16 32 36
+
+CPU topology binary not found, using CUDA test program (includes OpenMP comparison)
+========== 2D: ATM (1800x3600), eb=1e-3 ==========
+  AEROD_v threads=1 ... comp=0.032379
+0.326590s  decomp=0.326590s
+  AEROD_v threads=2 ... comp=0.038281
+0.318428s  decomp=0.318428s
+  AEROD_v threads=4 ... comp=0.061867
+0.302742s  decomp=0.302742s
+  AEROD_v threads=8 ... comp=0.031712
+0.315666s  decomp=0.315666s
+  AEROD_v threads=16 ... comp=0.046160
+0.312935s  decomp=0.312935s
+  AEROD_v threads=32 ... comp=0.032540
+0.320927s  decomp=0.320927s
+  AEROD_v threads=36 ... comp=0.053385
+0.329760s  decomp=0.329760s
+  CLDHGH threads=1 ... comp=0.041754
+0.384487s  decomp=0.384487s
+  CLDHGH threads=2 ... comp=0.039035
+0.385680s  decomp=0.385680s
+  CLDHGH threads=4 ... comp=0.038833
+0.372344s  decomp=0.372344s
+  CLDHGH threads=8 ... comp=0.046914
+0.380902s  decomp=0.380902s
+  CLDHGH threads=16 ... comp=0.042509
+0.378410s  decomp=0.378410s
+  CLDHGH threads=32 ... comp=0.048639
+0.385224s  decomp=0.385224s
+  CLDHGH threads=36 ... comp=0.047479
+0.384006s  decomp=0.384006s
+  CLDLOW threads=1 ... comp=0.056950
+0.341365s  decomp=0.341365s
+  CLDLOW threads=2 ... comp=0.035455
+0.360145s  decomp=0.360145s
+  CLDLOW threads=4 ... comp=0.037797
+0.331932s  decomp=0.331932s
+  CLDLOW threads=8 ... comp=0.041931
+0.344637s  decomp=0.344637s
+  CLDLOW threads=16 ... comp=0.039064
+0.343347s  decomp=0.343347s
+  CLDLOW threads=32 ... comp=0.035795
+0.342191s  decomp=0.342191s
+  CLDLOW threads=36 ... comp=0.037978
+0.341915s  decomp=0.341915s
+  CLDMED threads=1 ... comp=0.041867
+0.368942s  decomp=0.368942s
+  CLDMED threads=2 ... comp=0.039823
+0.367476s  decomp=0.367476s
+  CLDMED threads=4 ... comp=0.037396
+0.358867s  decomp=0.358867s
+  CLDMED threads=8 ... comp=0.036514
+0.363689s  decomp=0.363689s
+  CLDMED threads=16 ... comp=0.043271
+0.366020s  decomp=0.366020s
+  CLDMED threads=32 ... comp=0.037718
+0.375445s  decomp=0.375445s
+  CLDMED threads=36 ... comp=0.041811
+0.369441s  decomp=0.369441s
+  CLDTOT threads=1 ... comp=0.037430
+0.369647s  decomp=0.369647s
+  CLDTOT threads=2 ... comp=0.037840
+0.368017s  decomp=0.368017s
+  CLDTOT threads=4 ... comp=0.036747
+0.359912s  decomp=0.359912s
+  CLDTOT threads=8 ... comp=0.037695
+0.365678s  decomp=0.365678s
+  CLDTOT threads=16 ... comp=0.039708
+0.363766s  decomp=0.363766s
+  CLDTOT threads=32 ... comp=0.039332
+0.376758s  decomp=0.376758s
+  CLDTOT threads=36 ... comp=0.038273
+0.370112s  decomp=0.370112s
+  FLDS threads=1 ... comp=0.037832
+0.316918s  decomp=0.316918s
+  FLDS threads=2 ... comp=0.051207
+0.316252s  decomp=0.316252s
+  FLDS threads=4 ... comp=0.036540
+0.309339s  decomp=0.309339s
+  FLDS threads=8 ... comp=0.043494
+0.317460s  decomp=0.317460s
+  FLDS threads=16 ... comp=0.041253
+0.312500s  decomp=0.312500s
+  FLDS threads=32 ... comp=0.037257
+0.316445s  decomp=0.316445s
+  FLDS threads=36 ... comp=0.039473
+0.320164s  decomp=0.320164s
+  FLDSC threads=1 ... comp=0.037501
+0.299678s  decomp=0.299678s
+  FLDSC threads=2 ... comp=0.033732
+0.284620s  decomp=0.284620s
+  FLDSC threads=4 ... comp=0.036735
+0.273926s  decomp=0.273926s
+  FLDSC threads=8 ... comp=0.033692
+0.276973s  decomp=0.276973s
+  FLDSC threads=16 ... comp=0.061118
+0.282745s  decomp=0.282745s
+  FLDSC threads=32 ... comp=0.037419
+0.290214s  decomp=0.290214s
+  FLDSC threads=36 ... comp=0.034210
+0.292173s  decomp=0.292173s
+  FLNS threads=1 ... comp=0.039187
+0.335007s  decomp=0.335007s
+  FLNS threads=2 ... comp=0.047340
+0.344077s  decomp=0.344077s
+  FLNS threads=4 ... comp=0.038080
+0.323538s  decomp=0.323538s
+  FLNS threads=8 ... comp=0.055929
+0.345940s  decomp=0.345940s
+  FLNS threads=16 ... comp=0.041205
+0.331991s  decomp=0.331991s
+  FLNS threads=32 ... comp=0.042451
+0.332573s  decomp=0.332573s
+  FLNS threads=36 ... comp=0.057779
+0.345757s  decomp=0.345757s
+  FLNSC threads=1 ... comp=0.035852
+0.305849s  decomp=0.305849s
+  FLNSC threads=2 ... comp=0.035760
+0.307574s  decomp=0.307574s
+  FLNSC threads=4 ... comp=0.035400
+0.300674s  decomp=0.300674s
+  FLNSC threads=8 ... comp=0.035749
+0.303038s  decomp=0.303038s
+  FLNSC threads=16 ... comp=0.038648
+0.303605s  decomp=0.303605s
+  FLNSC threads=32 ... comp=0.050404
+0.313570s  decomp=0.313570s
+  FLNSC threads=36 ... comp=0.039253
+0.307527s  decomp=0.307527s
+  FLNT threads=1 ... comp=0.055165
+0.322665s  decomp=0.322665s
+  FLNT threads=2 ... comp=0.044096
+0.331304s  decomp=0.331304s
+  FLNT threads=4 ... comp=0.039694
+0.313207s  decomp=0.313207s
+  FLNT threads=8 ... comp=0.036735
+0.322058s  decomp=0.322058s
+  FLNT threads=16 ... comp=0.058794
+0.320739s  decomp=0.320739s
+  FLNT threads=32 ... comp=0.055193
+0.321861s  decomp=0.321861s
+  FLNT threads=36 ... comp=0.040798
+0.332830s  decomp=0.332830s
+  FLNTC threads=1 ... comp=0.042617
+0.286234s  decomp=0.286234s
+  FLNTC threads=2 ... comp=0.035888
+0.286542s  decomp=0.286542s
+  FLNTC threads=4 ... comp=0.035019
+0.279747s  decomp=0.279747s
+  FLNTC threads=8 ... comp=0.067838
+0.283456s  decomp=0.283456s
+  FLNTC threads=16 ... comp=0.037250
+0.281614s  decomp=0.281614s
+  FLNTC threads=32 ... comp=0.052041
+0.284725s  decomp=0.284725s
+  FLNTC threads=36 ... comp=0.034906
+0.286871s  decomp=0.286871s
+  FLUT threads=1 ... comp=0.068516
+0.323872s  decomp=0.323872s
+  FLUT threads=2 ... comp=0.053652
+0.325581s  decomp=0.325581s
+  FLUT threads=4 ... comp=0.037102
+0.311654s  decomp=0.311654s
+  FLUT threads=8 ... comp=0.041381
+0.321385s  decomp=0.321385s
+  FLUT threads=16 ... comp=0.051415
+0.320900s  decomp=0.320900s
+  FLUT threads=32 ... comp=0.037821
+0.323107s  decomp=0.323107s
+  FLUT threads=36 ... comp=0.038635
+0.323859s  decomp=0.323859s
+  FLUTC threads=1 ... comp=0.045962
+0.294143s  decomp=0.294143s
+  FLUTC threads=2 ... comp=0.034132
+0.286449s  decomp=0.286449s
+  FLUTC threads=4 ... comp=0.038718
+0.276908s  decomp=0.276908s
+  FLUTC threads=8 ... comp=0.040509
+0.285721s  decomp=0.285721s
+  FLUTC threads=16 ... comp=0.034066
+0.282620s  decomp=0.282620s
+  FLUTC threads=32 ... comp=0.038887
+0.289716s  decomp=0.289716s
+  FLUTC threads=36 ... comp=0.041605
+0.299501s  decomp=0.299501s
+  FREQSH threads=1 ... comp=0.054586
+0.350731s  decomp=0.350731s
+  FREQSH threads=2 ... comp=0.038854
+0.370238s  decomp=0.370238s
+  FREQSH threads=4 ... comp=0.046650
+0.386032s  decomp=0.386032s
+  FREQSH threads=8 ... comp=0.035529
+0.378194s  decomp=0.378194s
+  FREQSH threads=16 ... comp=0.119651
+0.480950s  decomp=0.480950s
+  FREQSH threads=32 ... comp=0.147567
+0.376902s  decomp=0.376902s
+  FREQSH threads=36 ... comp=0.041759
+0.353862s  decomp=0.353862s
+  FREQZM threads=1 ... comp=0.033072
+0.323148s  decomp=0.323148s
+  FREQZM threads=2 ... comp=0.037947
+0.365382s  decomp=0.365382s
+  FREQZM threads=4 ... comp=0.036636
+0.317312s  decomp=0.317312s
+  FREQZM threads=8 ... comp=0.167923
+0.322503s  decomp=0.322503s
+  FREQZM threads=16 ... comp=0.067502
+0.323579s  decomp=0.323579s
+  FREQZM threads=32 ... comp=0.034658
+0.323534s  decomp=0.323534s
+  FREQZM threads=36 ... comp=0.034654
+0.322427s  decomp=0.322427s
+  FSDS threads=1 ... comp=0.044085
+0.326641s  decomp=0.326641s
+  FSDS threads=2 ... comp=0.043069
+0.332195s  decomp=0.332195s
+  FSDS threads=4 ... comp=0.041450
+0.398603s  decomp=0.398603s
+  FSDS threads=8 ... comp=0.038447
+0.463389s  decomp=0.463389s
+  FSDS threads=16 ... comp=0.040111
+0.356646s  decomp=0.356646s
+  FSDS threads=32 ... comp=0.054277
+0.322785s  decomp=0.322785s
+  FSDS threads=36 ... comp=0.054736
+0.325303s  decomp=0.325303s
+  FSDSC threads=1 ... comp=0.034721
+0.281630s  decomp=0.281630s
+  FSDSC threads=2 ... comp=0.032659
+0.281004s  decomp=0.281004s
+  FSDSC threads=4 ... comp=0.031631
+0.278108s  decomp=0.278108s
+  FSDSC threads=8 ... comp=0.041285
+0.276542s  decomp=0.276542s
+  FSDSC threads=16 ... comp=0.040143
+0.280018s  decomp=0.280018s
+  FSDSC threads=32 ... comp=0.041190
+0.280632s  decomp=0.280632s
+  FSDSC threads=36 ... comp=0.036016
+0.282176s  decomp=0.282176s
+  FSDTOA threads=1 ... comp=0.036629
+0.280969s  decomp=0.280969s
+  FSDTOA threads=2 ... comp=0.030498
+0.283145s  decomp=0.283145s
+  FSDTOA threads=4 ... comp=0.031498
+0.268236s  decomp=0.268236s
+  FSDTOA threads=8 ... comp=0.029182
+0.274019s  decomp=0.274019s
+  FSDTOA threads=16 ... comp=0.035535
+0.275292s  decomp=0.275292s
+  FSDTOA threads=32 ... comp=0.035496
+0.280799s  decomp=0.280799s
+  FSDTOA threads=36 ... comp=0.034449
+0.275979s  decomp=0.275979s
+  FSNS threads=1 ... comp=0.038550
+0.327640s  decomp=0.327640s
+  FSNS threads=2 ... comp=0.041813
+0.330375s  decomp=0.330375s
+  FSNS threads=4 ... comp=0.038126
+0.314838s  decomp=0.314838s
+  FSNS threads=8 ... comp=0.037146
+0.330831s  decomp=0.330831s
+  FSNS threads=16 ... comp=0.040861
+0.320848s  decomp=0.320848s
+  FSNS threads=32 ... comp=0.042313
+0.326824s  decomp=0.326824s
+  FSNS threads=36 ... comp=0.040794
+0.340314s  decomp=0.340314s
+  FSNSC threads=1 ... comp=0.034171
+0.292417s  decomp=0.292417s
+  FSNSC threads=2 ... comp=0.035971
+0.289569s  decomp=0.289569s
+  FSNSC threads=4 ... comp=0.048296
+0.295519s  decomp=0.295519s
+  FSNSC threads=8 ... comp=0.033147
+0.292776s  decomp=0.292776s
+  FSNSC threads=16 ... comp=0.044017
+0.286989s  decomp=0.286989s
+  FSNSC threads=32 ... comp=0.040246
+0.296574s  decomp=0.296574s
+  FSNSC threads=36 ... comp=0.033776
+0.293793s  decomp=0.293793s
+  FSNT threads=1 ... comp=0.045046
+0.343121s  decomp=0.343121s
+  FSNT threads=2 ... comp=0.049146
+0.332630s  decomp=0.332630s
+  FSNT threads=4 ... comp=0.036665
+0.319744s  decomp=0.319744s
+  FSNT threads=8 ... comp=0.074543
+0.328854s  decomp=0.328854s
+  FSNT threads=16 ... comp=0.041290
+0.341155s  decomp=0.341155s
+  FSNT threads=32 ... comp=0.040598
+0.323816s  decomp=0.323816s
+  FSNT threads=36 ... comp=0.037036
+0.337236s  decomp=0.337236s
+  FSNTC threads=1 ... comp=0.037843
+0.299387s  decomp=0.299387s
+  FSNTC threads=2 ... comp=0.033739
+0.289618s  decomp=0.289618s
+  FSNTC threads=4 ... comp=0.032559
+0.302444s  decomp=0.302444s
+  FSNTC threads=8 ... comp=0.046006
+0.299610s  decomp=0.299610s
+  FSNTC threads=16 ... comp=0.035211
+0.287623s  decomp=0.287623s
+  FSNTC threads=32 ... comp=0.038811
+0.292018s  decomp=0.292018s
+  FSNTC threads=36 ... comp=0.034438
+0.300317s  decomp=0.300317s
+  FSNTOA threads=1 ... comp=0.038402
+0.335102s  decomp=0.335102s
+  FSNTOA threads=2 ... comp=0.051109
+0.328175s  decomp=0.328175s
+  FSNTOA threads=4 ... comp=0.036768
+0.327373s  decomp=0.327373s
+  FSNTOA threads=8 ... comp=0.037003
+0.319446s  decomp=0.319446s
+  FSNTOA threads=16 ... comp=0.038933
+0.330458s  decomp=0.330458s
+  FSNTOA threads=32 ... comp=0.045067
+0.326991s  decomp=0.326991s
+  FSNTOA threads=36 ... comp=0.051410
+0.325386s  decomp=0.325386s
+  FSNTOAC threads=1 ... comp=0.051445
+0.287815s  decomp=0.287815s
+  FSNTOAC threads=2 ... comp=0.036016
+0.303427s  decomp=0.303427s
+  FSNTOAC threads=4 ... comp=0.035091
+0.283202s  decomp=0.283202s
+  FSNTOAC threads=8 ... comp=0.034862
+0.288585s  decomp=0.288585s
+  FSNTOAC threads=16 ... comp=0.034582
+0.285916s  decomp=0.285916s
+  FSNTOAC threads=32 ... comp=0.039902
+0.300946s  decomp=0.300946s
+  FSNTOAC threads=36 ... comp=0.050003
+0.291227s  decomp=0.291227s
+  FSUTOA threads=1 ... comp=0.038055
+0.328245s  decomp=0.328245s
+  FSUTOA threads=2 ... comp=0.052594
+0.331308s  decomp=0.331308s
+  FSUTOA threads=4 ... comp=0.042634
+0.323588s  decomp=0.323588s
+  FSUTOA threads=8 ... comp=0.051158
+0.324159s  decomp=0.324159s
+  FSUTOA threads=16 ... comp=0.066789
+0.325260s  decomp=0.325260s
+  FSUTOA threads=32 ... comp=0.044794
+0.340852s  decomp=0.340852s
+  FSUTOA threads=36 ... comp=0.039922
+0.327147s  decomp=0.327147s
+  ICEFRAC threads=1 ... comp=0.032629
+0.292350s  decomp=0.292350s
+  ICEFRAC threads=2 ... comp=0.034552
+0.289387s  decomp=0.289387s
+  ICEFRAC threads=4 ... comp=0.029000
+0.271663s  decomp=0.271663s
+  ICEFRAC threads=8 ... comp=0.031217
+0.283454s  decomp=0.283454s
+  ICEFRAC threads=16 ... comp=0.036704
+0.279934s  decomp=0.279934s
+  ICEFRAC threads=32 ... comp=0.034484
+0.283026s  decomp=0.283026s
+  ICEFRAC threads=36 ... comp=0.029181
+0.288492s  decomp=0.288492s
+  LANDFRAC threads=1 ... comp=0.029279
+0.280920s  decomp=0.280920s
+  LANDFRAC threads=2 ... comp=0.029019
+0.289142s  decomp=0.289142s
+  LANDFRAC threads=4 ... comp=0.031404
+0.286939s  decomp=0.286939s
+  LANDFRAC threads=8 ... comp=0.031312
+0.276987s  decomp=0.276987s
+  LANDFRAC threads=16 ... comp=0.036923
+0.276851s  decomp=0.276851s
+  LANDFRAC threads=32 ... comp=0.029660
+0.280003s  decomp=0.280003s
+  LANDFRAC threads=36 ... comp=0.029205
+0.288397s  decomp=0.288397s
+  LHFLX threads=1 ... comp=0.040723
+0.307579s  decomp=0.307579s
+  LHFLX threads=2 ... comp=0.036427
+0.452998s  decomp=0.452998s
+  LHFLX threads=4 ... comp=0.058805
+0.359127s  decomp=0.359127s
+  LHFLX threads=8 ... comp=0.220285
+0.320459s  decomp=0.320459s
+  LHFLX threads=16 ... comp=0.041309
+0.305820s  decomp=0.305820s
+  LHFLX threads=32 ... comp=0.065122
+0.311353s  decomp=0.311353s
+  LHFLX threads=36 ... comp=0.042942
+0.311161s  decomp=0.311161s
+  LWCF threads=1 ... comp=0.038767
+0.340213s  decomp=0.340213s
+  LWCF threads=2 ... comp=0.046380
+0.437418s  decomp=0.437418s
+  LWCF threads=4 ... comp=0.039349
+0.366468s  decomp=0.366468s
+  LWCF threads=8 ... comp=0.048629
+0.408445s  decomp=0.408445s
+  LWCF threads=16 ... comp=0.038878
+0.408483s  decomp=0.408483s
+  LWCF threads=32 ... comp=0.041277
+0.392608s  decomp=0.392608s
+  LWCF threads=36 ... comp=0.042961
+0.343662s  decomp=0.343662s
+  OCNFRAC threads=1 ... comp=0.032057
+0.284455s  decomp=0.284455s
+  OCNFRAC threads=2 ... comp=0.029387
+0.283432s  decomp=0.283432s
+  OCNFRAC threads=4 ... comp=0.031129
+0.274544s  decomp=0.274544s
+  OCNFRAC threads=8 ... comp=0.029831
+0.279273s  decomp=0.279273s
+  OCNFRAC threads=16 ... comp=0.037636
+0.285922s  decomp=0.285922s
+  OCNFRAC threads=32 ... comp=0.035763
+0.285422s  decomp=0.285422s
+  OCNFRAC threads=36 ... comp=0.034872
+0.284899s  decomp=0.284899s
+  ODV_SSLTA threads=1 ... comp=0.063225
+0.327438s  decomp=0.327438s
+  ODV_SSLTA threads=2 ... comp=0.034774
+0.320665s  decomp=0.320665s
+  ODV_SSLTA threads=4 ... comp=0.038580
+0.307100s  decomp=0.307100s
+  ODV_SSLTA threads=8 ... comp=0.038628
+0.310785s  decomp=0.310785s
+  ODV_SSLTA threads=16 ... comp=0.044323
+0.310845s  decomp=0.310845s
+  ODV_SSLTA threads=32 ... comp=0.043066
+0.315521s  decomp=0.315521s
+  ODV_SSLTA threads=36 ... comp=0.032169
+0.319966s  decomp=0.319966s
+  ODV_SSLTC threads=1 ... comp=0.031807
+0.320698s  decomp=0.320698s
+  ODV_SSLTC threads=2 ... comp=0.031461
+0.318872s  decomp=0.318872s
+  ODV_SSLTC threads=4 ... comp=0.031115
+0.312031s  decomp=0.312031s
+  ODV_SSLTC threads=8 ... comp=0.044829
+0.312868s  decomp=0.312868s
+  ODV_SSLTC threads=16 ... comp=0.031723
+0.322995s  decomp=0.322995s
+  ODV_SSLTC threads=32 ... comp=0.036764
+0.325082s  decomp=0.325082s
+  ODV_SSLTC threads=36 ... comp=0.031529
+0.319328s  decomp=0.319328s
+  ODV_bcar1 threads=1 ... comp=0.036049
+0.276194s  decomp=0.276194s
+  ODV_bcar1 threads=2 ... comp=0.028011
+0.279911s  decomp=0.279911s
+  ODV_bcar1 threads=4 ... comp=0.034191
+0.277952s  decomp=0.277952s
+  ODV_bcar1 threads=8 ... comp=0.030672
+0.279255s  decomp=0.279255s
+  ODV_bcar1 threads=16 ... comp=0.028324
+0.274395s  decomp=0.274395s
+  ODV_bcar1 threads=32 ... comp=0.031793
+0.277868s  decomp=0.277868s
+  ODV_bcar1 threads=36 ... comp=0.055546
+0.280878s  decomp=0.280878s
+  ODV_bcar2 threads=1 ... comp=0.037996
+0.279425s  decomp=0.279425s
+  ODV_bcar2 threads=2 ... comp=0.028900
+0.279060s  decomp=0.279060s
+  ODV_bcar2 threads=4 ... comp=0.028703
+0.271267s  decomp=0.271267s
+  ODV_bcar2 threads=8 ... comp=0.034420
+0.277884s  decomp=0.277884s
+  ODV_bcar2 threads=16 ... comp=0.028243
+0.279027s  decomp=0.279027s
+  ODV_bcar2 threads=32 ... comp=0.028825
+0.281259s  decomp=0.281259s
+  ODV_bcar2 threads=36 ... comp=0.037538
+0.287623s  decomp=0.287623s
+  ODV_dust1 threads=1 ... comp=0.035873
+0.287000s  decomp=0.287000s
+  ODV_dust1 threads=2 ... comp=0.028202
+0.276254s  decomp=0.276254s
+  ODV_dust1 threads=4 ... comp=0.031385
+0.271308s  decomp=0.271308s
+  ODV_dust1 threads=8 ... comp=0.031045
+0.276463s  decomp=0.276463s
+  ODV_dust1 threads=16 ... comp=0.040635
+0.277304s  decomp=0.277304s
+  ODV_dust1 threads=32 ... comp=0.035387
+0.280239s  decomp=0.280239s
+  ODV_dust1 threads=36 ... comp=0.041276
+0.280578s  decomp=0.280578s
+  ODV_dust2 threads=1 ... comp=0.039315
+0.277276s  decomp=0.277276s
+  ODV_dust2 threads=2 ... comp=0.035689
+0.282379s  decomp=0.282379s
+  ODV_dust2 threads=4 ... comp=0.028156
+0.271388s  decomp=0.271388s
+  ODV_dust2 threads=8 ... comp=0.028858
+0.276328s  decomp=0.276328s
+  ODV_dust2 threads=16 ... comp=0.032119
+0.282481s  decomp=0.282481s
+  ODV_dust2 threads=32 ... comp=0.029675
+0.282017s  decomp=0.282017s
+  ODV_dust2 threads=36 ... comp=0.040912
+0.282389s  decomp=0.282389s
+  ODV_dust3 threads=1 ... comp=0.033788
+0.278258s  decomp=0.278258s
+  ODV_dust3 threads=2 ... comp=0.029069
+0.281540s  decomp=0.281540s
+  ODV_dust3 threads=4 ... comp=0.028643
+0.271597s  decomp=0.271597s
+  ODV_dust3 threads=8 ... comp=0.044319
+0.279634s  decomp=0.279634s
+  ODV_dust3 threads=16 ... comp=0.035011
+0.298805s  decomp=0.298805s
+  ODV_dust3 threads=32 ... comp=0.030342
+0.279939s  decomp=0.279939s
+  ODV_dust3 threads=36 ... comp=0.028369
+0.278678s  decomp=0.278678s
+  ODV_dust4 threads=1 ... comp=0.030650
+0.279702s  decomp=0.279702s
+  ODV_dust4 threads=2 ... comp=0.027742
+0.282506s  decomp=0.282506s
+  ODV_dust4 threads=4 ... comp=0.049542
+0.272024s  decomp=0.272024s
+  ODV_dust4 threads=8 ... comp=0.030543
+0.281917s  decomp=0.281917s
+  ODV_dust4 threads=16 ... comp=0.028145
+0.273685s  decomp=0.273685s
+  ODV_dust4 threads=32 ... comp=0.028454
+0.279359s  decomp=0.279359s
+  ODV_dust4 threads=36 ... comp=0.028323
+0.306759s  decomp=0.306759s
+  ODV_ocar1 threads=1 ... comp=0.030970
+0.279515s  decomp=0.279515s
+  ODV_ocar1 threads=2 ... comp=0.033729
+0.279276s  decomp=0.279276s
+  ODV_ocar1 threads=4 ... comp=0.030435
+0.269762s  decomp=0.269762s
+  ODV_ocar1 threads=8 ... comp=0.033230
+0.276545s  decomp=0.276545s
+  ODV_ocar1 threads=16 ... comp=0.029191
+0.277045s  decomp=0.277045s
+  ODV_ocar1 threads=32 ... comp=0.028405
+0.279591s  decomp=0.279591s
+  ODV_ocar1 threads=36 ... comp=0.028076
+0.277767s  decomp=0.277767s
+  ODV_ocar2 threads=1 ... comp=0.030307
+0.318796s  decomp=0.318796s
+  ODV_ocar2 threads=2 ... comp=0.038861
+0.314443s  decomp=0.314443s
+  ODV_ocar2 threads=4 ... comp=0.030129
+0.305090s  decomp=0.305090s
+  ODV_ocar2 threads=8 ... comp=0.034290
+0.327637s  decomp=0.327637s
+  ODV_ocar2 threads=16 ... comp=0.030266
+0.310959s  decomp=0.310959s
+  ODV_ocar2 threads=32 ... comp=0.030437
+0.313448s  decomp=0.313448s
+  ODV_ocar2 threads=36 ... comp=0.030257
+0.324994s  decomp=0.324994s
+  ODV_sulf threads=1 ... comp=0.040304
+0.325403s  decomp=0.325403s
+  ODV_sulf threads=2 ... comp=0.034802
+0.327881s  decomp=0.327881s
+  ODV_sulf threads=4 ... comp=0.056214
+0.317578s  decomp=0.317578s
+  ODV_sulf threads=8 ... comp=0.032033
+0.323259s  decomp=0.323259s
+  ODV_sulf threads=16 ... comp=0.044993
+0.332147s  decomp=0.332147s
+  ODV_sulf threads=32 ... comp=0.035942
+0.326333s  decomp=0.326333s
+  ODV_sulf threads=36 ... comp=0.040125
+0.328778s  decomp=0.328778s
+  QREFHT threads=1 ... comp=0.029130
+0.298039s  decomp=0.298039s
+  QREFHT threads=2 ... comp=0.029078
+0.284172s  decomp=0.284172s
+  QREFHT threads=4 ... comp=0.028844
+0.276220s  decomp=0.276220s
+  QREFHT threads=8 ... comp=0.030332
+0.294145s  decomp=0.294145s
+  QREFHT threads=16 ... comp=0.028894
+0.286304s  decomp=0.286304s
+  QREFHT threads=32 ... comp=0.029233
+0.296143s  decomp=0.296143s
+  QREFHT threads=36 ... comp=0.034445
+0.288542s  decomp=0.288542s
+  RHREFHT threads=1 ... comp=0.038371
+0.302766s  decomp=0.302766s
+  RHREFHT threads=2 ... comp=0.037546
+0.304684s  decomp=0.304684s
+  RHREFHT threads=4 ... comp=0.040917
+0.296516s  decomp=0.296516s
+  RHREFHT threads=8 ... comp=0.034700
+0.299900s  decomp=0.299900s
+  RHREFHT threads=16 ... comp=0.037290
+0.301842s  decomp=0.301842s
+  RHREFHT threads=32 ... comp=0.045871
+0.309749s  decomp=0.309749s
+  RHREFHT threads=36 ... comp=0.037193
+0.303106s  decomp=0.303106s
+  SHFLX threads=1 ... comp=0.046910
+0.308630s  decomp=0.308630s
+  SHFLX threads=2 ... comp=0.045064
+0.313292s  decomp=0.313292s
+  SHFLX threads=4 ... comp=0.040652
+0.300021s  decomp=0.300021s
+  SHFLX threads=8 ... comp=0.038359
+0.310226s  decomp=0.310226s
+  SHFLX threads=16 ... comp=0.037725
+0.310933s  decomp=0.310933s
+  SHFLX threads=32 ... comp=0.052606
+0.312263s  decomp=0.312263s
+  SHFLX threads=36 ... comp=0.058348
+0.312097s  decomp=0.312097s
+  SNOWHICE threads=1 ... comp=0.032950
+0.282906s  decomp=0.282906s
+  SNOWHICE threads=2 ... comp=0.029294
+0.281041s  decomp=0.281041s
+  SNOWHICE threads=4 ... comp=0.030177
+0.273779s  decomp=0.273779s
+  SNOWHICE threads=8 ... comp=0.036145
+0.284994s  decomp=0.284994s
+  SNOWHICE threads=16 ... comp=0.030111
+0.285723s  decomp=0.285723s
+  SNOWHICE threads=32 ... comp=0.030162
+0.286137s  decomp=0.286137s
+  SNOWHICE threads=36 ... comp=0.029344
+0.284889s  decomp=0.284889s
+  SOLIN threads=1 ... comp=0.035790
+0.276748s  decomp=0.276748s
+  SOLIN threads=2 ... comp=0.029150
+0.282799s  decomp=0.282799s
+  SOLIN threads=4 ... comp=0.030310
+0.265565s  decomp=0.265565s
+  SOLIN threads=8 ... comp=0.031044
+0.279404s  decomp=0.279404s
+  SOLIN threads=16 ... comp=0.029494
+0.275303s  decomp=0.275303s
+  SOLIN threads=32 ... comp=0.042529
+0.272888s  decomp=0.272888s
+  SOLIN threads=36 ... comp=0.033475
+0.285417s  decomp=0.285417s
+  SRFRAD threads=1 ... comp=0.040026
+0.325934s  decomp=0.325934s
+  SRFRAD threads=2 ... comp=0.057509
+0.325150s  decomp=0.325150s
+  SRFRAD threads=4 ... comp=0.038642
+0.315885s  decomp=0.315885s
+  SRFRAD threads=8 ... comp=0.042854
+0.328792s  decomp=0.328792s
+  SRFRAD threads=16 ... comp=0.046931
+0.319268s  decomp=0.319268s
+  SRFRAD threads=32 ... comp=0.053449
+0.333085s  decomp=0.333085s
+  SRFRAD threads=36 ... comp=0.047577
+0.324813s  decomp=0.324813s
+  SWCF threads=1 ... comp=0.047702
+0.332659s  decomp=0.332659s
+  SWCF threads=2 ... comp=0.042776
+0.328763s  decomp=0.328763s
+  SWCF threads=4 ... comp=0.037578
+0.329532s  decomp=0.329532s
+  SWCF threads=8 ... comp=0.052707
+0.327060s  decomp=0.327060s
+  SWCF threads=16 ... comp=0.040134
+0.327179s  decomp=0.327179s
+  SWCF threads=32 ... comp=0.045249
+0.331020s  decomp=0.331020s
+  SWCF threads=36 ... comp=0.045561
+0.335674s  decomp=0.335674s
+  TAUX threads=1 ... comp=0.039034
+0.296030s  decomp=0.296030s
+  TAUX threads=2 ... comp=0.031752
+0.295737s  decomp=0.295737s
+  TAUX threads=4 ... comp=0.033550
+0.285005s  decomp=0.285005s
+  TAUX threads=8 ... comp=0.039262
+0.291481s  decomp=0.291481s
+  TAUX threads=16 ... comp=0.040882
+0.298191s  decomp=0.298191s
+  TAUX threads=32 ... comp=0.033871
+0.298560s  decomp=0.298560s
+  TAUX threads=36 ... comp=0.049464
+0.296131s  decomp=0.296131s
+  TAUY threads=1 ... comp=0.039226
+0.299591s  decomp=0.299591s
+  TAUY threads=2 ... comp=0.035696
+0.305729s  decomp=0.305729s
+  TAUY threads=4 ... comp=0.035774
+0.294844s  decomp=0.294844s
+  TAUY threads=8 ... 

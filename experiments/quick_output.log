@@ -1,0 +1,615 @@
+=== 1. Install compressors ===
+Installing compressors to: /lcrc/project/ECP-EZ/tripti/compressors
+
+=== SZ3: already installed ===
+
+=== ZFP: already installed ===
+
+=== Tthresh: already installed ===
+
+=== Building SZ (1.4/2.x) ===
+=== 2. Build ===
+-- CUDA support enabled (arch: 80)
+-- Checking for one of the modules 'libzstd'
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/build
+Consolidate compiler generated dependencies of target SZp
+Consolidate compiler generated dependencies of target SZp_cuda
+[ 40%] Built target SZp
+[ 60%] Built target SZp_cuda
+Consolidate compiler generated dependencies of target test_cuda_decompress
+Consolidate compiler generated dependencies of target compare_with_lopc
+Consolidate compiler generated dependencies of target test_cuda_topology
+Consolidate compiler generated dependencies of target test_cuda_compress
+Consolidate compiler generated dependencies of target test_cuda_topology_3d
+Consolidate compiler generated dependencies of target compare_with_lopc_3d
+[ 66%] Built target test_cuda_decompress
+[ 73%] Built target compare_with_lopc
+[ 80%] Built target test_cuda_topology
+[ 93%] Built target test_cuda_topology_3d
+[ 96%] Built target test_cuda_compress
+[100%] Built target compare_with_lopc_3d
+=== 3. Scalability (quick) ===
+TopoSZp+ Scalability Experiment — 20261025_181326
+Threads: 1 2 4 8 16 32 36
+
+CPU topology binary not found, using CUDA test program (includes OpenMP comparison)
+========== 2D: ATM (1800x3600), eb=1e-3 ==========
+  AEROD_v threads=1 ... comp=0.319785s  decomp=0.319785s
+  AEROD_v threads=2 ... comp=0.325464s  decomp=0.325464s
+  AEROD_v threads=4 ... comp=0.312649s  decomp=0.312649s
+  AEROD_v threads=8 ... comp=0.317383s  decomp=0.317383s
+  AEROD_v threads=16 ... comp=0.314915s  decomp=0.314915s
+  AEROD_v threads=32 ... comp=0.335205s  decomp=0.335205s
+  AEROD_v threads=36 ... comp=0.325430s  decomp=0.325430s
+  CLDHGH threads=1 ... comp=0.384339s  decomp=0.384339s
+  CLDHGH threads=2 ... comp=0.385045s  decomp=0.385045s
+  CLDHGH threads=4 ... comp=0.370047s  decomp=0.370047s
+  CLDHGH threads=8 ... comp=0.376453s  decomp=0.376453s
+  CLDHGH threads=16 ... comp=0.373115s  decomp=0.373115s
+  CLDHGH threads=32 ... comp=0.383217s  decomp=0.383217s
+  CLDHGH threads=36 ... comp=0.385738s  decomp=0.385738s
+  CLDLOW threads=1 ... comp=0.342083s  decomp=0.342083s
+  CLDLOW threads=2 ... comp=0.350771s  decomp=0.350771s
+  CLDLOW threads=4 ... comp=0.339769s  decomp=0.339769s
+  CLDLOW threads=8 ... comp=0.339559s  decomp=0.339559s
+  CLDLOW threads=16 ... comp=0.338620s  decomp=0.338620s
+  CLDLOW threads=32 ... comp=0.342219s  decomp=0.342219s
+  CLDLOW threads=36 ... comp=0.342239s  decomp=0.342239s
+  CLDMED threads=1 ... comp=0.368675s  decomp=0.368675s
+  CLDMED threads=2 ... comp=0.368522s  decomp=0.368522s
+  CLDMED threads=4 ... comp=0.359049s  decomp=0.359049s
+  CLDMED threads=8 ... comp=0.371087s  decomp=0.371087s
+  CLDMED threads=16 ... comp=0.362952s  decomp=0.362952s
+  CLDMED threads=32 ... comp=0.367258s  decomp=0.367258s
+  CLDMED threads=36 ... comp=0.374401s  decomp=0.374401s
+  FLDSC threads=1 ... comp=0.282414s  decomp=0.282414s
+  FLDSC threads=2 ... comp=0.279807s  decomp=0.279807s
+  FLDSC threads=4 ... comp=0.272049s  decomp=0.272049s
+  FLDSC threads=8 ... comp=0.281053s  decomp=0.281053s
+  FLDSC threads=16 ... comp=0.279660s  decomp=0.279660s
+  FLDSC threads=32 ... comp=0.293315s  decomp=0.293315s
+  FLDSC threads=36 ... comp=0.284638s  decomp=0.284638s
+
+========== SCALABILITY SUMMARY ==========
+Dataset  Field    Dims       Threads  CompTime_s  DecompTime_s  MaxError      PreservRate  FN     FP  FT
+ATM-2D   AEROD_v  1800x3600  1        0.319785    0.319785      2.000000e-03  83.49        11824  0   0
+ATM-2D   AEROD_v  1800x3600  2        0.325464    0.325464      2.000000e-03  83.49        11824  0   0
+ATM-2D   AEROD_v  1800x3600  4        0.312649    0.312649      2.000000e-03  83.49        11824  0   0
+ATM-2D   AEROD_v  1800x3600  8        0.317383    0.317383      2.000000e-03  83.49        11824  0   0
+ATM-2D   AEROD_v  1800x3600  16       0.314915    0.314915      2.000000e-03  83.49        11824  0   0
+ATM-2D   AEROD_v  1800x3600  32       0.335205    0.335205      2.000000e-03  83.49        11824  0   0
+ATM-2D   AEROD_v  1800x3600  36       0.325430    0.325430      2.000000e-03  83.49        11824  0   0
+ATM-2D   CLDHGH   1800x3600  1        0.384339    0.384339      2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDHGH   1800x3600  2        0.385045    0.385045      2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDHGH   1800x3600  4        0.370047    0.370047      2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDHGH   1800x3600  8        0.376453    0.376453      2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDHGH   1800x3600  16       0.373115    0.373115      2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDHGH   1800x3600  32       0.383217    0.383217      2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDHGH   1800x3600  36       0.385738    0.385738      2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDLOW   1800x3600  1        0.342083    0.342083      2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDLOW   1800x3600  2        0.350771    0.350771      2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDLOW   1800x3600  4        0.339769    0.339769      2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDLOW   1800x3600  8        0.339559    0.339559      2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDLOW   1800x3600  16       0.338620    0.338620      2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDLOW   1800x3600  32       0.342219    0.342219      2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDLOW   1800x3600  36       0.342239    0.342239      2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDMED   1800x3600  1        0.368675    0.368675      2.000000e-03  93.61        11317  0   0
+ATM-2D   CLDMED   1800x3600  2        0.368522    0.368522      2.000000e-03  93.61        11317  0   0
+ATM-2D   CLDMED   1800x3600  4        0.359049    0.359049      2.000000e-03  93.61        11317  0   0
+ATM-2D   CLDMED   1800x3600  8        0.371087    0.371087      2.000000e-03  93.61        11317  0   0
+ATM-2D   CLDMED   1800x3600  16       0.362952    0.362952      2.000000e-03  93.61        11317  0   0
+ATM-2D   CLDMED   1800x3600  32       0.367258    0.367258      2.000000e-03  93.61        11317  0   0
+ATM-2D   CLDMED   1800x3600  36       0.374401    0.374401      2.000000e-03  93.61        11317  0   0
+ATM-2D   FLDSC    1800x3600  1        0.282414    0.282414      2.000000e-03  99.93        6      0   0
+ATM-2D   FLDSC    1800x3600  2        0.279807    0.279807      2.000000e-03  99.93        6      0   0
+ATM-2D   FLDSC    1800x3600  4        0.272049    0.272049      2.000000e-03  99.93        6      0   0
+ATM-2D   FLDSC    1800x3600  8        0.281053    0.281053      2.000000e-03  99.93        6      0   0
+ATM-2D   FLDSC    1800x3600  16       0.279660    0.279660      2.000000e-03  99.93        6      0   0
+ATM-2D   FLDSC    1800x3600  32       0.293315    0.293315      2.000000e-03  99.93        6      0   0
+ATM-2D   FLDSC    1800x3600  36       0.284638    0.284638      2.000000e-03  99.93        6      0   0
+
+Results: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/scalability_20261025_181326/scalability.csv
+=== 4. GPU vs CPU (quick) ===
+GPU vs CPU Timing Experiment — 20261025_181416
+NVIDIA A100-SXM4-40GB, 40960 MiB
+OMP_NUM_THREADS=32
+
+========== 2D Fields ==========
+  CLDHGH abs 1e-3 ... CUDA=0.382287s OMP=s
+  CLDHGH rel:1e-3 ... CUDA=0.390439s OMP=s
+  CLDHGH rel:1e-4 ... CUDA=0.376748s OMP=s
+
+========== 3D Fields ==========
+  CLDICE abs 1e-7 ... CUDA=12.662547s OMP=s
+  CLDICE rel:1e-3 ... CUDA=12.629354s OMP=s
+  CLDICE rel:1e-4 ... CUDA=12.900738s OMP=s
+
+Results: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/gpu_vs_cpu_20261025_181416/gpu_vs_cpu.csv
+Field   Dims          Bound     BoundType  CUDA_Comp_s  CUDA_Decomp_s  OMP_Comp_s  OMP_Decomp_s  Maxima_Before  Maxima_After  Minima_Before  Minima_After  Saddle_Before  Saddle_After  FN_Before  FN_After  FP  FT            MaxErr_eps
+CLDHGH  1800x3600     1e-3      ABS        0.382287     0.382287                                                                                                                        9676       0         0   1.487494e-03  
+CLDHGH  1800x3600     rel:1e-3  REL        0.390439     0.390439                                                                                                                        8917       0         0   1.380406e-03  
+CLDHGH  1800x3600     rel:1e-4  REL        0.376748     0.376748                                                                                                                        444        0         0   1.378097e-04  
+CLDICE  26x1800x3600  1e-7      ABS        12.662547    12.662547                                                                                                                       0          0         0   0             
+CLDICE  26x1800x3600  rel:1e-3  REL        12.629354    12.629354                                                                                                                       0          0         0   0             
+CLDICE  26x1800x3600  rel:1e-4  REL        12.900738    12.900738                                                                                                                       0          0         0   0             
+=== 5. Compressor comparison (quick) ===
+Compressor Comparison Experiment — 20261025_181516
+Mode: quick
+
+Available compressors:
+  ✓ SZ3: /lcrc/project/ECP-EZ/tripti/compressors/bin/sz3
+  ✓ ZFP: /lcrc/project/ECP-EZ/tripti/compressors/bin/zfp
+  ✓ Tthresh: /lcrc/project/ECP-EZ/tripti/compressors/bin/tthresh
+  ✓ SZ: /home/sdi/SZ-2.1.12-install/bin/sz
+  ✓ TopoSZp+: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/../build/test_cuda_topology
+  ✗ compare: NOT FOUND at /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/../build/compare_critical_points
+
+========== ATM (1800x3600) ==========
+
+Results: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/comparison_20261025_181516/comparison.csv
+Done.
+=== 6. Bit rate sweep (quick) ===
+Bit Rate Sweep Experiment — 20261025_181517
+
+=== Error bound: 1e-2 ===
+  TopoSZp+: br=4.53 FN=23606.60 FP=0 FT=0
+compression ratio = 192.38 
+compression time = 0.107787
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/AEROD_v_1_1800_3600_SZ3_1e-2.compressed
+compression ratio = 192.381914
+decompression time = 0.053737 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/AEROD_v_1_1800_3600_SZ3_1e-2.decompressed
+compression ratio = 39.75 
+compression time = 0.115142
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDHGH_1_1800_3600_SZ3_1e-2.compressed
+compression ratio = 39.754357
+decompression time = 0.059121 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDHGH_1_1800_3600_SZ3_1e-2.decompressed
+compression ratio = 35.23 
+compression time = 0.117242
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDLOW_1_1800_3600_SZ3_1e-2.compressed
+compression ratio = 35.226198
+decompression time = 0.060489 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDLOW_1_1800_3600_SZ3_1e-2.decompressed
+compression ratio = 44.72 
+compression time = 0.117860
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDMED_1_1800_3600_SZ3_1e-2.compressed
+compression ratio = 44.724355
+decompression time = 0.057782 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDMED_1_1800_3600_SZ3_1e-2.decompressed
+compression ratio = 26.88 
+compression time = 0.122805
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/FREQSH_1_1800_3600_SZ3_1e-2.compressed
+compression ratio = 26.882027
+decompression time = 0.061969 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/FREQSH_1_1800_3600_SZ3_1e-2.decompressed
+  SZ3: br=.75 FN=0 FP=0 FT=0
+  ZFP: br=6.63 FN=0 FP=0 FT=0
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+compression time = 0.135628
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz
+decompression time = 0.067720 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz.out
+compression time = 0.181279
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz
+decompression time = 0.091062 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz.out
+compression time = 0.188585
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz
+decompression time = 0.092218 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz.out
+compression time = 0.175663
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz
+decompression time = 0.085142 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz.out
+compression time = 0.191291
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz
+decompression time = 0.102184 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz.out
+  SZ: br=.85 FN=0 FP=0 FT=0
+=== Error bound: 1e-3 ===
+  TopoSZp+: br=6.17 FN=8632.80 FP=0 FT=0
+compression ratio = 33.09 
+compression time = 0.118293
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/AEROD_v_1_1800_3600_SZ3_1e-3.compressed
+compression ratio = 33.091784
+decompression time = 0.059239 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/AEROD_v_1_1800_3600_SZ3_1e-3.decompressed
+compression ratio = 9.54 
+compression time = 0.127345
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDHGH_1_1800_3600_SZ3_1e-3.compressed
+compression ratio = 9.539439
+decompression time = 0.070396 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDHGH_1_1800_3600_SZ3_1e-3.decompressed
+compression ratio = 9.37 
+compression time = 0.147391
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDLOW_1_1800_3600_SZ3_1e-3.compressed
+compression ratio = 9.365454
+decompression time = 0.076869 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDLOW_1_1800_3600_SZ3_1e-3.decompressed
+compression ratio = 10.59 
+compression time = 0.131115
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDMED_1_1800_3600_SZ3_1e-3.compressed
+compression ratio = 10.590424
+decompression time = 0.070169 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDMED_1_1800_3600_SZ3_1e-3.decompressed
+compression ratio = 7.70 
+compression time = 0.131154
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/FREQSH_1_1800_3600_SZ3_1e-3.compressed
+compression ratio = 7.695807
+decompression time = 0.072571 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/FREQSH_1_1800_3600_SZ3_1e-3.decompressed
+  SZ3: br=2.98 FN=0 FP=0 FT=0
+  ZFP: br=9.38 FN=0 FP=0 FT=0
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+compression time = 0.181849
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz
+decompression time = 0.091984 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz.out
+compression time = 0.200990
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz
+decompression time = 0.129150 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz.out
+compression time = 0.200244
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz
+decompression time = 0.123295 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz.out
+compression time = 0.195734
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz
+decompression time = 0.108806 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz.out
+compression time = 0.197579
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz
+decompression time = 0.138266 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz.out
+  SZ: br=2.74 FN=0 FP=0 FT=0
+=== Error bound: 1e-4 ===
+  TopoSZp+: br=8.85 FN=1128.60 FP=0 FT=0
+compression ratio = 9.70 
+compression time = 0.128164
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/AEROD_v_1_1800_3600_SZ3_1e-4.compressed
+compression ratio = 9.696179
+decompression time = 0.069875 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/AEROD_v_1_1800_3600_SZ3_1e-4.decompressed
+compression ratio = 4.86 
+compression time = 0.146914
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDHGH_1_1800_3600_SZ3_1e-4.compressed
+compression ratio = 4.857162
+decompression time = 0.087895 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDHGH_1_1800_3600_SZ3_1e-4.decompressed
+compression ratio = 4.90 
+compression time = 0.132189
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDLOW_1_1800_3600_SZ3_1e-4.compressed
+compression ratio = 4.900786
+decompression time = 0.087263 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDLOW_1_1800_3600_SZ3_1e-4.decompressed
+compression ratio = 5.11 
+compression time = 0.130674
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDMED_1_1800_3600_SZ3_1e-4.compressed
+compression ratio = 5.105960
+decompression time = 0.082347 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDMED_1_1800_3600_SZ3_1e-4.decompressed
+compression ratio = 4.39 
+compression time = 0.147882
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/FREQSH_1_1800_3600_SZ3_1e-4.compressed
+compression ratio = 4.385929
+decompression time = 0.091534 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/FREQSH_1_1800_3600_SZ3_1e-4.decompressed
+  SZ3: br=5.99 FN=0 FP=0 FT=0
+  ZFP: br=13.20 FN=0 FP=0 FT=0
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+compression time = 0.187446
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz
+decompression time = 0.121947 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz.out
+compression time = 0.202272
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz
+decompression time = 0.156563 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz.out
+compression time = 0.195955
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz
+decompression time = 0.151151 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz.out
+compression time = 0.199717
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz
+decompression time = 0.147535 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz.out
+compression time = 0.184804
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz
+decompression time = 0.145948 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz.out
+  SZ: br=5.71 FN=0 FP=0 FT=0
+=== Error bound: 1e-5 ===
+  TopoSZp+: br=11.85 FN=83.40 FP=0 FT=0
+compression ratio = 5.20 
+compression time = 0.132112
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/AEROD_v_1_1800_3600_SZ3_1e-5.compressed
+compression ratio = 5.199601
+decompression time = 0.083657 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/AEROD_v_1_1800_3600_SZ3_1e-5.decompressed
+compression ratio = 3.23 
+compression time = 0.146392
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDHGH_1_1800_3600_SZ3_1e-5.compressed
+compression ratio = 3.231111
+decompression time = 0.094540 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDHGH_1_1800_3600_SZ3_1e-5.decompressed
+compression ratio = 3.31 
+compression time = 0.146443
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDLOW_1_1800_3600_SZ3_1e-5.compressed
+compression ratio = 3.306244
+decompression time = 0.092554 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDLOW_1_1800_3600_SZ3_1e-5.decompressed
+compression ratio = 3.37 
+compression time = 0.147318
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDMED_1_1800_3600_SZ3_1e-5.compressed
+compression ratio = 3.373492
+decompression time = 0.091289 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDMED_1_1800_3600_SZ3_1e-5.decompressed
+compression ratio = 3.00 
+compression time = 0.151353
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/FREQSH_1_1800_3600_SZ3_1e-5.compressed
+compression ratio = 3.003786
+decompression time = 0.095760 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/FREQSH_1_1800_3600_SZ3_1e-5.decompressed
+  SZ3: br=9.17 FN=0 FP=0 FT=0
+  ZFP: br=16.11 FN=0 FP=0 FT=0
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+compression time = 0.185170
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz
+decompression time = 0.143194 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz.out
+compression time = 0.200246
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz
+decompression time = 0.198061 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz.out
+compression time = 0.197400
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz
+decompression time = 0.195424 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz.out
+compression time = 0.197050
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz
+decompression time = 0.186612 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz.out
+compression time = 0.189027
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz
+decompression time = 0.202421 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz.out
+  SZ: br=9.04 FN=0 FP=0 FT=0
+=== Error bound: 1e-6 ===
+  TopoSZp+: br=15.01 FN=12.20 FP=0 FT=0
+compression ratio = 3.43 
+compression time = 0.146867
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/AEROD_v_1_1800_3600_SZ3_1e-6.compressed
+compression ratio = 3.428368
+decompression time = 0.092016 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/AEROD_v_1_1800_3600_SZ3_1e-6.decompressed
+compression ratio = 2.26 
+compression time = 0.191801
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDHGH_1_1800_3600_SZ3_1e-6.compressed
+compression ratio = 2.257845
+decompression time = 0.110732 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDHGH_1_1800_3600_SZ3_1e-6.decompressed
+compression ratio = 2.29 
+compression time = 0.215537
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDLOW_1_1800_3600_SZ3_1e-6.compressed
+compression ratio = 2.291195
+decompression time = 0.114164 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDLOW_1_1800_3600_SZ3_1e-6.decompressed
+compression ratio = 2.36 
+compression time = 0.204128
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDMED_1_1800_3600_SZ3_1e-6.compressed
+compression ratio = 2.355002
+decompression time = 0.112065 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/CLDMED_1_1800_3600_SZ3_1e-6.decompressed
+compression ratio = 2.12 
+compression time = 0.215989
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/FREQSH_1_1800_3600_SZ3_1e-6.compressed
+compression ratio = 2.123786
+decompression time = 0.119338 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/tmp/FREQSH_1_1800_3600_SZ3_1e-6.decompressed
+  SZ3: br=13.22 FN=0 FP=0 FT=0
+  ZFP: br=19.02 FN=0 FP=0 FT=0
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+
+Error: Unrecognized flag "/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat"
+Run "tthresh -h" for usage information
+
+compression time = 0.186410
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz
+decompression time = 0.189241 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz.out
+compression time = 0.221739
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz
+decompression time = 0.322257 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz.out
+compression time = 0.216645
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz
+decompression time = 0.313184 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz.out
+compression time = 0.207185
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz
+decompression time = 0.288152 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz.out
+compression time = 0.230006
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz
+decompression time = 0.347477 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz.out
+  SZ: br=12.63 FN=0 FP=0 FT=0
+
+Results: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_181517/bitrate_sweep.csv
+=== 7. SDRBench (quick) ===
+TopoSZp-CUDA SDRBench Experiments — 20261025_181618
+Mode: quick
+
+NVIDIA A100-SXM4-40GB, 580.95.05, 40960 MiB
+
+========== CESM-ATM 2D (1800x3600) ==========
+  CLDHGH eb=1e-3 ... ratio=4.95x  pres=95.63%  FN=9676 FP=0 FT=0  t=386.96ms
+  CLDHGH eb=1e-4 ... ratio=3.43x  pres=99.79%  FN=466 FP=0 FT=0  t=378.00ms
+  CLDHGH eb=1e-5 ... ratio=2.57x  pres=100.00%  FN=8 FP=0 FT=0  t=380.24ms
+  CLDLOW eb=1e-3 ... ratio=4.88x  pres=94.69%  FN=6046 FP=0 FT=0  t=345.69ms
+  CLDLOW eb=1e-4 ... ratio=3.40x  pres=99.71%  FN=333 FP=0 FT=0  t=339.44ms
+  CLDLOW eb=1e-5 ... ratio=2.57x  pres=99.96%  FN=43 FP=0 FT=0  t=336.02ms
+  FREQSH eb=1e-3 ... ratio=4.45x  pres=96.94%  FN=4301 FP=0 FT=0  t=352.54ms
+  FREQSH eb=1e-4 ... ratio=3.14x  pres=99.85%  FN=212 FP=0 FT=0  t=360.83ms
+  FREQSH eb=1e-5 ... ratio=2.40x  pres=100.00%  FN=5 FP=0 FT=0  t=354.49ms
+
+========== CESM-ATM 3D (26x1800x3600) ==========
+  CLOUD eb=1e-3 ... ratio=6.54x  pres=88.38%  FN=593075 FP=0 FT=0  t=13746.37ms
+  CLOUD eb=1e-4 ... ratio=4.72x  pres=96.64%  FN=171506 FP=0 FT=0  t=13409.13ms
+  CLOUD eb=1e-5 ... ratio=3.59x  pres=99.20%  FN=40656 FP=0 FT=0  t=13271.04ms
+  OMEGA eb=1e-3 ... ratio=6.30x  pres=61.59%  FN=1946149 FP=0 FT=0  t=14437.23ms
+  OMEGA eb=1e-4 ... ratio=4.39x  pres=88.51%  FN=581867 FP=0 FT=0  t=13943.28ms
+  OMEGA eb=1e-5 ... ratio=3.19x  pres=97.88%  FN=107604 FP=0 FT=0  t=13198.36ms
+  T eb=1e-3 ... ratio=3.98x  pres=95.83%  FN=10630 FP=0 FT=0  t=10774.02ms
+  T eb=1e-4 ... ratio=2.88x  pres=99.37%  FN=1607 FP=0 FT=0  t=10824.48ms
+  T eb=1e-5 ... ratio=2.23x  pres=100.00%  FN=0 FP=0 FT=0  t=10747.01ms
+
+========== Hurricane ISABEL (100x500x500) ==========
+
+========== NYX (512x512x512) ==========
+  baryon_density eb=1e-3 ... ratio=2.59x  pres=87.64%  FN=177828 FP=0 FT=0  t=10302.06ms
+  baryon_density eb=1e-4 ... ratio=2.05x  pres=98.39%  FN=23182 FP=0 FT=0  t=10165.90ms
+  baryon_density eb=1e-5 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+  dark_matter_density eb=1e-3 ... ratio=2.08x  pres=99.95%  FN=21301 FP=0 FT=0  t=26090.28ms
+  dark_matter_density eb=1e-4 ... ratio=1.72x  pres=99.99%  FN=2190 FP=0 FT=0  t=26085.20ms
+  dark_matter_density eb=1e-5 ... ratio=1.46x  pres=100.00%  FN=199 FP=0 FT=0  t=26115.41ms
+  temperature eb=1e-3 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+  temperature eb=1e-4 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+  temperature eb=1e-5 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+
+========== SCALE-LETKF (98x1200x1200) ==========
+
+========== Miranda (256x384x384, float64) ==========
+  NOTE: Miranda is float64. Testing if supported...
+
+========== AVERAGES PER DATASET × ERROR BOUND ==========
+  CESM-ATM-2D        eb=1e-3    ratio= 4.76x  pres=  95.75%  FN=6674.3  FP= 0.0  FT= 0.0  (n=3)
+  CESM-ATM-2D        eb=1e-4    ratio= 3.32x  pres=  99.78%  FN= 337.0  FP= 0.0  FT= 0.0  (n=3)
+  CESM-ATM-2D        eb=1e-5    ratio= 2.51x  pres=  99.99%  FN=  18.7  FP= 0.0  FT= 0.0  (n=3)
+  CESM-ATM-3D        eb=1e-3    ratio= 5.61x  pres=  81.93%  FN=849951.3  FP= 0.0  FT= 0.0  (n=3)
+  CESM-ATM-3D        eb=1e-4    ratio= 4.00x  pres=  94.84%  FN=251660.0  FP= 0.0  FT= 0.0  (n=3)
+  CESM-ATM-3D        eb=1e-5    ratio= 3.00x  pres=  99.03%  FN=49420.0  FP= 0.0  FT= 0.0  (n=3)
+  NYX                eb=1e-3    ratio= 1.56x  pres=  62.53%  FN=66376.3  FP= 0.0  FT= 0.0  (n=3)
+  NYX                eb=1e-4    ratio= 1.26x  pres=  66.13%  FN=8457.3  FP= 0.0  FT= 0.0  (n=3)
+  NYX                eb=1e-5    ratio= 0.49x  pres=  33.33%  FN=  66.3  FP= 0.0  FT= 0.0  (n=3)
+
+--- Grand Averages (all datasets) ---
+  ALL                eb=1e-3    ratio= 3.97x  pres=  80.07%  FN=307667.3  FP= 0.0  FT= 0.0  (n=9)
+  ALL                eb=1e-4    ratio= 2.86x  pres=  86.92%  FN=86818.1  FP= 0.0  FT= 0.0  (n=9)
+  ALL                eb=1e-5    ratio= 2.00x  pres=  77.45%  FN=16501.7  FP= 0.0  FT= 0.0  (n=9)
+
+==================== RESULTS ====================
+All results: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/20261025_181618/results_all.csv
+Averages:    /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/20261025_181618/averages.csv
+Full log:    /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/20261025_181618/experiment.log
+Per-run:     /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/20261025_181618/*.log
+
+--- Averages Table ---
+Source       ErrorBound  Avg_CompRatio  Avg_CompTime_ms  Avg_DecompTime_ms  Avg_PreservRate  Avg_FN    Avg_FP  Avg_FT  Num_Fields
+CESM-ATM-2D  1e-3        4.76           361.73           361.73             95.75            6674.3    0.0     0.0     3
+CESM-ATM-2D  1e-4        3.32           359.42           359.42             99.78            337.0     0.0     0.0     3
+CESM-ATM-2D  1e-5        2.51           356.92           356.92             99.99            18.7      0.0     0.0     3
+CESM-ATM-3D  1e-3        5.61           12985.87         12985.87           81.93            849951.3  0.0     0.0     3
+CESM-ATM-3D  1e-4        4.00           12725.63         12725.63           94.84            251660.0  0.0     0.0     3
+CESM-ATM-3D  1e-5        3.00           12405.47         12405.47           99.03            49420.0   0.0     0.0     3
+NYX          1e-3        1.56           12130.78         12130.78           62.53            66376.3   0.0     0.0     3
+NYX          1e-4        1.26           12083.70         12083.70           66.13            8457.3    0.0     0.0     3
+NYX          1e-5        0.49           8705.14          8705.14            33.33            66.3      0.0     0.0     3
+ALL          1e-3        3.97                                               80.07            307667.3  0.0     0.0     9
+ALL          1e-4        2.86                                               86.92            86818.1   0.0     0.0     9
+ALL          1e-5        2.00                                               77.45            16501.7   0.0     0.0     9
+=== ALL QUICK TESTS DONE ===
