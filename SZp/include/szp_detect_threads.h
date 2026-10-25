@@ -160,13 +160,14 @@ szp_validate_nbThreads_threadblock(const unsigned char *cmpBytes,
  */
 static inline unsigned int
 szp_detect_nbThreads_randomaccess(const unsigned char *cmpBytes,
-                                   size_t nbEle, int blockSize)
+                                   size_t nbEle, int blockSize,
+                                   size_t elemSize)
 {
-    size_t maxCmpSize = sizeof(float) * nbEle + sizeof(float);
+    size_t maxCmpSize = elemSize * nbEle + elemSize;
 
     if (szp_read_size_t(cmpBytes) != 0) return 1;
 
-    for (unsigned int try_nt = 1; try_nt <= 128; try_nt++) {
+    for (unsigned int try_nt = 2; try_nt <= 128; try_nt++) {
         /* Basic offset validity */
         int valid = 1;
         for (unsigned int k = 1; k < try_nt; k++) {
@@ -184,6 +185,7 @@ szp_detect_nbThreads_randomaccess(const unsigned char *cmpBytes,
             return try_nt;
         }
     }
+    /* No multi-thread candidate validated; fall back to single thread */
     return 1;
 }
 
@@ -192,13 +194,14 @@ szp_detect_nbThreads_randomaccess(const unsigned char *cmpBytes,
  */
 static inline unsigned int
 szp_detect_nbThreads_threadblock(const unsigned char *cmpBytes,
-                                  size_t nbEle, int blockSize)
+                                  size_t nbEle, int blockSize,
+                                  size_t elemSize)
 {
-    size_t maxCmpSize = sizeof(float) * nbEle + sizeof(float);
+    size_t maxCmpSize = elemSize * nbEle + elemSize;
 
     if (szp_read_size_t(cmpBytes) != 0) return 1;
 
-    for (unsigned int try_nt = 1; try_nt <= 128; try_nt++) {
+    for (unsigned int try_nt = 2; try_nt <= 128; try_nt++) {
         int valid = 1;
         for (unsigned int k = 1; k < try_nt; k++) {
             size_t off_k = szp_read_size_t(cmpBytes + k * sizeof(size_t));
@@ -214,6 +217,7 @@ szp_detect_nbThreads_threadblock(const unsigned char *cmpBytes,
             return try_nt;
         }
     }
+    /* No multi-thread candidate validated; fall back to single thread */
     return 1;
 }
 

@@ -112,7 +112,7 @@ extern int szp_sysEndianType; //*sysEndianType is actually set automatically.
 extern "C" {
 #endif
 
-inline size_t szp_computeDataLength(size_t r5, size_t r4, size_t r3, size_t r2, size_t r1)
+static inline size_t szp_computeDataLength(size_t r5, size_t r4, size_t r3, size_t r2, size_t r1)
 {
 	size_t dataLength;
 	if(r1==0)

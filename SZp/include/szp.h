@@ -20,11 +20,7 @@
 #include "szpd_double.h"
 #include "szp_TypeManager.h"
 
-#ifdef _WIN32
-#define PATH_SEPARATOR ';'
-#else
-#define PATH_SEPARATOR ':'
-#endif
+/* PATH_SEPARATOR is defined in szp_rw.h (included above) */
 
 #ifdef __cplusplus
 extern "C" {

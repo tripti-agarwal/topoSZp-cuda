@@ -33,7 +33,7 @@ double *szp_double_decompress_openmp_threadblock(size_t nbEle, double absErrBoun
     size_t threadblocksize = 0;
     int block_size = blockSize;
 
-    nbThreads = szp_detect_nbThreads_threadblock(cmpBytes, nbEle, blockSize);
+    nbThreads = szp_detect_nbThreads_threadblock(cmpBytes, nbEle, blockSize, sizeof(double));
     rcp = cmpBytes + nbThreads * sizeof(size_t);
     threadblocksize = nbEle / nbThreads;
 
@@ -331,7 +331,7 @@ void szp_double_decompress_openmp_threadblock_arg(double *newData, size_t nbEle,
     size_t threadblocksize = 0;
     size_t block_size = blockSize;
 
-    nbThreads = szp_detect_nbThreads_threadblock(cmpBytes, nbEle, blockSize);
+    nbThreads = szp_detect_nbThreads_threadblock(cmpBytes, nbEle, blockSize, sizeof(double));
     rcp = cmpBytes + nbThreads * sizeof(size_t);
     threadblocksize = nbEle / nbThreads;
 
@@ -435,7 +435,7 @@ double *szp_double_decompress_openmp_threadblock_randomaccess(size_t nbEle, doub
     size_t threadblocksize = 0;
     int block_size = blockSize;
 
-    nbThreads = szp_detect_nbThreads_randomaccess(cmpBytes, nbEle, blockSize);
+    nbThreads = szp_detect_nbThreads_randomaccess(cmpBytes, nbEle, blockSize, sizeof(double));
     rcp = cmpBytes + nbThreads * sizeof(size_t);
 
     /* Use block-based distribution matching the compressor */
@@ -519,7 +519,7 @@ void szp_double_decompress_openmp_threadblock_randomaccess_arg(double *newData, 
     unsigned int nbThreads = 0;
     int block_size = blockSize;
 
-    nbThreads = szp_detect_nbThreads_randomaccess(cmpBytes, nbEle, blockSize);
+    nbThreads = szp_detect_nbThreads_randomaccess(cmpBytes, nbEle, blockSize, sizeof(double));
     rcp = cmpBytes + nbThreads * sizeof(size_t);
 
     size_t num_blocks = (nbEle + block_size - 1) / block_size;

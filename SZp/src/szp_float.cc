@@ -19,7 +19,6 @@
 #ifdef _OPENMP
 #include "omp.h"
 #endif
-#include <stdlib.h>
 #ifdef _POSIX_C_SOURCE
 #include <malloc.h>  // For posix_memalign
 #endif
@@ -59,7 +58,7 @@ CriticalPoint *szp_find_critical_points(float *data, size_t *outCount, int rows,
             size_t end_idx = (tid == nbThreads - 1) ? (rows - 2) * (cols - 2) : (tid + 1) * threadblocksize;
             
             size_t local_count = 0;
-            CriticalPoint *local_results = (CriticalPoint *)malloc(((rows - 2) * (cols - 2)) * sizeof(CriticalPoint));
+            CriticalPoint *local_results = (CriticalPoint *)malloc((end_idx - start_idx) * sizeof(CriticalPoint));
             
             for (size_t idx = start_idx; idx < end_idx; idx++) {
                 int i = 1 + idx / (cols - 2);

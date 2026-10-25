@@ -10,7 +10,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <stdbool.h>
 #include <string.h>
 #include "szp_defines.h"
 

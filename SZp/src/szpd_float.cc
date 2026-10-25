@@ -29,6 +29,7 @@ float *szp_float_decompress_openmp_threadblock(size_t nbEle, float absErrBound, 
 {
 #ifdef _OPENMP
     float *newData = (float *)malloc(sizeof(float) * nbEle);
+    if (!newData) { fprintf(stderr, "szpd_float: malloc failed\n"); exit(EXIT_FAILURE); }
     size_t *offsets = (size_t *)cmpBytes;
     unsigned char *rcp;
     unsigned int nbThreads = 0;
@@ -36,7 +37,7 @@ float *szp_float_decompress_openmp_threadblock(size_t nbEle, float absErrBound, 
     size_t threadblocksize = 0;
     int block_size = blockSize;
 
-    nbThreads = szp_detect_nbThreads_threadblock(cmpBytes, nbEle, blockSize);
+    nbThreads = szp_detect_nbThreads_threadblock(cmpBytes, nbEle, blockSize, sizeof(float));
     rcp = cmpBytes + nbThreads * sizeof(size_t);
     threadblocksize = nbEle / nbThreads;
 
@@ -74,6 +75,7 @@ float *szp_float_decompress_openmp_threadblock(size_t nbEle, float absErrBound, 
         
         unsigned char *temp_sign_arr = (unsigned char *)malloc(blockSize * sizeof(unsigned char));
         unsigned int *temp_predict_arr = (unsigned int *)malloc(blockSize * sizeof(unsigned int));
+        if (!temp_sign_arr || !temp_predict_arr) { fprintf(stderr, "szpd_float: malloc failed\n"); exit(EXIT_FAILURE); }
         unsigned int savedbitsbytelength = 0;
         
         for (i = lo + 1; i < hi; i = i + block_size)
@@ -166,6 +168,7 @@ void szp_float_decompress_single_thread_arg(float *newData, size_t nbEle, float 
     
     unsigned char *temp_sign_arr = (unsigned char *)malloc(blockSize * sizeof(unsigned char));
     unsigned int *temp_predict_arr = (unsigned int *)malloc(blockSize * sizeof(unsigned int));
+    if (!temp_sign_arr || !temp_predict_arr) { fprintf(stderr, "szpd_float: malloc failed\n"); exit(EXIT_FAILURE); }
     unsigned int savedbitsbytelength = 0;
     
     for (i = lo + 1; i < hi; i = i + block_size)
@@ -257,6 +260,7 @@ size_t szp_float_decompress_single_thread_arg_record(float *newData, size_t nbEl
     
     unsigned char *temp_sign_arr = (unsigned char *)malloc(blockSize * sizeof(unsigned char));
     unsigned int *temp_predict_arr = (unsigned int *)malloc(blockSize * sizeof(unsigned int));
+    if (!temp_sign_arr || !temp_predict_arr) { fprintf(stderr, "szpd_float: malloc failed\n"); exit(EXIT_FAILURE); }
     unsigned int savedbitsbytelength = 0;
 
     // Unified loop for all remaining data blocks
@@ -331,7 +335,7 @@ void szp_float_decompress_openmp_threadblock_arg(float *newData, size_t nbEle, f
     size_t threadblocksize = 0;
     size_t block_size = blockSize;
 
-    nbThreads = szp_detect_nbThreads_threadblock(cmpBytes, nbEle, blockSize);
+    nbThreads = szp_detect_nbThreads_threadblock(cmpBytes, nbEle, blockSize, sizeof(float));
     rcp = cmpBytes + nbThreads * sizeof(size_t);
     threadblocksize = nbEle / nbThreads;
 
@@ -369,6 +373,7 @@ void szp_float_decompress_openmp_threadblock_arg(float *newData, size_t nbEle, f
         
         unsigned char *temp_sign_arr = (unsigned char *)malloc(blockSize * sizeof(unsigned char));
         unsigned int *temp_predict_arr = (unsigned int *)malloc(blockSize * sizeof(unsigned int));
+        if (!temp_sign_arr || !temp_predict_arr) { fprintf(stderr, "szpd_float: malloc failed\n"); exit(EXIT_FAILURE); }
         unsigned int savedbitsbytelength = 0;
         
         for (i = lo + 1; i < hi; i = i + block_size)
@@ -427,6 +432,7 @@ float *szp_float_decompress_openmp_threadblock_randomaccess(size_t nbEle, float 
 {
 #ifdef _OPENMP
     float *newData = (float *)malloc(sizeof(float) * nbEle);
+    if (!newData) { fprintf(stderr, "szpd_float: malloc failed\n"); exit(EXIT_FAILURE); }
     size_t *offsets = (size_t *)cmpBytes;
     unsigned char *rcp;
     unsigned int nbThreads = 0;
@@ -434,7 +440,7 @@ float *szp_float_decompress_openmp_threadblock_randomaccess(size_t nbEle, float 
     size_t threadblocksize = 0;
     int block_size = blockSize;
 
-    nbThreads = szp_detect_nbThreads_randomaccess(cmpBytes, nbEle, blockSize);
+    nbThreads = szp_detect_nbThreads_randomaccess(cmpBytes, nbEle, blockSize, sizeof(float));
     rcp = cmpBytes + nbThreads * sizeof(size_t);
 
     /* Use block-based distribution matching the compressor */
@@ -462,6 +468,7 @@ float *szp_float_decompress_openmp_threadblock_randomaccess(size_t nbEle, float 
 
         unsigned char *temp_sign_arr = (unsigned char *)malloc((block_size-1) * sizeof(unsigned char));
         unsigned int *temp_predict_arr = (unsigned int *)malloc((block_size-1) * sizeof(unsigned int));
+        if (!temp_sign_arr || !temp_predict_arr) { fprintf(stderr, "szpd_float: malloc failed\n"); exit(EXIT_FAILURE); }
         unsigned int savedbitsbytelength = 0;
 
         for (size_t block_idx = start_block; block_idx < end_block; block_idx++)
@@ -527,7 +534,7 @@ void szp_float_decompress_openmp_threadblock_randomaccess_arg(float *newData, si
     size_t threadblocksize = 0;
     int block_size = blockSize;
 
-    nbThreads = szp_detect_nbThreads_randomaccess(cmpBytes, nbEle, blockSize);
+    nbThreads = szp_detect_nbThreads_randomaccess(cmpBytes, nbEle, blockSize, sizeof(float));
     rcp = cmpBytes + nbThreads * sizeof(size_t);
 
     /* Use block-based distribution matching the compressor */
@@ -552,6 +559,7 @@ void szp_float_decompress_openmp_threadblock_randomaccess_arg(float *newData, si
 
         unsigned char *temp_sign_arr = (unsigned char *)malloc((block_size-1) * sizeof(unsigned char));
         unsigned int *temp_predict_arr = (unsigned int *)malloc((block_size-1) * sizeof(unsigned int));
+        if (!temp_sign_arr || !temp_predict_arr) { fprintf(stderr, "szpd_float: malloc failed\n"); exit(EXIT_FAILURE); }
         unsigned int savedbitsbytelength = 0;
 
         for (size_t block_idx = start_block; block_idx < end_block; block_idx++)
@@ -612,6 +620,7 @@ void szp_float_decompress_openmp_threadblock_randomaccess_topology_preserved(
 #ifdef _OPENMP
     *newData = (float *)malloc(sizeof(float) * nbEle);
     *FN      = (int   *)calloc(nbEle, sizeof(int));
+    if (!*newData || !*FN) { fprintf(stderr, "szpd_float: malloc failed\n"); exit(EXIT_FAILURE); }
 
     size_t *offsets = (size_t *)cmpBytes;
     unsigned char *rcp;
@@ -691,17 +700,22 @@ void szp_float_decompress_openmp_threadblock_randomaccess_topology_preserved(
         #if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L
         if (posix_memalign((void**)&temp_sign_arr, 64, new_block_size) != 0) {
             temp_sign_arr = (unsigned char *)malloc(new_block_size);
+            if (!temp_sign_arr) { fprintf(stderr, "szpd_float: malloc failed\n"); exit(EXIT_FAILURE); }
         }
         if (posix_memalign((void**)&temp_predict_arr, 64, new_block_size * sizeof(unsigned int)) != 0) {
             temp_predict_arr = (unsigned int *)malloc(new_block_size * sizeof(unsigned int));
+            if (!temp_predict_arr) { fprintf(stderr, "szpd_float: malloc failed\n"); exit(EXIT_FAILURE); }
         }
         if (posix_memalign((void**)&temp_type_arr, 64, block_size) != 0) {
             temp_type_arr = (unsigned char *)malloc(block_size);
+            if (!temp_type_arr) { fprintf(stderr, "szpd_float: malloc failed\n"); exit(EXIT_FAILURE); }
         }
         #else
         temp_sign_arr = (unsigned char *)malloc(new_block_size);
         temp_predict_arr = (unsigned int *)malloc(new_block_size * sizeof(unsigned int));
+        if (!temp_sign_arr || !temp_predict_arr) { fprintf(stderr, "szpd_float: malloc failed\n"); exit(EXIT_FAILURE); }
         temp_type_arr = (unsigned char *)malloc(block_size);
+        if (!temp_type_arr) { fprintf(stderr, "szpd_float: malloc failed\n"); exit(EXIT_FAILURE); }
         #endif
 
         // Process blocks assigned to this thread using block-based distribution
@@ -797,7 +811,7 @@ int *szp_decompress_sort_positions(unsigned char *cmpBytes, size_t critical_coun
     size_t num_blocks_estimate = (critical_count + block_size - 1) / block_size;
     int optimal_threads = 0;
 
-    nbThreads = szp_detect_nbThreads_randomaccess(cmpBytes, critical_count, blockSize);
+    nbThreads = szp_detect_nbThreads_randomaccess(cmpBytes, critical_count, blockSize, sizeof(float));
     if (nbThreads == 0) nbThreads = 1;
 
     // For high thread counts with small problems, limit effective parallelism
@@ -864,13 +878,16 @@ int *szp_decompress_sort_positions(unsigned char *cmpBytes, size_t critical_coun
         #if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L
         if (posix_memalign((void**)&temp_sign_arr, 64, temp_arr_size * sizeof(unsigned char)) != 0) {
             temp_sign_arr = (unsigned char *)malloc(temp_arr_size * sizeof(unsigned char));
+            if (!temp_sign_arr) { fprintf(stderr, "szpd_float: malloc failed\n"); exit(EXIT_FAILURE); }
         }
         if (posix_memalign((void**)&temp_predict_arr, 64, temp_arr_size * sizeof(unsigned int)) != 0) {
             temp_predict_arr = (unsigned int *)malloc(temp_arr_size * sizeof(unsigned int));
+            if (!temp_predict_arr) { fprintf(stderr, "szpd_float: malloc failed\n"); exit(EXIT_FAILURE); }
         }
         #else
         temp_sign_arr = (unsigned char *)malloc(temp_arr_size * sizeof(unsigned char));
         temp_predict_arr = (unsigned int *)malloc(temp_arr_size * sizeof(unsigned int));
+        if (!temp_sign_arr || !temp_predict_arr) { fprintf(stderr, "szpd_float: malloc failed\n"); exit(EXIT_FAILURE); }
         #endif
         
         unsigned int signbytelength = 0; 
@@ -944,6 +961,7 @@ int *szp_decompress_sort_positions(unsigned char *cmpBytes, size_t critical_coun
     
     unsigned char *temp_sign_arr = (unsigned char *)malloc((blockSize - 1) * sizeof(unsigned char));
     unsigned int *temp_predict_arr = (unsigned int *)malloc((blockSize - 1) * sizeof(unsigned int));
+    if (!temp_sign_arr || !temp_predict_arr) { fprintf(stderr, "szpd_float: malloc failed\n"); exit(EXIT_FAILURE); }
     unsigned int savedbitsbytelength = 0;
     
     for (size_t i = 0; i < critical_count; i = i + blockSize)

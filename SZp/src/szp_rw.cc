@@ -748,6 +748,7 @@ uint64_t *szp_readUInt64Data_systemEndian(char *srcFilePath, size_t *nbEle, int 
 	if (pFile == NULL)
 	{
 		printf("Failed to open input file. 2\n");
+		free(daBuf);
 		*status = SZ_FERR;
 		return NULL;
 	}
@@ -785,6 +786,7 @@ float *szp_readFloatData_systemEndian(char *srcFilePath, size_t *nbEle, int *sta
     if (pFile == NULL)
     {
         printf("Failed to open input file. 2\n");
+        free(daBuf);
         *status = SZ_FERR;
         return NULL;
     }
