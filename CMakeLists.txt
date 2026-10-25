@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.20)
 
 project (szp
-  VERSION 1.0.0
+  VERSION 1.2.0
   DESCRIPTION "SZp Error Bounded Lossy Compressor"
   LANGUAGES C CXX
 )
@@ -82,7 +82,7 @@ if(ENABLE_CUDA)
       $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SZp>
   )
   if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-    set_target_properties(SZp_cuda PROPERTIES CUDA_ARCHITECTURES "60;70;75;80;86;89;90")
+    set_target_properties(SZp_cuda PROPERTIES CUDA_ARCHITECTURES "60;61;70;75;80;86;89;90")
   endif()
   install(TARGETS SZp_cuda EXPORT SZpTargets)
 
@@ -90,40 +90,37 @@ if(ENABLE_CUDA)
   if(OpenMP_CXX_FOUND)
     add_executable(test_cuda_compress example/test_cuda_compress.cu)
     target_link_libraries(test_cuda_compress SZp SZp_cuda OpenMP::OpenMP_CXX)
-    target_include_directories(test_cuda_compress PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/SZp/include)
 
     add_executable(test_cuda_decompress example/test_cuda_decompress.cu)
     target_link_libraries(test_cuda_decompress SZp SZp_cuda OpenMP::OpenMP_CXX)
-    target_include_directories(test_cuda_decompress PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/SZp/include)
 
     add_executable(test_cuda_topology example/test_cuda_topology.cu)
     target_link_libraries(test_cuda_topology SZp SZp_cuda OpenMP::OpenMP_CXX)
-    target_include_directories(test_cuda_topology PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/SZp/include)
 
     add_executable(test_cuda_topology_3d example/test_cuda_topology_3d.cu)
     target_link_libraries(test_cuda_topology_3d SZp SZp_cuda OpenMP::OpenMP_CXX)
-    target_include_directories(test_cuda_topology_3d PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/SZp/include)
 
     add_executable(compare_with_lopc example/compare_with_lopc.cu)
     target_link_libraries(compare_with_lopc SZp SZp_cuda OpenMP::OpenMP_CXX)
-    target_include_directories(compare_with_lopc PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/SZp/include)
 
     add_executable(compare_with_lopc_3d example/compare_with_lopc_3d.cu)
     target_link_libraries(compare_with_lopc_3d SZp SZp_cuda OpenMP::OpenMP_CXX)
-    target_include_directories(compare_with_lopc_3d PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/SZp/include)
+    # Automated CTest tests (self-contained, no external data files)
+    if(BUILD_TESTING)
+      add_subdirectory(tests)
+    endif()
   else()
     message(STATUS "OpenMP CXX not found — test programs skipped. SZp_cuda library will still be built.")
   endif()
 endif()
 
+# ---- Standalone utilities (no CUDA required) ----
+if(OpenMP_CXX_FOUND)
+  add_executable(compare_critical_points example/compare_critical_points.cc)
+  target_link_libraries(compare_critical_points OpenMP::OpenMP_CXX)
+endif()
+
 # ---- Install / export (only if at least one target was created) ----
-get_property(_export_targets GLOBAL PROPERTY PACKAGES_FOUND)
 # Check if any installable targets exist
 if(OpenMP_CXX_FOUND OR ENABLE_CUDA)
   install(EXPORT SZpTargets NAMESPACE SZp:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SZp/)

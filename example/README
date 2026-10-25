@@ -1,30 +1,80 @@
---------SZ (version 2.1): Error-bounded Lossy Compressor for HPC Data--------
- (C) 2016 by Mathematics and Computer Science (MCS), Argonne National Laboratory.
-       See COPYRIGHT in top-level directory.
+TopoSZp-CUDA — Example Programs
+=================================
 
-===Example files===
--------------------
-testdouble_compress.c  testdouble_decompress.c  testfloat_compress.c  testfloat_decompress.c
-testdouble_compress_f.f90  testdouble_decompress_f.f90
+All example programs are built by CMake when both CUDA and OpenMP are available:
 
-You can use "make clean;make" to recompile all the example codes, or compile them by the customized Makefile.bk as follows:
-make -f Makefile.bk
+    mkdir build && cd build
+    cmake .. -DENABLE_CUDA=ON
+    make -j
 
-We provide an example below (more can be found in doc/userguide.pdf) 
+The built executables are placed in the build directory.
 
-char *SZ_compress(int dataType, void *data, ulong *outSize, int r5, int r4, int r3, int r2, int r1);
 
-dataType: either SZ_DOUBLE or SZ_FLOAT
-void *data: either double* data or float* data
-ulong *outSize: size of output compressed data (in byte)
-int r5: size of dimension 5 
-int r4: size of dimension 4 
-int r3: size of dimension 3 
-int r2: size of dimension 2 
-int r1: size of dimension 1 
+Programs
+--------
 
-Return: the compressed bytes
+test_cuda_topology
+    End-to-end 2D topology preservation test. Runs the full CUDA pipeline
+    (find critical points, sort, compress, decompress, post-process) and
+    verifies preservation rates against the OpenMP reference.
 
-Warm reminder: Please remember to release the memory occupied by the variable after calling the compress/decompress function if it's not used any longer in case of memory leakcage.
+    Usage: test_cuda_topology <input_file> <rows> <cols> <errBound> <blockSize>
+    Example: ./test_cuda_topology CLDHGH_1_1800_3600.dat 1800 3600 1e-3 64
 
-Note: Compiling testfloat_CompDecomp.c requires to install z-checker library first (https://github.com/CODARcode/Z-checker)
+test_cuda_topology_3d
+    End-to-end 3D topology preservation test. Uses 6-connected neighborhoods
+    and includes saddle stencil restoration with axis-pattern detection and
+    3x3x3 RBF Gaussian kernel.
+
+    Usage: test_cuda_topology_3d <input_file> <d1> <d2> <d3> <errBound> <blockSize>
+    Example: ./test_cuda_topology_3d volume_100_500_500.dat 100 500 500 1e-3 64
+
+test_cuda_compress
+    Compression validation. Compresses with CUDA random-access mode,
+    decompresses with both CUDA and OpenMP, and cross-validates results.
+    Supports both absolute and relative error bounds.
+
+    Usage: test_cuda_compress <input_file> <nbEle> <errBound> <blockSize>
+    Example: ./test_cuda_compress data.dat 6480000 1e-3 64
+
+test_cuda_decompress
+    Decompression validation. Tests OpenMP-compress-to-CUDA-decompress and
+    CUDA-compress-to-CUDA-decompress paths. Optionally tests topology-
+    preserved decompression when grid dimensions are provided.
+
+    Usage: test_cuda_decompress <input_file> <nbEle> <absErrBound> <blockSize> [rows cols]
+    Example: ./test_cuda_decompress data.dat 6480000 1e-3 64 1800 3600
+
+compare_with_lopc
+    2D comparison tool. Benchmarks TopoSZp CUDA against the LOPC GPU
+    compressor for critical point preservation, local order, compression
+    ratio, and persistence analysis.
+
+    Usage: compare_with_lopc <orig> <lopc_decomp> <rows> <cols> <eb> <blockSize> <lopc_comp_size>
+
+compare_with_lopc_3d
+    3D comparison tool. Same as above for 3D structured grids with
+    6-connected neighborhoods.
+
+    Usage: compare_with_lopc_3d <orig> <lopc_decomp> <d1> <d2> <d3> <eb> <blockSize> <lopc_comp_size>
+
+compare_critical_points
+    CPU-only utility. Compares critical points between original and
+    decompressed data files without running compression (built even
+    without CUDA).
+
+    Usage: compare_critical_points <orig_file> <decomp_file> <rows> <cols> <eb>
+
+
+Error Bound Modes
+-----------------
+Programs that accept <errBound> support two modes:
+    Absolute:  1e-3          Maximum pointwise error is 0.001
+    Relative:  rel:1e-4      Error bound = (data_max - data_min) * 1e-4
+
+
+Input Data Format
+-----------------
+All programs expect raw binary files of 32-bit IEEE 754 floats in row-major
+(C) order. For 3D data, the layout is d1 x d2 x d3 (slowest to fastest
+varying dimension).

@@ -31,6 +31,76 @@
         }                                                                      \
     } while (0)
 
+/// Check for errors from the most recent kernel launch.
+#define CUDA_CHECK_KERNEL()  CUDA_CHECK(cudaGetLastError())
+
+/* ================================================================
+ *  Maximum compression-block size for stack-allocated local arrays.
+ *
+ *  Packing kernels declare local_signs[SZP_CUDA_MAX_BLOCK] and
+ *  local_mags[SZP_CUDA_MAX_BLOCK] on the GPU stack.  blockSize
+ *  must satisfy  blockSize <= SZP_CUDA_MAX_BLOCK + 1  (since
+ *  n = blockSize - 1 deltas are stored).
+ *
+ *  The topology kernels use 256; the compress kernels use 1024.
+ *  Each host-side wrapper validates blockSize before launching.
+ * ================================================================ */
+#ifndef SZP_CUDA_MAX_BLOCK
+#define SZP_CUDA_MAX_BLOCK 1024
+#endif
+
+/* Topology kernels use smaller local arrays (256 elements). */
+#ifndef SZP_CUDA_TOPO_MAX_BLOCK
+#define SZP_CUDA_TOPO_MAX_BLOCK 256
+#endif
+
+/* ================================================================
+ *  Input validation helpers (host-side)
+ * ================================================================ */
+
+/** Validate blockSize against a compile-time array limit.
+ *  Prints an error and exits if blockSize is too large. */
+inline void szp_cuda_validate_blocksize(int blockSize, int maxBlock,
+                                        const char *funcName)
+{
+    if (blockSize <= 0 || blockSize > maxBlock + 1) {
+        fprintf(stderr, "%s: blockSize %d out of range [1, %d]\n",
+                funcName, blockSize, maxBlock + 1);
+        exit(EXIT_FAILURE);
+    }
+}
+
+/** Validate grid dimensions: each > 0, product fits in size_t.
+ *  Returns total element count, or exits on overflow / invalid input. */
+inline size_t szp_cuda_validate_dims(int d1, int d2, int d3,
+                                     const char *funcName)
+{
+    if (d1 <= 0 || d2 <= 0 || d3 <= 0) {
+        fprintf(stderr, "%s: invalid dimensions %d x %d x %d\n",
+                funcName, d1, d2, d3);
+        exit(EXIT_FAILURE);
+    }
+    /* Overflow check: (size_t)d1 * d2 * d3 */
+    size_t s1 = (size_t)d1;
+    size_t s2 = (size_t)d2;
+    size_t s3 = (size_t)d3;
+    if (s2 != 0 && s1 > SIZE_MAX / s2) goto overflow;
+    size_t s12 = s1 * s2;
+    if (s3 != 0 && s12 > SIZE_MAX / s3) goto overflow;
+    return s12 * s3;
+
+overflow:
+    fprintf(stderr, "%s: dimension overflow %d x %d x %d\n",
+            funcName, d1, d2, d3);
+    exit(EXIT_FAILURE);
+}
+
+inline size_t szp_cuda_validate_dims_2d(int rows, int cols,
+                                        const char *funcName)
+{
+    return szp_cuda_validate_dims(rows, cols, 1, funcName);
+}
+
 namespace szp_cuda {
 
 /* ================================================================

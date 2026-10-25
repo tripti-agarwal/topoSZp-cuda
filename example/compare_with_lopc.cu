@@ -191,15 +191,19 @@ int main(int argc, char *argv[]) {
     /* Read original data */
     float *orig = (float *)malloc(nbEle * sizeof(float));
     FILE *fp = fopen(orig_file, "rb");
-    if (!fp) { fprintf(stderr, "Cannot open %s\n", orig_file); return 1; }
-    fread(orig, sizeof(float), nbEle, fp);
+    if (!fp) { fprintf(stderr, "Cannot open %s\n", orig_file); free(orig); return 1; }
+    if (fread(orig, sizeof(float), nbEle, fp) != nbEle) {
+        fprintf(stderr, "Short read on %s\n", orig_file); fclose(fp); free(orig); return 1;
+    }
     fclose(fp);
 
     /* Read LOPC decompressed data */
     float *lopc_decomp = (float *)malloc(nbEle * sizeof(float));
     fp = fopen(lopc_file, "rb");
-    if (!fp) { fprintf(stderr, "Cannot open %s\n", lopc_file); return 1; }
-    fread(lopc_decomp, sizeof(float), nbEle, fp);
+    if (!fp) { fprintf(stderr, "Cannot open %s\n", lopc_file); free(orig); free(lopc_decomp); return 1; }
+    if (fread(lopc_decomp, sizeof(float), nbEle, fp) != nbEle) {
+        fprintf(stderr, "Short read on %s\n", lopc_file); fclose(fp); free(orig); free(lopc_decomp); return 1;
+    }
     fclose(fp);
 
     /* CUDA warmup */

@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT(szp, 1.2, sdi1@anl.gov)
+AC_INIT(szp, 1.2.0, sdi1@anl.gov)
 AM_INIT_AUTOMAKE([foreign -Wall -Werror subdir-objects])
 AC_CONFIG_SRCDIR([SZp/include/szp.h])
 AC_CONFIG_HEADERS([config.h])

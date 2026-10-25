@@ -57,12 +57,12 @@ int main(int argc, char *argv[]) {
     /* Read input data */
     float *data = (float *)malloc(nbEle * sizeof(float));
     FILE *fp = fopen(input_file, "rb");
-    if (!fp) { fprintf(stderr, "Cannot open %s\n", input_file); return 1; }
+    if (!fp) { fprintf(stderr, "Cannot open %s\n", input_file); free(data); return 1; }
     size_t nread = fread(data, sizeof(float), nbEle, fp);
     fclose(fp);
     if (nread != nbEle) {
         fprintf(stderr, "Read only %zu of %zu elements\n", nread, nbEle);
-        return 1;
+        free(data); return 1;
     }
 
     /* ============================================================ */

@@ -173,12 +173,18 @@ int main(int argc, char *argv[]) {
     FILE *fp;
 
     fp = fopen(orig_file, "rb");
-    if (!fp) { fprintf(stderr, "Cannot open %s\n", orig_file); return 1; }
-    fread(orig, sizeof(float), nbEle, fp); fclose(fp);
+    if (!fp) { fprintf(stderr, "Cannot open %s\n", orig_file); free(orig); free(lopc_decomp); return 1; }
+    if (fread(orig, sizeof(float), nbEle, fp) != nbEle) {
+        fprintf(stderr, "Short read on %s\n", orig_file); fclose(fp); free(orig); free(lopc_decomp); return 1;
+    }
+    fclose(fp);
 
     fp = fopen(lopc_file, "rb");
-    if (!fp) { fprintf(stderr, "Cannot open %s\n", lopc_file); return 1; }
-    fread(lopc_decomp, sizeof(float), nbEle, fp); fclose(fp);
+    if (!fp) { fprintf(stderr, "Cannot open %s\n", lopc_file); free(orig); free(lopc_decomp); return 1; }
+    if (fread(lopc_decomp, sizeof(float), nbEle, fp) != nbEle) {
+        fprintf(stderr, "Short read on %s\n", lopc_file); fclose(fp); free(orig); free(lopc_decomp); return 1;
+    }
+    fclose(fp);
 
     /* CUDA warmup */
     { void *d; cudaMalloc(&d, 1); cudaFree(d); cudaDeviceSynchronize(); }

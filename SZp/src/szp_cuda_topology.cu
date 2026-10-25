@@ -21,24 +21,11 @@
 #include <thrust/functional.h>
 #include <thrust/count.h>
 #include <thrust/copy.h>
+#include <thrust/iterator/transform_iterator.h>
 
 #include "szp_cuda_topology.cuh"
-#include "szp_cuda_common.cuh"
+#include "szp_cuda_common.cuh"  // CUDA_CHECK, CUDA_CHECK_KERNEL
 #include "szp_defines.h"
-
-/* ------------------------------------------------------------------ */
-/*  Helper: CUDA error checking                                        */
-/* ------------------------------------------------------------------ */
-#ifndef CUDA_CHECK
-#define CUDA_CHECK(call) do {                                          \
-    cudaError_t err = (call);                                          \
-    if (err != cudaSuccess) {                                          \
-        fprintf(stderr, "CUDA error at %s:%d: %s\n",                  \
-                __FILE__, __LINE__, cudaGetErrorString(err));          \
-        exit(EXIT_FAILURE);                                            \
-    }                                                                  \
-} while (0)
-#endif
 
 /* ================================================================== */
 /*  1.  CRITICAL POINT FINDING                                         */
@@ -50,14 +37,15 @@
  */
 __global__ void find_critical_points_kernel(
     const float *data, int rows, int cols, double inver_bound, float absErrBound,
-    CriticalPoint *results, unsigned int *d_count)
+    CriticalPoint *results, unsigned int *d_count,
+    size_t total_interior)
 {
-    unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    unsigned int total_interior = (unsigned int)(rows - 2) * (unsigned int)(cols - 2);
+    size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= total_interior) return;
 
-    int i = 1 + (int)(idx / (unsigned int)(cols - 2));
-    int j = 1 + (int)(idx % (unsigned int)(cols - 2));
+    size_t cols_m2 = (size_t)(cols - 2);
+    int i = 1 + (int)(idx / cols_m2);
+    int j = 1 + (int)(idx % cols_m2);
 
     float center = data[i * cols + j];
     float up     = data[(i - 1) * cols + j];
@@ -95,8 +83,10 @@ CriticalPoint *szp_cuda_find_critical_points(float *data, size_t *outCount,
         return NULL;
     }
 
+    szp_cuda_validate_dims_2d(rows, cols, "szp_cuda_find_critical_points");
+
     size_t grid_size = (size_t)rows * cols;
-    unsigned int total_interior = (unsigned int)(rows - 2) * (unsigned int)(cols - 2);
+    size_t total_interior = (size_t)(rows - 2) * (size_t)(cols - 2);
 
     /* Allocate device memory */
     float *d_data;
@@ -114,9 +104,10 @@ CriticalPoint *szp_cuda_find_critical_points(float *data, size_t *outCount,
     double inver_bound = 1.0 / absErrBound;
 
     int threadsPerBlock = 256;
-    int blocks = ((int)total_interior + threadsPerBlock - 1) / threadsPerBlock;
+    int blocks = (int)((total_interior + threadsPerBlock - 1) / threadsPerBlock);
     find_critical_points_kernel<<<blocks, threadsPerBlock>>>(
-        d_data, rows, cols, inver_bound, absErrBound, d_results, d_count);
+        d_data, rows, cols, inver_bound, absErrBound, d_results, d_count,
+        total_interior);
     CUDA_CHECK(cudaGetLastError());
 
     /* Copy count back */
@@ -190,21 +181,14 @@ __global__ void mark_boundaries_kernel(
     }
 }
 
-/* O(n) sequential scan to compute cumulative positions within each bin */
-__global__ void compute_sort_positions_kernel(
+/* Parallel scatter: write precomputed positions back to cp[] */
+__global__ void scatter_sort_positions_kernel(
     CriticalPoint *cp, const BinValueKey *sorted_keys,
-    const int *boundaries, size_t n)
+    const int *positions, size_t n)
 {
-    if (blockIdx.x != 0 || threadIdx.x != 0) return;
-
-    int pos = 0;
-    for (size_t i = 0; i < n; i++) {
-        if (i > 0 && sorted_keys[i].bin != sorted_keys[i - 1].bin)
-            pos = 0;
-        else
-            pos += boundaries[i];
-        cp[sorted_keys[i].original_index].sort_position = pos;
-    }
+    size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= n) return;
+    cp[sorted_keys[idx].original_index].sort_position = positions[idx];
 }
 
 extern "C"
@@ -247,12 +231,36 @@ void szp_cuda_sort_critical_points_by_original_data(CriticalPoint *critical_poin
     thrust::device_ptr<BinValueKey> keys_ptr(d_keys);
     thrust::sort(keys_ptr, keys_ptr + critical_count, BinValueCmp());
 
-    /* O(n) position assignment: mark boundaries → sequential scan */
+    /* O(n) parallel position assignment: mark boundaries → segmented scan → scatter */
     mark_boundaries_kernel<<<blocks, threadsPerBlock>>>(d_keys, d_boundaries, critical_count);
     CUDA_CHECK(cudaGetLastError());
 
-    compute_sort_positions_kernel<<<1, 1>>>(d_cp, d_keys, d_boundaries, critical_count);
-    CUDA_CHECK(cudaGetLastError());
+    {
+        int *d_bin_keys = NULL;
+        int *d_positions = NULL;
+        CUDA_CHECK(cudaMalloc(&d_bin_keys, critical_count * sizeof(int)));
+        CUDA_CHECK(cudaMalloc(&d_positions, critical_count * sizeof(int)));
+
+        /* Extract bins in parallel */
+        thrust::device_ptr<BinValueKey> kp(d_keys);
+        thrust::device_ptr<int> bk(d_bin_keys);
+        thrust::transform(kp, kp + critical_count, bk,
+            [] __device__ (const BinValueKey &k) { return k.bin; });
+
+        /* Segmented exclusive scan: resets to 0 at every new bin */
+        thrust::device_ptr<int> bp(d_boundaries);
+        thrust::device_ptr<int> pp(d_positions);
+        thrust::exclusive_scan_by_key(bk, bk + critical_count, bp, pp);
+        CUDA_CHECK(cudaGetLastError());
+
+        /* Scatter positions back to cp[] in parallel */
+        scatter_sort_positions_kernel<<<blocks, threadsPerBlock>>>(
+            d_cp, d_keys, d_positions, critical_count);
+        CUDA_CHECK(cudaGetLastError());
+
+        cudaFree(d_bin_keys);
+        cudaFree(d_positions);
+    }
 
     /* Copy back */
     CUDA_CHECK(cudaMemcpy(critical_points, d_cp, critical_count * sizeof(CriticalPoint), cudaMemcpyDeviceToHost));
@@ -421,6 +429,9 @@ unsigned char *szp_cuda_compress_sort_positions(CriticalPoint *critical_points,
         *outSize = 0;
         return NULL;
     }
+
+    szp_cuda_validate_blocksize(blockSize, SZP_CUDA_TOPO_MAX_BLOCK,
+                                "szp_cuda_compress_sort_positions");
 
     /* Extract sort_position values for extrema (type 1 or 2) */
     size_t extrema_count = 0;
@@ -679,6 +690,11 @@ unsigned char *szp_cuda_float_compress_randomaccess_topology_preserved(
         *outSize = 0;
         return NULL;
     }
+
+    szp_cuda_validate_blocksize(blockSize, SZP_CUDA_TOPO_MAX_BLOCK,
+                                "szp_cuda_float_compress_randomaccess_topology_preserved");
+    szp_cuda_validate_dims_2d(rows, cols,
+                              "szp_cuda_float_compress_randomaccess_topology_preserved");
 
     double inver_bound = 1.0 / absErrBound;
     unsigned int block_size = (unsigned int)blockSize;

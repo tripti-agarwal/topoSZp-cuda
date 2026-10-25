@@ -40,21 +40,8 @@
 #include <cuda_runtime.h>
 
 #include "szp_cuda_decompress.cuh"
+#include "szp_cuda_common.cuh"  // CUDA_CHECK, CUDA_CHECK_KERNEL
 #include "szp_defines.h"
-
-/* ================================================================== */
-/*  CUDA helpers                                                       */
-/* ================================================================== */
-
-#define CUDA_CHECK(call)                                                \
-    do {                                                                \
-        cudaError_t _e = (call);                                        \
-        if (_e != cudaSuccess) {                                        \
-            fprintf(stderr, "CUDA error %s:%d: %s\n",                   \
-                    __FILE__, __LINE__, cudaGetErrorString(_e));         \
-            exit(EXIT_FAILURE);                                         \
-        }                                                               \
-    } while (0)
 
 /* ================================================================== */
 /*  Device-side bit unpacking (serial, one CUDA thread per block)      */
@@ -884,7 +871,7 @@ cuda_decompress_randomaccess_impl(T *hostOut, size_t nbEle,
 
     /* 4. Async copy data to device */
     cudaStream_t stream;
-    cudaStreamCreate(&stream);
+    CUDA_CHECK(cudaStreamCreate(&stream));
     cudaMemcpyAsync(d_cmpBytes, cmpBytes, cmpTotalSize,
                     cudaMemcpyHostToDevice, stream);
     cudaMemcpyAsync(d_block_offsets, h_block_offsets, offsets_bytes,

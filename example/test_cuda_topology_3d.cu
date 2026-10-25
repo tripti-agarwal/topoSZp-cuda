@@ -458,12 +458,12 @@ int main(int argc, char *argv[])
     /* Read input */
     float *data = (float *)malloc(nbEle * sizeof(float));
     FILE *fp = fopen(input_file, "rb");
-    if (!fp) { fprintf(stderr, "Cannot open %s\n", input_file); return 1; }
+    if (!fp) { fprintf(stderr, "Cannot open %s\n", input_file); free(data); return 1; }
     size_t nread = fread(data, sizeof(float), nbEle, fp);
     fclose(fp);
     if (nread != nbEle) {
         fprintf(stderr, "Read %zu / %zu elements\n", nread, nbEle);
-        return 1;
+        free(data); return 1;
     }
 
     /* Parse error bound */
@@ -471,7 +471,7 @@ int main(int argc, char *argv[])
     const char *eb_mode;
     if (szp_parse_errbound_float(eb_arg, data, nbEle, &absErrBound, &eb_mode) != 0) {
         fprintf(stderr, "Invalid error bound: %s\n", eb_arg);
-        return 1;
+        free(data); return 1;
     }
 
     printf("=== TopoSZp 3D Critical Point Preservation Test ===\n");

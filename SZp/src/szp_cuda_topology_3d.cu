@@ -20,63 +20,116 @@
 #include <thrust/scan.h>
 #include <thrust/device_ptr.h>
 #include <thrust/sort.h>
+#include <thrust/iterator/transform_iterator.h>
+#include <thrust/functional.h>
 
 #include "szp_cuda_topology_3d.cuh"
+#include "szp_cuda_common.cuh"  // CUDA_CHECK, CUDA_CHECK_KERNEL
 #include "szp_defines.h"
 
-/* ------------------------------------------------------------------ */
-/*  Helper: CUDA error checking                                        */
-/* ------------------------------------------------------------------ */
-#ifndef CUDA_CHECK
-#define CUDA_CHECK(call) do {                                          \
-    cudaError_t err = (call);                                          \
-    if (err != cudaSuccess) {                                          \
-        fprintf(stderr, "CUDA error at %s:%d: %s\n",                  \
-                __FILE__, __LINE__, cudaGetErrorString(err));          \
-        exit(EXIT_FAILURE);                                            \
-    }                                                                  \
-} while (0)
-#endif
+/* ================================================================== */
+/*  1.  3D CRITICAL POINT FINDING (shared-memory tiled)                */
+/* ================================================================== */
 
-/* ================================================================== */
-/*  1.  3D CRITICAL POINT FINDING                                      */
-/* ================================================================== */
+/* Tile dimensions for shared-memory tiling.
+ * Each thread block processes a TILE_X × TILE_Y × TILE_Z tile of
+ * interior voxels and loads a (TILE_X+2) × (TILE_Y+2) × (TILE_Z+2)
+ * halo region into shared memory.  Neighbor reads come from shared
+ * memory instead of far-stride global reads (especially ±d2*d3).
+ *
+ * Shared memory per block = (TX+2)*(TY+2)*(TZ+2) * sizeof(float)
+ *   8×8×4  → 10×10×6 × 4 = 2400 B,  256 threads  — high occupancy
+ *   8×8×8  → 10×10×10× 4 = 4000 B,  512 threads
+ * Both well under the 48 KB limit.
+ */
+#define CP3D_TILE_X 8
+#define CP3D_TILE_Y 8
+#define CP3D_TILE_Z 4
+#define CP3D_HALO_X (CP3D_TILE_X + 2)
+#define CP3D_HALO_Y (CP3D_TILE_Y + 2)
+#define CP3D_HALO_Z (CP3D_TILE_Z + 2)
 
 /**
- * Kernel: one thread per interior voxel.
- * Interior = x in [1, d1-2], y in [1, d2-2], z in [1, d3-2].
- * Uses 6-connected (face-adjacent) neighborhood.
+ * Kernel: shared-memory tiled 3D critical point finder.
+ *
+ * Launched with a 3D grid where each block covers one tile of interior
+ * voxels.  Each block loads its tile + 1-voxel halo into shared memory,
+ * then every thread classifies its voxel via fast shared-memory reads
+ * for the 6-connected neighbors.
+ *
+ * This eliminates the far-stride global reads (±d2*d3) that cause
+ * severe cache thrashing in a flat-index kernel.
  */
 __global__ void find_critical_points_3d_kernel(
     const float *data, int d1, int d2, int d3,
     double inver_bound, float absErrBound,
-    CriticalPoint3D *results, unsigned int *d_count)
+    CriticalPoint3D *results, unsigned int *d_count,
+    size_t /* total_interior — unused, kept for API compat */)
 {
-    unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    unsigned int d1m2 = (unsigned int)(d1 - 2);
-    unsigned int d2m2 = (unsigned int)(d2 - 2);
-    unsigned int d3m2 = (unsigned int)(d3 - 2);
-    unsigned int total_interior = d1m2 * d2m2 * d3m2;
-    if (idx >= total_interior) return;
+    /* Shared memory tile including 1-voxel halo on each side */
+    __shared__ float tile[CP3D_HALO_X][CP3D_HALO_Y][CP3D_HALO_Z];
 
-    /* Convert flat interior index to 3D coordinates */
-    unsigned int plane = d2m2 * d3m2;
-    int x = 1 + (int)(idx / plane);
-    unsigned int rem = idx % plane;
-    int y = 1 + (int)(rem / d3m2);
-    int z = 1 + (int)(rem % d3m2);
+    /* Global coordinates of this tile's interior origin.
+     * Interior voxels span x in [1, d1-2], y in [1, d2-2], z in [1, d3-2]. */
+    int tile_x0 = 1 + (int)blockIdx.x * CP3D_TILE_X;
+    int tile_y0 = 1 + (int)blockIdx.y * CP3D_TILE_Y;
+    int tile_z0 = 1 + (int)blockIdx.z * CP3D_TILE_Z;
 
-    /* Flat index into data array */
-    int sd2d3 = d2 * d3;
-    size_t flat = (size_t)x * sd2d3 + (size_t)y * d3 + z;
+    /* Local thread indices within the tile */
+    int tx = (int)threadIdx.x;
+    int ty = (int)threadIdx.y;
+    int tz = (int)threadIdx.z;
 
-    float center = data[flat];
-    float xm = data[flat - sd2d3];       /* x-1 */
-    float xp = data[flat + sd2d3];       /* x+1 */
-    float ym = data[flat - d3];          /* y-1 */
-    float yp = data[flat + d3];          /* y+1 */
-    float zm = data[flat - 1];           /* z-1 */
-    float zp = data[flat + 1];           /* z+1 */
+    /* --- Load the halo region into shared memory ---
+     * Halo spans [tile_x0-1 .. tile_x0+TILE_X] in each dim.
+     * We have TILE_X*TILE_Y*TILE_Z threads; each may load multiple elements. */
+    int halo_total = CP3D_HALO_X * CP3D_HALO_Y * CP3D_HALO_Z;
+    int tid_flat = tx * (CP3D_TILE_Y * CP3D_TILE_Z)
+                 + ty * CP3D_TILE_Z + tz;
+    int threads_per_block = CP3D_TILE_X * CP3D_TILE_Y * CP3D_TILE_Z;
+
+    for (int h = tid_flat; h < halo_total; h += threads_per_block) {
+        int hx = h / (CP3D_HALO_Y * CP3D_HALO_Z);
+        int hr = h % (CP3D_HALO_Y * CP3D_HALO_Z);
+        int hy = hr / CP3D_HALO_Z;
+        int hz = hr % CP3D_HALO_Z;
+
+        /* Global coordinate for this halo element */
+        int gx = tile_x0 - 1 + hx;
+        int gy = tile_y0 - 1 + hy;
+        int gz = tile_z0 - 1 + hz;
+
+        /* Clamp to valid data range [0, d-1] for boundary tiles */
+        if (gx >= 0 && gx < d1 && gy >= 0 && gy < d2 && gz >= 0 && gz < d3) {
+            tile[hx][hy][hz] = data[(size_t)gx * d2 * d3
+                                  + (size_t)gy * d3 + gz];
+        } else {
+            tile[hx][hy][hz] = 0.0f;
+        }
+    }
+
+    __syncthreads();
+
+    /* Global coordinate of this thread's interior voxel */
+    int x = tile_x0 + tx;
+    int y = tile_y0 + ty;
+    int z = tile_z0 + tz;
+
+    /* Check this thread maps to a valid interior voxel */
+    if (x > d1 - 2 || y > d2 - 2 || z > d3 - 2) return;
+
+    /* Shared-memory indices: interior voxel sits at (tx+1, ty+1, tz+1). */
+    int sx = tx + 1;
+    int sy = ty + 1;
+    int sz = tz + 1;
+
+    float center = tile[sx][sy][sz];
+    float xm = tile[sx - 1][sy][sz];      /* x-1 */
+    float xp = tile[sx + 1][sy][sz];      /* x+1 */
+    float ym = tile[sx][sy - 1][sz];      /* y-1 */
+    float yp = tile[sx][sy + 1][sz];      /* y+1 */
+    float zm = tile[sx][sy][sz - 1];      /* z-1 */
+    float zp = tile[sx][sy][sz + 1];      /* z+1 */
 
     int type = 0;
     if (center > xm && center > xp &&
@@ -128,10 +181,12 @@ CriticalPoint3D *szp_cuda_find_critical_points_3d(
         return NULL;
     }
 
+    szp_cuda_validate_dims(d1, d2, d3, "szp_cuda_find_critical_points_3d");
+
     size_t grid_size = (size_t)d1 * d2 * d3;
-    unsigned int total_interior = (unsigned int)(d1 - 2)
-                                * (unsigned int)(d2 - 2)
-                                * (unsigned int)(d3 - 2);
+    size_t total_interior = (size_t)(d1 - 2)
+                          * (size_t)(d2 - 2)
+                          * (size_t)(d3 - 2);
 
     float *d_data;
     CUDA_CHECK(cudaMalloc(&d_data, grid_size * sizeof(float)));
@@ -147,11 +202,20 @@ CriticalPoint3D *szp_cuda_find_critical_points_3d(
 
     double inver_bound = 1.0 / absErrBound;
 
-    int tpb = 256;
-    int blocks = ((int)total_interior + tpb - 1) / tpb;
-    find_critical_points_3d_kernel<<<blocks, tpb>>>(
+    /* 3D grid of thread blocks, each covering one tile of interior voxels.
+     * Block dim = (TILE_X, TILE_Y, TILE_Z) = (8, 8, 4) = 256 threads.
+     * Grid dim covers all interior tiles, rounding up. */
+    int interior_x = d1 - 2;
+    int interior_y = d2 - 2;
+    int interior_z = d3 - 2;
+    dim3 blockDim3(CP3D_TILE_X, CP3D_TILE_Y, CP3D_TILE_Z);
+    dim3 gridDim3((interior_x + CP3D_TILE_X - 1) / CP3D_TILE_X,
+                  (interior_y + CP3D_TILE_Y - 1) / CP3D_TILE_Y,
+                  (interior_z + CP3D_TILE_Z - 1) / CP3D_TILE_Z);
+
+    find_critical_points_3d_kernel<<<gridDim3, blockDim3>>>(
         d_data, d1, d2, d3, inver_bound, absErrBound,
-        d_results, d_count);
+        d_results, d_count, total_interior);
     CUDA_CHECK(cudaGetLastError());
 
     unsigned int h_count = 0;
@@ -237,69 +301,20 @@ __global__ void mark_boundaries_3d_kernel(
 }
 
 /**
- * Step 2: Segmented prefix sum — sum boundaries within each bin segment.
- * After this, positions[idx] = number of distinct values before idx in its bin.
- * Uses thrust::inclusive_scan with a custom operator that resets at bin boundaries.
+ * Step 3: Segmented prefix sum + parallel scatter.
+ *
+ * boundaries[] is 0/1: 1 where (bin,value) differs from predecessor, else 0.
+ * An exclusive_scan_by_key over boundaries[], keyed by bin, produces the
+ * within-bin rank (number of distinct values before this element in its bin).
+ * A parallel kernel then scatters the rank to cp[original_index].sort_position.
  */
-struct BinSegmentedAdd {
-    const BinValueKey3D *keys;
-    BinSegmentedAdd(const BinValueKey3D *k) : keys(k) {}
-
-    __host__ __device__
-    int operator()(int a, int b) const {
-        /* b comes from a later index; if we're at a bin boundary, reset */
-        return a + b;
-    }
-};
-
-/**
- * Step 3: Write sort positions back — handle bin-boundary resets in a simple kernel.
- * After inclusive_scan on boundaries, values within a bin are cumulative sums.
- * But the scan doesn't reset at bin boundaries. Fix: scan, then subtract the
- * value at the start of each bin.
- *
- * Simpler approach: just use the scan result directly since boundaries[0] = 0
- * for each new bin, and inclusive_scan produces cumulative sum from 0.
- * But inclusive_scan doesn't reset at bin boundaries!
- *
- * Solution: use a two-pass approach:
- *   1. Mark boundaries (done above)
- *   2. For each element, walk forward from the bin start and accumulate.
- *      This is still O(n) if bins are small.
- *
- * Better solution: segmented scan using Thrust. But Thrust doesn't have built-in
- * segmented scan. Instead, use a simple parallel approach:
- *   - Compute positions[idx] = boundaries[idx] (0 or 1)
- *   - Prefix sum within each bin segment
- *
- * Simplest O(n) approach: single kernel where each thread looks at its
- * boundary value and the prefix sum, then subtracts the prefix sum value
- * at the start of its bin.
- *
- * Actually, the simplest correct O(n) approach: after sorting, each element
- * can compute its position by binary searching for the bin start, then
- * counting distinct values from there. But that's O(n log n).
- *
- * Practical approach: just do a sequential scan on the GPU with a single
- * thread block processing chunks, resetting at bin boundaries. For 2.9M
- * elements this takes ~1ms.
- */
-__global__ void compute_sort_positions_3d_kernel(
+__global__ void scatter_sort_positions_3d_kernel(
     CriticalPoint3D *cp, const BinValueKey3D *sorted_keys,
-    const int *boundaries, size_t n)
+    const int *positions, size_t n)
 {
-    /* Simple sequential scan - runs on one thread but is O(n) not O(n²) */
-    if (blockIdx.x != 0 || threadIdx.x != 0) return;
-
-    int pos = 0;
-    for (size_t i = 0; i < n; i++) {
-        if (i > 0 && sorted_keys[i].bin != sorted_keys[i - 1].bin) {
-            pos = 0;  /* new bin */
-        } else {
-            pos += boundaries[i];  /* 0 if same value, 1 if new value */
-        }
-        cp[sorted_keys[i].original_index].sort_position = pos;
-    }
+    size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= n) return;
+    cp[sorted_keys[idx].original_index].sort_position = positions[idx];
 }
 
 extern "C"
@@ -347,13 +362,39 @@ void szp_cuda_sort_critical_points_3d(
     thrust::device_ptr<BinValueKey3D> keys_ptr(d_keys);
     thrust::sort(keys_ptr, keys_ptr + critical_count, BinValueCmp3D());
 
-    /* Mark boundaries (O(n) parallel) */
+    /* Mark boundaries (O(n) parallel): boundaries[i] = 1 where value changes */
     mark_boundaries_3d_kernel<<<grid, tpb>>>(d_keys, d_boundaries, critical_count);
     CUDA_CHECK(cudaGetLastError());
 
-    /* Compute sort positions (O(n) sequential scan on GPU) */
-    compute_sort_positions_3d_kernel<<<1, 1>>>(d_cp, d_keys, d_boundaries, critical_count);
-    CUDA_CHECK(cudaGetLastError());
+    /* Segmented exclusive prefix sum keyed by bin:
+       produces within-bin rank for each element.  O(n) parallel via Thrust. */
+    {
+        /* Build bin-key array for the scan: key[i] = sorted_keys[i].bin */
+        int *d_bin_keys = NULL;
+        int *d_positions = NULL;
+        CUDA_CHECK(cudaMalloc(&d_bin_keys, critical_count * sizeof(int)));
+        CUDA_CHECK(cudaMalloc(&d_positions, critical_count * sizeof(int)));
+
+        /* Extract bins in parallel */
+        thrust::device_ptr<BinValueKey3D> kp(d_keys);
+        thrust::device_ptr<int> bk(d_bin_keys);
+        thrust::transform(kp, kp + critical_count, bk,
+            [] __device__ (const BinValueKey3D &k) { return k.bin; });
+
+        /* Segmented exclusive scan: resets to 0 at every new bin */
+        thrust::device_ptr<int> bp(d_boundaries);
+        thrust::device_ptr<int> pp(d_positions);
+        thrust::exclusive_scan_by_key(bk, bk + critical_count, bp, pp);
+        CUDA_CHECK(cudaGetLastError());
+
+        /* Scatter positions back to cp[] in parallel */
+        scatter_sort_positions_3d_kernel<<<grid, tpb>>>(
+            d_cp, d_keys, d_positions, critical_count);
+        CUDA_CHECK(cudaGetLastError());
+
+        cudaFree(d_bin_keys);
+        cudaFree(d_positions);
+    }
 
     /* Copy results back */
     CUDA_CHECK(cudaMemcpy(critical_points, d_cp, critical_count * sizeof(CriticalPoint3D), cudaMemcpyDeviceToHost));
@@ -494,6 +535,9 @@ unsigned char *szp_cuda_compress_sort_positions_3d(
         return NULL;
     }
 
+    szp_cuda_validate_blocksize(blockSize, SZP_CUDA_TOPO_MAX_BLOCK,
+                                "szp_cuda_compress_sort_positions_3d");
+
     /* Extract sort_position values for extrema (type 1 or 2) */
     size_t extrema_count = 0;
     for (size_t i = 0; i < critical_count; i++)
@@ -617,18 +661,19 @@ __global__ static void quantize_3d_kernel_double(
  */
 __global__ static void perturb_saddle_neighbors_3d_kernel(
     float *data, const unsigned char *critical_type,
-    int d1, int d2, int d3, float absErrBound)
+    int d1, int d2, int d3, float absErrBound,
+    size_t total_interior)
 {
-    unsigned int total_interior = (unsigned int)(d1-2) * (unsigned int)(d2-2) * (unsigned int)(d3-2);
-    unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= total_interior) return;
 
-    unsigned int d2m2 = (unsigned int)(d2-2);
-    unsigned int d3m2 = (unsigned int)(d3-2);
-    int x = 1 + (int)(idx / (d2m2 * d3m2));
-    int rem = (int)(idx % (d2m2 * d3m2));
-    int y = 1 + rem / (int)d3m2;
-    int z = 1 + rem % (int)d3m2;
+    size_t d2m2 = (size_t)(d2-2);
+    size_t d3m2 = (size_t)(d3-2);
+    size_t plane = d2m2 * d3m2;
+    int x = 1 + (int)(idx / plane);
+    size_t rr = idx % plane;
+    int y = 1 + (int)(rr / d3m2);
+    int z = 1 + (int)(rr % d3m2);
 
     size_t flat = (size_t)x * d2 * d3 + (size_t)y * d3 + z;
     if (critical_type[flat] != 3) return;  /* only process saddles */
@@ -683,32 +728,40 @@ __global__ static void perturb_saddle_neighbors_3d_kernel(
  * Saddle condition: high along some axes AND low along others.
  * We find a valid quantized value that satisfies this.
  */
+/**
+ * Fix saddle quantized values using double-buffering to avoid races.
+ * Reads neighbor values from qdata_src (previous pass snapshot),
+ * writes corrections to qdata_dst.  The caller swaps/copies between passes.
+ */
 __global__ static void fix_saddles_3d_kernel(
-    int *qdata, const unsigned char *critical_type,
-    int d1, int d2, int d3, size_t nbEle)
+    const int *qdata_src, int *qdata_dst,
+    const unsigned char *critical_type,
+    int d1, int d2, int d3, size_t nbEle,
+    size_t total_interior)
 {
     size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
-    /* Map to interior voxel */
-    unsigned int total_interior = (unsigned int)(d1-2) * (unsigned int)(d2-2) * (unsigned int)(d3-2);
     if (idx >= total_interior) return;
 
-    unsigned int d2m2 = (unsigned int)(d2-2);
-    unsigned int d3m2 = (unsigned int)(d3-2);
-    int x = 1 + (int)(idx / (d2m2 * d3m2));
-    int rem = (int)(idx % (d2m2 * d3m2));
-    int y = 1 + rem / (int)d3m2;
-    int z = 1 + rem % (int)d3m2;
+    size_t d2m2 = (size_t)(d2-2);
+    size_t d3m2 = (size_t)(d3-2);
+    size_t plane = d2m2 * d3m2;
+    int x = 1 + (int)(idx / plane);
+    size_t rr = idx % plane;
+    int y = 1 + (int)(rr / d3m2);
+    int z = 1 + (int)(rr % d3m2);
 
     size_t flat = (size_t)x * d2 * d3 + (size_t)y * d3 + z;
     if (critical_type[flat] != 3) return;  /* only fix saddles */
 
-    int c  = qdata[flat];
-    int xm = qdata[(x-1)*d2*d3 + y*d3 + z];
-    int xp = qdata[(x+1)*d2*d3 + y*d3 + z];
-    int ym = qdata[x*d2*d3 + (y-1)*d3 + z];
-    int yp = qdata[x*d2*d3 + (y+1)*d3 + z];
-    int zm = qdata[x*d2*d3 + y*d3 + (z-1)];
-    int zp = qdata[x*d2*d3 + y*d3 + (z+1)];
+    /* Read all values from the source (snapshot) buffer */
+    size_t sd2d3 = (size_t)d2 * d3;
+    int c  = qdata_src[flat];
+    int xm = qdata_src[flat - sd2d3];
+    int xp = qdata_src[flat + sd2d3];
+    int ym = qdata_src[flat - d3];
+    int yp = qdata_src[flat + d3];
+    int zm = qdata_src[flat - 1];
+    int zp = qdata_src[flat + 1];
 
     /* Check if saddle condition already holds */
     int x_high = (c > xm) && (c > xp);
@@ -751,21 +804,21 @@ __global__ static void fix_saddles_3d_kernel(
                 /* Check: don't break neighboring maxima/minima */
                 int ok = 1;
                 /* If a neighbor is a maximum, it must stay > center */
-                if (critical_type[(x-1)*d2*d3+y*d3+z] == 1 && xm <= trial) ok = 0;
-                if (critical_type[(x+1)*d2*d3+y*d3+z] == 1 && xp <= trial) ok = 0;
-                if (critical_type[x*d2*d3+(y-1)*d3+z] == 1 && ym <= trial) ok = 0;
-                if (critical_type[x*d2*d3+(y+1)*d3+z] == 1 && yp <= trial) ok = 0;
-                if (critical_type[x*d2*d3+y*d3+(z-1)] == 1 && zm <= trial) ok = 0;
-                if (critical_type[x*d2*d3+y*d3+(z+1)] == 1 && zp <= trial) ok = 0;
+                if (critical_type[flat - sd2d3] == 1 && xm <= trial) ok = 0;
+                if (critical_type[flat + sd2d3] == 1 && xp <= trial) ok = 0;
+                if (critical_type[flat - d3]    == 1 && ym <= trial) ok = 0;
+                if (critical_type[flat + d3]    == 1 && yp <= trial) ok = 0;
+                if (critical_type[flat - 1]     == 1 && zm <= trial) ok = 0;
+                if (critical_type[flat + 1]     == 1 && zp <= trial) ok = 0;
                 /* If a neighbor is a minimum, it must stay < center */
-                if (critical_type[(x-1)*d2*d3+y*d3+z] == 2 && xm >= trial) ok = 0;
-                if (critical_type[(x+1)*d2*d3+y*d3+z] == 2 && xp >= trial) ok = 0;
-                if (critical_type[x*d2*d3+(y-1)*d3+z] == 2 && ym >= trial) ok = 0;
-                if (critical_type[x*d2*d3+(y+1)*d3+z] == 2 && yp >= trial) ok = 0;
-                if (critical_type[x*d2*d3+y*d3+(z-1)] == 2 && zm >= trial) ok = 0;
-                if (critical_type[x*d2*d3+y*d3+(z+1)] == 2 && zp >= trial) ok = 0;
+                if (critical_type[flat - sd2d3] == 2 && xm >= trial) ok = 0;
+                if (critical_type[flat + sd2d3] == 2 && xp >= trial) ok = 0;
+                if (critical_type[flat - d3]    == 2 && ym >= trial) ok = 0;
+                if (critical_type[flat + d3]    == 2 && yp >= trial) ok = 0;
+                if (critical_type[flat - 1]     == 2 && zm >= trial) ok = 0;
+                if (critical_type[flat + 1]     == 2 && zp >= trial) ok = 0;
 
-                if (ok) { qdata[flat] = trial; return; }
+                if (ok) { qdata_dst[flat] = trial; return; }
             }
         }
     }
@@ -913,6 +966,11 @@ unsigned char *szp_cuda_float_compress_topology_3d(
         return NULL;
     }
 
+    szp_cuda_validate_blocksize(blockSize, SZP_CUDA_TOPO_MAX_BLOCK,
+                                "szp_cuda_float_compress_topology_3d");
+    szp_cuda_validate_dims(d1, d2, d3,
+                           "szp_cuda_float_compress_topology_3d");
+
     double inver_bound = 1.0 / absErrBound;
     unsigned int bsz = (unsigned int)blockSize;
     size_t num_blocks = (nbEle + bsz - 1) / bsz;
@@ -1016,6 +1074,11 @@ unsigned char *szp_cuda_double_compress_topology_3d(
         return NULL;
     }
 
+    szp_cuda_validate_blocksize(blockSize, SZP_CUDA_TOPO_MAX_BLOCK,
+                                "szp_cuda_double_compress_topology_3d");
+    szp_cuda_validate_dims(d1, d2, d3,
+                           "szp_cuda_double_compress_topology_3d");
+
     double inver_bound = 1.0 / absErrBound;
     unsigned int bsz = (unsigned int)blockSize;
     size_t num_blocks = (nbEle + bsz - 1) / bsz;
@@ -1056,15 +1119,29 @@ unsigned char *szp_cuda_double_compress_topology_3d(
         CUDA_CHECK(cudaGetLastError());
     }
 
-    /* Fix saddles */
+    /* Fix saddles using double-buffering to avoid read-write races.
+     * Each pass reads from d_qdata_src and writes corrections to d_qdata.
+     * After each pass, copy d_qdata back to d_qdata_src for the next pass. */
     {
-        unsigned int total_interior = (unsigned int)(d1-2) * (unsigned int)(d2-2) * (unsigned int)(d3-2);
+        size_t total_interior = (size_t)(d1-2) * (size_t)(d2-2) * (size_t)(d3-2);
         int stpb = 256;
-        int sgrid = ((int)total_interior + stpb - 1) / stpb;
+        int sgrid = (int)((total_interior + stpb - 1) / stpb);
+
+        int *d_qdata_src;
+        CUDA_CHECK(cudaMalloc(&d_qdata_src, nbEle * sizeof(int)));
+
         for (int pass = 0; pass < 3; pass++) {
-            fix_saddles_3d_kernel<<<sgrid, stpb>>>(d_qdata, d_ct, d1, d2, d3, nbEle);
+            /* Snapshot current state into the read buffer */
+            CUDA_CHECK(cudaMemcpy(d_qdata_src, d_qdata,
+                                  nbEle * sizeof(int),
+                                  cudaMemcpyDeviceToDevice));
+            fix_saddles_3d_kernel<<<sgrid, stpb>>>(
+                d_qdata_src, d_qdata, d_ct, d1, d2, d3, nbEle,
+                total_interior);
             CUDA_CHECK(cudaGetLastError());
         }
+
+        cudaFree(d_qdata_src);
     }
 
     cudaFree(d_data);

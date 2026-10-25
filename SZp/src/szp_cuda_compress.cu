@@ -23,23 +23,14 @@
 #include <thrust/scan.h>
 
 #include "szp_cuda_compress.cuh"
+#include "szp_cuda_common.cuh"  // CUDA_CHECK, CUDA_CHECK_KERNEL
 #include "szp_defines.h"
 
 /* ═══════════════════════════════════════════════════════════════════════════ */
 /*  Helpers                                                                   */
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
-#define CUDA_CHECK(call)                                                       \
-    do {                                                                       \
-        cudaError_t err = (call);                                              \
-        if (err != cudaSuccess) {                                              \
-            fprintf(stderr, "CUDA error at %s:%d — %s\n", __FILE__, __LINE__,  \
-                    cudaGetErrorString(err));                                   \
-        }                                                                      \
-    } while (0)
-
-/* Maximum compression-block size we support in local arrays.                 */
-#define SZP_CUDA_MAX_BLOCK 1024
+/* SZP_CUDA_MAX_BLOCK is defined in szp_cuda_common.cuh (default 1024).      */
 
 /* ─── Device: MSB-first 1-bit sign packing (matches convertIntArray2ByteArray_fast_1b_args) ── */
 __device__ static unsigned int
@@ -396,24 +387,30 @@ cuda_compress_randomaccess_impl(T *oriData, size_t *outSize, T absErrBound,
 {
     if (nbEle == 0 || absErrBound <= 0) { *outSize = 0; return NULL; }
 
+    szp_cuda_validate_blocksize(blockSize, SZP_CUDA_MAX_BLOCK,
+                                "cuda_compress_randomaccess");
+
     double inver_bound = 1.0 / (double)absErrBound;
     size_t numBlocks = (nbEle + blockSize - 1) / blockSize;
 
     /* --- Single device allocation for input + metadata --- */
     size_t data_bytes = nbEle * sizeof(T);
+    /* Align data_bytes to 8 bytes so that the size_t arrays that follow
+       are properly aligned (avoids misaligned access on GPU). */
+    size_t data_bytes_aligned = (data_bytes + 7) & ~(size_t)7;
     size_t meta_bytes = numBlocks * sizeof(size_t) * 2; /* sizes + offsets */
-    size_t pool_bytes = data_bytes + meta_bytes;
+    size_t pool_bytes = data_bytes_aligned + meta_bytes;
 
     unsigned char *d_pool = NULL;
     CUDA_CHECK(cudaMalloc(&d_pool, pool_bytes));
 
     T      *d_data         = (T *)d_pool;
-    size_t *d_blockSizes   = (size_t *)(d_pool + data_bytes);
+    size_t *d_blockSizes   = (size_t *)(d_pool + data_bytes_aligned);
     size_t *d_blockOffsets  = d_blockSizes + numBlocks;
 
     /* --- Async copy input using a stream --- */
     cudaStream_t stream;
-    cudaStreamCreate(&stream);
+    CUDA_CHECK(cudaStreamCreate(&stream));
     cudaMemcpyAsync(d_data, oriData, data_bytes, cudaMemcpyHostToDevice, stream);
 
     /* --- Pass 1: sizing --- */
@@ -483,23 +480,27 @@ cuda_compress_randomaccess_arg_impl(unsigned char *output, T *oriData,
 {
     if (!output || nbEle == 0 || absErrBound <= 0) { *outSize = 0; return; }
 
+    szp_cuda_validate_blocksize(blockSize, SZP_CUDA_MAX_BLOCK,
+                                "cuda_compress_randomaccess_arg");
+
     double inver_bound = 1.0 / (double)absErrBound;
     size_t numBlocks = (nbEle + blockSize - 1) / blockSize;
 
     /* Single device allocation for input + metadata */
     size_t data_bytes = nbEle * sizeof(T);
+    size_t data_bytes_aligned = (data_bytes + 7) & ~(size_t)7;
     size_t meta_bytes = numBlocks * sizeof(size_t) * 2;
-    size_t pool_bytes = data_bytes + meta_bytes;
+    size_t pool_bytes = data_bytes_aligned + meta_bytes;
 
     unsigned char *d_pool = NULL;
     CUDA_CHECK(cudaMalloc(&d_pool, pool_bytes));
 
     T      *d_data         = (T *)d_pool;
-    size_t *d_blockSizes   = (size_t *)(d_pool + data_bytes);
+    size_t *d_blockSizes   = (size_t *)(d_pool + data_bytes_aligned);
     size_t *d_blockOffsets  = d_blockSizes + numBlocks;
 
     cudaStream_t stream;
-    cudaStreamCreate(&stream);
+    CUDA_CHECK(cudaStreamCreate(&stream));
     cudaMemcpyAsync(d_data, oriData, data_bytes, cudaMemcpyHostToDevice, stream);
 
     int tpb = 256;
@@ -551,6 +552,9 @@ cuda_compress_threadblock_impl(T *oriData, size_t *outSize, T absErrBound,
                                size_t nbEle, int blockSize)
 {
     if (nbEle == 0 || absErrBound <= 0) { *outSize = 0; return NULL; }
+
+    szp_cuda_validate_blocksize(blockSize, SZP_CUDA_MAX_BLOCK,
+                                "cuda_compress_threadblock");
 
     double inver_bound = 1.0 / (double)absErrBound;
     unsigned int nChunks = 1;     /* single chunk — serial within */
@@ -608,6 +612,9 @@ cuda_compress_threadblock_arg_impl(unsigned char *output, T *oriData,
                                    size_t nbEle, int blockSize)
 {
     if (!output || nbEle == 0 || absErrBound <= 0) { *outSize = 0; return; }
+
+    szp_cuda_validate_blocksize(blockSize, SZP_CUDA_MAX_BLOCK,
+                                "cuda_compress_threadblock_arg");
 
     double inver_bound = 1.0 / (double)absErrBound;
     unsigned int nChunks = 1;
