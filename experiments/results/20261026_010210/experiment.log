@@ -1,0 +1,459 @@
+TopoSZp-CUDA SDRBench Experiments — 20261026_010210
+Mode: full
+
+NVIDIA A100-SXM4-40GB, 580.95.05, 40960 MiB
+
+========== CESM-ATM 2D (1800x3600) ==========
+  AEROD_v eb=1e-3 ... ratio=7.09x  pres=83.49%  FN=11824 FP=0 FT=0  t=31.47ms
+  AEROD_v eb=1e-4 ... ratio=5.09x  pres=94.97%  FN=3604 FP=0 FT=0  t=32.72ms
+  AEROD_v eb=1e-5 ... ratio=3.61x  pres=99.69%  FN=219 FP=0 FT=0  t=33.63ms
+  CLDHGH eb=1e-3 ... ratio=4.95x  pres=95.63%  FN=9676 FP=0 FT=0  t=51.74ms
+  CLDHGH eb=1e-4 ... ratio=3.43x  pres=99.79%  FN=466 FP=0 FT=0  t=39.94ms
+  CLDHGH eb=1e-5 ... ratio=2.57x  pres=100.00%  FN=8 FP=0 FT=0  t=40.83ms
+  CLDLOW eb=1e-3 ... ratio=4.88x  pres=94.69%  FN=6046 FP=0 FT=0  t=45.44ms
+  CLDLOW eb=1e-4 ... ratio=3.40x  pres=99.71%  FN=333 FP=0 FT=0  t=36.79ms
+  CLDLOW eb=1e-5 ... ratio=2.57x  pres=99.96%  FN=43 FP=0 FT=0  t=52.32ms
+  CLDMED eb=1e-3 ... ratio=5.19x  pres=93.61%  FN=11317 FP=0 FT=0  t=40.11ms
+  CLDMED eb=1e-4 ... ratio=3.54x  pres=99.42%  FN=1028 FP=0 FT=0  t=63.55ms
+  CLDMED eb=1e-5 ... ratio=2.63x  pres=99.92%  FN=142 FP=0 FT=0  t=39.38ms
+  CLDTOT eb=1e-3 ... ratio=4.67x  pres=96.54%  FN=6227 FP=0 FT=0  t=42.84ms
+  CLDTOT eb=1e-4 ... ratio=3.25x  pres=99.88%  FN=218 FP=0 FT=0  t=39.18ms
+  CLDTOT eb=1e-5 ... ratio=2.46x  pres=100.00%  FN=6 FP=0 FT=0  t=40.25ms
+  FLDS eb=1e-3 ... ratio=2.51x  pres=100.00%  FN=3 FP=0 FT=0  t=37.74ms
+  FLDS eb=1e-4 ... ratio=1.99x  pres=100.00%  FN=1 FP=0 FT=0  t=55.84ms
+  FLDS eb=1e-5 ... ratio=1.66x  pres=100.00%  FN=0 FP=0 FT=0  t=40.13ms
+  FLDSC eb=1e-3 ... ratio=2.75x  pres=99.93%  FN=6 FP=0 FT=0  t=34.09ms
+  FLDSC eb=1e-4 ... ratio=2.15x  pres=99.99%  FN=1 FP=0 FT=0  t=34.72ms
+  FLDSC eb=1e-5 ... ratio=1.76x  pres=100.00%  FN=0 FP=0 FT=0  t=49.55ms
+  FLNS eb=1e-3 ... ratio=2.49x  pres=99.99%  FN=9 FP=0 FT=0  t=37.89ms
+  FLNS eb=1e-4 ... ratio=1.99x  pres=100.00%  FN=0 FP=0 FT=0  t=55.65ms
+  FLNS eb=1e-5 ... ratio=1.65x  pres=100.00%  FN=0 FP=0 FT=0  t=51.22ms
+  FLNSC eb=1e-3 ... ratio=2.71x  pres=99.97%  FN=13 FP=0 FT=0  t=39.18ms
+  FLNSC eb=1e-4 ... ratio=2.13x  pres=100.00%  FN=1 FP=0 FT=0  t=37.92ms
+  FLNSC eb=1e-5 ... ratio=1.74x  pres=100.00%  FN=0 FP=0 FT=0  t=38.77ms
+  FLNT eb=1e-3 ... ratio=2.63x  pres=99.99%  FN=9 FP=0 FT=0  t=40.81ms
+  FLNT eb=1e-4 ... ratio=2.07x  pres=100.00%  FN=1 FP=0 FT=0  t=42.52ms
+  FLNT eb=1e-5 ... ratio=1.71x  pres=100.00%  FN=0 FP=0 FT=0  t=41.42ms
+  FLNTC eb=1e-3 ... ratio=2.89x  pres=99.93%  FN=14 FP=0 FT=0  t=42.84ms
+  FLNTC eb=1e-4 ... ratio=2.24x  pres=100.00%  FN=0 FP=0 FT=0  t=41.47ms
+  FLNTC eb=1e-5 ... ratio=1.82x  pres=100.00%  FN=0 FP=0 FT=0  t=61.19ms
+  FLUT eb=1e-3 ... ratio=2.63x  pres=99.99%  FN=9 FP=0 FT=0  t=36.26ms
+  FLUT eb=1e-4 ... ratio=2.07x  pres=100.00%  FN=0 FP=0 FT=0  t=38.42ms
+  FLUT eb=1e-5 ... ratio=1.71x  pres=100.00%  FN=0 FP=0 FT=0  t=41.88ms
+  FLUTC eb=1e-3 ... ratio=2.89x  pres=99.93%  FN=13 FP=0 FT=0  t=38.98ms
+  FLUTC eb=1e-4 ... ratio=2.24x  pres=100.00%  FN=0 FP=0 FT=0  t=48.56ms
+  FLUTC eb=1e-5 ... ratio=1.82x  pres=100.00%  FN=0 FP=0 FT=0  t=60.36ms
+  FREQSH eb=1e-3 ... ratio=4.45x  pres=96.94%  FN=4301 FP=0 FT=0  t=46.40ms
+  FREQSH eb=1e-4 ... ratio=3.14x  pres=99.85%  FN=212 FP=0 FT=0  t=43.76ms
+  FREQSH eb=1e-5 ... ratio=2.40x  pres=100.00%  FN=5 FP=0 FT=0  t=39.48ms
+  FREQZM eb=1e-3 ... ratio=5.77x  pres=93.16%  FN=5470 FP=0 FT=0  t=33.92ms
+  FREQZM eb=1e-4 ... ratio=4.16x  pres=99.20%  FN=638 FP=0 FT=0  t=34.26ms
+  FREQZM eb=1e-5 ... ratio=3.20x  pres=99.98%  FN=16 FP=0 FT=0  t=36.64ms
+  FSDS eb=1e-3 ... ratio=2.57x  pres=100.00%  FN=0 FP=0 FT=0  t=54.60ms
+  FSDS eb=1e-4 ... ratio=2.08x  pres=100.00%  FN=0 FP=0 FT=0  t=38.26ms
+  FSDS eb=1e-5 ... ratio=1.76x  pres=100.00%  FN=0 FP=0 FT=0  t=40.31ms
+  FSDSC eb=1e-3 ... ratio=3.41x  pres=99.78%  FN=17 FP=0 FT=0  t=33.14ms
+  FSDSC eb=1e-4 ... ratio=2.63x  pres=100.00%  FN=0 FP=0 FT=0  t=35.65ms
+  FSDSC eb=1e-5 ... ratio=2.12x  pres=100.00%  FN=0 FP=0 FT=0  t=38.86ms
+  FSDTOA eb=1e-3 ... ratio=4.08x  pres=99.82%  FN=1 FP=0 FT=0  t=28.77ms
+  FSDTOA eb=1e-4 ... ratio=3.06x  pres=100.00%  FN=0 FP=0 FT=0  t=32.01ms
+  FSDTOA eb=1e-5 ... ratio=2.40x  pres=100.00%  FN=0 FP=0 FT=0  t=36.77ms
+  FSNS eb=1e-3 ... ratio=2.53x  pres=100.00%  FN=2 FP=0 FT=0  t=37.22ms
+  FSNS eb=1e-4 ... ratio=2.06x  pres=100.00%  FN=0 FP=0 FT=0  t=49.28ms
+  FSNS eb=1e-5 ... ratio=1.74x  pres=100.00%  FN=0 FP=0 FT=0  t=49.85ms
+  FSNSC eb=1e-3 ... ratio=3.01x  pres=99.95%  FN=16 FP=0 FT=0  t=32.66ms
+  FSNSC eb=1e-4 ... ratio=2.38x  pres=100.00%  FN=0 FP=0 FT=0  t=34.20ms
+  FSNSC eb=1e-5 ... ratio=1.96x  pres=100.00%  FN=0 FP=0 FT=0  t=36.89ms
+  FSNT eb=1e-3 ... ratio=2.55x  pres=100.00%  FN=0 FP=0 FT=0  t=36.22ms
+  FSNT eb=1e-4 ... ratio=2.08x  pres=100.00%  FN=0 FP=0 FT=0  t=38.97ms
+  FSNT eb=1e-5 ... ratio=1.75x  pres=100.00%  FN=0 FP=0 FT=0  t=39.93ms
+  FSNTC eb=1e-3 ... ratio=3.07x  pres=99.97%  FN=9 FP=0 FT=0  t=33.17ms
+  FSNTC eb=1e-4 ... ratio=2.42x  pres=100.00%  FN=0 FP=0 FT=0  t=51.50ms
+  FSNTC eb=1e-5 ... ratio=1.98x  pres=100.00%  FN=0 FP=0 FT=0  t=38.14ms
+  FSNTOA eb=1e-3 ... ratio=2.55x  pres=100.00%  FN=0 FP=0 FT=0  t=39.28ms
+  FSNTOA eb=1e-4 ... ratio=2.08x  pres=100.00%  FN=0 FP=0 FT=0  t=44.39ms
+  FSNTOA eb=1e-5 ... ratio=1.75x  pres=100.00%  FN=0 FP=0 FT=0  t=42.09ms
+  FSNTOAC eb=1e-3 ... ratio=3.07x  pres=99.98%  FN=4 FP=0 FT=0  t=32.76ms
+  FSNTOAC eb=1e-4 ... ratio=2.41x  pres=100.00%  FN=0 FP=0 FT=0  t=34.02ms
+  FSNTOAC eb=1e-5 ... ratio=1.98x  pres=100.00%  FN=0 FP=0 FT=0  t=43.48ms
+  FSUTOA eb=1e-3 ... ratio=2.55x  pres=100.00%  FN=1 FP=0 FT=0  t=39.45ms
+  FSUTOA eb=1e-4 ... ratio=2.08x  pres=100.00%  FN=0 FP=0 FT=0  t=41.76ms
+  FSUTOA eb=1e-5 ... ratio=1.75x  pres=100.00%  FN=0 FP=0 FT=0  t=53.23ms
+  ICEFRAC eb=1e-3 ... ratio=9.42x  pres=92.70%  FN=508 FP=0 FT=0  t=31.59ms
+  ICEFRAC eb=1e-4 ... ratio=8.22x  pres=96.41%  FN=250 FP=0 FT=0  t=29.32ms
+  ICEFRAC eb=1e-5 ... ratio=7.11x  pres=99.40%  FN=42 FP=0 FT=0  t=29.52ms
+  LANDFRAC eb=1e-3 ... ratio=7.69x  pres=99.42%  FN=23 FP=0 FT=0  t=28.03ms
+  LANDFRAC eb=1e-4 ... ratio=6.69x  pres=99.95%  FN=2 FP=0 FT=0  t=30.82ms
+  LANDFRAC eb=1e-5 ... ratio=5.91x  pres=99.97%  FN=1 FP=0 FT=0  t=30.24ms
+  LHFLX eb=1e-3 ... ratio=2.51x  pres=99.87%  FN=67 FP=0 FT=0  t=61.85ms
+  LHFLX eb=1e-4 ... ratio=2.00x  pres=99.99%  FN=3 FP=0 FT=0  t=39.22ms
+  LHFLX eb=1e-5 ... ratio=1.66x  pres=100.00%  FN=0 FP=0 FT=0  t=39.75ms
+  LWCF eb=1e-3 ... ratio=2.73x  pres=99.98%  FN=27 FP=0 FT=0  t=58.84ms
+  LWCF eb=1e-4 ... ratio=2.13x  pres=100.00%  FN=0 FP=0 FT=0  t=54.88ms
+  LWCF eb=1e-5 ... ratio=1.75x  pres=100.00%  FN=0 FP=0 FT=0  t=41.87ms
+  OCNFRAC eb=1e-3 ... ratio=7.37x  pres=93.04%  FN=598 FP=0 FT=0  t=29.52ms
+  OCNFRAC eb=1e-4 ... ratio=6.13x  pres=96.70%  FN=283 FP=0 FT=0  t=33.11ms
+  OCNFRAC eb=1e-5 ... ratio=5.15x  pres=99.36%  FN=55 FP=0 FT=0  t=38.24ms
+  ODV_SSLTA eb=1e-3 ... ratio=7.86x  pres=81.74%  FN=11389 FP=0 FT=0  t=29.81ms
+  ODV_SSLTA eb=1e-4 ... ratio=6.37x  pres=88.70%  FN=7046 FP=0 FT=0  t=36.40ms
+  ODV_SSLTA eb=1e-5 ... ratio=4.47x  pres=97.66%  FN=1460 FP=0 FT=0  t=41.20ms
+  ODV_SSLTC eb=1e-3 ... ratio=8.06x  pres=81.54%  FN=12672 FP=0 FT=0  t=34.12ms
+  ODV_SSLTC eb=1e-4 ... ratio=6.70x  pres=87.02%  FN=8910 FP=0 FT=0  t=31.52ms
+  ODV_SSLTC eb=1e-5 ... ratio=4.73x  pres=96.80%  FN=2199 FP=0 FT=0  t=42.16ms
+  ODV_bcar1 eb=1e-3 ... ratio=11.78x  pres=80.19%  FN=596 FP=0 FT=0  t=29.54ms
+  ODV_bcar1 eb=1e-4 ... ratio=10.46x  pres=80.53%  FN=586 FP=0 FT=0  t=27.69ms
+  ODV_bcar1 eb=1e-5 ... ratio=8.79x  pres=82.25%  FN=534 FP=0 FT=0  t=64.95ms
+  ODV_bcar2 eb=1e-3 ... ratio=11.49x  pres=80.40%  FN=574 FP=0 FT=0  t=31.86ms
+  ODV_bcar2 eb=1e-4 ... ratio=9.65x  pres=80.57%  FN=569 FP=0 FT=0  t=27.27ms
+  ODV_bcar2 eb=1e-5 ... ratio=7.97x  pres=82.96%  FN=499 FP=0 FT=0  t=28.78ms
+  ODV_dust1 eb=1e-3 ... ratio=9.69x  pres=80.14%  FN=536 FP=0 FT=0  t=28.82ms
+  ODV_dust1 eb=1e-4 ... ratio=8.02x  pres=84.55%  FN=417 FP=0 FT=0  t=28.25ms
+  ODV_dust1 eb=1e-5 ... ratio=6.38x  pres=91.18%  FN=238 FP=0 FT=0  t=29.09ms
+  ODV_dust2 eb=1e-3 ... ratio=9.79x  pres=80.68%  FN=508 FP=0 FT=0  t=41.33ms
+  ODV_dust2 eb=1e-4 ... ratio=8.12x  pres=84.60%  FN=405 FP=0 FT=0  t=31.98ms
+  ODV_dust2 eb=1e-5 ... ratio=6.47x  pres=91.22%  FN=231 FP=0 FT=0  t=33.36ms
+  ODV_dust3 eb=1e-3 ... ratio=10.63x  pres=79.90%  FN=508 FP=0 FT=0  t=29.70ms
+  ODV_dust3 eb=1e-4 ... ratio=8.95x  pres=82.23%  FN=449 FP=0 FT=0  t=39.47ms
+  ODV_dust3 eb=1e-5 ... ratio=7.22x  pres=87.81%  FN=308 FP=0 FT=0  t=28.29ms
+  ODV_dust4 eb=1e-3 ... ratio=11.08x  pres=79.94%  FN=413 FP=0 FT=0  t=27.15ms
+  ODV_dust4 eb=1e-4 ... ratio=9.52x  pres=82.22%  FN=366 FP=0 FT=0  t=28.34ms
+  ODV_dust4 eb=1e-5 ... ratio=7.65x  pres=86.40%  FN=280 FP=0 FT=0  t=30.35ms
+  ODV_ocar1 eb=1e-3 ... ratio=11.72x  pres=79.17%  FN=696 FP=0 FT=0  t=26.98ms
+  ODV_ocar1 eb=1e-4 ... ratio=10.30x  pres=79.53%  FN=684 FP=0 FT=0  t=39.10ms
+  ODV_ocar1 eb=1e-5 ... ratio=8.60x  pres=81.50%  FN=618 FP=0 FT=0  t=27.55ms
+  ODV_ocar2 eb=1e-3 ... ratio=10.70x  pres=81.21%  FN=11536 FP=0 FT=0  t=32.92ms
+  ODV_ocar2 eb=1e-4 ... ratio=8.65x  pres=81.77%  FN=11195 FP=0 FT=0  t=34.41ms
+  ODV_ocar2 eb=1e-5 ... ratio=6.90x  pres=85.01%  FN=9203 FP=0 FT=0  t=40.63ms
+  ODV_sulf eb=1e-3 ... ratio=7.48x  pres=81.61%  FN=15028 FP=0 FT=0  t=36.03ms
+  ODV_sulf eb=1e-4 ... ratio=6.11x  pres=88.50%  FN=9397 FP=0 FT=0  t=31.83ms
+  ODV_sulf eb=1e-5 ... ratio=4.22x  pres=98.56%  FN=1180 FP=0 FT=0  t=35.85ms
+  QREFHT eb=1e-3 ... ratio=9.52x  pres=80.90%  FN=2432 FP=0 FT=0  t=34.32ms
+  QREFHT eb=1e-4 ... ratio=7.29x  pres=82.85%  FN=2184 FP=0 FT=0  t=30.96ms
+  QREFHT eb=1e-5 ... ratio=5.78x  pres=89.86%  FN=1291 FP=0 FT=0  t=37.18ms
+  RHREFHT eb=1e-3 ... ratio=2.89x  pres=99.87%  FN=55 FP=0 FT=0  t=49.69ms
+  RHREFHT eb=1e-4 ... ratio=2.24x  pres=100.00%  FN=0 FP=0 FT=0  t=37.52ms
+  RHREFHT eb=1e-5 ... ratio=1.82x  pres=100.00%  FN=0 FP=0 FT=0  t=38.78ms
+  SHFLX eb=1e-3 ... ratio=2.56x  pres=99.97%  FN=21 FP=0 FT=0  t=35.34ms
+  SHFLX eb=1e-4 ... ratio=2.03x  pres=100.00%  FN=0 FP=0 FT=0  t=38.57ms
+  SHFLX eb=1e-5 ... ratio=1.68x  pres=100.00%  FN=0 FP=0 FT=0  t=43.91ms
+  SNOWHICE eb=1e-3 ... ratio=9.50x  pres=91.38%  FN=964 FP=0 FT=0  t=28.00ms
+  SNOWHICE eb=1e-4 ... ratio=8.19x  pres=97.81%  FN=245 FP=0 FT=0  t=50.29ms
+  SNOWHICE eb=1e-5 ... ratio=7.02x  pres=99.66%  FN=38 FP=0 FT=0  t=32.65ms
+  SOLIN eb=1e-3 ... ratio=4.08x  pres=99.82%  FN=1 FP=0 FT=0  t=30.33ms
+  SOLIN eb=1e-4 ... ratio=3.06x  pres=100.00%  FN=0 FP=0 FT=0  t=45.47ms
+  SOLIN eb=1e-5 ... ratio=2.40x  pres=100.00%  FN=0 FP=0 FT=0  t=42.10ms
+  SRFRAD eb=1e-3 ... ratio=2.31x  pres=100.00%  FN=2 FP=0 FT=0  t=39.58ms
+  SRFRAD eb=1e-4 ... ratio=1.86x  pres=100.00%  FN=1 FP=0 FT=0  t=48.36ms
+  SRFRAD eb=1e-5 ... ratio=1.57x  pres=100.00%  FN=0 FP=0 FT=0  t=43.65ms
+  SWCF eb=1e-3 ... ratio=2.66x  pres=99.94%  FN=68 FP=0 FT=0  t=74.57ms
+  SWCF eb=1e-4 ... ratio=2.15x  pres=99.96%  FN=45 FP=0 FT=0  t=49.92ms
+  SWCF eb=1e-5 ... ratio=1.81x  pres=99.97%  FN=35 FP=0 FT=0  t=43.09ms
+  TAUX eb=1e-3 ... ratio=5.67x  pres=92.49%  FN=2243 FP=0 FT=0  t=31.15ms
+  TAUX eb=1e-4 ... ratio=4.10x  pres=97.90%  FN=626 FP=0 FT=0  t=38.80ms
+  TAUX eb=1e-5 ... ratio=2.95x  pres=99.85%  FN=45 FP=0 FT=0  t=33.06ms
+  TAUY eb=1e-3 ... ratio=5.79x  pres=90.68%  FN=2799 FP=0 FT=0  t=33.97ms
+  TAUY eb=1e-4 ... ratio=4.19x  pres=96.76%  FN=972 FP=0 FT=0  t=31.75ms
+  TAUY eb=1e-5 ... ratio=3.00x  pres=99.73%  FN=81 FP=0 FT=0  t=33.22ms
+  TGCLDIWP eb=1e-3 ... ratio=2.62x  pres=99.97%  FN=34 FP=0 FT=0  t=37.38ms
+  TGCLDIWP eb=1e-4 ... ratio=2.07x  pres=100.00%  FN=0 FP=0 FT=0  t=70.79ms
+  TGCLDIWP eb=1e-5 ... ratio=1.71x  pres=100.00%  FN=0 FP=0 FT=0  t=44.33ms
+  TGCLDLWP eb=1e-3 ... ratio=2.20x  pres=100.00%  FN=2 FP=0 FT=0  t=38.67ms
+  TGCLDLWP eb=1e-4 ... ratio=1.80x  pres=100.00%  FN=0 FP=0 FT=0  t=40.31ms
+  TGCLDLWP eb=1e-5 ... ratio=1.52x  pres=100.00%  FN=0 FP=0 FT=0  t=53.13ms
+  TMQ eb=1e-3 ... ratio=3.60x  pres=98.49%  FN=76 FP=0 FT=0  t=33.13ms
+  TMQ eb=1e-4 ... ratio=2.69x  pres=99.94%  FN=3 FP=0 FT=0  t=33.41ms
+  TMQ eb=1e-5 ... ratio=2.11x  pres=99.98%  FN=1 FP=0 FT=0  t=36.24ms
+  TREFHT eb=1e-3 ... ratio=3.39x  pres=99.37%  FN=74 FP=0 FT=0  t=39.87ms
+  TREFHT eb=1e-4 ... ratio=2.53x  pres=99.99%  FN=1 FP=0 FT=0  t=34.37ms
+  TREFHT eb=1e-5 ... ratio=2.01x  pres=100.00%  FN=0 FP=0 FT=0  t=35.78ms
+  TREFMNAV eb=1e-3 ... ratio=3.25x  pres=99.64%  FN=72 FP=0 FT=0  t=35.77ms
+  TREFMNAV eb=1e-4 ... ratio=2.45x  pres=99.99%  FN=2 FP=0 FT=0  t=36.63ms
+  TREFMNAV eb=1e-5 ... ratio=1.96x  pres=100.00%  FN=0 FP=0 FT=0  t=38.36ms
+  TREFMXAV eb=1e-3 ... ratio=3.36x  pres=99.43%  FN=81 FP=0 FT=0  t=47.60ms
+  TREFMXAV eb=1e-4 ... ratio=2.51x  pres=100.00%  FN=0 FP=0 FT=0  t=44.78ms
+  TREFMXAV eb=1e-5 ... ratio=2.00x  pres=100.00%  FN=0 FP=0 FT=0  t=39.86ms
+  TROP_T eb=1e-3 ... ratio=3.91x  pres=98.93%  FN=149 FP=0 FT=0  t=41.72ms
+  TROP_T eb=1e-4 ... ratio=2.84x  pres=99.98%  FN=3 FP=0 FT=0  t=35.35ms
+  TROP_T eb=1e-5 ... ratio=2.20x  pres=100.00%  FN=0 FP=0 FT=0  t=38.03ms
+  TS eb=1e-3 ... ratio=3.31x  pres=99.81%  FN=33 FP=0 FT=0  t=40.89ms
+  TS eb=1e-4 ... ratio=2.48x  pres=99.99%  FN=2 FP=0 FT=0  t=47.28ms
+  TS eb=1e-5 ... ratio=1.98x  pres=100.00%  FN=0 FP=0 FT=0  t=60.79ms
+  TSMN eb=1e-3 ... ratio=3.09x  pres=99.91%  FN=34 FP=0 FT=0  t=35.40ms
+  TSMN eb=1e-4 ... ratio=2.36x  pres=100.00%  FN=1 FP=0 FT=0  t=43.48ms
+  TSMN eb=1e-5 ... ratio=1.90x  pres=100.00%  FN=0 FP=0 FT=0  t=42.13ms
+  TSMX eb=1e-3 ... ratio=3.27x  pres=99.59%  FN=146 FP=0 FT=0  t=32.93ms
+  TSMX eb=1e-4 ... ratio=2.47x  pres=99.98%  FN=6 FP=0 FT=0  t=52.42ms
+  TSMX eb=1e-5 ... ratio=1.97x  pres=100.00%  FN=0 FP=0 FT=0  t=41.45ms
+
+========== CESM-ATM 3D (26x1800x3600) ==========
+  CLDICE eb=1e-3 ... ratio=12.19x  pres=10.72%  FN=2630525 FP=0 FT=0  t=565.57ms
+  CLDICE eb=1e-4 ... ratio=12.19x  pres=10.72%  FN=2630525 FP=0 FT=0  t=575.09ms
+  CLDICE eb=1e-5 ... ratio=11.83x  pres=13.78%  FN=2540338 FP=0 FT=0  t=559.54ms
+  CLDLIQ eb=1e-3 ... ratio=12.19x  pres=11.20%  FN=4130844 FP=0 FT=0  t=615.74ms
+  CLDLIQ eb=1e-4 ... ratio=12.10x  pres=11.69%  FN=4108125 FP=0 FT=0  t=599.08ms
+  CLDLIQ eb=1e-5 ... ratio=10.49x  pres=28.79%  FN=3312439 FP=0 FT=0  t=606.62ms
+  CLOUD eb=1e-3 ... ratio=6.54x  pres=88.38%  FN=593075 FP=0 FT=0  t=668.79ms
+  CLOUD eb=1e-4 ... ratio=4.72x  pres=96.64%  FN=171506 FP=0 FT=0  t=715.44ms
+  CLOUD eb=1e-5 ... ratio=3.59x  pres=99.20%  FN=40656 FP=0 FT=0  t=728.81ms
+  CMFDQ eb=1e-3 ... ratio=12.19x  pres=14.45%  FN=3954281 FP=0 FT=0  t=661.19ms
+  CMFDQ eb=1e-4 ... ratio=12.19x  pres=14.45%  FN=3954281 FP=0 FT=0  t=652.91ms
+  CMFDQ eb=1e-5 ... ratio=12.19x  pres=14.45%  FN=3954281 FP=0 FT=0  t=638.25ms
+  CMFDQR eb=1e-3 ... ratio=12.19x  pres=13.78%  FN=2642402 FP=0 FT=0  t=558.46ms
+  CMFDQR eb=1e-4 ... ratio=12.19x  pres=13.78%  FN=2642402 FP=0 FT=0  t=583.25ms
+  CMFDQR eb=1e-5 ... ratio=12.19x  pres=13.78%  FN=2642402 FP=0 FT=0  t=574.75ms
+  CMFDT eb=1e-3 ... ratio=12.19x  pres=15.05%  FN=4660212 FP=0 FT=0  t=674.74ms
+  CMFDT eb=1e-4 ... ratio=12.17x  pres=15.09%  FN=4657924 FP=0 FT=0  t=711.18ms
+  CMFDT eb=1e-5 ... ratio=11.29x  pres=22.44%  FN=4255095 FP=0 FT=0  t=683.12ms
+  CONCLD eb=1e-3 ... ratio=8.66x  pres=57.05%  FN=1331955 FP=0 FT=0  t=613.77ms
+  CONCLD eb=1e-4 ... ratio=6.66x  pres=87.21%  FN=396733 FP=0 FT=0  t=604.97ms
+  CONCLD eb=1e-5 ... ratio=5.02x  pres=96.68%  FN=102847 FP=0 FT=0  t=609.91ms
+  DCQ eb=1e-3 ... ratio=12.19x  pres=15.19%  FN=4992335 FP=0 FT=0  t=679.56ms
+  DCQ eb=1e-4 ... ratio=12.19x  pres=15.19%  FN=4992335 FP=0 FT=0  t=678.50ms
+  DCQ eb=1e-5 ... ratio=12.19x  pres=15.19%  FN=4992335 FP=0 FT=0  t=673.04ms
+  DTCOND eb=1e-3 ... ratio=12.19x  pres=15.24%  FN=5345418 FP=0 FT=0  t=688.17ms
+  DTCOND eb=1e-4 ... ratio=12.13x  pres=15.32%  FN=5340493 FP=0 FT=0  t=676.52ms
+  DTCOND eb=1e-5 ... ratio=10.46x  pres=27.31%  FN=4584171 FP=0 FT=0  t=698.95ms
+  DTV eb=1e-3 ... ratio=12.19x  pres=8.94%  FN=4936552 FP=0 FT=0  t=649.18ms
+  DTV eb=1e-4 ... ratio=12.06x  pres=8.99%  FN=4934200 FP=0 FT=0  t=616.91ms
+  DTV eb=1e-5 ... ratio=11.41x  pres=13.21%  FN=4704965 FP=0 FT=0  t=633.53ms
+  FICE eb=1e-3 ... ratio=9.31x  pres=60.21%  FN=44035 FP=0 FT=0  t=460.60ms
+  FICE eb=1e-4 ... ratio=7.90x  pres=83.70%  FN=18035 FP=0 FT=0  t=474.20ms
+  FICE eb=1e-5 ... ratio=6.34x  pres=93.65%  FN=7031 FP=0 FT=0  t=500.96ms
+  GCLDLWP eb=1e-3 ... ratio=4.31x  pres=83.11%  FN=530195 FP=0 FT=0  t=647.24ms
+  GCLDLWP eb=1e-4 ... ratio=3.41x  pres=86.35%  FN=428347 FP=0 FT=0  t=670.45ms
+  GCLDLWP eb=1e-5 ... ratio=2.79x  pres=87.79%  FN=383237 FP=0 FT=0  t=652.64ms
+  ICIMR eb=1e-3 ... ratio=12.17x  pres=18.27%  FN=4461710 FP=0 FT=0  t=638.24ms
+  ICIMR eb=1e-4 ... ratio=11.27x  pres=25.45%  FN=4069518 FP=0 FT=0  t=654.55ms
+  ICIMR eb=1e-5 ... ratio=9.41x  pres=44.64%  FN=3022138 FP=0 FT=0  t=659.40ms
+  ICLDIWP eb=1e-3 ... ratio=4.02x  pres=75.13%  FN=1278542 FP=0 FT=0  t=689.15ms
+  ICLDIWP eb=1e-4 ... ratio=3.32x  pres=75.82%  FN=1243063 FP=0 FT=0  t=725.74ms
+  ICLDIWP eb=1e-5 ... ratio=2.82x  pres=75.99%  FN=1234610 FP=0 FT=0  t=723.76ms
+  ICLDTWP eb=1e-3 ... ratio=3.05x  pres=93.18%  FN=407475 FP=0 FT=0  t=775.91ms
+  ICLDTWP eb=1e-4 ... ratio=2.53x  pres=93.76%  FN=372990 FP=0 FT=0  t=766.02ms
+  ICLDTWP eb=1e-5 ... ratio=2.15x  pres=94.09%  FN=353108 FP=0 FT=0  t=797.09ms
+  ICWMR eb=1e-3 ... ratio=11.66x  pres=19.06%  FN=5307204 FP=0 FT=0  t=681.80ms
+  ICWMR eb=1e-4 ... ratio=9.90x  pres=43.41%  FN=3710680 FP=0 FT=0  t=662.21ms
+  ICWMR eb=1e-5 ... ratio=8.14x  pres=57.08%  FN=2814270 FP=0 FT=0  t=711.55ms
+  OMEGA eb=1e-3 ... ratio=6.30x  pres=61.59%  FN=1946149 FP=0 FT=0  t=690.06ms
+  OMEGA eb=1e-4 ... ratio=4.39x  pres=88.51%  FN=581867 FP=0 FT=0  t=743.38ms
+  OMEGA eb=1e-5 ... ratio=3.19x  pres=97.88%  FN=107604 FP=0 FT=0  t=792.27ms
+  OMEGAT eb=1e-3 ... ratio=2.87x  pres=98.90%  FN=55652 FP=0 FT=0  t=786.90ms
+  OMEGAT eb=1e-4 ... ratio=2.24x  pres=99.81%  FN=9529 FP=0 FT=0  t=850.18ms
+  OMEGAT eb=1e-5 ... ratio=1.83x  pres=99.97%  FN=1665 FP=0 FT=0  t=887.57ms
+  Q eb=1e-3 ... ratio=11.36x  pres=4.28%  FN=388323 FP=0 FT=0  t=477.33ms
+  Q eb=1e-4 ... ratio=10.03x  pres=8.03%  FN=373128 FP=0 FT=0  t=470.22ms
+  Q eb=1e-5 ... ratio=8.71x  pres=12.42%  FN=355309 FP=0 FT=0  t=484.07ms
+  QC eb=1e-3 ... ratio=12.19x  pres=14.31%  FN=2951557 FP=0 FT=0  t=590.20ms
+  QC eb=1e-4 ... ratio=12.19x  pres=14.31%  FN=2951557 FP=0 FT=0  t=585.44ms
+  QC eb=1e-5 ... ratio=12.19x  pres=14.31%  FN=2951557 FP=0 FT=0  t=570.47ms
+  QRL eb=1e-3 ... ratio=12.19x  pres=11.37%  FN=4603980 FP=0 FT=0  t=650.97ms
+  QRL eb=1e-4 ... ratio=12.17x  pres=11.42%  FN=4601329 FP=0 FT=0  t=652.11ms
+  QRL eb=1e-5 ... ratio=10.62x  pres=22.34%  FN=4034038 FP=0 FT=0  t=602.92ms
+  QRS eb=1e-3 ... ratio=12.19x  pres=12.04%  FN=3293809 FP=0 FT=0  t=595.93ms
+  QRS eb=1e-4 ... ratio=12.19x  pres=12.04%  FN=3293809 FP=0 FT=0  t=578.44ms
+  QRS eb=1e-5 ... ratio=11.33x  pres=18.15%  FN=3065305 FP=0 FT=0  t=574.93ms
+  RELHUM eb=1e-3 ... ratio=3.43x  pres=99.42%  FN=9788 FP=0 FT=0  t=610.66ms
+  RELHUM eb=1e-4 ... ratio=2.63x  pres=99.80%  FN=3338 FP=0 FT=0  t=643.82ms
+  RELHUM eb=1e-5 ... ratio=2.11x  pres=99.93%  FN=1140 FP=0 FT=0  t=677.38ms
+  T eb=1e-3 ... ratio=3.98x  pres=95.83%  FN=10630 FP=0 FT=0  t=533.85ms
+  T eb=1e-4 ... ratio=2.88x  pres=99.37%  FN=1607 FP=0 FT=0  t=578.14ms
+  T eb=1e-5 ... ratio=2.23x  pres=100.00%  FN=0 FP=0 FT=0  t=620.75ms
+  U eb=1e-3 ... ratio=3.62x  pres=98.70%  FN=5211 FP=0 FT=0  t=573.07ms
+  U eb=1e-4 ... ratio=2.67x  pres=99.77%  FN=923 FP=0 FT=0  t=591.71ms
+  U eb=1e-5 ... ratio=2.10x  pres=99.97%  FN=123 FP=0 FT=0  t=649.54ms
+  UU eb=1e-3 ... ratio=2.45x  pres=99.89%  FN=859 FP=0 FT=0  t=622.09ms
+  UU eb=1e-4 ... ratio=1.96x  pres=99.98%  FN=125 FP=0 FT=0  t=671.71ms
+  UU eb=1e-5 ... ratio=1.64x  pres=100.00%  FN=18 FP=0 FT=0  t=704.03ms
+  V eb=1e-3 ... ratio=3.60x  pres=98.98%  FN=12196 FP=0 FT=0  t=593.62ms
+  V eb=1e-4 ... ratio=2.66x  pres=99.81%  FN=2255 FP=0 FT=0  t=684.81ms
+  V eb=1e-5 ... ratio=2.09x  pres=99.97%  FN=319 FP=0 FT=0  t=673.13ms
+  VD01 eb=1e-3 ... ratio=12.19x  pres=11.31%  FN=4563481 FP=0 FT=0  t=647.45ms
+  VD01 eb=1e-4 ... ratio=12.19x  pres=11.31%  FN=4563481 FP=0 FT=0  t=651.41ms
+  VD01 eb=1e-5 ... ratio=12.19x  pres=11.31%  FN=4563481 FP=0 FT=0  t=657.32ms
+  VQ eb=1e-3 ... ratio=10.01x  pres=22.59%  FN=958852 FP=0 FT=0  t=525.74ms
+  VQ eb=1e-4 ... ratio=8.41x  pres=39.53%  FN=749009 FP=0 FT=0  t=517.11ms
+  VQ eb=1e-5 ... ratio=6.43x  pres=49.64%  FN=623830 FP=0 FT=0  t=538.79ms
+  VT eb=1e-3 ... ratio=1.94x  pres=99.99%  FN=120 FP=0 FT=0  t=754.06ms
+  VT eb=1e-4 ... ratio=1.62x  pres=100.00%  FN=7 FP=0 FT=0  t=731.49ms
+  VT eb=1e-5 ... ratio=1.39x  pres=100.00%  FN=0 FP=0 FT=0  t=800.51ms
+  VU eb=1e-3 ... ratio=2.59x  pres=99.84%  FN=2096 FP=0 FT=0  t=643.87ms
+  VU eb=1e-4 ... ratio=2.05x  pres=99.97%  FN=364 FP=0 FT=0  t=684.82ms
+  VU eb=1e-5 ... ratio=1.69x  pres=100.00%  FN=52 FP=0 FT=0  t=721.18ms
+  VV eb=1e-3 ... ratio=2.60x  pres=99.77%  FN=2908 FP=0 FT=0  t=631.09ms
+  VV eb=1e-4 ... ratio=2.06x  pres=99.96%  FN=467 FP=0 FT=0  t=669.90ms
+  VV eb=1e-5 ... ratio=1.70x  pres=100.00%  FN=57 FP=0 FT=0  t=741.49ms
+  Z3 eb=1e-3 ... ratio=2.50x  pres=99.55%  FN=542 FP=0 FT=0  t=591.27ms
+  Z3 eb=1e-4 ... ratio=2.00x  pres=99.97%  FN=35 FP=0 FT=0  t=627.94ms
+  Z3 eb=1e-5 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+
+========== Hurricane ISABEL (100x500x500) ==========
+  CLOUDf48.bin eb=1e-3 ... ratio=12.13x  pres=33.57%  FN=73469 FP=0 FT=0  t=92.28ms
+  CLOUDf48.bin eb=1e-4 ... ratio=10.41x  pres=44.12%  FN=61804 FP=0 FT=0  t=86.22ms
+  CLOUDf48.bin eb=1e-5 ... ratio=8.31x  pres=68.90%  FN=34392 FP=0 FT=0  t=88.91ms
+  CLOUDf48.log10.bin eb=1e-3 ... ratio=4.18x  pres=99.55%  FN=496 FP=0 FT=0  t=109.19ms
+  CLOUDf48.log10.bin eb=1e-4 ... ratio=3.64x  pres=99.96%  FN=47 FP=0 FT=0  t=108.59ms
+  CLOUDf48.log10.bin eb=1e-5 ... ratio=3.23x  pres=100.00%  FN=4 FP=0 FT=0  t=111.91ms
+  PRECIPf48.bin eb=1e-3 ... ratio=12.00x  pres=27.62%  FN=813935 FP=0 FT=0  t=126.92ms
+  PRECIPf48.bin eb=1e-4 ... ratio=10.45x  pres=28.17%  FN=807690 FP=0 FT=0  t=119.35ms
+  PRECIPf48.bin eb=1e-5 ... ratio=8.38x  pres=30.42%  FN=782412 FP=0 FT=0  t=130.16ms
+  PRECIPf48.log10.bin eb=1e-3 ... ratio=2.40x  pres=98.07%  FN=21740 FP=0 FT=0  t=150.53ms
+  PRECIPf48.log10.bin eb=1e-4 ... ratio=1.93x  pres=99.76%  FN=2668 FP=0 FT=0  t=150.44ms
+  PRECIPf48.log10.bin eb=1e-5 ... ratio=1.61x  pres=99.98%  FN=261 FP=0 FT=0  t=164.84ms
+  Pf48.bin eb=1e-3 ... ratio=1.86x  pres=99.86%  FN=503 FP=0 FT=0  t=127.49ms
+  Pf48.bin eb=1e-4 ... ratio=1.57x  pres=99.99%  FN=44 FP=0 FT=0  t=164.45ms
+  Pf48.bin eb=1e-5 ... ratio=1.35x  pres=100.00%  FN=3 FP=0 FT=0  t=140.74ms
+  QCLOUDf48.bin eb=1e-3 ... ratio=12.13x  pres=42.71%  FN=50514 FP=0 FT=0  t=95.21ms
+  QCLOUDf48.bin eb=1e-4 ... ratio=10.78x  pres=54.56%  FN=40061 FP=0 FT=0  t=93.02ms
+  QCLOUDf48.bin eb=1e-5 ... ratio=9.41x  pres=72.18%  FN=24533 FP=0 FT=0  t=85.66ms
+  QCLOUDf48.log10.bin eb=1e-3 ... ratio=5.14x  pres=99.78%  FN=195 FP=0 FT=0  t=94.97ms
+  QCLOUDf48.log10.bin eb=1e-4 ... ratio=4.61x  pres=99.98%  FN=19 FP=0 FT=0  t=99.52ms
+  QCLOUDf48.log10.bin eb=1e-5 ... ratio=4.20x  pres=100.00%  FN=0 FP=0 FT=0  t=106.57ms
+  QGRAUPf48.bin eb=1e-3 ... ratio=12.15x  pres=24.14%  FN=691433 FP=0 FT=0  t=117.99ms
+  QGRAUPf48.bin eb=1e-4 ... ratio=11.48x  pres=24.35%  FN=689440 FP=0 FT=0  t=113.21ms
+  QGRAUPf48.bin eb=1e-5 ... ratio=10.33x  pres=25.40%  FN=679945 FP=0 FT=0  t=115.84ms
+  QGRAUPf48.log10.bin eb=1e-3 ... ratio=2.25x  pres=98.28%  FN=15660 FP=0 FT=0  t=148.92ms
+  QGRAUPf48.log10.bin eb=1e-4 ... ratio=1.83x  pres=99.80%  FN=1810 FP=0 FT=0  t=166.13ms
+  QGRAUPf48.log10.bin eb=1e-5 ... ratio=1.54x  pres=99.98%  FN=185 FP=0 FT=0  t=176.68ms
+  QICEf48.bin eb=1e-3 ... ratio=12.19x  pres=29.89%  FN=60156 FP=0 FT=0  t=96.80ms
+  QICEf48.bin eb=1e-4 ... ratio=11.71x  pres=31.10%  FN=59118 FP=0 FT=0  t=87.02ms
+  QICEf48.bin eb=1e-5 ... ratio=10.25x  pres=44.48%  FN=47634 FP=0 FT=0  t=87.82ms
+  QICEf48.log10.bin eb=1e-3 ... ratio=4.87x  pres=99.52%  FN=411 FP=0 FT=0  t=96.18ms
+  QICEf48.log10.bin eb=1e-4 ... ratio=4.29x  pres=99.95%  FN=44 FP=0 FT=0  t=97.97ms
+  QICEf48.log10.bin eb=1e-5 ... ratio=3.87x  pres=99.99%  FN=5 FP=0 FT=0  t=96.74ms
+  QRAINf48.bin eb=1e-3 ... ratio=12.04x  pres=25.92%  FN=735746 FP=0 FT=0  t=121.09ms
+  QRAINf48.bin eb=1e-4 ... ratio=11.20x  pres=26.23%  FN=732627 FP=0 FT=0  t=120.89ms
+  QRAINf48.bin eb=1e-5 ... ratio=9.93x  pres=27.36%  FN=721397 FP=0 FT=0  t=115.50ms
+  QRAINf48.log10.bin eb=1e-3 ... ratio=2.22x  pres=98.04%  FN=19454 FP=0 FT=0  t=142.61ms
+  QRAINf48.log10.bin eb=1e-4 ... ratio=1.82x  pres=99.75%  FN=2477 FP=0 FT=0  t=149.25ms
+  QRAINf48.log10.bin eb=1e-5 ... ratio=1.53x  pres=99.97%  FN=255 FP=0 FT=0  t=159.10ms
+  QSNOWf48.bin eb=1e-3 ... ratio=12.19x  pres=23.64%  FN=773614 FP=0 FT=0  t=118.42ms
+  QSNOWf48.bin eb=1e-4 ... ratio=11.83x  pres=23.76%  FN=772329 FP=0 FT=0  t=122.88ms
+  QSNOWf48.bin eb=1e-5 ... ratio=10.41x  pres=25.07%  FN=759079 FP=0 FT=0  t=125.87ms
+  QSNOWf48.log10.bin eb=1e-3 ... ratio=2.28x  pres=98.15%  FN=18783 FP=0 FT=0  t=143.51ms
+  QSNOWf48.log10.bin eb=1e-4 ... ratio=1.84x  pres=99.77%  FN=2284 FP=0 FT=0  t=151.09ms
+  QSNOWf48.log10.bin eb=1e-5 ... ratio=1.55x  pres=99.97%  FN=255 FP=0 FT=0  t=158.91ms
+  QVAPORf48.bin eb=1e-3 ... ratio=9.29x  pres=11.72%  FN=284362 FP=0 FT=0  t=105.22ms
+  QVAPORf48.bin eb=1e-4 ... ratio=7.01x  pres=26.32%  FN=237326 FP=0 FT=0  t=117.78ms
+  QVAPORf48.bin eb=1e-5 ... ratio=5.07x  pres=47.06%  FN=170531 FP=0 FT=0  t=106.92ms
+  TCf48.bin eb=1e-3 ... ratio=2.68x  pres=98.08%  FN=6753 FP=0 FT=0  t=120.40ms
+  TCf48.bin eb=1e-4 ... ratio=2.11x  pres=99.80%  FN=704 FP=0 FT=0  t=125.11ms
+  TCf48.bin eb=1e-5 ... ratio=1.73x  pres=99.98%  FN=69 FP=0 FT=0  t=160.14ms
+  Uf48.bin eb=1e-3 ... ratio=2.42x  pres=99.37%  FN=2700 FP=0 FT=0  t=123.79ms
+  Uf48.bin eb=1e-4 ... ratio=1.94x  pres=99.94%  FN=279 FP=0 FT=0  t=134.33ms
+  Uf48.bin eb=1e-5 ... ratio=1.62x  pres=99.99%  FN=23 FP=0 FT=0  t=143.49ms
+  Vf48.bin eb=1e-3 ... ratio=2.42x  pres=99.36%  FN=2375 FP=0 FT=0  t=132.38ms
+  Vf48.bin eb=1e-4 ... ratio=1.94x  pres=99.94%  FN=240 FP=0 FT=0  t=137.04ms
+  Vf48.bin eb=1e-5 ... ratio=1.62x  pres=99.99%  FN=24 FP=0 FT=0  t=138.11ms
+  Wf48.bin eb=1e-3 ... ratio=2.87x  pres=96.59%  FN=32574 FP=0 FT=0  t=196.33ms
+  Wf48.bin eb=1e-4 ... ratio=2.22x  pres=99.58%  FN=4039 FP=0 FT=0  t=207.03ms
+  Wf48.bin eb=1e-5 ... ratio=1.81x  pres=99.96%  FN=427 FP=0 FT=0  t=211.90ms
+
+========== NYX (512x512x512) ==========
+  baryon_density eb=1e-3 ... ratio=2.59x  pres=87.64%  FN=177828 FP=0 FT=0  t=575.41ms
+  baryon_density eb=1e-4 ... ratio=2.05x  pres=98.39%  FN=23182 FP=0 FT=0  t=579.67ms
+  baryon_density eb=1e-5 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+  dark_matter_density eb=1e-3 ... ratio=2.08x  pres=99.95%  FN=21301 FP=0 FT=0  t=2078.51ms
+  dark_matter_density eb=1e-4 ... ratio=1.72x  pres=99.99%  FN=2190 FP=0 FT=0  t=2170.63ms
+  dark_matter_density eb=1e-5 ... ratio=1.46x  pres=100.00%  FN=199 FP=0 FT=0  t=2156.51ms
+  temperature eb=1e-3 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+  temperature eb=1e-4 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+  temperature eb=1e-5 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+  velocity_x eb=1e-3 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+  velocity_x eb=1e-4 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+  velocity_x eb=1e-5 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+  velocity_y eb=1e-3 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+  velocity_y eb=1e-4 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+  velocity_y eb=1e-5 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+  velocity_z eb=1e-3 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+  velocity_z eb=1e-4 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+  velocity_z eb=1e-5 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+
+========== SCALE-LETKF (98x1200x1200) ==========
+  PRES-98x1200x1200 eb=1e-3 ... ratio=1.75x  pres=99.84%  FN=1242 FP=0 FT=0  t=589.36ms
+  PRES-98x1200x1200 eb=1e-4 ... ratio=1.48x  pres=100.00%  FN=0 FP=0 FT=0  t=639.57ms
+  PRES-98x1200x1200 eb=1e-5 ... ratio=x  pres=%  FN= FP= FT=  t=0.00ms
+  QC-98x1200x1200 eb=1e-3 ... ratio=12.17x  pres=7.31%  FN=1858569 FP=0 FT=0  t=429.88ms
+  QC-98x1200x1200 eb=1e-4 ... ratio=11.77x  pres=8.20%  FN=1840846 FP=0 FT=0  t=436.14ms
+  QC-98x1200x1200 eb=1e-5 ... ratio=10.67x  pres=13.98%  FN=1724939 FP=0 FT=0  t=445.99ms
+  QG-98x1200x1200 eb=1e-3 ... ratio=12.10x  pres=5.77%  FN=2071008 FP=0 FT=0  t=499.78ms
+  QG-98x1200x1200 eb=1e-4 ... ratio=11.83x  pres=6.43%  FN=2056675 FP=0 FT=0  t=463.47ms
+  QG-98x1200x1200 eb=1e-5 ... ratio=11.09x  pres=8.58%  FN=2009318 FP=0 FT=0  t=469.35ms
+  QI-98x1200x1200 eb=1e-3 ... ratio=12.19x  pres=5.57%  FN=1248387 FP=0 FT=0  t=427.39ms
+  QI-98x1200x1200 eb=1e-4 ... ratio=12.05x  pres=5.89%  FN=1244114 FP=0 FT=0  t=423.96ms
+  QI-98x1200x1200 eb=1e-5 ... ratio=11.21x  pres=10.53%  FN=1182760 FP=0 FT=0  t=425.62ms
+  QR-98x1200x1200 eb=1e-3 ... ratio=12.13x  pres=6.87%  FN=2661630 FP=0 FT=0  t=464.05ms
+  QR-98x1200x1200 eb=1e-4 ... ratio=11.72x  pres=7.15%  FN=2653568 FP=0 FT=0  t=471.62ms
+  QR-98x1200x1200 eb=1e-5 ... ratio=10.56x  pres=9.12%  FN=2597244 FP=0 FT=0  t=465.42ms
+  QS-98x1200x1200 eb=1e-3 ... ratio=12.19x  pres=6.47%  FN=2343734 FP=0 FT=0  t=539.65ms
+  QS-98x1200x1200 eb=1e-4 ... ratio=12.04x  pres=6.72%  FN=2337512 FP=0 FT=0  t=475.78ms
+  QS-98x1200x1200 eb=1e-5 ... ratio=10.88x  pres=11.41%  FN=2219928 FP=0 FT=0  t=490.78ms
+  QV-98x1200x1200 eb=1e-3 ... ratio=9.60x  pres=6.44%  FN=1602957 FP=0 FT=0  t=470.98ms
+  QV-98x1200x1200 eb=1e-4 ... ratio=8.07x  pres=20.11%  FN=1368728 FP=0 FT=0  t=468.17ms
+  QV-98x1200x1200 eb=1e-5 ... ratio=6.13x  pres=43.92%  FN=960755 FP=0 FT=0  t=482.40ms
+  RH-98x1200x1200 eb=1e-3 ... ratio=2.65x  pres=94.43%  FN=147401 FP=0 FT=0  t=582.92ms
+  RH-98x1200x1200 eb=1e-4 ... ratio=2.09x  pres=98.59%  FN=37437 FP=0 FT=0  t=605.22ms
+  RH-98x1200x1200 eb=1e-5 ... ratio=1.72x  pres=99.80%  FN=5212 FP=0 FT=0  t=645.89ms
+  T-98x1200x1200 eb=1e-3 ... ratio=3.00x  pres=90.88%  FN=123175 FP=0 FT=0  t=512.02ms
+  T-98x1200x1200 eb=1e-4 ... ratio=2.30x  pres=98.88%  FN=15116 FP=0 FT=0  t=556.74ms
+  T-98x1200x1200 eb=1e-5 ... ratio=1.86x  pres=100.00%  FN=0 FP=0 FT=0  t=600.55ms
+  U-98x1200x1200 eb=1e-3 ... ratio=2.93x  pres=95.56%  FN=83317 FP=0 FT=0  t=536.96ms
+  U-98x1200x1200 eb=1e-4 ... ratio=2.26x  pres=99.45%  FN=10265 FP=0 FT=0  t=570.47ms
+  U-98x1200x1200 eb=1e-5 ... ratio=1.83x  pres=99.95%  FN=951 FP=0 FT=0  t=616.68ms
+  V-98x1200x1200 eb=1e-3 ... ratio=2.89x  pres=95.76%  FN=90843 FP=0 FT=0  t=553.96ms
+  V-98x1200x1200 eb=1e-4 ... ratio=2.23x  pres=99.46%  FN=11608 FP=0 FT=0  t=939.34ms
+  V-98x1200x1200 eb=1e-5 ... ratio=1.82x  pres=99.95%  FN=1159 FP=0 FT=0  t=642.00ms
+  W-98x1200x1200 eb=1e-3 ... ratio=3.01x  pres=91.69%  FN=249304 FP=0 FT=0  t=603.64ms
+  W-98x1200x1200 eb=1e-4 ... ratio=2.31x  pres=98.69%  FN=39431 FP=0 FT=0  t=638.23ms
+  W-98x1200x1200 eb=1e-5 ... ratio=1.87x  pres=99.86%  FN=4321 FP=0 FT=0  t=679.08ms
+
+========== Miranda (256x384x384, float64) ==========
+  NOTE: Miranda is float64. Testing if supported...
+
+========== AVERAGES PER DATASET × ERROR BOUND ==========
+  CESM-ATM-2D        eb=1e-3    ratio= 5.08x  pres=  94.58%  FN=1999.2  FP= 0.0  FT= 0.0  (n=60)
+  CESM-ATM-2D        eb=1e-4    ratio= 4.06x  pres=  96.35%  FN= 852.6  FP= 0.0  FT= 0.0  (n=60)
+  CESM-ATM-2D        eb=1e-5    ratio= 3.25x  pres=  97.81%  FN= 313.0  FP= 0.0  FT= 0.0  (n=60)
+  CESM-ATM-3D        eb=1e-3    ratio= 7.98x  pres=  52.34%  FN=2001603.4  FP= 0.0  FT= 0.0  (n=33)
+  CESM-ATM-3D        eb=1e-4    ratio= 7.31x  pres=  57.00%  FN=1842545.1  FP= 0.0  FT= 0.0  (n=33)
+  CESM-ATM-3D        eb=1e-5    ratio= 6.48x  pres=  58.30%  FN=1656012.8  FP= 0.0  FT= 0.0  (n=33)
+  Hurricane          eb=1e-3    ratio= 6.49x  pres=  70.19%  FN=180243.6  FP= 0.0  FT= 0.0  (n=20)
+  Hurricane          eb=1e-4    ratio= 5.73x  pres=  72.84%  FN=170752.5  FP= 0.0  FT= 0.0  (n=20)
+  Hurricane          eb=1e-5    ratio= 4.89x  pres=  77.03%  FN=161071.7  FP= 0.0  FT= 0.0  (n=20)
+  NYX                eb=1e-3    ratio= 0.78x  pres=  31.27%  FN=33188.2  FP= 0.0  FT= 0.0  (n=6)
+  NYX                eb=1e-4    ratio= 0.63x  pres=  33.06%  FN=4228.7  FP= 0.0  FT= 0.0  (n=6)
+  NYX                eb=1e-5    ratio= 0.24x  pres=  16.67%  FN=  33.2  FP= 0.0  FT= 0.0  (n=6)
+  SCALE              eb=1e-3    ratio= 7.22x  pres=  50.55%  FN=1040130.6  FP= 0.0  FT= 0.0  (n=12)
+  SCALE              eb=1e-4    ratio= 6.68x  pres=  54.13%  FN=967941.7  FP= 0.0  FT= 0.0  (n=12)
+  SCALE              eb=1e-5    ratio= 5.80x  pres=  49.76%  FN=892215.6  FP= 0.0  FT= 0.0  (n=12)
+
+--- Grand Averages (all datasets) ---
+  ALL                eb=1e-3    ratio= 6.02x  pres=  73.29%  FN=629453.7  FP= 0.0  FT= 0.0  (n=131)
+  ALL                eb=1e-4    ratio= 5.22x  pres=  76.09%  FN=579472.3  FP= 0.0  FT= 0.0  (n=131)
+  ALL                eb=1e-5    ratio= 4.41x  pres=  76.57%  FN=523629.2  FP= 0.0  FT= 0.0  (n=131)
+
+==================== RESULTS ====================
+All results: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/20261026_010210/results_all.csv
+Averages:    /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/20261026_010210/averages.csv
+Full log:    /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/20261026_010210/experiment.log
+Per-run:     /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/20261026_010210/*.log
+
+--- Averages Table ---
+Source       ErrorBound  Avg_CompRatio  Avg_CompTime_ms  Avg_DecompTime_ms  Avg_PreservRate  Avg_FN     Avg_FP  Avg_FT  Num_Fields
+CESM-ATM-2D  1e-3        5.08           37.76            312.83             94.58            1999.2     0.0     0.0     60
+CESM-ATM-2D  1e-4        4.06           39.99            311.16             96.35            852.6      0.0     0.0     60
+CESM-ATM-2D  1e-5        3.25           40.77            310.75             97.81            313.0      0.0     0.0     60
+CESM-ATM-3D  1e-3        7.98           629.89           13103.07           52.34            2001603.4  0.0     0.0     33
+CESM-ATM-3D  1e-4        7.31           645.44           13043.67           57.00            1842545.1  0.0     0.0     33
+CESM-ATM-3D  1e-5        6.48           640.86           12694.50           58.30            1656012.8  0.0     0.0     33
+Hurricane    1e-3        6.49           123.01           1950.66            70.19            180243.6   0.0     0.0     20
+Hurricane    1e-4        5.73           127.57           1942.96            72.84            170752.5   0.0     0.0     20
+Hurricane    1e-5        4.89           131.29           1945.32            77.03            161071.7   0.0     0.0     20
+NYX          1e-3        0.78           442.32           6035.16            31.27            33188.2    0.0     0.0     6
+NYX          1e-4        0.63           458.38           6013.20            33.06            4228.7     0.0     0.0     6
+NYX          1e-5        0.24           359.42           4348.48            16.67            33.2       0.0     0.0     6
+SCALE        1e-3        7.22           517.55           10712.34           50.55            1040130.6  0.0     0.0     12
+SCALE        1e-4        6.68           557.39           10685.97           54.13            967941.7   0.0     0.0     12
+SCALE        1e-5        5.80           496.98           9876.24            49.76            892215.6   0.0     0.0     12
+ALL          1e-3        6.02                                               73.29            629453.7   0.0     0.0     131
+ALL          1e-4        5.22                                               76.09            579472.3   0.0     0.0     131
+ALL          1e-5        4.41                                               76.57            523629.2   0.0     0.0     131

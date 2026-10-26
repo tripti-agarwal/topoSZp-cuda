@@ -1,0 +1,46 @@
+Lmod has detected the following error: The following module(s) are unknown:
+"gcc/11.2.0"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore-cache load "gcc/11.2.0"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+Cloning into 'SZ3'...
+Cloning into 'zfp'...
+Cloning into 'tthresh'...
+In file included from /lcrc/project/ECP-EZ/tripti/compressors/src/tthresh/external/Eigen/Core:498,
+                 from /lcrc/project/ECP-EZ/tripti/compressors/src/tthresh/external/Eigen/Dense:1,
+                 from /lcrc/project/ECP-EZ/tripti/compressors/src/tthresh/src/tucker.hpp:13,
+                 from /lcrc/project/ECP-EZ/tripti/compressors/src/tthresh/src/compress.hpp:15,
+                 from /lcrc/project/ECP-EZ/tripti/compressors/src/tthresh/src/tthresh.cpp:15:
+/lcrc/project/ECP-EZ/tripti/compressors/src/tthresh/external/Eigen/src/Core/products/SelfadjointMatrixVector.h: In function 'static void Eigen::internal::selfadjoint_product_impl<Lhs, LhsMode, false, Rhs, 0, true>::run(Dest&, const Lhs&, const Rhs&, const Scalar&) [with Dest = Eigen::Block<Eigen::Matrix<double, -1, 1>, -1, 1, false>; Lhs = Eigen::Block<Eigen::Matrix<double, -1, -1>, -1, -1, false>; int LhsMode = 17; Rhs = Eigen::CwiseBinaryOp<Eigen::internal::scalar_product_op<double, double>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, const Eigen::Matrix<double, -1, 1> >, const Eigen::Block<Eigen::Block<Eigen::Matrix<double, -1, -1>, -1, 1, true>, -1, 1, false> >]':
+/lcrc/project/ECP-EZ/tripti/compressors/src/tthresh/external/Eigen/src/Core/products/SelfadjointMatrixVector.h:227:7: warning: 'result' may be used uninitialized [-Wmaybe-uninitialized]
+  225 |     internal::selfadjoint_matrix_vector_product<Scalar, Index, (internal::traits<ActualLhsTypeCleaned>::Flags&RowMajorBit) ? RowMajor : ColMajor,
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  226 |                                                 int(LhsUpLo), bool(LhsBlasTraits::NeedToConjugate), bool(RhsBlasTraits::NeedToConjugate)>::run
+      |                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  227 |       (
+      |       ^
+  228 |         lhs.rows(),                             // size
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  229 |         &lhs.coeffRef(0,0),  lhs.outerStride(), // lhs info
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  230 |         actualRhsPtr,                           // rhs info
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  231 |         actualDestPtr,                          // result info
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  232 |         actualAlpha                             // scale factor
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  233 |       );
+      |       ~
+/lcrc/project/ECP-EZ/tripti/compressors/src/tthresh/external/Eigen/src/Core/products/SelfadjointMatrixVector.h:39:24: note: by argument 4 of type 'const double*' to 'static void Eigen::internal::selfadjoint_matrix_vector_product<Scalar, Index, StorageOrder, UpLo, ConjugateLhs, ConjugateRhs, Version>::run(Index, const Scalar*, Index, const Scalar*, Scalar*, Scalar) [with Scalar = double; Index = long int; int StorageOrder = 0; int UpLo = 1; bool ConjugateLhs = false; bool ConjugateRhs = false; int Version = 0]' declared here
+   39 | EIGEN_DONT_INLINE void selfadjoint_matrix_vector_product<Scalar,Index,StorageOrder,UpLo,ConjugateLhs,ConjugateRhs,Version>::run(
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cloning into 'SZ'...
+CMake Error: The source directory "/lcrc/project/ECP-EZ/tripti/compressors/src/SZ" does not appear to contain CMakeLists.txt.
+Specify --help for usage, or press the help button on the CMake GUI.

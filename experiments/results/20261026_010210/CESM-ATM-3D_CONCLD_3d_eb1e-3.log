@@ -1,0 +1,71 @@
+=== TopoSZp 3D Critical Point Preservation Test ===
+Input: /lcrc/project/ECP-EZ/public/compression/cesmbig-26x1800x3600/CONCLD_1_26_1800_3600.dat  (26 × 1800 × 3600 = 168480000 elements)
+Error bound: 1.000000e-03    Block size: 64
+
+--- Step 1: Find 3D critical points in original data ---
+Found 3101367 critical points in 113.15 ms
+  Maxima: 209260    Minima: 150789    Saddles: 2741318
+
+OpenMP found 3101367 (CUDA 3101367 — MATCH)
+
+--- Step 2: Sort critical points ---
+Sorted in 121.51 ms
+
+--- Step 3: Topology-preserved compression ---
+Compressed: 77794532 bytes (ratio: 8.66x) in 346.02 ms
+
+--- Step 4: Decompress with topology extraction ---
+Decompressed in 777.25 ms
+
+--- Step 4a: Raw decompression verification ---
+Raw max error: 9.999999e-04 (bound: 1.000000e-03) — PASS
+Raw CP preservation: 178950 / 3101367 (5.77%)
+
+--- Step 4b: Post-processing ---
+  Sort positions: 360049 extrema, decompressed: OK
+  Extrema lost 344115 -> 0 of 360049; saddles lost 2574470 -> 1331955 of 2741318
+  Saddle stencil restored 800701 saddles; RBF restored 441737 saddles
+  Post-processing done in 12328.86 ms
+
+TIMING comp_s=0.613771 decomp_s=12.701366
+--- Step 5: Find CPs in post-processed data ---
+Found 1769412 CPs
+  Maxima: 209260  Minima: 150789  Saddles: 1409363
+
+--- Step 6: Critical point preservation ---
+Original: 3101367    Preserved: 1769412 (57.05%)
+Lost: 1331955 (max:0 min:0 sad:1331955)  Changed: 0  New: 0
+
+--- Step 7: FN array ---
+Non-zero: 3101367 (expected 3101367)   Match: 168480000 / 168480000 (100.00%)
+
+--- Step 8: Error bound ---
+Max error: 1.997072e-03   1×eb over: 574654   2×eb over: 0
+Status: PASS (within 2×eb — expected for topology preservation)
+
+--- Persistence-based saddle analysis ---
+
+  Persistence threshold      Total  Preserved       Lost     Rate
+  --------------------      -----  ---------       ----     ----
+  All saddles             2741299    1409359    1331940   51.41%
+  > 0.5×eb                 55866      55179        687   98.77%
+  > 1.0×eb                 12221      12221          0  100.00%
+  > 2.0×eb                  2033       2033          0  100.00%
+  > 5.0×eb                   231        231          0  100.00%
+  > 10.0×eb                   28         28          0  100.00%
+
+  Saddle persistence: min=0.000000e+00  avg=6.154333e-05  max=1.799004e-02
+  Error bound: 1.000000e-03
+
+==================== 3D SUMMARY ====================
+Grid:              26 × 1800 × 3600 = 168480000
+Critical points:   3101367 → 1769412 in decompressed
+Preserved:         1769412 / 3101367 (57.05%)
+  Maxima:          209260 / 209260
+  Minima:          150789 / 150789
+  Saddles:         1409363 / 2741318
+Error bound:       PASS (within 2×eb — expected for topology preservation)
+FN array:          PASS (168480000 / 168480000)
+Compression ratio: 8.66x
+====================================================
+Result: PASS (error <= 2 eb, no FP, no FT, all extrema kept)

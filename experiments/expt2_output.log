@@ -1,0 +1,72 @@
+-- CUDA support enabled (arch: 80)
+-- Checking for one of the modules 'libzstd'
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/build
+Consolidate compiler generated dependencies of target SZp
+Consolidate compiler generated dependencies of target SZp_cuda
+[ 40%] Built target SZp
+[ 60%] Built target SZp_cuda
+Consolidate compiler generated dependencies of target test_cuda_decompress
+Consolidate compiler generated dependencies of target compare_with_lopc
+Consolidate compiler generated dependencies of target test_cuda_topology_3d
+Consolidate compiler generated dependencies of target test_cuda_compress
+Consolidate compiler generated dependencies of target test_cuda_topology
+Consolidate compiler generated dependencies of target compare_with_lopc_3d
+[ 66%] Built target compare_with_lopc
+[ 86%] Built target test_cuda_compress
+[ 86%] Built target test_cuda_topology_3d
+[ 86%] Built target test_cuda_decompress
+[ 93%] Built target test_cuda_topology
+[100%] Built target compare_with_lopc_3d
+Compressor Comparison Experiment — 20261025_180128
+Mode: full
+
+Available compressors:
+  ✓ SZ3: /home/sdi/SZ3/SZ3-install/bin/sz3
+  ✓ ZFP: /home/sdi/zfp-22-03-02/bin/zfp
+  ✗ Tthresh: NOT FOUND at /lcrc/project/ECP-EZ/tripti/compressors/bin/tthresh
+  ✓ SZ: /home/sdi/SZ-2.1.12-install/bin/sz
+  ✓ TopoSZp+: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/../build/test_cuda_topology
+  ✗ compare: NOT FOUND at /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/../build/compare_critical_points
+
+========== ATM (1800x3600) ==========
+
+Results: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/comparison_20261025_180128/comparison.csv
+Done.
+-- CUDA support enabled (arch: 80)
+-- Checking for one of the modules 'libzstd'
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/build
+Consolidate compiler generated dependencies of target SZp
+Consolidate compiler generated dependencies of target SZp_cuda
+[ 40%] Built target SZp
+[ 60%] Built target SZp_cuda
+Consolidate compiler generated dependencies of target test_cuda_compress
+Consolidate compiler generated dependencies of target compare_with_lopc
+Consolidate compiler generated dependencies of target test_cuda_decompress
+Consolidate compiler generated dependencies of target compare_with_lopc_3d
+Consolidate compiler generated dependencies of target test_cuda_topology
+Consolidate compiler generated dependencies of target test_cuda_topology_3d
+[ 66%] Built target test_cuda_compress
+[ 76%] Built target compare_with_lopc
+[ 80%] Built target test_cuda_decompress
+[ 86%] Built target compare_with_lopc_3d
+[ 93%] Built target test_cuda_topology
+[100%] Built target test_cuda_topology_3d
+Compressor Comparison Experiment — 20261025_180227
+Mode: full
+
+Available compressors:
+  ✓ SZ3: /lcrc/project/ECP-EZ/tripti/compressors/bin/sz3
+  ✓ ZFP: /lcrc/project/ECP-EZ/tripti/compressors/bin/zfp
+  ✗ Tthresh: NOT FOUND at /lcrc/project/ECP-EZ/tripti/compressors/bin/tthresh
+  ✓ SZ: /home/sdi/SZ-2.1.12-install/bin/sz
+  ✓ TopoSZp+: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/../build/test_cuda_topology
+  ✗ compare: NOT FOUND at /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/../build/compare_critical_points
+
+========== ATM (1800x3600) ==========
+
+Results: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/comparison_20261025_180227/comparison.csv
+Done.
