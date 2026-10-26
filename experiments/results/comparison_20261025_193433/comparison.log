@@ -1,0 +1,30 @@
+Compressor Comparison Experiment — 20261025_193433
+Mode: quick
+
+Available compressors:
+  ✓ SZ3: /lcrc/project/ECP-EZ/tripti/compressors/bin/sz3
+  ✓ ZFP: /lcrc/project/ECP-EZ/tripti/compressors/bin/zfp
+  ✓ Tthresh: /lcrc/project/ECP-EZ/tripti/compressors/bin/tthresh
+  ✓ SZ: /home/sdi/SZ-2.1.12-install/bin/sz
+  ✓ TopoSZp+: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/../build/test_cuda_topology
+  ✓ compare: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/../build/compare_critical_points
+
+========== ATM (1800x3600) ==========
+  SZ3 eb=1e-3: FN=0 FP=0 FT=0 (n=60)
+  ZFP eb=1e-3: FN=N/A FP=N/A FT=N/A (n=0)
+  Tthresh eb=1e-3: FN=N/A FP=N/A FT=N/A (n=0)
+  SZ eb=1e-3: FN=0 FP=0 FT=0 (n=60)
+  TopoSZp+ eb=1e-3: FN=1999.20 FP=0 FT=0 (n=60)
+  SZ3 eb=1e-4: FN=0 FP=0 FT=0 (n=60)
+  ZFP eb=1e-4: FN=N/A FP=N/A FT=N/A (n=0)
+  Tthresh eb=1e-4: FN=N/A FP=N/A FT=N/A (n=0)
+  SZ eb=1e-4: FN=0 FP=0 FT=0 (n=60)
+  TopoSZp+ eb=1e-4: FN=852.60 FP=0 FT=0 (n=60)
+  SZ3 eb=1e-5: FN=0 FP=0 FT=0 (n=60)
+  ZFP eb=1e-5: FN=N/A FP=N/A FT=N/A (n=0)
+  Tthresh eb=1e-5: FN=N/A FP=N/A FT=N/A (n=0)
+  SZ eb=1e-5: FN=0 FP=0 FT=0 (n=60)
+  TopoSZp+ eb=1e-5: FN=312.96 FP=0 FT=0 (n=60)
+
+Results: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/comparison_20261025_193433/comparison.csv
+Done.

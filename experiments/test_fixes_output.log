@@ -1,0 +1,100 @@
+=== 1. Rebuild (with compare_critical_points) ===
+-- Found PkgConfig: /bin/pkg-config (found version "0.29.2") 
+-- Checking for one of the modules 'libzstd'
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/build
+[ 91%] Linking CUDA executable compare_with_lopc
+[ 94%] Linking CUDA executable compare_with_lopc_3d
+[ 94%] Built target test_cuda_decompress
+[ 94%] Built target test_cuda_compress
+[ 94%] Built target compare_with_lopc
+[ 94%] Built target compare_with_lopc_3d
+[ 97%] Linking CUDA executable test_cuda_topology_3d
+[100%] Linking CUDA executable test_cuda_topology
+[100%] Built target test_cuda_topology_3d
+[100%] Built target test_cuda_topology
+
+=== 2. Verify compare_critical_points exists ===
+-rwxrwx--x+ 1 sdi cels  21168 Oct 25 19:33 build/compare_critical_points
+-rwxrwx--x+ 1 sdi cels 149504 Oct 25 19:33 build/pl_topo_check
+-rwxrwx--x+ 1 sdi cels  49664 Oct 25 19:33 build/topo_check
+
+=== 3. Test compare_critical_points manually ===
+--- SZ3 ---
+compression ratio = 20.86 
+compression time = 0.128717
+compressed data file = /tmp/test.sz3
+compression ratio = 20.855309
+decompression time = 0.072261 seconds.
+decompressed file = /tmp/test.sz3.out
+94210 202479 5817 302506 329742
+
+--- ZFP ---
+  -d -1 1000000 -a 1e-9 : compression of 1M doubles with < 1e-9 max error
+  -d -1 1000000 -c 64 64 0 -1074 : 4x fixed-rate compression of 1M doubles
+  -x omp=16,256 : parallel compression with 16 threads, 256-block chunks
+  -d -1 1000000 -a 1e-9 : compression of 1M doubles with < 1e-9 max error
+  -d -1 1000000 -c 64 64 0 -1074 : 4x fixed-rate compression of 1M doubles
+  -x omp=16,256 : parallel compression with 16 threads, 256-block chunks
+Error: Failed to read decompressed file: /tmp/test.zfp.out
+
+--- Tthresh ---
+
+Error: Numeric argument expected
+Run "tthresh -h" for usage information
+
+Tthresh decompress failed
+
+--- SZ (old) ---
+compression time = 0.202281
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz
+decompression time = 0.127594 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz.out
+100218 484178 11785 596181 605433
+
+=== 4. Quick compressor comparison (1 field, 1 eb) ===
+
+========== ATM (1800x3600) ==========
+  SZ3 eb=1e-3: FN=0 FP=0 FT=0 (n=60)
+  ZFP eb=1e-3: FN=N/A FP=N/A FT=N/A (n=0)
+  Tthresh eb=1e-3: FN=N/A FP=N/A FT=N/A (n=0)
+  SZ eb=1e-3: FN=0 FP=0 FT=0 (n=60)
+  TopoSZp+ eb=1e-3: FN=1999.20 FP=0 FT=0 (n=60)
+  SZ3 eb=1e-4: FN=0 FP=0 FT=0 (n=60)
+  ZFP eb=1e-4: FN=N/A FP=N/A FT=N/A (n=0)
+  Tthresh eb=1e-4: FN=N/A FP=N/A FT=N/A (n=0)
+  SZ eb=1e-4: FN=0 FP=0 FT=0 (n=60)
+  TopoSZp+ eb=1e-4: FN=852.60 FP=0 FT=0 (n=60)
+  SZ3 eb=1e-5: FN=0 FP=0 FT=0 (n=60)
+  ZFP eb=1e-5: FN=N/A FP=N/A FT=N/A (n=0)
+  Tthresh eb=1e-5: FN=N/A FP=N/A FT=N/A (n=0)
+  SZ eb=1e-5: FN=0 FP=0 FT=0 (n=60)
+  TopoSZp+ eb=1e-5: FN=312.96 FP=0 FT=0 (n=60)
+
+Results: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/comparison_20261025_193433/comparison.csv
+Done.
+
+=== 5. Quick bit rate sweep (1 eb) ===
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz.out
+compression time = 0.220229
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz
+decompression time = 0.318953 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz.out
+compression time = 0.216432
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz
+decompression time = 0.310866 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz.out
+compression time = 0.207170
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz
+decompression time = 0.288897 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz.out
+compression time = 0.228435
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz
+decompression time = 0.349652 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz.out
+  SZ: br=12.63 FN=614.60 FP=34567.40 FT=33.40
+
+Results: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_194543/bitrate_sweep.csv
+
+=== ALL TESTS DONE ===
