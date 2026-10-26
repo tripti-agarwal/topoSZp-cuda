@@ -37,7 +37,7 @@ fi
 echo "OMP_NUM_THREADS=$OMP_THREADS" | tee -a "$LOG"
 echo "" | tee -a "$LOG"
 
-echo "Field,Dims,Bound,BoundType,CUDA_Comp_s,CUDA_Decomp_s,OMP_Comp_s,OMP_Decomp_s,Maxima_Before,Maxima_After,Minima_Before,Minima_After,Saddle_Before,Saddle_After,FN_Before,FN_After,FP,FT,MaxErr_eps" > "$CSV"
+echo "Field,Dims,Bound,BoundType,CUDA_Total_Comp_s,CUDA_Total_Decomp_s,CUDA_Kernel_Comp_s,CUDA_Kernel_Decomp_s,CUDA_PostProc_s,OMP_Comp_s,OMP_Decomp_s,FN_After,FP,FT,MaxErr_eps" > "$CSV"
 
 export OMP_NUM_THREADS=$OMP_THREADS
 
@@ -47,10 +47,34 @@ export OMP_NUM_THREADS=$OMP_THREADS
 parse_results() {
     local OUT="$1"
 
-    # CUDA timing from "TIMING comp_s=X.XXX decomp_s=X.XXX"
-    # Note: "comp_s=" also matches inside "decomp_s=", so match "TIMING comp_s=" or use space before
+    # CUDA total timing from "TIMING comp_s=X.XXX decomp_s=X.XXX"
     cuda_comp=$(echo "$OUT" | grep 'TIMING' | sed -n 's/.*TIMING comp_s=\([0-9.]*\).*/\1/p' | head -1)
     cuda_decomp=$(echo "$OUT" | grep 'TIMING' | sed -n 's/.*decomp_s=\([0-9.]*\).*/\1/p' | head -1)
+
+    # CUDA kernel-only times (before OpenMP section)
+    local cuda_section
+    cuda_section=$(echo "$OUT" | sed -n '1,/OpenMP PIPELINE/p')
+    # "Compressed: XXXXX bytes (ratio: X.XXx) in XX.XX ms"
+    local kernel_comp_ms kernel_decomp_ms postproc_ms
+    kernel_comp_ms=$(echo "$cuda_section" | grep 'Compressed:' | sed -n 's/.*in \([0-9.]*\) ms/\1/p' | head -1)
+    kernel_decomp_ms=$(echo "$cuda_section" | grep 'Decompressed in' | sed -n 's/.*in \([0-9.]*\) ms/\1/p' | head -1)
+    postproc_ms=$(echo "$cuda_section" | grep 'Post-processing done' | sed -n 's/.*in \([0-9.]*\) ms/\1/p' | head -1)
+    # Convert ms to seconds
+    if [ -n "$kernel_comp_ms" ]; then
+        cuda_kernel_comp=$(echo "scale=6; $kernel_comp_ms / 1000" | bc)
+    else
+        cuda_kernel_comp=""
+    fi
+    if [ -n "$kernel_decomp_ms" ]; then
+        cuda_kernel_decomp=$(echo "scale=6; $kernel_decomp_ms / 1000" | bc)
+    else
+        cuda_kernel_decomp=""
+    fi
+    if [ -n "$postproc_ms" ]; then
+        cuda_postproc=$(echo "scale=6; $postproc_ms / 1000" | bc)
+    else
+        cuda_postproc=""
+    fi
 
     # OpenMP timing from section after "OpenMP PIPELINE COMPARISON"
     # Compress: "Compressed: XXXXX bytes (ratio: X.XXx) in XX.XX ms"
@@ -109,8 +133,8 @@ for field in $FIELDS_2D; do
         echo -n "  $field abs $eb ... " | tee -a "$LOG"
         OUT=$("$TOPO_2D" "$FILE" 1800 3600 $eb $BLOCK 2>&1) || true
         parse_results "$OUT"
-        echo "$field,1800x3600,$eb,ABS,$cuda_comp,$cuda_decomp,$omp_comp,$omp_decomp,,,,,,$fn_before,$fn_after,${fp:-0},${ft:-0},$max_err_eps" >> "$CSV"
-        echo "CUDA=${cuda_comp}s OMP=${omp_comp}s" | tee -a "$LOG"
+        echo "$field,1800x3600,$eb,ABS,$cuda_comp,$cuda_decomp,$cuda_kernel_comp,$cuda_kernel_decomp,$cuda_postproc,$omp_comp,$omp_decomp,$fn_after,${fp:-0},${ft:-0},$max_err_eps" >> "$CSV"
+        echo "total=${cuda_comp}s kernel_c=${cuda_kernel_comp}s kernel_d=${cuda_kernel_decomp}s post=${cuda_postproc}s OMP=${omp_comp}s" | tee -a "$LOG"
         echo "$OUT" > "$OUTDIR/${field}_2d_abs_${eb}.log"
     done
 
@@ -119,8 +143,8 @@ for field in $FIELDS_2D; do
         echo -n "  $field $rel_eb ... " | tee -a "$LOG"
         OUT=$("$TOPO_2D" "$FILE" 1800 3600 "$rel_eb" $BLOCK 2>&1) || true
         parse_results "$OUT"
-        echo "$field,1800x3600,$rel_eb,REL,$cuda_comp,$cuda_decomp,$omp_comp,$omp_decomp,,,,,,$fn_before,$fn_after,${fp:-0},${ft:-0},$max_err_eps" >> "$CSV"
-        echo "CUDA=${cuda_comp}s OMP=${omp_comp}s" | tee -a "$LOG"
+        echo "$field,1800x3600,$rel_eb,REL,$cuda_comp,$cuda_decomp,$cuda_kernel_comp,$cuda_kernel_decomp,$cuda_postproc,$omp_comp,$omp_decomp,$fn_after,${fp:-0},${ft:-0},$max_err_eps" >> "$CSV"
+        echo "total=${cuda_comp}s kernel_c=${cuda_kernel_comp}s kernel_d=${cuda_kernel_decomp}s post=${cuda_postproc}s OMP=${omp_comp}s" | tee -a "$LOG"
         echo "$OUT" > "$OUTDIR/${field}_2d_${rel_eb//:/_}.log"
     done
 done
@@ -150,8 +174,8 @@ for field in $FIELDS_3D; do
         echo -n "  $field abs $eb ... " | tee -a "$LOG"
         OUT=$("$TOPO_3D" "$FILE" 26 1800 3600 $eb $BLOCK 2>&1) || true
         parse_results "$OUT"
-        echo "$field,26x1800x3600,$eb,ABS,$cuda_comp,$cuda_decomp,$omp_comp,$omp_decomp,,,,,,$fn_before,$fn_after,${fp:-0},${ft:-0},$max_err_eps" >> "$CSV"
-        echo "CUDA=${cuda_comp}s OMP=${omp_comp}s" | tee -a "$LOG"
+        echo "$field,26x1800x3600,$eb,ABS,$cuda_comp,$cuda_decomp,$cuda_kernel_comp,$cuda_kernel_decomp,$cuda_postproc,$omp_comp,$omp_decomp,$fn_after,${fp:-0},${ft:-0},$max_err_eps" >> "$CSV"
+        echo "CUDA=${cuda_comp}s kernel_c=${cuda_kernel_comp}s kernel_d=${cuda_kernel_decomp}s post=${cuda_postproc}s" | tee -a "$LOG"
         echo "$OUT" > "$OUTDIR/${field}_3d_abs_${eb}.log"
     done
 
@@ -160,8 +184,8 @@ for field in $FIELDS_3D; do
         echo -n "  $field $rel_eb ... " | tee -a "$LOG"
         OUT=$("$TOPO_3D" "$FILE" 26 1800 3600 "$rel_eb" $BLOCK 2>&1) || true
         parse_results "$OUT"
-        echo "$field,26x1800x3600,$rel_eb,REL,$cuda_comp,$cuda_decomp,$omp_comp,$omp_decomp,,,,,,$fn_before,$fn_after,${fp:-0},${ft:-0},$max_err_eps" >> "$CSV"
-        echo "CUDA=${cuda_comp}s OMP=${omp_comp}s" | tee -a "$LOG"
+        echo "$field,26x1800x3600,$rel_eb,REL,$cuda_comp,$cuda_decomp,$cuda_kernel_comp,$cuda_kernel_decomp,$cuda_postproc,$omp_comp,$omp_decomp,$fn_after,${fp:-0},${ft:-0},$max_err_eps" >> "$CSV"
+        echo "total=${cuda_comp}s kernel_c=${cuda_kernel_comp}s kernel_d=${cuda_kernel_decomp}s post=${cuda_postproc}s OMP=${omp_comp}s" | tee -a "$LOG"
         echo "$OUT" > "$OUTDIR/${field}_3d_${rel_eb//:/_}.log"
     done
 done
