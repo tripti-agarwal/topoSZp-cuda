@@ -1,0 +1,29 @@
+#!/bin/bash
+#PBS -N toposzp_test_cmp
+#PBS -q backfill
+#PBS -A SDR
+#PBS -l select=1:ngpus=1
+#PBS -l walltime=00:30:00
+#PBS -o /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/test_cmp_output.log
+#PBS -e /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/test_cmp_error.log
+module purge
+module load gcc/11.4.0
+export PATH=/usr/local/cuda/bin:/lcrc/project/ECP-EZ/tripti/compressors/bin:$PATH
+export LD_LIBRARY_PATH=/lcrc/project/ECP-EZ/tripti/compressors/lib:$LD_LIBRARY_PATH
+cd /lcrc/project/ECP-EZ/tripti/topoSZp-cuda
+
+echo "=== Build ==="
+cd build && cmake .. -DENABLE_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES="80" 2>&1 | tail -3
+make -j$(nproc) 2>&1 | tail -5
+ls -la compare_critical_points
+cd ..
+
+echo ""
+echo "=== Quick compressor comparison (SZ3 + SZ vs TopoSZp+) ==="
+bash experiments/run_compressor_comparison.sh quick
+
+echo ""
+echo "=== Quick bit rate sweep ==="
+bash experiments/run_bitrate_sweep.sh quick
+
+echo "=== DONE ==="

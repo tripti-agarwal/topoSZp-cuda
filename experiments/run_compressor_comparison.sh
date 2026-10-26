@@ -147,17 +147,21 @@ run_compressor() {
     esac
 
     # Count FN/FP/FT using compare_critical_points
-    # Output format: "FN FP FT Total DecompCount" (5 space-separated integers)
-    if [ -f "$decomp_file" ] && [ -f "$COMPARE_BIN" ]; then
-        local cmp_out=$("$COMPARE_BIN" "$input" "$decomp_file" $rows $cols $eb 2>/dev/null) || true
-        fn=$(echo "$cmp_out" | tail -1 | awk '{print $1}')
-        fp=$(echo "$cmp_out" | tail -1 | awk '{print $2}')
-        ft=$(echo "$cmp_out" | tail -1 | awk '{print $3}')
-        # Validate they're numbers
-        case "$fn" in ''|*[!0-9]*) fn=0 ;; esac
-        case "$fp" in ''|*[!0-9]*) fp=0 ;; esac
-        case "$ft" in ''|*[!0-9]*) ft=0 ;; esac
+    # Output format: "FN FP FT Total DecompCount" (5 space-separated integers on last line)
+    if [ -f "$COMPARE_BIN" ]; then
+        if [ -f "$decomp_file" ]; then
+            local cmp_out=$("$COMPARE_BIN" "$input" "$decomp_file" $rows $cols $eb 2>&1) || true
+            # Get last line with 5 numbers
+            local last_line=$(echo "$cmp_out" | grep -E '^[0-9]+ [0-9]+ [0-9]+' | tail -1)
+            fn=$(echo "$last_line" | awk '{print $1}')
+            fp=$(echo "$last_line" | awk '{print $2}')
+            ft=$(echo "$last_line" | awk '{print $3}')
+        fi
     fi
+    # Validate they're numbers
+    case "$fn" in ''|*[!0-9]*) fn=0 ;; esac
+    case "$fp" in ''|*[!0-9]*) fp=0 ;; esac
+    case "$ft" in ''|*[!0-9]*) ft=0 ;; esac
 
     # Compute compression ratio
     local orig_size=$((nbele * 4))
@@ -175,7 +179,7 @@ run_compressor() {
 ###############################################################################
 # Main loop
 ###############################################################################
-COMPRESSORS="SZ3 ZFP Tthresh SZ"
+COMPRESSORS="SZ3 SZ"
 
 for ds_name in "${!DATASETS[@]}"; do
     IFS='|' read -r data_dir rows cols <<< "${DATASETS[$ds_name]}"

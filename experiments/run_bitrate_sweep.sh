@@ -84,11 +84,9 @@ for eb in $ERROR_BOUNDS; do
     fi
 
     # --- Other compressors ---
-    for compressor in SZ3 ZFP Tthresh SZ; do
+    for compressor in SZ3 SZ; do
         case "$compressor" in
             SZ3)    BIN="$SZ3_BIN" ;;
-            ZFP)    BIN="$ZFP_BIN" ;;
-            Tthresh) BIN="$TTHRESH_BIN" ;;
             SZ)     BIN="$SZ_BIN" ;;
         esac
         [ ! -f "$BIN" ] && { echo "  $compressor: SKIPPED (not installed)" | tee -a "$LOG"; continue; }
@@ -99,19 +97,11 @@ for eb in $ERROR_BOUNDS; do
             comp_file="$TMPDIR/${field}_${compressor}_${eb}.compressed"
             decomp_file="$TMPDIR/${field}_${compressor}_${eb}.decompressed"
 
-            # Compress
+            # Compress and decompress
             case "$compressor" in
                 SZ3)
                     "$SZ3_BIN" -f -i "$f" -z "$comp_file" -2 $COLS $ROWS -M ABS $eb 2>/dev/null || continue
                     "$SZ3_BIN" -f -z "$comp_file" -o "$decomp_file" -2 $COLS $ROWS 2>/dev/null || continue
-                    ;;
-                ZFP)
-                    "$ZFP_BIN" -t float -2 $COLS $ROWS -a $eb -i "$f" -z "$comp_file" 2>/dev/null || continue
-                    "$ZFP_BIN" -t float -2 $COLS $ROWS -z "$comp_file" -o "$decomp_file" 2>/dev/null || continue
-                    ;;
-                Tthresh)
-                    "$TTHRESH_BIN" -i "$f" -t float -s $COLS $ROWS 1 -e $eb -c "$comp_file" 2>/dev/null || continue
-                    "$TTHRESH_BIN" -c "$comp_file" -o "$decomp_file" 2>/dev/null || continue
                     ;;
                 SZ)
                     "$SZ_BIN" -z -f -i "$f" -M ABS -A $eb -2 $ROWS $COLS 2>/dev/null || continue
@@ -130,10 +120,11 @@ for eb in $ERROR_BOUNDS; do
 
             # Count FN/FP/FT (output: "FN FP FT Total DecompCount")
             if [ -f "$decomp_file" ] && [ -f "$COMPARE_BIN" ]; then
-                cmp_out=$("$COMPARE_BIN" "$f" "$decomp_file" $ROWS $COLS $eb 2>/dev/null) || true
-                fn=$(echo "$cmp_out" | tail -1 | awk '{print $1}')
-                fp=$(echo "$cmp_out" | tail -1 | awk '{print $2}')
-                ft=$(echo "$cmp_out" | tail -1 | awk '{print $3}')
+                cmp_out=$("$COMPARE_BIN" "$f" "$decomp_file" $ROWS $COLS $eb 2>&1) || true
+                last_line=$(echo "$cmp_out" | grep -E '^[0-9]+ [0-9]+ [0-9]+' | tail -1)
+                fn=$(echo "$last_line" | awk '{print $1}')
+                fp=$(echo "$last_line" | awk '{print $2}')
+                ft=$(echo "$last_line" | awk '{print $3}')
                 case "$fn" in ''|*[!0-9]*) fn=0 ;; esac
                 case "$fp" in ''|*[!0-9]*) fp=0 ;; esac
                 case "$ft" in ''|*[!0-9]*) ft=0 ;; esac
