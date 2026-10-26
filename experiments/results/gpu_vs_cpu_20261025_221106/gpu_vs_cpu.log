@@ -1,0 +1,194 @@
+GPU vs CPU Timing Experiment — 20261025_221106
+  CLDHGH abs 1e-3 ... NVIDIA A100-SXM4-40GB, 40960 MiB
+OMP_NUM_THREADS=32
+
+========== 2D Fields ==========
+  CLDHGH abs 1e-3 ... CUDA=0.048349s OMP=.105130s
+  CLDHGH rel:1e-3 ... CUDA=0.055389s OMP=.121230s
+  CLDHGH rel:1e-3 ... CUDA=0.041461s OMP=.009350s
+  CLDHGH rel:1e-4 ... CUDA=0.055557s OMP=.159630s
+  CLDHGH rel:1e-4 ... CUDA=0.057939s OMP=.111940s
+  CLDLOW abs 1e-3 ... CUDA=0.080485s OMP=.149260s
+  CLDLOW abs 1e-3 ... CUDA=0.049159s OMP=.132620s
+  CLDLOW rel:1e-3 ... CUDA=0.037690s OMP=.120860s
+  CLDLOW rel:1e-3 ... CUDA=0.042804s OMP=.135940s
+  CLDLOW rel:1e-4 ... CUDA=0.045540s OMP=.123980s
+  CLDLOW rel:1e-4 ... CUDA=0.071294s OMP=.185460s
+  AEROD_v abs 1e-3 ... CUDA=0.063096s OMP=.116950s
+  AEROD_v abs 1e-3 ... CUDA=0.043726s OMP=.113700s
+  AEROD_v rel:1e-3 ... CUDA=0.051016s OMP=.154440s
+  AEROD_v rel:1e-3 ... CUDA=0.062873s OMP=.130380s
+  AEROD_v rel:1e-4 ... CUDA=0.040763s OMP=.125510s
+  AEROD_v rel:1e-4 ... CUDA=0.045960s OMP=.140950s
+  FREQSH abs 1e-3 ... CUDA=0.038887s OMP=.117770s
+  FREQSH abs 1e-3 ... CUDA=0.043624s OMP=.146140s
+  FREQSH rel:1e-3 ... CUDA=0.039608s OMP=.110620s
+  FREQSH rel:1e-3 ... CUDA=0.050771s OMP=.125480s
+  FREQSH rel:1e-4 ... CUDA=0.053347s OMP=.137140s
+  FREQSH rel:1e-4 ... CUDA=0.042840s OMP=.116830s
+  CLDMED abs 1e-3 ... CUDA=0.051666s OMP=.122830s
+  CLDMED abs 1e-3 ... CUDA=0.049620s OMP=.110520s
+  CLDMED rel:1e-3 ... CUDA=0.042274s OMP=.126700s
+  CLDMED rel:1e-3 ... CUDA=0.058168s OMP=.105080s
+  CLDMED rel:1e-4 ... CUDA=0.045947s OMP=.135190s
+  CLDMED rel:1e-4 ... CUDA=0.058775s OMP=.153830s
+
+========== 3D Fields ==========
+  CLDICE abs 1e-7 ... CUDA=0.065471s OMP=.117020s
+
+========== 3D Fields ==========
+  CLDICE abs 1e-7 ... CUDA=0.639585s OMP=s
+  CLDICE rel:1e-3 ... CUDA=0.658148s OMP=s
+  CLDICE rel:1e-3 ... CUDA=0.616302s OMP=s
+  CLDICE rel:1e-4 ... CUDA=0.626555s OMP=s
+  CLDICE rel:1e-4 ... CUDA=0.663550s OMP=s
+  CLOUD abs 1e-7 ... CUDA=0.613847s OMP=s
+  CLOUD abs 1e-7 ... CUDA=0.885522s OMP=s
+  CLOUD rel:1e-3 ... CUDA=0.810735s OMP=s
+  CLOUD rel:1e-3 ... CUDA=0.771823s OMP=s
+  CLOUD rel:1e-4 ... CUDA=0.769749s OMP=s
+  CLOUD rel:1e-4 ... CUDA=0.731673s OMP=s
+  T abs 1e-7 ... CUDA=0.773502s OMP=s
+  T abs 1e-7 ... CUDA=s OMP=s
+  T rel:1e-3 ... CUDA=s OMP=s
+  T rel:1e-3 ... CUDA=0.565926s OMP=s
+  T rel:1e-4 ... CUDA=0.589482s OMP=s
+  T rel:1e-4 ... CUDA=0.597339s OMP=s
+  OMEGA abs 1e-7 ... CUDA=0.609073s OMP=s
+  OMEGA abs 1e-7 ... CUDA=0.928864s OMP=s
+  OMEGA rel:1e-3 ... CUDA=0.953157s OMP=s
+  OMEGA rel:1e-3 ... CUDA=0.753238s OMP=s
+  OMEGA rel:1e-4 ... CUDA=0.815808s OMP=s
+  OMEGA rel:1e-4 ... CUDA=0.875994s OMP=s
+  RELHUM abs 1e-7 ... CUDA=0.851714s OMP=s
+  RELHUM abs 1e-7 ... CUDA=0.941197s OMP=s
+  RELHUM rel:1e-3 ... CUDA=0.950770s OMP=s
+  RELHUM rel:1e-3 ... CUDA=0.638023s OMP=s
+  RELHUM rel:1e-4 ... CUDA=0.654078s OMP=s
+  RELHUM rel:1e-4 ... CUDA=0.684865s OMP=s
+
+Results: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/gpu_vs_cpu_20261025_221106/gpu_vs_cpu.csv
+Field    Dims          Bound     BoundType  CUDA_Comp_s  CUDA_Decomp_s  OMP_Comp_s  OMP_Decomp_s  Maxima_Before  Maxima_After  Minima_Before  Minima_After  Saddle_Before  Saddle_After  FN_Before  FN_After  FP  FT            MaxErr_eps
+CLDHGH   1800x3600     1e-3      ABS        0.048349     0.386762       .105130     .027400                                                                                              9676       0         0   2.000000e-03  
+CLDHGH   1800x3600     1e-3      ABS        0.055389     0.387477       .121230     .026770                                                                                              9676       0         0   2.000000e-03  
+CLDHGH   1800x3600     rel:1e-3  REL        0.041461     0.382578       .009350     .003240                                                                                              8917       0         0   1.841508e-03  
+CLDHGH   1800x3600     rel:1e-3  REL        0.055557     0.391217       .159630     .044100                                                                                              8917       0         0   1.841508e-03  
+CLDHGH   1800x3600     rel:1e-4  REL        0.057939     0.381848       .111940     .036560                                                                                              444        0         0   1.841508e-04  
+CLDHGH   1800x3600     rel:1e-4  REL        0.080485     0.384216       .149260     .031730                                                                                              444        0         0   1.841508e-04  
+CLDLOW   1800x3600     1e-3      ABS        0.049159     0.346603       .132620     .022470                                                                                              6046       0         0   2.000000e-03  
+CLDLOW   1800x3600     1e-3      ABS        0.037690     0.342594       .120860     .037600                                                                                              6046       0         0   2.000000e-03  
+CLDLOW   1800x3600     rel:1e-3  REL        0.042804     0.346668       .135940     .031830                                                                                              5855       0         0   1.953074e-03  
+CLDLOW   1800x3600     rel:1e-3  REL        0.045540     0.342118       .123980     .029430                                                                                              5855       0         0   1.953074e-03  
+CLDLOW   1800x3600     rel:1e-4  REL        0.071294     0.354093       .185460     .040230                                                                                              348        0         0   1.953074e-04  
+CLDLOW   1800x3600     rel:1e-4  REL        0.063096     0.337456       .116950     .028090                                                                                              348        0         0   1.953074e-04  
+AEROD_v  1800x3600     1e-3      ABS        0.043726     0.329679       .113700     .023720                                                                                              11824      0         0   2.000000e-03  
+AEROD_v  1800x3600     1e-3      ABS        0.051016     0.326222       .154440     .040150                                                                                              11824      0         0   2.000000e-03  
+AEROD_v  1800x3600     rel:1e-3  REL        0.062873     0.326177       .130380     .027860                                                                                              10481      0         0   1.143109e-03  
+AEROD_v  1800x3600     rel:1e-3  REL        0.040763     0.320136       .125510     .041910                                                                                              10481      0         0   1.143109e-03  
+AEROD_v  1800x3600     rel:1e-4  REL        0.045960     0.322574       .140950     .026600                                                                                              2055       0         0   1.143109e-04  
+AEROD_v  1800x3600     rel:1e-4  REL        0.038887     0.327431       .117770     .043180                                                                                              2055       0         0   1.143109e-04  
+FREQSH   1800x3600     1e-3      ABS        0.043624     0.361307       .146140     .040030                                                                                              4301       0         0   2.000000e-03  
+FREQSH   1800x3600     1e-3      ABS        0.039608     0.356361       .110620     .031320                                                                                              4301       0         0   2.000000e-03  
+FREQSH   1800x3600     rel:1e-3  REL        0.050771     0.373159       .125480     .025270                                                                                              4224       0         0   1.988883e-03  
+FREQSH   1800x3600     rel:1e-3  REL        0.053347     0.363580       .137140     .030300                                                                                              4224       0         0   1.988883e-03  
+FREQSH   1800x3600     rel:1e-4  REL        0.042840     0.353672       .116830     .028090                                                                                              214        0         0   1.988883e-04  
+FREQSH   1800x3600     rel:1e-4  REL        0.051666     0.358121       .122830     .040430                                                                                              214        0         0   1.988883e-04  
+CLDMED   1800x3600     1e-3      ABS        0.049620     0.373070       .110520     .040020                                                                                              11317      0         0   2.000000e-03  
+CLDMED   1800x3600     1e-3      ABS        0.042274     0.367430       .126700     .026110                                                                                              11317      0         0   2.000000e-03  
+CLDMED   1800x3600     rel:1e-3  REL        0.058168     0.373600       .105080     .022190                                                                                              9552       0         0   1.660856e-03  
+CLDMED   1800x3600     rel:1e-3  REL        0.045947     0.370872       .135190     .039960                                                                                              9552       0         0   1.660856e-03  
+CLDMED   1800x3600     rel:1e-4  REL        0.058775     0.365097       .153830     .023810                                                                                              844        0         0   1.660856e-04  
+CLDMED   1800x3600     rel:1e-4  REL        0.065471     0.371966       .117020     .030510                                                                                              844        0         0   1.660856e-04  
+CLDICE   26x1800x3600  1e-7      ABS        0.639585     13.161125                                                                                                                       1589700    0         0   0             
+CLDICE   26x1800x3600  1e-7      ABS        0.658148     13.146074                                                                                                                       1589700    0         0   0             
+CLDICE   26x1800x3600  rel:1e-3  REL        0.616302     12.911573                                                                                                                       1549788    0         0   0             
+CLDICE   26x1800x3600  rel:1e-3  REL        0.626555     13.226808                                                                                                                       1549788    0         0   0             
+CLDICE   26x1800x3600  rel:1e-4  REL        0.663550     12.997104                                                                                                                       1257683    0         0   0             
+CLDICE   26x1800x3600  rel:1e-4  REL        0.613847     12.995809                                                                                                                       1257683    0         0   0             
+CLOUD    26x1800x3600  1e-7      ABS        0.885522     13.445527                                                                                                                       2291       0         0   0             
+CLOUD    26x1800x3600  1e-7      ABS        0.810735     13.361152                                                                                                                       2291       0         0   0             
+CLOUD    26x1800x3600  rel:1e-3  REL        0.771823     13.488690                                                                                                                       583400     0         0   0             
+CLOUD    26x1800x3600  rel:1e-3  REL        0.769749     13.527082                                                                                                                       583400     0         0   0             
+CLOUD    26x1800x3600  rel:1e-4  REL        0.731673     13.408803                                                                                                                       168259     0         0   0             
+CLOUD    26x1800x3600  rel:1e-4  REL        0.773502     13.590681                                                                                                                       168259     0         0   0             
+T        26x1800x3600  1e-7      ABS                                                                                                                                                                0         0                 
+T        26x1800x3600  1e-7      ABS                                                                                                                                                                0         0                 
+T        26x1800x3600  rel:1e-3  REL        0.565926     11.029951                                                                                                                       42447      0         0   0             
+T        26x1800x3600  rel:1e-3  REL        0.589482     11.043452                                                                                                                       42447      0         0   0             
+T        26x1800x3600  rel:1e-4  REL        0.597339     10.965417                                                                                                                       25722      0         0   0             
+T        26x1800x3600  rel:1e-4  REL        0.609073     11.017405                                                                                                                       25722      0         0   0             
+OMEGA    26x1800x3600  1e-7      ABS        0.928864     13.624419                                                                                                                       3155       0         0   0             
+OMEGA    26x1800x3600  1e-7      ABS        0.953157     13.767237                                                                                                                       3155       0         0   0             
+OMEGA    26x1800x3600  rel:1e-3  REL        0.753238     14.894402                                                                                                                       2997558    0         0   0             
+OMEGA    26x1800x3600  rel:1e-3  REL        0.815808     14.927760                                                                                                                       2997558    0         0   0             
+OMEGA    26x1800x3600  rel:1e-4  REL        0.875994     14.172755                                                                                                                       1339147    0         0   0             
+OMEGA    26x1800x3600  rel:1e-4  REL        0.851714     14.184006                                                                                                                       1339147    0         0   0             
+RELHUM   26x1800x3600  1e-7      ABS        0.941197     11.862777                                                                                                                       35         0         0   0             
+RELHUM   26x1800x3600  1e-7      ABS        0.950770     11.853572                                                                                                                       35         0         0   0             
+RELHUM   26x1800x3600  rel:1e-3  REL        0.638023     11.765506                                                                                                                       109789     0         0   0             
+RELHUM   26x1800x3600  rel:1e-3  REL        0.654078     11.790301                                                                                                                       109789     0         0   0             
+RELHUM   26x1800x3600  rel:1e-4  REL        0.684865     11.755046                                                                                                                       35708      0         0   0             
+CUDA=0.657603s OMP=s
+
+Results: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/gpu_vs_cpu_20261025_221106/gpu_vs_cpu.csv
+Field    Dims          Bound     BoundType  CUDA_Comp_s  CUDA_Decomp_s  OMP_Comp_s  OMP_Decomp_s  Maxima_Before  Maxima_After  Minima_Before  Minima_After  Saddle_Before  Saddle_After  FN_Before  FN_After  FP  FT            MaxErr_eps
+CLDHGH   1800x3600     1e-3      ABS        0.048349     0.386762       .105130     .027400                                                                                              9676       0         0   2.000000e-03  
+CLDHGH   1800x3600     1e-3      ABS        0.055389     0.387477       .121230     .026770                                                                                              9676       0         0   2.000000e-03  
+CLDHGH   1800x3600     rel:1e-3  REL        0.041461     0.382578       .009350     .003240                                                                                              8917       0         0   1.841508e-03  
+CLDHGH   1800x3600     rel:1e-3  REL        0.055557     0.391217       .159630     .044100                                                                                              8917       0         0   1.841508e-03  
+CLDHGH   1800x3600     rel:1e-4  REL        0.057939     0.381848       .111940     .036560                                                                                              444        0         0   1.841508e-04  
+CLDHGH   1800x3600     rel:1e-4  REL        0.080485     0.384216       .149260     .031730                                                                                              444        0         0   1.841508e-04  
+CLDLOW   1800x3600     1e-3      ABS        0.049159     0.346603       .132620     .022470                                                                                              6046       0         0   2.000000e-03  
+CLDLOW   1800x3600     1e-3      ABS        0.037690     0.342594       .120860     .037600                                                                                              6046       0         0   2.000000e-03  
+CLDLOW   1800x3600     rel:1e-3  REL        0.042804     0.346668       .135940     .031830                                                                                              5855       0         0   1.953074e-03  
+CLDLOW   1800x3600     rel:1e-3  REL        0.045540     0.342118       .123980     .029430                                                                                              5855       0         0   1.953074e-03  
+CLDLOW   1800x3600     rel:1e-4  REL        0.071294     0.354093       .185460     .040230                                                                                              348        0         0   1.953074e-04  
+CLDLOW   1800x3600     rel:1e-4  REL        0.063096     0.337456       .116950     .028090                                                                                              348        0         0   1.953074e-04  
+AEROD_v  1800x3600     1e-3      ABS        0.043726     0.329679       .113700     .023720                                                                                              11824      0         0   2.000000e-03  
+AEROD_v  1800x3600     1e-3      ABS        0.051016     0.326222       .154440     .040150                                                                                              11824      0         0   2.000000e-03  
+AEROD_v  1800x3600     rel:1e-3  REL        0.062873     0.326177       .130380     .027860                                                                                              10481      0         0   1.143109e-03  
+AEROD_v  1800x3600     rel:1e-3  REL        0.040763     0.320136       .125510     .041910                                                                                              10481      0         0   1.143109e-03  
+AEROD_v  1800x3600     rel:1e-4  REL        0.045960     0.322574       .140950     .026600                                                                                              2055       0         0   1.143109e-04  
+AEROD_v  1800x3600     rel:1e-4  REL        0.038887     0.327431       .117770     .043180                                                                                              2055       0         0   1.143109e-04  
+FREQSH   1800x3600     1e-3      ABS        0.043624     0.361307       .146140     .040030                                                                                              4301       0         0   2.000000e-03  
+FREQSH   1800x3600     1e-3      ABS        0.039608     0.356361       .110620     .031320                                                                                              4301       0         0   2.000000e-03  
+FREQSH   1800x3600     rel:1e-3  REL        0.050771     0.373159       .125480     .025270                                                                                              4224       0         0   1.988883e-03  
+FREQSH   1800x3600     rel:1e-3  REL        0.053347     0.363580       .137140     .030300                                                                                              4224       0         0   1.988883e-03  
+FREQSH   1800x3600     rel:1e-4  REL        0.042840     0.353672       .116830     .028090                                                                                              214        0         0   1.988883e-04  
+FREQSH   1800x3600     rel:1e-4  REL        0.051666     0.358121       .122830     .040430                                                                                              214        0         0   1.988883e-04  
+CLDMED   1800x3600     1e-3      ABS        0.049620     0.373070       .110520     .040020                                                                                              11317      0         0   2.000000e-03  
+CLDMED   1800x3600     1e-3      ABS        0.042274     0.367430       .126700     .026110                                                                                              11317      0         0   2.000000e-03  
+CLDMED   1800x3600     rel:1e-3  REL        0.058168     0.373600       .105080     .022190                                                                                              9552       0         0   1.660856e-03  
+CLDMED   1800x3600     rel:1e-3  REL        0.045947     0.370872       .135190     .039960                                                                                              9552       0         0   1.660856e-03  
+CLDMED   1800x3600     rel:1e-4  REL        0.058775     0.365097       .153830     .023810                                                                                              844        0         0   1.660856e-04  
+CLDMED   1800x3600     rel:1e-4  REL        0.065471     0.371966       .117020     .030510                                                                                              844        0         0   1.660856e-04  
+CLDICE   26x1800x3600  1e-7      ABS        0.639585     13.161125                                                                                                                       1589700    0         0   0             
+CLDICE   26x1800x3600  1e-7      ABS        0.658148     13.146074                                                                                                                       1589700    0         0   0             
+CLDICE   26x1800x3600  rel:1e-3  REL        0.616302     12.911573                                                                                                                       1549788    0         0   0             
+CLDICE   26x1800x3600  rel:1e-3  REL        0.626555     13.226808                                                                                                                       1549788    0         0   0             
+CLDICE   26x1800x3600  rel:1e-4  REL        0.663550     12.997104                                                                                                                       1257683    0         0   0             
+CLDICE   26x1800x3600  rel:1e-4  REL        0.613847     12.995809                                                                                                                       1257683    0         0   0             
+CLOUD    26x1800x3600  1e-7      ABS        0.885522     13.445527                                                                                                                       2291       0         0   0             
+CLOUD    26x1800x3600  1e-7      ABS        0.810735     13.361152                                                                                                                       2291       0         0   0             
+CLOUD    26x1800x3600  rel:1e-3  REL        0.771823     13.488690                                                                                                                       583400     0         0   0             
+CLOUD    26x1800x3600  rel:1e-3  REL        0.769749     13.527082                                                                                                                       583400     0         0   0             
+CLOUD    26x1800x3600  rel:1e-4  REL        0.731673     13.408803                                                                                                                       168259     0         0   0             
+CLOUD    26x1800x3600  rel:1e-4  REL        0.773502     13.590681                                                                                                                       168259     0         0   0             
+T        26x1800x3600  1e-7      ABS                                                                                                                                                                0         0                 
+T        26x1800x3600  1e-7      ABS                                                                                                                                                                0         0                 
+T        26x1800x3600  rel:1e-3  REL        0.565926     11.029951                                                                                                                       42447      0         0   0             
+T        26x1800x3600  rel:1e-3  REL        0.589482     11.043452                                                                                                                       42447      0         0   0             
+T        26x1800x3600  rel:1e-4  REL        0.597339     10.965417                                                                                                                       25722      0         0   0             
+T        26x1800x3600  rel:1e-4  REL        0.609073     11.017405                                                                                                                       25722      0         0   0             
+OMEGA    26x1800x3600  1e-7      ABS        0.928864     13.624419                                                                                                                       3155       0         0   0             
+OMEGA    26x1800x3600  1e-7      ABS        0.953157     13.767237                                                                                                                       3155       0         0   0             
+OMEGA    26x1800x3600  rel:1e-3  REL        0.753238     14.894402                                                                                                                       2997558    0         0   0             
+OMEGA    26x1800x3600  rel:1e-3  REL        0.815808     14.927760                                                                                                                       2997558    0         0   0             
+OMEGA    26x1800x3600  rel:1e-4  REL        0.875994     14.172755                                                                                                                       1339147    0         0   0             
+OMEGA    26x1800x3600  rel:1e-4  REL        0.851714     14.184006                                                                                                                       1339147    0         0   0             
+RELHUM   26x1800x3600  1e-7      ABS        0.941197     11.862777                                                                                                                       35         0         0   0             
+RELHUM   26x1800x3600  1e-7      ABS        0.950770     11.853572                                                                                                                       35         0         0   0             
+RELHUM   26x1800x3600  rel:1e-3  REL        0.638023     11.765506                                                                                                                       109789     0         0   0             
+RELHUM   26x1800x3600  rel:1e-3  REL        0.654078     11.790301                                                                                                                       109789     0         0   0             
+RELHUM   26x1800x3600  rel:1e-4  REL        0.684865     11.755046                                                                                                                       35708      0         0   0             
+RELHUM   26x1800x3600  rel:1e-4  REL        0.657603     11.743409                                                                                                                       35708      0         0   0             

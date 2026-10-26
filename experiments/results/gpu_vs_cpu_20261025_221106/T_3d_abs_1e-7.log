@@ -1,0 +1,18 @@
+TopoSZp CUDA compress (3D): max |value| 305.932 / error bound 1e-07 exceeds the 32-bit bin range of the format (use eb >= 1.42461e-07 for this float32 data)
+=== TopoSZp 3D Critical Point Preservation Test ===
+Input: /lcrc/project/ECP-EZ/public/compression/cesmbig-26x1800x3600/T_1_26_1800_3600.dat  (26 × 1800 × 3600 = 168480000 elements)
+Error bound: 1.000000e-07    Block size: 64
+
+--- Step 1: Find 3D critical points in original data ---
+Found 254926 critical points in 107.67 ms
+  Maxima: 1732    Minima: 2263    Saddles: 250931
+
+OpenMP found 254926 (CUDA 254926 — MATCH)
+
+--- Step 2: Sort critical points ---
+Sorted in 119.93 ms
+
+--- Step 3: Topology-preserved compression ---
+Compressed: 0 bytes (ratio: infx) in 213.74 ms
+
+ERROR: compression failed

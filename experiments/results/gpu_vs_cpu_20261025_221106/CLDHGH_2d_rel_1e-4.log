@@ -1,0 +1,119 @@
+=== TopoSZp Critical Point Preservation Test ===
+Input: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat  (1800 x 3600 = 6480000 elements)
+Error bound: rel:1e-4 → abs=9.207541e-05 (range=9.207541e-01)    Block size: 64
+
+--- Step 1: Find critical points in original data ---
+Found 221473 critical points in 27.01 ms
+  Maxima: 89399    Minima: 90230    Saddles: 41844
+
+OpenMP found 221473 critical points (CUDA: 221473 — MATCH)
+
+--- Step 2: Sort critical points by data value within bins ---
+Sorted in 16.71 ms
+
+--- Step 3: Topology-preserved compression (CUDA) ---
+Compressed: 7644471 bytes (ratio: 3.39x) in 29.98 ms
+
+--- Step 4: Topology-preserved decompression (CUDA) ---
+Decompressed in 39.50 ms
+
+--- Step 4a: Verify raw decompression (before post-processing) ---
+Raw max error: 9.207428e-05 (bound: 9.207541e-05) — PASS
+Raw CP preservation (no stencils): 193813 / 221473 (87.51%)
+
+--- Step 4b: Post-processing — restore critical points ---
+  Sort positions: 179629 extrema, compressed 184162 bytes, decompressed: OK
+  Extrema lost 18063 -> 0 of 179629; saddles lost 8334 -> 444 of 41844 (stencil 7882, RBF 2)
+  RBF restored 2 saddles
+  Post-processing done in 365.52 ms
+
+TIMING comp_s=0.080485 decomp_s=0.384216
+--- Step 5: Find critical points in post-processed data ---
+Found 221029 critical points in decompressed data
+  Maxima: 89399    Minima: 90230    Saddles: 41400
+
+--- Step 6: Verify critical point preservation ---
+Original CPs: 221473
+Preserved (same type): 221029 (99.80%)
+Lost (became regular): 444 (0.20%)
+  Lost maxima: 0  minima: 0  saddles: 444
+Type changed: 0 (0.00%)
+New CPs (not in original): 0
+
+--- Step 7: Verify embedded type (FN) array ---
+FN array: 221473 non-zero entries (expected: 221473)
+FN matches original types: 6480000 / 6480000 (100.00%)
+
+--- Step 8: Verify error bound ---
+Max pointwise error: 1.378097e-04 (bound: 9.207541e-05, 2×eb: 1.841508e-04)
+  Within 1×eb: NO (2676 elements over)
+  Within 2×eb: YES (0 elements over)
+  Status: PASS (within 2×eb — expected for topology preservation)
+--- Step 9: Persistence-based saddle analysis ---
+
+  Persistence threshold      Total  Preserved       Lost     Rate
+  --------------------      -----  ---------       ----     ----
+  All saddles               41844      41400        444   98.94%
+  > 0.5×eb                 31923      31923          0  100.00%
+  > 1.0×eb                 26365      26365          0  100.00%
+  > 2.0×eb                 19269      19269          0  100.00%
+  > 5.0×eb                 10081      10081          0  100.00%
+  > 10.0×eb                 4766       4766          0  100.00%
+
+  Saddle persistence stats:
+    Min: 3.725290e-09    Avg: 3.859173e-04    Max: 1.151937e-02
+    Error bound: 9.207541e-05
+
+--- Step 10: Local order verification ---
+
+  Pair type                             Total   Violations     Rate
+  -----                                 -----   ----------     ----
+  All adjacent pairs                 12932963       416652 96.7784%
+  At least one CP                      869247         1038 99.8806%
+  Both CPs                              16561            1 99.9940%
+  At least one extremum                717545            0 100.0000%
+  (Rate = % of pairs with LOCAL ORDER PRESERVED)
+
+
+==================== SUMMARY ====================
+Critical points:   221473 original → 221029 in decompressed
+Preserved:         221029 / 221473 (99.80%)
+Error bound:       PASS (within 2×eb — expected for topology preservation)
+FN array:          PASS (6480000 / 6480000 match)
+Compression ratio: 3.39x
+
+============ OpenMP PIPELINE COMPARISON ============
+
+--- OpenMP Topology Compression ---
+Compressed: 7644719 bytes (ratio: 3.39x) in 149.26 ms
+
+--- OpenMP Topology Decompression ---
+Decompressed in 31.73 ms
+
+OpenMP decompress returned: data=OK, FN=OK
+--- OpenMP Raw Decompression ---
+Raw max error: 9.207428e-05
+Raw CP preservation: 193813 / 221473 (87.51%)
+
+--- OpenMP Post-Processing ---
+  RBF restored 2 saddles (stencil 7882)
+  CPU and GPU restored fields: IDENTICAL
+
+
+============ SIDE-BY-SIDE COMPARISON ============
+
+Metric                                      CUDA       OpenMP
+---                                         ----       ------
+Compression size (bytes)                 7644471      7644719
+Compression ratio                          3.39x        3.39x
+Total CPs in decompressed                 221029       221029
+Preserved (same type)                     221029       221029
+Preservation rate                         99.80%       99.80%
+  Lost maxima                                  0            0
+  Lost minima                                  0            0
+  Lost saddles                               444          444
+Max error                           1.378097e-04 1.378097e-04
+Within 2×eb                                 YES          YES
+Elements > 2×eb                               0            0
+
+Result: PASS (error <= 2 eb, no FP, no FT, all extrema kept)

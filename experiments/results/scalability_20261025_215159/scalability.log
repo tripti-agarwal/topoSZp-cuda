@@ -1,0 +1,492 @@
+TopoSZp+ Scalability Experiment — 20261025_215159
+Threads: 1 2 4 8 16 32 36
+
+CPU topology binary not found, using CUDA test program (includes OpenMP comparison)
+========== 2D: ATM (1800x3600), eb=1e-3 ==========
+  AEROD_v threads=1 ... comp=.091390s  decomp=.041120s
+  AEROD_v threads=2 ... comp=.046250s  decomp=.024580s
+  AEROD_v threads=4 ... comp=.025140s  decomp=.012750s
+  AEROD_v threads=8 ... comp=.013810s  decomp=.006820s
+  AEROD_v threads=16 ... comp=.010760s  decomp=.004780s
+  AEROD_v threads=32 ... comp=.121880s  decomp=.062140s
+  AEROD_v threads=36 ... comp=.013790s  decomp=.006200s
+  CLDHGH threads=1 ... comp=.109700s  decomp=.052630s
+  CLDHGH threads=2 ... comp=.058390s  decomp=.031620s
+  CLDHGH threads=4 ... comp=.032150s  decomp=.015850s
+  CLDHGH threads=8 ... comp=.016240s  decomp=.008160s
+  CLDHGH threads=16 ... comp=.009910s  decomp=.005290s
+  CLDHGH threads=32 ... comp=.143090s  decomp=.024600s
+  CLDHGH threads=36 ... comp=.009920s  decomp=.007050s
+  CLDLOW threads=1 ... comp=.099490s  decomp=.057970s
+  CLDLOW threads=2 ... comp=.052110s  decomp=.030980s
+  CLDLOW threads=4 ... comp=.026670s  decomp=.015130s
+  CLDLOW threads=8 ... comp=.014680s  decomp=.007870s
+  CLDLOW threads=16 ... comp=.009720s  decomp=.005340s
+  CLDLOW threads=32 ... comp=.153850s  decomp=.022670s
+  CLDLOW threads=36 ... comp=.008850s  decomp=.005020s
+  CLDMED threads=1 ... comp=.118490s  decomp=.054980s
+  CLDMED threads=2 ... comp=.055580s  decomp=.033380s
+  CLDMED threads=4 ... comp=.029990s  decomp=.015240s
+  CLDMED threads=8 ... comp=.016040s  decomp=.007980s
+  CLDMED threads=16 ... comp=.009450s  decomp=.005270s
+  CLDMED threads=32 ... comp=.127820s  decomp=.068490s
+  CLDMED threads=36 ... comp=.012530s  decomp=.004860s
+  CLDTOT threads=1 ... comp=.112720s  decomp=.055290s
+  CLDTOT threads=2 ... comp=.054210s  decomp=.033040s
+  CLDTOT threads=4 ... comp=.026720s  decomp=.016960s
+  CLDTOT threads=8 ... comp=.015210s  decomp=.007970s
+  CLDTOT threads=16 ... comp=.011260s  decomp=.005530s
+  CLDTOT threads=32 ... comp=.096140s  decomp=.002970s
+  CLDTOT threads=36 ... comp=.012460s  decomp=.006850s
+  FLDS threads=1 ... comp=.091120s  decomp=.062030s
+  FLDS threads=2 ... comp=.047620s  decomp=.033570s
+  FLDS threads=4 ... comp=.024720s  decomp=.015370s
+  FLDS threads=8 ... comp=.012810s  decomp=.007950s
+  FLDS threads=16 ... comp=.008310s  decomp=.004800s
+  FLDS threads=32 ... comp=.111440s  decomp=.062470s
+  FLDS threads=36 ... comp=.009280s  decomp=.006210s
+  FLDSC threads=1 ... comp=.079430s  decomp=.053540s
+  FLDSC threads=2 ... comp=.047810s  decomp=.030390s
+  FLDSC threads=4 ... comp=.021650s  decomp=.014810s
+  FLDSC threads=8 ... comp=.012290s  decomp=.008240s
+  FLDSC threads=16 ... comp=.011390s  decomp=.005480s
+  FLDSC threads=32 ... comp=.084400s  decomp=.007460s
+  FLDSC threads=36 ... comp=.011750s  decomp=.005810s
+  FLNS threads=1 ... comp=.097760s  decomp=.055880s
+  FLNS threads=2 ... comp=.050920s  decomp=.031700s
+  FLNS threads=4 ... comp=.025030s  decomp=.017350s
+  FLNS threads=8 ... comp=.013220s  decomp=.008230s
+  FLNS threads=16 ... comp=.009660s  decomp=.005810s
+  FLNS threads=32 ... comp=.142810s  decomp=.013460s
+  FLNS threads=36 ... comp=.011000s  decomp=.005350s
+  FLNSC threads=1 ... comp=.083210s  decomp=.054980s
+  FLNSC threads=2 ... comp=.045440s  decomp=.030460s
+  FLNSC threads=4 ... comp=.022440s  decomp=.015070s
+  FLNSC threads=8 ... comp=.011950s  decomp=.007930s
+  FLNSC threads=16 ... comp=.008590s  decomp=.004680s
+  FLNSC threads=32 ... comp=.130020s  decomp=.033530s
+  FLNSC threads=36 ... comp=.016370s  decomp=.005530s
+  FLNT threads=1 ... comp=.089800s  decomp=.055020s
+  FLNT threads=2 ... comp=.046420s  decomp=.032820s
+  FLNT threads=4 ... comp=.025160s  decomp=.018390s
+  FLNT threads=8 ... comp=.013040s  decomp=.008180s
+  FLNT threads=16 ... comp=.009860s  decomp=.005430s
+  FLNT threads=32 ... comp=.120760s  decomp=.005850s
+  FLNT threads=36 ... comp=.010540s  decomp=.006610s
+  FLNTC threads=1 ... comp=.089640s  decomp=.054680s
+  FLNTC threads=2 ... comp=.043820s  decomp=.028480s
+  FLNTC threads=4 ... comp=.021880s  decomp=.014900s
+  FLNTC threads=8 ... comp=.011890s  decomp=.007740s
+  FLNTC threads=16 ... comp=.009470s  decomp=.005900s
+  FLNTC threads=32 ... comp=.155730s  decomp=.022690s
+  FLNTC threads=36 ... comp=.008970s  decomp=.005240s
+  FLUT threads=1 ... comp=.089540s  decomp=.061870s
+  FLUT threads=2 ... comp=.049390s  decomp=.034110s
+  FLUT threads=4 ... comp=.024920s  decomp=.015990s
+  FLUT threads=8 ... comp=.013110s  decomp=.008220s
+  FLUT threads=16 ... comp=.008000s  decomp=.005210s
+  FLUT threads=32 ... comp=.119120s  decomp=.024810s
+  FLUT threads=36 ... comp=.011320s  decomp=.006340s
+  FLUTC threads=1 ... comp=.080300s  decomp=.053820s
+  FLUTC threads=2 ... comp=.040880s  decomp=.036080s
+  FLUTC threads=4 ... comp=.022110s  decomp=.014900s
+  FLUTC threads=8 ... comp=.011820s  decomp=.007860s
+  FLUTC threads=16 ... comp=.008330s  decomp=.004880s
+  FLUTC threads=32 ... comp=.045930s  decomp=.009010s
+  FLUTC threads=36 ... comp=.008250s  decomp=.005440s
+  FREQSH threads=1 ... comp=.102060s  decomp=.054620s
+  FREQSH threads=2 ... comp=.049180s  decomp=.031830s
+  FREQSH threads=4 ... comp=.025080s  decomp=.019010s
+  FREQSH threads=8 ... comp=.014320s  decomp=.007910s
+  FREQSH threads=16 ... comp=.009300s  decomp=.004210s
+  FREQSH threads=32 ... comp=.157830s  decomp=.023770s
+  FREQSH threads=36 ... comp=.011100s  decomp=.006130s
+  FREQZM threads=1 ... comp=.082060s  decomp=.046260s
+  FREQZM threads=2 ... comp=.044010s  decomp=.024760s
+  FREQZM threads=4 ... comp=.026030s  decomp=.014540s
+  FREQZM threads=8 ... comp=.015130s  decomp=.007430s
+  FREQZM threads=16 ... comp=.010810s  decomp=.004230s
+  FREQZM threads=32 ... comp=.145670s  decomp=.022480s
+  FREQZM threads=36 ... comp=.011170s  decomp=.005950s
+  FSDS threads=1 ... comp=.090720s  decomp=.062720s
+  FSDS threads=2 ... comp=.049000s  decomp=.028780s
+  FSDS threads=4 ... comp=.034100s  decomp=.018360s
+  FSDS threads=8 ... comp=.014750s  decomp=.008560s
+  FSDS threads=16 ... comp=.009840s  decomp=.004580s
+  FSDS threads=32 ... comp=.132130s  decomp=.023950s
+  FSDS threads=36 ... comp=.011170s  decomp=.006330s
+  FSDSC threads=1 ... comp=.075970s  decomp=.050330s
+  FSDSC threads=2 ... comp=.041760s  decomp=.026490s
+  FSDSC threads=4 ... comp=.025460s  decomp=.017820s
+  FSDSC threads=8 ... comp=.014750s  decomp=.007510s
+  FSDSC threads=16 ... comp=.011690s  decomp=.004510s
+  FSDSC threads=32 ... comp=.132090s  decomp=.022850s
+  FSDSC threads=36 ... comp=.014040s  decomp=.006820s
+  FSDTOA threads=1 ... comp=.073080s  decomp=.047410s
+  FSDTOA threads=2 ... comp=.043760s  decomp=.025340s
+  FSDTOA threads=4 ... comp=.029230s  decomp=.014240s
+  FSDTOA threads=8 ... comp=.018650s  decomp=.007180s
+  FSDTOA threads=16 ... comp=.016640s  decomp=.005090s
+  FSDTOA threads=32 ... comp=.107030s  decomp=.004160s
+  FSDTOA threads=36 ... comp=.011490s  decomp=.004230s
+  FSNS threads=1 ... comp=.089880s  decomp=.059550s
+  FSNS threads=2 ... comp=.052670s  decomp=.031660s
+  FSNS threads=4 ... comp=.032690s  decomp=.021520s
+  FSNS threads=8 ... comp=.014880s  decomp=.008650s
+  FSNS threads=16 ... comp=.010560s  decomp=.005470s
+  FSNS threads=32 ... comp=.167040s  decomp=.024180s
+  FSNS threads=36 ... comp=.011640s  decomp=.005400s
+  FSNSC threads=1 ... comp=.079840s  decomp=.052670s
+  FSNSC threads=2 ... comp=.043050s  decomp=.027970s
+  FSNSC threads=4 ... comp=.033500s  decomp=.019380s
+  FSNSC threads=8 ... comp=.012880s  decomp=.007900s
+  FSNSC threads=16 ... comp=.010990s  decomp=.005270s
+  FSNSC threads=32 ... comp=.123820s  decomp=.026750s
+  FSNSC threads=36 ... comp=.010570s  decomp=.006880s
+  FSNT threads=1 ... comp=.090490s  decomp=.059320s
+  FSNT threads=2 ... comp=.051190s  decomp=.029490s
+  FSNT threads=4 ... comp=.036340s  decomp=.018400s
+  FSNT threads=8 ... comp=.015910s  decomp=.008880s
+  FSNT threads=16 ... comp=.013260s  decomp=.006330s
+  FSNT threads=32 ... comp=.128710s  decomp=.062880s
+  FSNT threads=36 ... comp=.012320s  decomp=.005790s
+  FSNTC threads=1 ... comp=.079690s  decomp=.053140s
+  FSNTC threads=2 ... comp=.042840s  decomp=.030110s
+  FSNTC threads=4 ... comp=.029490s  decomp=.016920s
+  FSNTC threads=8 ... comp=.060360s  decomp=.018380s
+  FSNTC threads=16 ... comp=.010140s  decomp=.004230s
+  FSNTC threads=32 ... comp=.119000s  decomp=.022250s
+  FSNTC threads=36 ... comp=.009440s  decomp=.004540s
+  FSNTOA threads=1 ... comp=.097830s  decomp=.054180s
+  FSNTOA threads=2 ... comp=.048690s  decomp=.029490s
+  FSNTOA threads=4 ... comp=.027670s  decomp=.016940s
+  FSNTOA threads=8 ... comp=.020910s  decomp=.009810s
+  FSNTOA threads=16 ... comp=.012270s  decomp=.006350s
+  FSNTOA threads=32 ... comp=.147660s  decomp=.022910s
+  FSNTOA threads=36 ... comp=.012460s  decomp=.005790s
+  FSNTOAC threads=1 ... comp=.079370s  decomp=.050400s
+  FSNTOAC threads=2 ... comp=.042510s  decomp=.027880s
+  FSNTOAC threads=4 ... comp=.023230s  decomp=.015660s
+  FSNTOAC threads=8 ... comp=.016970s  decomp=.009150s
+  FSNTOAC threads=16 ... comp=.010190s  decomp=.004230s
+  FSNTOAC threads=32 ... comp=.052180s  decomp=.061030s
+  FSNTOAC threads=36 ... comp=.009650s  decomp=.005400s
+  FSUTOA threads=1 ... comp=.096410s  decomp=.054710s
+  FSUTOA threads=2 ... comp=.048560s  decomp=.028590s
+  FSUTOA threads=4 ... comp=.034460s  decomp=.018440s
+  FSUTOA threads=8 ... comp=.025390s  decomp=.012490s
+  FSUTOA threads=16 ... comp=.010350s  decomp=.004730s
+  FSUTOA threads=32 ... comp=.124050s  decomp=.061890s
+  FSUTOA threads=36 ... comp=.011920s  decomp=.006340s
+  ICEFRAC threads=1 ... comp=.047710s  decomp=.033100s
+  ICEFRAC threads=2 ... comp=.027260s  decomp=.018340s
+  ICEFRAC threads=4 ... comp=.018860s  decomp=.010730s
+  ICEFRAC threads=8 ... comp=.044470s  decomp=.007060s
+  ICEFRAC threads=16 ... comp=.014020s  decomp=.003970s
+  ICEFRAC threads=32 ... comp=.066850s  decomp=.021070s
+  ICEFRAC threads=36 ... comp=.011870s  decomp=.003860s
+  LANDFRAC threads=1 ... comp=.045380s  decomp=.030890s
+  LANDFRAC threads=2 ... comp=.025870s  decomp=.018900s
+  LANDFRAC threads=4 ... comp=.016370s  decomp=.011070s
+  LANDFRAC threads=8 ... comp=.012300s  decomp=.009200s
+  LANDFRAC threads=16 ... comp=.010430s  decomp=.003950s
+  LANDFRAC threads=32 ... comp=.050660s  decomp=.055130s
+  LANDFRAC threads=36 ... comp=.008960s  decomp=.004320s
+  LHFLX threads=1 ... comp=.084890s  decomp=.053310s
+  LHFLX threads=2 ... comp=.044050s  decomp=.032450s
+  LHFLX threads=4 ... comp=.023560s  decomp=.016030s
+  LHFLX threads=8 ... comp=.013980s  decomp=.008490s
+  LHFLX threads=16 ... comp=.047240s  decomp=.005670s
+  LHFLX threads=32 ... comp=.085850s  decomp=.007180s
+  LHFLX threads=36 ... comp=.014110s  decomp=.005810s
+  LWCF threads=1 ... comp=.090580s  decomp=.054100s
+  LWCF threads=2 ... comp=.045460s  decomp=.031270s
+  LWCF threads=4 ... comp=.026140s  decomp=.015640s
+  LWCF threads=8 ... comp=.014360s  decomp=.008170s
+  LWCF threads=16 ... comp=.024500s  decomp=.005570s
+  LWCF threads=32 ... comp=.087400s  decomp=.008800s
+  LWCF threads=36 ... comp=.008970s  decomp=.004570s
+  OCNFRAC threads=1 ... comp=.050830s  decomp=.032250s
+  OCNFRAC threads=2 ... comp=.028060s  decomp=.019240s
+  OCNFRAC threads=4 ... comp=.016890s  decomp=.010750s
+  OCNFRAC threads=8 ... comp=.015300s  decomp=.007450s
+  OCNFRAC threads=16 ... comp=.040140s  decomp=.015240s
+  OCNFRAC threads=32 ... comp=.125130s  decomp=.056990s
+  OCNFRAC threads=36 ... comp=.009080s  decomp=.004480s
+  ODV_SSLTA threads=1 ... comp=.059930s  decomp=.040680s
+  ODV_SSLTA threads=2 ... comp=.030870s  decomp=.020240s
+  ODV_SSLTA threads=4 ... comp=.018450s  decomp=.011390s
+  ODV_SSLTA threads=8 ... comp=.010770s  decomp=.006500s
+  ODV_SSLTA threads=16 ... comp=.051610s  decomp=.007220s
+  ODV_SSLTA threads=32 ... comp=.121330s  decomp=.067790s
+  ODV_SSLTA threads=36 ... comp=.009370s  decomp=.004520s
+  ODV_SSLTC threads=1 ... comp=.062640s  decomp=.035330s
+  ODV_SSLTC threads=2 ... comp=.029120s  decomp=.019730s
+  ODV_SSLTC threads=4 ... comp=.016900s  decomp=.011080s
+  ODV_SSLTC threads=8 ... comp=.010110s  decomp=.006360s
+  ODV_SSLTC threads=16 ... comp=.026740s  decomp=.007270s
+  ODV_SSLTC threads=32 ... comp=.054220s  decomp=.003060s
+  ODV_SSLTC threads=36 ... comp=.010540s  decomp=.005120s
+  ODV_bcar1 threads=1 ... comp=.039530s  decomp=.027310s
+  ODV_bcar1 threads=2 ... comp=.022700s  decomp=.016410s
+  ODV_bcar1 threads=4 ... comp=.013890s  decomp=.009010s
+  ODV_bcar1 threads=8 ... comp=.009790s  decomp=.005390s
+  ODV_bcar1 threads=16 ... comp=.026820s  decomp=.007460s
+  ODV_bcar1 threads=32 ... comp=.011480s  decomp=.002470s
+  ODV_bcar1 threads=36 ... comp=.009020s  decomp=.004140s
+  ODV_bcar2 threads=1 ... comp=.040750s  decomp=.028420s
+  ODV_bcar2 threads=2 ... comp=.023020s  decomp=.015880s
+  ODV_bcar2 threads=4 ... comp=.014500s  decomp=.009280s
+  ODV_bcar2 threads=8 ... comp=.011850s  decomp=.005970s
+  ODV_bcar2 threads=16 ... comp=.010790s  decomp=.003110s
+  ODV_bcar2 threads=32 ... comp=.102060s  decomp=.002250s
+  ODV_bcar2 threads=36 ... comp=.011580s  decomp=.003960s
+  ODV_dust1 threads=1 ... comp=.048270s  decomp=.030820s
+  ODV_dust1 threads=2 ... comp=.029030s  decomp=.018820s
+  ODV_dust1 threads=4 ... comp=.019300s  decomp=.010860s
+  ODV_dust1 threads=8 ... comp=.013420s  decomp=.005710s
+  ODV_dust1 threads=16 ... comp=.056080s  decomp=.004560s
+  ODV_dust1 threads=32 ... comp=.081120s  decomp=.002780s
+  ODV_dust1 threads=36 ... comp=.009850s  decomp=.004580s
+  ODV_dust2 threads=1 ... comp=.048200s  decomp=.030900s
+  ODV_dust2 threads=2 ... comp=.028630s  decomp=.018340s
+  ODV_dust2 threads=4 ... comp=.019300s  decomp=.010780s
+  ODV_dust2 threads=8 ... comp=.015060s  decomp=.006420s
+  ODV_dust2 threads=16 ... comp=.036970s  decomp=.016170s
+  ODV_dust2 threads=32 ... comp=.127760s  decomp=.002780s
+  ODV_dust2 threads=36 ... comp=.010360s  decomp=.003650s
+  ODV_dust3 threads=1 ... comp=.044090s  decomp=.029680s
+  ODV_dust3 threads=2 ... comp=.026390s  decomp=.018260s
+  ODV_dust3 threads=4 ... comp=.024530s  decomp=.011040s
+  ODV_dust3 threads=8 ... comp=.011820s  decomp=.005290s
+  ODV_dust3 threads=16 ... comp=.063600s  decomp=.003570s
+  ODV_dust3 threads=32 ... comp=.089600s  decomp=.004820s
+  ODV_dust3 threads=36 ... comp=.008990s  decomp=.003880s
+  ODV_dust4 threads=1 ... comp=.042750s  decomp=.028230s
+  ODV_dust4 threads=2 ... comp=.025250s  decomp=.017660s
+  ODV_dust4 threads=4 ... comp=.016580s  decomp=.009290s
+  ODV_dust4 threads=8 ... comp=.012620s  decomp=.005190s
+  ODV_dust4 threads=16 ... comp=.042150s  decomp=.003410s
+  ODV_dust4 threads=32 ... comp=.098650s  decomp=.002700s
+  ODV_dust4 threads=36 ... comp=.011990s  decomp=.003320s
+  ODV_ocar1 threads=1 ... comp=.039770s  decomp=.026730s
+  ODV_ocar1 threads=2 ... comp=.022790s  decomp=.016860s
+  ODV_ocar1 threads=4 ... comp=.014040s  decomp=.008620s
+  ODV_ocar1 threads=8 ... comp=.012310s  decomp=.005180s
+  ODV_ocar1 threads=16 ... comp=.014710s  decomp=.012830s
+  ODV_ocar1 threads=32 ... comp=.111590s  decomp=.005050s
+  ODV_ocar1 threads=36 ... comp=.009940s  decomp=.003130s
+  ODV_ocar2 threads=1 ... comp=.052170s  decomp=.029480s
+  ODV_ocar2 threads=2 ... comp=.023280s  decomp=.017320s
+  ODV_ocar2 threads=4 ... comp=.013180s  decomp=.009380s
+  ODV_ocar2 threads=8 ... comp=.011780s  decomp=.005530s
+  ODV_ocar2 threads=16 ... comp=.055320s  decomp=.007560s
+  ODV_ocar2 threads=32 ... comp=.080470s  decomp=.059050s
+  ODV_ocar2 threads=36 ... comp=.008250s  decomp=.003200s
+  ODV_sulf threads=1 ... comp=.063360s  decomp=.037500s
+  ODV_sulf threads=2 ... comp=.034290s  decomp=.020920s
+  ODV_sulf threads=4 ... comp=.018940s  decomp=.011520s
+  ODV_sulf threads=8 ... comp=.013350s  decomp=.008900s
+  ODV_sulf threads=16 ... comp=.019750s  decomp=.008350s
+  ODV_sulf threads=32 ... comp=.007710s  decomp=.003140s
+  ODV_sulf threads=36 ... comp=.009660s  decomp=.004310s
+  QREFHT threads=1 ... comp=.045240s  decomp=.031160s
+  QREFHT threads=2 ... comp=.023810s  decomp=.017930s
+  QREFHT threads=4 ... comp=.013770s  decomp=.010210s
+  QREFHT threads=8 ... comp=.007620s  decomp=.005270s
+  QREFHT threads=16 ... comp=.014470s  decomp=.003980s
+  QREFHT threads=32 ... comp=.132710s  decomp=.023960s
+  QREFHT threads=36 ... comp=.006780s  decomp=.003530s
+  RHREFHT threads=1 ... comp=.079170s  decomp=.052660s
+  RHREFHT threads=2 ... comp=.040940s  decomp=.030910s
+  RHREFHT threads=4 ... comp=.021830s  decomp=.015250s
+  RHREFHT threads=8 ... comp=.011640s  decomp=.007660s
+  RHREFHT threads=16 ... comp=.008840s  decomp=.004840s
+  RHREFHT threads=32 ... comp=.163540s  decomp=.023960s
+  RHREFHT threads=36 ... comp=.008940s  decomp=.006050s
+  SHFLX threads=1 ... comp=.083990s  decomp=.058190s
+  SHFLX threads=2 ... comp=.043470s  decomp=.032000s
+  SHFLX threads=4 ... comp=.022780s  decomp=.015500s
+  SHFLX threads=8 ... comp=.012380s  decomp=.008050s
+  SHFLX threads=16 ... comp=.008360s  decomp=.004830s
+  SHFLX threads=32 ... comp=.131670s  decomp=.019840s
+  SHFLX threads=36 ... comp=.012540s  decomp=.005440s
+  SNOWHICE threads=1 ... comp=.048940s  decomp=.031370s
+  SNOWHICE threads=2 ... comp=.028250s  decomp=.020500s
+  SNOWHICE threads=4 ... comp=.019380s  decomp=.010760s
+  SNOWHICE threads=8 ... comp=.014730s  decomp=.006200s
+  SNOWHICE threads=16 ... comp=.013410s  decomp=.003920s
+  SNOWHICE threads=32 ... comp=.133150s  decomp=.027940s
+  SNOWHICE threads=36 ... comp=.010650s  decomp=.005250s
+  SOLIN threads=1 ... comp=.071860s  decomp=.044540s
+  SOLIN threads=2 ... comp=.043050s  decomp=.023420s
+  SOLIN threads=4 ... comp=.027150s  decomp=.013420s
+  SOLIN threads=8 ... comp=.018810s  decomp=.007150s
+  SOLIN threads=16 ... comp=.015880s  decomp=.004010s
+  SOLIN threads=32 ... comp=.111740s  decomp=.029440s
+  SOLIN threads=36 ... comp=.012570s  decomp=.004380s
+  SRFRAD threads=1 ... comp=.097400s  decomp=.060810s
+  SRFRAD threads=2 ... comp=.047820s  decomp=.030730s
+  SRFRAD threads=4 ... comp=.026440s  decomp=.016690s
+  SRFRAD threads=8 ... comp=.013850s  decomp=.008730s
+  SRFRAD threads=16 ... comp=.009090s  decomp=.004850s
+  SRFRAD threads=32 ... comp=.086070s  decomp=.043520s
+  SRFRAD threads=36 ... comp=.010790s  decomp=.005950s
+  SWCF threads=1 ... comp=.088990s  decomp=.058600s
+  SWCF threads=2 ... comp=.047880s  decomp=.029720s
+  SWCF threads=4 ... comp=.027180s  decomp=.016820s
+  SWCF threads=8 ... comp=.014770s  decomp=.008680s
+  SWCF threads=16 ... comp=.009790s  decomp=.004690s
+  SWCF threads=32 ... comp=.149980s  decomp=.027760s
+  SWCF threads=36 ... comp=.012550s  decomp=.004740s
+  TAUX threads=1 ... comp=.086520s  decomp=.051220s
+  TAUX threads=2 ... comp=.045160s  decomp=.026430s
+  TAUX threads=4 ... comp=.024460s  decomp=.013900s
+  TAUX threads=8 ... comp=.013030s  decomp=.007760s
+  TAUX threads=16 ... comp=.008120s  decomp=.004310s
+  TAUX threads=32 ... comp=.113640s  decomp=.027720s
+  TAUX threads=36 ... comp=.008350s  decomp=.005470s
+  TAUY threads=1 ... comp=.085520s  decomp=.046530s
+  TAUY threads=2 ... comp=.044870s  decomp=.025770s
+  TAUY threads=4 ... comp=.023750s  decomp=.013680s
+  TAUY threads=8 ... comp=.012910s  decomp=.007250s
+  TAUY threads=16 ... comp=.007780s  decomp=.004150s
+  TAUY threads=32 ... comp=.128600s  decomp=.042030s
+  TAUY threads=36 ... comp=.010720s  decomp=.006450s
+  TGCLDIWP threads=1 ... comp=.090050s  decomp=.061890s
+  TGCLDIWP threads=2 ... comp=.045380s  decomp=.029170s
+  TGCLDIWP threads=4 ... comp=.025410s  decomp=.015800s
+  TGCLDIWP threads=8 ... comp=.013500s  decomp=.008140s
+  TGCLDIWP threads=16 ... comp=.009160s  decomp=.004690s
+  TGCLDIWP threads=32 ... comp=.137780s  decomp=.023670s
+  TGCLDIWP threads=36 ... comp=.011160s  decomp=.006110s
+  TGCLDLWP threads=1 ... comp=.092050s  decomp=.064880s
+  TGCLDLWP threads=2 ... comp=.046720s  decomp=.032860s
+  TGCLDLWP threads=4 ... comp=.026080s  decomp=.016610s
+  TGCLDLWP threads=8 ... comp=.013810s  decomp=.008880s
+  TGCLDLWP threads=16 ... comp=.009140s  decomp=.004980s
+  TGCLDLWP threads=32 ... comp=.149400s  decomp=.024080s
+  TGCLDLWP threads=36 ... comp=.009360s  decomp=.005060s
+  TMQ threads=1 ... comp=.074460s  decomp=.048880s
+  TMQ threads=2 ... comp=.037770s  decomp=.026100s
+  TMQ threads=4 ... comp=.020960s  decomp=.014070s
+  TMQ threads=8 ... comp=.011970s  decomp=.007350s
+  TMQ threads=16 ... comp=.010330s  decomp=.004290s
+  TMQ threads=32 ... comp=.158480s  decomp=.028520s
+  TMQ threads=36 ... comp=.011410s  decomp=.005460s
+  TREFHT threads=1 ... comp=.076780s  decomp=.049640s
+  TREFHT threads=2 ... comp=.039420s  decomp=.027230s
+  TREFHT threads=4 ... comp=.021300s  decomp=.016810s
+  TREFHT threads=8 ... comp=.011840s  decomp=.007310s
+  TREFHT threads=16 ... comp=.009900s  decomp=.006010s
+  TREFHT threads=32 ... comp=.123510s  decomp=.033740s
+  TREFHT threads=36 ... comp=.018240s  decomp=.004700s
+  TREFMNAV threads=1 ... comp=.079460s  decomp=.051140s
+  TREFMNAV threads=2 ... comp=.040470s  decomp=.030290s
+  TREFMNAV threads=4 ... comp=.022050s  decomp=.014760s
+  TREFMNAV threads=8 ... comp=.011770s  decomp=.007680s
+  TREFMNAV threads=16 ... comp=.014000s  decomp=.005830s
+  TREFMNAV threads=32 ... comp=.133200s  decomp=.031050s
+  TREFMNAV threads=36 ... comp=.009510s  decomp=.004610s
+  TREFMXAV threads=1 ... comp=.078980s  decomp=.051020s
+  TREFMXAV threads=2 ... comp=.039910s  decomp=.027470s
+  TREFMXAV threads=4 ... comp=.021730s  decomp=.014610s
+  TREFMXAV threads=8 ... comp=.011610s  decomp=.007370s
+  TREFMXAV threads=16 ... comp=.008660s  decomp=.004660s
+  TREFMXAV threads=32 ... comp=.106630s  decomp=.022120s
+  TREFMXAV threads=36 ... comp=.008500s  decomp=.004180s
+  TROP_T threads=1 ... comp=.078270s  decomp=.049780s
+  TROP_T threads=2 ... comp=.039810s  decomp=.026980s
+  TROP_T threads=4 ... comp=.021850s  decomp=.014860s
+  TROP_T threads=8 ... comp=.012160s  decomp=.007840s
+  TROP_T threads=16 ... comp=.009660s  decomp=.005250s
+  TROP_T threads=32 ... comp=.137360s  decomp=.040180s
+  TROP_T threads=36 ... comp=.009220s  decomp=.006150s
+  TS threads=1 ... comp=.077600s  decomp=.050180s
+  TS threads=2 ... comp=.040170s  decomp=.027660s
+  TS threads=4 ... comp=.021410s  decomp=.014090s
+  TS threads=8 ... comp=.011700s  decomp=.007570s
+  TS threads=16 ... comp=.008740s  decomp=.004600s
+  TS threads=32 ... comp=.136480s  decomp=.030430s
+  TS threads=36 ... comp=.009990s  decomp=.005140s
+  TSMN threads=1 ... comp=.080430s  decomp=.050930s
+  TSMN threads=2 ... comp=.041340s  decomp=.027700s
+  TSMN threads=4 ... comp=.021420s  decomp=.014350s
+  TSMN threads=8 ... comp=.011630s  decomp=.007780s
+  TSMN threads=16 ... comp=.008930s  decomp=.004680s
+  TSMN threads=32 ... comp=.162540s  decomp=.042160s
+  TSMN threads=36 ... comp=.007640s  decomp=.004820s
+  TSMX threads=1 ... comp=.080620s  decomp=.050780s
+  TSMX threads=2 ... comp=.040810s  decomp=.030110s
+  TSMX threads=4 ... comp=.021860s  decomp=.014520s
+  TSMX threads=8 ... comp=.016100s  decomp=.009530s
+  TSMX threads=16 ... comp=.008190s  decomp=.004700s
+  TSMX threads=32 ... comp=.073770s  decomp=.023960s
+  TSMX threads=36 ... comp=.009960s  decomp=.004700s
+
+========== 3D: ATM-26 (26x1800x3600), eb=1e-3 ==========
+  CLOUD threads=1 ... comp=13.631955s
+  CLOUD threads=2 ... comp=13.862912s
+  CLOUD threads=4 ... comp=13.982159s
+  CLOUD threads=8 ... comp=13.984951s
+  CLOUD threads=16 ... comp=13.880547s
+  CLOUD threads=32 ... comp=13.913718s
+  CLOUD threads=36 ... comp=13.820802s
+  T threads=1 ... comp=10.991690s
+  T threads=2 ... comp=11.105537s
+  T threads=4 ... comp=11.106549s
+  T threads=8 ... comp=11.105001s
+  T threads=16 ... comp=11.030543s
+  T threads=32 ... comp=11.066602s
+  T threads=36 ... comp=11.091246s
+  OMEGA threads=1 ... comp=14.092138s
+  OMEGA threads=2 ... comp=14.587274s
+  OMEGA threads=4 ... comp=14.578214s
+  OMEGA threads=8 ... comp=14.674455s
+  OMEGA threads=16 ... comp=14.539194s
+  OMEGA threads=32 ... comp=14.620370s
+  OMEGA threads=36 ... comp=14.577560s
+
+========== SCALABILITY SUMMARY ==========
+Dataset  Field      Dims          Threads  CompTime_s  DecompTime_s  MaxError      PreservRate  FN     FP  FT
+ATM-2D   AEROD_v    1800x3600     1        .091390     .041120       2.000000e-03  83.49        11824  0   0
+ATM-2D   AEROD_v    1800x3600     2        .046250     .024580       2.000000e-03  83.49        11824  0   0
+ATM-2D   AEROD_v    1800x3600     4        .025140     .012750       2.000000e-03  83.49        11824  0   0
+ATM-2D   AEROD_v    1800x3600     8        .013810     .006820       2.000000e-03  83.49        11824  0   0
+ATM-2D   AEROD_v    1800x3600     16       .010760     .004780       2.000000e-03  83.49        11824  0   0
+ATM-2D   AEROD_v    1800x3600     32       .121880     .062140       2.000000e-03  83.49        11824  0   0
+ATM-2D   AEROD_v    1800x3600     36       .013790     .006200       2.000000e-03  83.49        11824  0   0
+ATM-2D   CLDHGH     1800x3600     1        .109700     .052630       2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDHGH     1800x3600     2        .058390     .031620       2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDHGH     1800x3600     4        .032150     .015850       2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDHGH     1800x3600     8        .016240     .008160       2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDHGH     1800x3600     16       .009910     .005290       2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDHGH     1800x3600     32       .143090     .024600       2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDHGH     1800x3600     36       .009920     .007050       2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDLOW     1800x3600     1        .099490     .057970       2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDLOW     1800x3600     2        .052110     .030980       2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDLOW     1800x3600     4        .026670     .015130       2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDLOW     1800x3600     8        .014680     .007870       2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDLOW     1800x3600     16       .009720     .005340       2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDLOW     1800x3600     32       .153850     .022670       2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDLOW     1800x3600     36       .008850     .005020       2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDMED     1800x3600     1        .118490     .054980       2.000000e-03  93.61        11317  0   0
+ATM-2D   CLDMED     1800x3600     2        .055580     .033380       2.000000e-03  93.61        11317  0   0
+ATM-2D   CLDMED     1800x3600     4        .029990     .015240       2.000000e-03  93.61        11317  0   0
+ATM-2D   CLDMED     1800x3600     8        .016040     .007980       2.000000e-03  93.61        11317  0   0
+ATM-2D   CLDMED     1800x3600     16       .009450     .005270       2.000000e-03  93.61        11317  0   0
+ATM-2D   CLDMED     1800x3600     32       .127820     .068490       2.000000e-03  93.61        11317  0   0
+ATM-2D   CLDMED     1800x3600     36       .012530     .004860       2.000000e-03  93.61        11317  0   0
+ATM-2D   CLDTOT     1800x3600     1        .112720     .055290       2.000000e-03  96.54        6227   0   0
+ATM-2D   CLDTOT     1800x3600     2        .054210     .033040       2.000000e-03  96.54        6227   0   0
+ATM-2D   CLDTOT     1800x3600     4        .026720     .016960       2.000000e-03  96.54        6227   0   0
+ATM-2D   CLDTOT     1800x3600     8        .015210     .007970       2.000000e-03  96.54        6227   0   0
+ATM-2D   CLDTOT     1800x3600     16       .011260     .005530       2.000000e-03  96.54        6227   0   0
+ATM-2D   CLDTOT     1800x3600     32       .096140     .002970       2.000000e-03  96.54        6227   0   0
+ATM-2D   CLDTOT     1800x3600     36       .012460     .006850       2.000000e-03  96.54        6227   0   0
+ATM-2D   FLDS       1800x3600     1        .091120     .062030       2.000000e-03  100.00       3      0   0
+ATM-2D   FLDS       1800x3600     2        .047620     .033570       2.000000e-03  100.00       3      0   0
+ATM-2D   FLDS       1800x3600     4        .024720     .015370       2.000000e-03  100.00       3      0   0
+ATM-2D   FLDS       1800x3600     8        .012810     .007950       2.000000e-03  100.00       3      0   0
+
+Results: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/scalability_20261025_215159/scalability.csv
