@@ -1,0 +1,313 @@
+=== Build ===
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/build
+[ 77%] Built target compare_with_lopc
+[ 83%] Built target test_cuda_topology
+[ 91%] Built target test_cuda_topology_3d
+[100%] Built target compare_with_lopc_3d
+[100%] Built target test_cuda_compress
+-rwxrwx--x+ 1 sdi cels 21168 Oct 25 19:33 compare_critical_points
+
+=== Quick compressor comparison (SZ3 + SZ vs TopoSZp+) ===
+Compressor Comparison Experiment — 20261025_200653
+Mode: quick
+
+Available compressors:
+  ✓ SZ3: /lcrc/project/ECP-EZ/tripti/compressors/bin/sz3
+  ✓ ZFP: /lcrc/project/ECP-EZ/tripti/compressors/bin/zfp
+  ✓ Tthresh: /lcrc/project/ECP-EZ/tripti/compressors/bin/tthresh
+  ✓ SZ: /home/sdi/SZ-2.1.12-install/bin/sz
+  ✓ TopoSZp+: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/../build/test_cuda_topology
+  ✓ compare: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/../build/compare_critical_points
+
+========== ATM (1800x3600) ==========
+  SZ3 eb=1e-3: FN=0 FP=0 FT=0 (n=60)
+  SZ eb=1e-3: FN=0 FP=0 FT=0 (n=60)
+  TopoSZp+ eb=1e-3: FN=1999.20 FP=0 FT=0 (n=60)
+  SZ3 eb=1e-4: FN=0 FP=0 FT=0 (n=60)
+  SZ eb=1e-4: FN=0 FP=0 FT=0 (n=60)
+  TopoSZp+ eb=1e-4: FN=852.60 FP=0 FT=0 (n=60)
+  SZ3 eb=1e-5: FN=0 FP=0 FT=0 (n=60)
+  SZ eb=1e-5: FN=0 FP=0 FT=0 (n=60)
+  TopoSZp+ eb=1e-5: FN=312.96 FP=0 FT=0 (n=60)
+
+Results: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/comparison_20261025_200653/comparison.csv
+Done.
+
+=== Quick bit rate sweep ===
+Bit Rate Sweep Experiment — 20261025_201756
+
+=== Error bound: 1e-2 ===
+  TopoSZp+: br=4.53 FN=23606.60 FP=0 FT=0
+compression ratio = 1712.02 
+compression time = 0.104134
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/AEROD_v_1_1800_3600_SZ3_1e-2.compressed
+compression ratio = 1712.021136
+decompression time = 0.048965 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/AEROD_v_1_1800_3600_SZ3_1e-2.decompressed
+compression ratio = 137.10 
+compression time = 0.107179
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDHGH_1_1800_3600_SZ3_1e-2.compressed
+compression ratio = 137.096433
+decompression time = 0.052817 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDHGH_1_1800_3600_SZ3_1e-2.decompressed
+compression ratio = 155.82 
+compression time = 0.121900
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDLOW_1_1800_3600_SZ3_1e-2.compressed
+compression ratio = 155.821671
+decompression time = 0.058959 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDLOW_1_1800_3600_SZ3_1e-2.decompressed
+compression ratio = 194.37 
+compression time = 0.106992
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDMED_1_1800_3600_SZ3_1e-2.compressed
+compression ratio = 194.368415
+decompression time = 0.052641 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDMED_1_1800_3600_SZ3_1e-2.decompressed
+compression ratio = 95.19 
+compression time = 0.121377
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/FREQSH_1_1800_3600_SZ3_1e-2.compressed
+compression ratio = 95.190528
+decompression time = 0.059495 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/FREQSH_1_1800_3600_SZ3_1e-2.decompressed
+  SZ3: br=.19 FN=133023.40 FP=69919.00 FT=1073.20
+compression time = 0.137163
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz
+decompression time = 0.069161 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz.out
+compression time = 0.181559
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz
+decompression time = 0.090910 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz.out
+compression time = 0.188542
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz
+decompression time = 0.092749 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz.out
+compression time = 0.177896
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz
+decompression time = 0.085642 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz.out
+compression time = 0.192810
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz
+decompression time = 0.102639 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz.out
+  SZ: br=.85 FN=131451.40 FP=483306.60 FT=4186.40
+=== Error bound: 1e-3 ===
+  TopoSZp+: br=6.17 FN=8632.80 FP=0 FT=0
+compression ratio = 178.40 
+compression time = 0.123242
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/AEROD_v_1_1800_3600_SZ3_1e-3.compressed
+compression ratio = 178.396906
+decompression time = 0.058188 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/AEROD_v_1_1800_3600_SZ3_1e-3.decompressed
+compression ratio = 20.86 
+compression time = 0.129238
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDHGH_1_1800_3600_SZ3_1e-3.compressed
+compression ratio = 20.855309
+decompression time = 0.071674 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDHGH_1_1800_3600_SZ3_1e-3.decompressed
+compression ratio = 23.67 
+compression time = 0.129300
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDLOW_1_1800_3600_SZ3_1e-3.compressed
+compression ratio = 23.674065
+decompression time = 0.072298 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDLOW_1_1800_3600_SZ3_1e-3.decompressed
+compression ratio = 25.77 
+compression time = 0.129304
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDMED_1_1800_3600_SZ3_1e-3.compressed
+compression ratio = 25.771633
+decompression time = 0.070642 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDMED_1_1800_3600_SZ3_1e-3.decompressed
+compression ratio = 16.99 
+compression time = 0.128651
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/FREQSH_1_1800_3600_SZ3_1e-3.compressed
+compression ratio = 16.986997
+decompression time = 0.074638 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/FREQSH_1_1800_3600_SZ3_1e-3.decompressed
+  SZ3: br=1.23 FN=72978.20 FP=141773.40 FT=3865.60
+compression time = 0.182047
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz
+decompression time = 0.093155 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz.out
+compression time = 0.203231
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz
+decompression time = 0.127881 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz.out
+compression time = 0.200469
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz
+decompression time = 0.123398 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz.out
+compression time = 0.195244
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz
+decompression time = 0.107446 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz.out
+compression time = 0.196654
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz
+decompression time = 0.138447 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz.out
+  SZ: br=2.74 FN=77280.20 FP=447107.00 FT=8526.20
+=== Error bound: 1e-4 ===
+  TopoSZp+: br=8.85 FN=1128.60 FP=0 FT=0
+compression ratio = 26.47 
+compression time = 0.128792
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/AEROD_v_1_1800_3600_SZ3_1e-4.compressed
+compression ratio = 26.473562
+decompression time = 0.068619 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/AEROD_v_1_1800_3600_SZ3_1e-4.decompressed
+compression ratio = 7.41 
+compression time = 0.122490
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDHGH_1_1800_3600_SZ3_1e-4.compressed
+compression ratio = 7.414039
+decompression time = 0.075865 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDHGH_1_1800_3600_SZ3_1e-4.decompressed
+compression ratio = 7.84 
+compression time = 0.123722
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDLOW_1_1800_3600_SZ3_1e-4.compressed
+compression ratio = 7.843208
+decompression time = 0.076260 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDLOW_1_1800_3600_SZ3_1e-4.decompressed
+compression ratio = 8.20 
+compression time = 0.123448
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDMED_1_1800_3600_SZ3_1e-4.compressed
+compression ratio = 8.195218
+decompression time = 0.075504 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDMED_1_1800_3600_SZ3_1e-4.decompressed
+compression ratio = 6.56 
+compression time = 0.139979
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/FREQSH_1_1800_3600_SZ3_1e-4.compressed
+compression ratio = 6.556073
+decompression time = 0.081855 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/FREQSH_1_1800_3600_SZ3_1e-4.decompressed
+  SZ3: br=3.67 FN=20420.20 FP=33868.80 FT=721.00
+compression time = 0.189708
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz
+decompression time = 0.123082 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz.out
+compression time = 0.202491
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz
+decompression time = 0.155246 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz.out
+compression time = 0.198672
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz
+decompression time = 0.151168 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz.out
+compression time = 0.200105
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz
+decompression time = 0.148644 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz.out
+compression time = 0.185308
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz
+decompression time = 0.145326 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz.out
+  SZ: br=5.71 FN=23420.60 FP=116145.80 FT=1982.20
+=== Error bound: 1e-5 ===
+  TopoSZp+: br=11.85 FN=83.40 FP=0 FT=0
+compression ratio = 8.97 
+compression time = 0.134121
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/AEROD_v_1_1800_3600_SZ3_1e-5.compressed
+compression ratio = 8.972665
+decompression time = 0.080185 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/AEROD_v_1_1800_3600_SZ3_1e-5.decompressed
+compression ratio = 4.28 
+compression time = 0.129524
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDHGH_1_1800_3600_SZ3_1e-5.compressed
+compression ratio = 4.283546
+decompression time = 0.083181 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDHGH_1_1800_3600_SZ3_1e-5.decompressed
+compression ratio = 4.47 
+compression time = 0.128185
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDLOW_1_1800_3600_SZ3_1e-5.compressed
+compression ratio = 4.466271
+decompression time = 0.081906 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDLOW_1_1800_3600_SZ3_1e-5.decompressed
+compression ratio = 4.55 
+compression time = 0.131511
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDMED_1_1800_3600_SZ3_1e-5.compressed
+compression ratio = 4.547153
+decompression time = 0.081516 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDMED_1_1800_3600_SZ3_1e-5.decompressed
+compression ratio = 3.94 
+compression time = 0.131874
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/FREQSH_1_1800_3600_SZ3_1e-5.compressed
+compression ratio = 3.937150
+decompression time = 0.084739 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/FREQSH_1_1800_3600_SZ3_1e-5.decompressed
+  SZ3: br=6.67 FN=3576.20 FP=7520.20 FT=106.00
+compression time = 0.185200
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz
+decompression time = 0.141422 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz.out
+compression time = 0.199842
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz
+decompression time = 0.198051 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz.out
+compression time = 0.197609
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz
+decompression time = 0.196931 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz.out
+compression time = 0.197202
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz
+decompression time = 0.187989 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz.out
+compression time = 0.188271
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz
+decompression time = 0.202238 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz.out
+  SZ: br=9.04 FN=4205.40 FP=41544.60 FT=240.80
+=== Error bound: 1e-6 ===
+  TopoSZp+: br=15.01 FN=12.20 FP=0 FT=0
+compression ratio = 4.86 
+compression time = 0.142568
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/AEROD_v_1_1800_3600_SZ3_1e-6.compressed
+compression ratio = 4.855467
+decompression time = 0.086432 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/AEROD_v_1_1800_3600_SZ3_1e-6.decompressed
+compression ratio = 2.97 
+compression time = 0.159272
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDHGH_1_1800_3600_SZ3_1e-6.compressed
+compression ratio = 2.973493
+decompression time = 0.101690 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDHGH_1_1800_3600_SZ3_1e-6.decompressed
+compression ratio = 3.07 
+compression time = 0.139784
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDLOW_1_1800_3600_SZ3_1e-6.compressed
+compression ratio = 3.067051
+decompression time = 0.100191 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDLOW_1_1800_3600_SZ3_1e-6.decompressed
+compression ratio = 3.14 
+compression time = 0.154050
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDMED_1_1800_3600_SZ3_1e-6.compressed
+compression ratio = 3.140723
+decompression time = 0.102432 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/CLDMED_1_1800_3600_SZ3_1e-6.decompressed
+compression ratio = 2.76 
+compression time = 0.181937
+compressed data file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/FREQSH_1_1800_3600_SZ3_1e-6.compressed
+compression ratio = 2.759381
+decompression time = 0.112637 seconds.
+decompressed file = /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/tmp/FREQSH_1_1800_3600_SZ3_1e-6.decompressed
+  SZ3: br=9.91 FN=523.60 FP=4035.40 FT=15.00
+compression time = 0.186261
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz
+decompression time = 0.188561 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/AEROD_v_1_1800_3600.dat.sz.out
+compression time = 0.220455
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz
+decompression time = 0.320326 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDHGH_1_1800_3600.dat.sz.out
+compression time = 0.217682
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz
+decompression time = 0.312115 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDLOW_1_1800_3600.dat.sz.out
+compression time = 0.207114
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz
+decompression time = 0.289019 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/CLDMED_1_1800_3600.dat.sz.out
+compression time = 0.228181
+compressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz
+decompression time = 0.347988 seconds.
+decompressed data file: /lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data/FREQSH_1_1800_3600.dat.sz.out
+  SZ: br=12.63 FN=614.60 FP=34567.40 FT=33.40
+
+Results: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/bitrate_20261025_201756/bitrate_sweep.csv
+=== DONE ===
