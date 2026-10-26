@@ -1,0 +1,22 @@
+GPU vs CPU Timing Experiment — 20261025_184720
+NVIDIA A100-SXM4-40GB, 40960 MiB
+OMP_NUM_THREADS=32
+
+========== 2D Fields ==========
+  CLDHGH abs 1e-3 ... CUDA=0.038832s OMP=.006750s
+  CLDHGH rel:1e-3 ... CUDA=0.039197s OMP=.006840s
+  CLDHGH rel:1e-4 ... CUDA=0.041876s OMP=.006600s
+
+========== 3D Fields ==========
+  CLDICE abs 1e-7 ... CUDA=0.545398s OMP=s
+  CLDICE rel:1e-3 ... CUDA=0.548600s OMP=s
+  CLDICE rel:1e-4 ... CUDA=0.577107s OMP=s
+
+Results: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/gpu_vs_cpu_20261025_184720/gpu_vs_cpu.csv
+Field   Dims          Bound     BoundType  CUDA_Comp_s  CUDA_Decomp_s  OMP_Comp_s  OMP_Decomp_s  Maxima_Before  Maxima_After  Minima_Before  Minima_After  Saddle_Before  Saddle_After  FN_Before  FN_After  FP  FT            MaxErr_eps
+CLDHGH  1800x3600     1e-3      ABS        0.038832     0.388117       .006750     .003170                                                                                              9676       0         0   2.000000e-03  
+CLDHGH  1800x3600     rel:1e-3  REL        0.039197     0.384216       .006840     .003340                                                                                              8917       0         0   1.841508e-03  
+CLDHGH  1800x3600     rel:1e-4  REL        0.041876     0.382097       .006600     .003310                                                                                              444        0         0   1.841508e-04  
+CLDICE  26x1800x3600  1e-7      ABS        0.545398     12.963129                                                                                                                       1589700    0         0   0             
+CLDICE  26x1800x3600  rel:1e-3  REL        0.548600     12.999841                                                                                                                       1549788    0         0   0             
+CLDICE  26x1800x3600  rel:1e-4  REL        0.577107     12.435630                                                                                                                       1257683    0         0   0             

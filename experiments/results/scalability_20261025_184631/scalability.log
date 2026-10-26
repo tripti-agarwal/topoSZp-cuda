@@ -1,0 +1,80 @@
+TopoSZp+ Scalability Experiment — 20261025_184631
+Threads: 1 2 4 8 16 32 36
+
+CPU topology binary not found, using CUDA test program (includes OpenMP comparison)
+========== 2D: ATM (1800x3600), eb=1e-3 ==========
+  AEROD_v threads=1 ... comp=.079980s  decomp=.042160s
+  AEROD_v threads=2 ... comp=.040950s  decomp=.025230s
+  AEROD_v threads=4 ... comp=.025190s  decomp=.013250s
+  AEROD_v threads=8 ... comp=.013760s  decomp=.006840s
+  AEROD_v threads=16 ... comp=.009170s  decomp=.004260s
+  AEROD_v threads=32 ... comp=.007710s  decomp=.002890s
+  AEROD_v threads=36 ... comp=.008590s  decomp=.004120s
+  CLDHGH threads=1 ... comp=.115360s  decomp=.054990s
+  CLDHGH threads=2 ... comp=.055400s  decomp=.029710s
+  CLDHGH threads=4 ... comp=.029500s  decomp=.016120s
+  CLDHGH threads=8 ... comp=.016220s  decomp=.008380s
+  CLDHGH threads=16 ... comp=.009180s  decomp=.004510s
+  CLDHGH threads=32 ... comp=.006780s  decomp=.003200s
+  CLDHGH threads=36 ... comp=.009260s  decomp=.005380s
+  CLDLOW threads=1 ... comp=.098890s  decomp=.058110s
+  CLDLOW threads=2 ... comp=.049580s  decomp=.028270s
+  CLDLOW threads=4 ... comp=.026770s  decomp=.015170s
+  CLDLOW threads=8 ... comp=.014720s  decomp=.007890s
+  CLDLOW threads=16 ... comp=.008280s  decomp=.004270s
+  CLDLOW threads=32 ... comp=.006520s  decomp=.003180s
+  CLDLOW threads=36 ... comp=.010220s  decomp=.004700s
+  CLDMED threads=1 ... comp=.112860s  decomp=.054000s
+  CLDMED threads=2 ... comp=.055180s  decomp=.028890s
+  CLDMED threads=4 ... comp=.029420s  decomp=.015420s
+  CLDMED threads=8 ... comp=.015980s  decomp=.008200s
+  CLDMED threads=16 ... comp=.009250s  decomp=.004310s
+  CLDMED threads=32 ... comp=.006840s  decomp=.003110s
+  CLDMED threads=36 ... comp=.009340s  decomp=.004510s
+  FLDSC threads=1 ... comp=.078470s  decomp=.052500s
+  FLDSC threads=2 ... comp=.040620s  decomp=.030940s
+  FLDSC threads=4 ... comp=.022200s  decomp=.014860s
+  FLDSC threads=8 ... comp=.012140s  decomp=.007810s
+  FLDSC threads=16 ... comp=.007580s  decomp=.004230s
+  FLDSC threads=32 ... comp=.007750s  decomp=.002980s
+  FLDSC threads=36 ... comp=.008530s  decomp=.004400s
+
+========== SCALABILITY SUMMARY ==========
+Dataset  Field    Dims       Threads  CompTime_s  DecompTime_s  MaxError      PreservRate  FN     FP  FT
+ATM-2D   AEROD_v  1800x3600  1        .079980     .042160       2.000000e-03  83.49        11824  0   0
+ATM-2D   AEROD_v  1800x3600  2        .040950     .025230       2.000000e-03  83.49        11824  0   0
+ATM-2D   AEROD_v  1800x3600  4        .025190     .013250       2.000000e-03  83.49        11824  0   0
+ATM-2D   AEROD_v  1800x3600  8        .013760     .006840       2.000000e-03  83.49        11824  0   0
+ATM-2D   AEROD_v  1800x3600  16       .009170     .004260       2.000000e-03  83.49        11824  0   0
+ATM-2D   AEROD_v  1800x3600  32       .007710     .002890       2.000000e-03  83.49        11824  0   0
+ATM-2D   AEROD_v  1800x3600  36       .008590     .004120       2.000000e-03  83.49        11824  0   0
+ATM-2D   CLDHGH   1800x3600  1        .115360     .054990       2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDHGH   1800x3600  2        .055400     .029710       2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDHGH   1800x3600  4        .029500     .016120       2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDHGH   1800x3600  8        .016220     .008380       2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDHGH   1800x3600  16       .009180     .004510       2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDHGH   1800x3600  32       .006780     .003200       2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDHGH   1800x3600  36       .009260     .005380       2.000000e-03  95.63        9676   0   0
+ATM-2D   CLDLOW   1800x3600  1        .098890     .058110       2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDLOW   1800x3600  2        .049580     .028270       2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDLOW   1800x3600  4        .026770     .015170       2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDLOW   1800x3600  8        .014720     .007890       2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDLOW   1800x3600  16       .008280     .004270       2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDLOW   1800x3600  32       .006520     .003180       2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDLOW   1800x3600  36       .010220     .004700       2.000000e-03  94.69        6046   0   0
+ATM-2D   CLDMED   1800x3600  1        .112860     .054000       2.000000e-03  93.61        11317  0   0
+ATM-2D   CLDMED   1800x3600  2        .055180     .028890       2.000000e-03  93.61        11317  0   0
+ATM-2D   CLDMED   1800x3600  4        .029420     .015420       2.000000e-03  93.61        11317  0   0
+ATM-2D   CLDMED   1800x3600  8        .015980     .008200       2.000000e-03  93.61        11317  0   0
+ATM-2D   CLDMED   1800x3600  16       .009250     .004310       2.000000e-03  93.61        11317  0   0
+ATM-2D   CLDMED   1800x3600  32       .006840     .003110       2.000000e-03  93.61        11317  0   0
+ATM-2D   CLDMED   1800x3600  36       .009340     .004510       2.000000e-03  93.61        11317  0   0
+ATM-2D   FLDSC    1800x3600  1        .078470     .052500       2.000000e-03  99.93        6      0   0
+ATM-2D   FLDSC    1800x3600  2        .040620     .030940       2.000000e-03  99.93        6      0   0
+ATM-2D   FLDSC    1800x3600  4        .022200     .014860       2.000000e-03  99.93        6      0   0
+ATM-2D   FLDSC    1800x3600  8        .012140     .007810       2.000000e-03  99.93        6      0   0
+ATM-2D   FLDSC    1800x3600  16       .007580     .004230       2.000000e-03  99.93        6      0   0
+ATM-2D   FLDSC    1800x3600  32       .007750     .002980       2.000000e-03  99.93        6      0   0
+ATM-2D   FLDSC    1800x3600  36       .008530     .004400       2.000000e-03  99.93        6      0   0
+
+Results: /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/results/scalability_20261025_184631/scalability.csv

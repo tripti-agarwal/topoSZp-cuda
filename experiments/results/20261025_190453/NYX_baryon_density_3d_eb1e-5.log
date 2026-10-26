@@ -1,0 +1,18 @@
+TopoSZp CUDA compress (3D): max |value| 115862 / error bound 1e-05 exceeds the 32-bit bin range of the format (use eb >= 5.39526e-05 for this float32 data)
+=== TopoSZp 3D Critical Point Preservation Test ===
+Input: /lcrc/project/ECP-EZ/tripti/SDRBench-data/NYX/baryon_density.f32  (512 × 512 × 512 = 134217728 elements)
+Error bound: 1.000000e-05    Block size: 64
+
+--- Step 1: Find 3D critical points in original data ---
+Found 1438305 critical points in 96.66 ms
+  Maxima: 95163    Minima: 106635    Saddles: 1236507
+
+OpenMP found 1438305 (CUDA 1438305 — MATCH)
+
+--- Step 2: Sort critical points ---
+Sorted in 61.52 ms
+
+--- Step 3: Topology-preserved compression ---
+Compressed: 0 bytes (ratio: infx) in 171.82 ms
+
+ERROR: compression failed
