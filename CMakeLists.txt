@@ -128,12 +128,15 @@ endif()
 if(OpenMP_CXX_FOUND)
   add_executable(compare_critical_points example/compare_critical_points.cc)
   target_link_libraries(compare_critical_points SZp OpenMP::OpenMP_CXX)
+  target_include_directories(compare_critical_points PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/SZp/include)
 
   add_executable(topo_check example/topo_check.cc)
   target_link_libraries(topo_check SZp OpenMP::OpenMP_CXX)
+  target_include_directories(topo_check PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/SZp/include)
 
   add_executable(pl_topo_check example/pl_topo_check.cc)
   target_link_libraries(pl_topo_check SZp OpenMP::OpenMP_CXX)
+  target_include_directories(pl_topo_check PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/SZp/include)
 endif()
 
 # ---- Install / export (only if at least one target was created) ----

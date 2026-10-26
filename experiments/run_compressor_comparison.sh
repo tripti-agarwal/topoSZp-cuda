@@ -121,11 +121,11 @@ run_compressor() {
         Tthresh)
             if [ -f "$TTHRESH_BIN" ]; then
                 local t0=$(date +%s%N)
-                "$TTHRESH_BIN" "$input" -c "$comp_file" -t float -e $eb -s "$rows $cols" 2>/dev/null || return 1
+                "$TTHRESH_BIN" -i "$input" -t float -s $cols $rows 1 -e $eb -c "$comp_file" 2>/dev/null || return 1
                 local t1=$(date +%s%N)
                 comp_time=$(echo "scale=6; ($t1 - $t0) / 1000000000" | bc)
                 comp_size=$(stat -c%s "$comp_file" 2>/dev/null || stat -f%z "$comp_file")
-                "$TTHRESH_BIN" "$comp_file" -d "$decomp_file" 2>/dev/null || return 1
+                "$TTHRESH_BIN" -c "$comp_file" -o "$decomp_file" 2>/dev/null || return 1
             else
                 return 1
             fi

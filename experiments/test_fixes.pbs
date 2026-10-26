@@ -1,0 +1,71 @@
+#!/bin/bash
+#PBS -N toposzp_test_fixes
+#PBS -q backfill
+#PBS -A SDR
+#PBS -l select=1:ngpus=1
+#PBS -l walltime=00:30:00
+#PBS -o /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/test_fixes_output.log
+#PBS -e /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/test_fixes_error.log
+module purge
+module load gcc/11.4.0
+export PATH=/usr/local/cuda/bin:/lcrc/project/ECP-EZ/tripti/compressors/bin:$PATH
+export LD_LIBRARY_PATH=/lcrc/project/ECP-EZ/tripti/compressors/lib:$LD_LIBRARY_PATH
+cd /lcrc/project/ECP-EZ/tripti/topoSZp-cuda
+
+echo "=== 1. Rebuild (with compare_critical_points) ==="
+rm -rf build && mkdir build && cd build
+cmake .. -DENABLE_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES="80" 2>&1 | tail -5
+make -j$(nproc) 2>&1 | tail -10
+cd ..
+
+echo ""
+echo "=== 2. Verify compare_critical_points exists ==="
+ls -la build/compare_critical_points build/topo_check build/pl_topo_check 2>&1
+
+echo ""
+echo "=== 3. Test compare_critical_points manually ==="
+DATA="/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/original_data"
+FILE="$DATA/CLDHGH_1_1800_3600.dat"
+EB=1e-3
+
+# Compress with SZ3, decompress, compare
+echo "--- SZ3 ---"
+sz3 -f -i "$FILE" -z /tmp/test.sz3 -2 3600 1800 -M ABS $EB 2>&1 | tail -3
+sz3 -f -z /tmp/test.sz3 -o /tmp/test.sz3.out -2 3600 1800 2>&1 | tail -3
+build/compare_critical_points "$FILE" /tmp/test.sz3.out 1800 3600 $EB 2>&1
+
+echo ""
+echo "--- ZFP ---"
+zfp -t float -2 3600 1800 -a $EB -i "$FILE" -z /tmp/test.zfp 2>&1 | tail -3
+zfp -t float -2 3600 1800 -z /tmp/test.zfp -o /tmp/test.zfp.out 2>&1 | tail -3
+build/compare_critical_points "$FILE" /tmp/test.zfp.out 1800 3600 $EB 2>&1
+
+echo ""
+echo "--- Tthresh ---"
+tthresh -i "$FILE" -t float -s 3600 1800 1 -e $EB -c /tmp/test.tthresh 2>&1 | tail -5
+tthresh -c /tmp/test.tthresh -o /tmp/test.tthresh.out 2>&1 | tail -5
+if [ -f /tmp/test.tthresh.out ]; then
+    build/compare_critical_points "$FILE" /tmp/test.tthresh.out 1800 3600 $EB 2>&1
+else
+    echo "Tthresh decompress failed"
+fi
+
+echo ""
+echo "--- SZ (old) ---"
+sz -z -f -i "$FILE" -M ABS -A $EB -2 1800 3600 2>&1 | tail -3
+if [ -f "${FILE}.sz" ]; then
+    sz -x -f -s "${FILE}.sz" -2 1800 3600 2>&1 | tail -3
+    build/compare_critical_points "$FILE" "${FILE}.sz.out" 1800 3600 $EB 2>&1
+fi
+
+echo ""
+echo "=== 4. Quick compressor comparison (1 field, 1 eb) ==="
+bash experiments/run_compressor_comparison.sh quick 2>&1 | tail -20
+
+echo ""
+echo "=== 5. Quick bit rate sweep (1 eb) ==="
+bash experiments/run_bitrate_sweep.sh quick 2>&1 | tail -20
+
+rm -f /tmp/test.sz3 /tmp/test.sz3.out /tmp/test.zfp /tmp/test.zfp.out /tmp/test.tthresh /tmp/test.tthresh.out
+echo ""
+echo "=== ALL TESTS DONE ==="

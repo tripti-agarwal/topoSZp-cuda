@@ -110,8 +110,8 @@ for eb in $ERROR_BOUNDS; do
                     "$ZFP_BIN" -t float -2 $COLS $ROWS -z "$comp_file" -o "$decomp_file" 2>/dev/null || continue
                     ;;
                 Tthresh)
-                    "$TTHRESH_BIN" "$f" -c "$comp_file" -t float -e $eb -s "$ROWS $COLS" 2>/dev/null || continue
-                    "$TTHRESH_BIN" "$comp_file" -d "$decomp_file" 2>/dev/null || continue
+                    "$TTHRESH_BIN" -i "$f" -t float -s $COLS $ROWS 1 -e $eb -c "$comp_file" 2>/dev/null || continue
+                    "$TTHRESH_BIN" -c "$comp_file" -o "$decomp_file" 2>/dev/null || continue
                     ;;
                 SZ)
                     "$SZ_BIN" -z -f -i "$f" -M ABS -A $eb -2 $ROWS $COLS 2>/dev/null || continue
