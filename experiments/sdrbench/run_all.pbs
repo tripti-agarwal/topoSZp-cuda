@@ -1,0 +1,22 @@
+#!/bin/bash
+# PBS job for LCRC Swing (one A100 node). Submit from the repository root:
+#   qsub -v DATA=/lcrc/project/ECP-EZ/tripti/sdrbench-data,OUT=/lcrc/project/ECP-EZ/tripti/toposzp-results experiments/sdrbench/run_all.pbs
+# The run resumes where it stopped: if the walltime runs out, submit the same
+# command again with the same OUT. To run only some experiments, add EXPS=main,pl
+# to -v. Adjust -A to your allocation.
+#PBS -N toposzp-exp
+#PBS -q gpu
+#PBS -A SDR
+#PBS -l select=1:ngpus=1
+#PBS -l walltime=24:00:00
+#PBS -j oe
+
+cd "${PBS_O_WORKDIR:-.}"
+module load nvhpc 2>/dev/null || true
+module load cmake 2>/dev/null || true
+: "${DATA:?pass DATA=<data folder> with qsub -v}"
+: "${OUT:?pass OUT=<results folder> with qsub -v}"
+nvidia-smi -L
+# Node-local scratch for the large 3D outputs, if the node has one.
+[ -n "${TMPDIR:-}" ] && [ -d "$TMPDIR" ] && export WORK=$TMPDIR/toposzp-work
+DATA=$DATA EXPS=${EXPS:-main,scaling,baselines,bitrate,pl,vis} experiments/sdrbench/run_all.sh "$OUT"
