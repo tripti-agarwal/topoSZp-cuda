@@ -195,16 +195,24 @@ def main():
     pl = [r for r in read_results(R, 'pl') if r['status'] == 'ok']
     if pl:
         rows = []
+        def pc(r, k, count):   # a percentage of zero items (or the checker's -1) is not a number
+            v = f(r[k])
+            return None if v is None or v < 0 or not f(r.get(count)) else v
         for (ds, mode, eb), rs in groups(pl, 'dataset', 'mode', 'eb').items():
-            rows.append([ds, '%s %s' % (mode, eb), len(rs), n(mean([f(r['pl_extrema_kept_final_pct']) for r in rs])),
-                         '%s -> %s' % (n(mean([f(r['pl_saddles_kept_raw_pct']) for r in rs])), n(mean([f(r['pl_saddles_kept_final_pct']) for r in rs]))),
-                         n(mean([f(r['pl_saddles_pers_ge_2eb_kept_final_pct']) for r in rs])),
+            rows.append([ds, '%s %s' % (mode, eb), len(rs),
+                         n(sum(f(r['pl_extrema']) or 0 for r in rs), 0), n(mean([pc(r, 'pl_extrema_kept_final_pct', 'pl_extrema') for r in rs])),
+                         n(sum(f(r['pl_saddles']) or 0 for r in rs), 0),
+                         '%s -> %s' % (n(mean([pc(r, 'pl_saddles_kept_raw_pct', 'pl_saddles') for r in rs])),
+                                      n(mean([pc(r, 'pl_saddles_kept_final_pct', 'pl_saddles') for r in rs]))),
+                         n(mean([pc(r, 'pl_saddles_pers_ge_2eb_kept_final_pct', 'pl_saddles') for r in rs])),
                          n(mean([f(r['FP_raw']) for r in rs]), 0) + ' -> ' + n(mean([f(r['FP_final']) for r in rs]), 0),
                          n(mean([f(r['FT_raw']) for r in rs]), 0) + ' -> ' + n(mean([f(r['FT_final']) for r in rs]), 0),
-                         n(mean([f(r['axis_saddles_that_are_pl_pct']) for r in rs]))])
+                         n(sum(f(r['axis_saddles']) or 0 for r in rs), 0),
+                         n(mean([pc(r, 'axis_saddles_that_are_pl_pct', 'axis_saddles') for r in rs]))])
         out.table('Cross-check with the piecewise-linear (TTK) definition',
-                  ['Dataset', 'Bound', 'Fields', 'PL extrema kept %', 'PL saddles kept % (SZp -> TopoSZp+)',
-                   'PL saddles with persistence >= 2 eps kept %', 'PL FP', 'PL FT', 'Axis saddles that are PL saddles %'], rows,
+                  ['Dataset', 'Bound', 'Fields', 'PL extrema', 'PL extrema kept %', 'PL saddles', 'PL saddles kept % (SZp -> TopoSZp+)',
+                   'PL saddles with persistence >= 2 eps kept %', 'PL FP (SZp -> TopoSZp+)', 'PL FT (SZp -> TopoSZp+)', 'Axis saddles',
+                   'Axis saddles that are PL saddles %'], rows,
                   'Freudenthal triangulation (6 neighbors in 2D, 14 in 3D), ties broken by index, as TTK. TopoSZp+ guarantees '
                   'refer to the axis rule; this table shows how the result looks under the PL definition.')
 

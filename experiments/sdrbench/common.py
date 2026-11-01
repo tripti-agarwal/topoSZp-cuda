@@ -378,7 +378,6 @@ def machine_info(c):
 
 def common_args(ap):
     """Options shared by every experiment script."""
-    nproc = os.cpu_count() or 1
     ap.add_argument('--data', required=True, help='folder with manifest.csv (download_sdrbench.sh)')
     ap.add_argument('--out', default=None, help='results folder (default: results/<date>); reuse it to resume')
     ap.add_argument('--bin', default=os.path.join(HERE, 'bin'), help='tools folder (setup.sh)')
@@ -387,7 +386,8 @@ def common_args(ap):
                     'at the same time write separate files; summarize.py merges them')
     ap.add_argument('--datasets', default='', help='comma-separated dataset names (default: all in the manifest)')
     ap.add_argument('--fields-per-dataset', type=int, default=0, help='limit fields per dataset (0 = all)')
-    ap.add_argument('--threads', type=int, default=nproc, help='OpenMP threads (default: all cores)')
+    ap.add_argument('--threads', type=int, default=usable_cpus()[1],
+                    help='OpenMP threads (default: the physical cores this job may use, %d here)' % usable_cpus()[1])
     ap.add_argument('--block-size', type=int, default=64)
     ap.add_argument('--reps', type=int, default=3, help='timed repetitions; the minimum is reported')
     ap.add_argument('--timeout', type=int, default=3600, help='seconds per command')
