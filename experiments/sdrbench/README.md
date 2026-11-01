@@ -34,20 +34,32 @@ qsub -v DATA=/lcrc/project/ECP-EZ/tripti/sdrbench-data,OUT=/lcrc/project/ECP-EZ/
      experiments/sdrbench/run_all.pbs
 ```
 
-## Separate jobs
+## Batch jobs (submit_separate.sh)
 
-`submit_separate.sh RESULTS` writes one job script per job into `RESULTS/jobs/` and submits it:
-`main-<dataset>`, `baselines-<dataset>`, `scaling-<dataset>` (one per dataset in the manifest), `bitrate`, `pl`,
-`vis`, and `summarize`, which waits for all of them (`afterany`). If the tools are not built, a `setup` job
-runs first. Each job writes `<experiment>.<job>.csv`, `run.<job>.log`, `logs/<job>/` and its own work folder,
-so jobs can run at the same time; `summarize.py` merges the CSVs.
+`submit_separate.sh RESULTS` writes the job scripts into `RESULTS/jobs/` and submits them. The default
+`PLAN=compact` is 7 jobs plus a summary job, all on 1 GPU, each sized to finish in about 2–3 h, so they fit
+a 4 h backfill walltime and the 9-jobs-per-user limit on Swing:
+
+| Job | Runs |
+|---|---|
+| `main-CESM-ATM-3D` | `exp_main.py` on CESM-ATM-3D |
+| `main-rest` | `exp_main.py` on all other datasets |
+| `baselines-CESM-ATM-3D-abs` / `-rel` | `exp_baselines.py` on CESM-ATM-3D, absolute / relative bounds |
+| `baselines-2D-Hurricane` | `exp_baselines.py` on CESM-ATM-2D and Hurricane |
+| `baselines-rest` | `exp_baselines.py` on NYX and SCALE-LETKF |
+| `other` | `exp_scaling.py`, `exp_bitrate.py`, `exp_pl.py`, `exp_vis.py`, one after another |
+| `summarize` | `summarize.py`, after all others have ended |
+
+`PLAN=separate` submits one job per experiment instead (main, baselines and scaling one per dataset; 17
+jobs). If the tools are not built, a `setup` job runs first. Each experiment writes `<experiment>.<tag>.csv`,
+`run.<tag>.log`, `logs/<tag>/` and its own work folder, so jobs can run at the same time; `summarize.py`
+merges the CSVs.
 
 ```bash
-# only some jobs, a shorter walltime for pl, whole nodes for the timed jobs
-EXPS=main,pl DATASETS=NYX,Hurricane WALLTIME=06:00:00 WALLTIME_PL=02:00:00 PLACE=excl \
-DATA=$DATA experiments/sdrbench/submit_separate.sh $OUT
-# options for every job / one experiment; DRYRUN=1 only writes the job scripts and prints the qsub lines
-OPTS="--reps 3" MAIN_OPTS="--bounds rel:1e-3,rel:1e-4" DRYRUN=1 DATA=$DATA experiments/sdrbench/submit_separate.sh $OUT
+# on Swing with the allocation used up
+QUEUE=backfill DATA=$DATA experiments/sdrbench/submit_separate.sh $OUT
+# DRYRUN=1 only writes the job scripts and prints the qsub lines
+DRYRUN=1 QUEUE=backfill DATA=$DATA experiments/sdrbench/submit_separate.sh $OUT
 ```
 
 Run the same command again at any time: jobs that are queued, running or finished are skipped, and
