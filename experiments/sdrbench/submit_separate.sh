@@ -13,9 +13,15 @@
 #   summarize            summarize.py, after all the others have ended (afterany)
 # If the tools are not built yet, a setup job runs first and the others wait for it.
 #
-# Every job resumes: if one hits its walltime, run this script again with the
-# same RESULTS_DIR (finished runs are skipped; submit only what is missing with EXPS
-# and DATASETS). summarize.py merges the per-job CSVs.
+# Run the same command again at any time: jobs that are queued or running, and
+# jobs that finished (their jobs/<name>.out ends with "done."), are skipped; the
+# rest is submitted. A job that hit its walltime is submitted again and resumes
+# (finished runs are skipped). summarize.py merges the per-job CSVs.
+#
+# Per-user job limit ("qsub: would exceed ... per-user limit"): the jobs that did
+# not fit are listed; run the command again when some have finished, or add
+# WAIT=1 to keep trying every WAIT_MIN minutes (run it in screen / tmux or with
+# nohup on the login node). The summarize job is submitted once all others are.
 #
 # Environment (all optional except DATA):
 #   DATA       data folder with manifest.csv (download_sdrbench.sh)
@@ -29,6 +35,8 @@
 #   OPTS       options added to every experiment, e.g. "--reps 3 --threads 32"
 #   <EXP>_OPTS options for one experiment, e.g. MAIN_OPTS="--bounds rel:1e-3,rel:1e-4"
 #   DRYRUN=1   write the job scripts and print the qsub commands without submitting
+#   WAIT=1     retry jobs that hit the per-user job limit every WAIT_MIN (default 10) minutes
+#   FORCE=1    submit even jobs that finished before
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 OUT=${1:?usage: DATA=<data folder> $0 RESULTS_DIR}
@@ -39,6 +47,7 @@ mkdir -p "$OUT"; OUT=$(cd "$OUT" && pwd)
 EXPS=${EXPS:-main,baselines,scaling,bitrate,pl,vis}
 ACCOUNT=${ACCOUNT:-SDR}; QUEUE=${QUEUE:-gpu}; SELECT=${SELECT:-select=1:ngpus=1}; PLACE=${PLACE:-}
 WALLTIME=${WALLTIME:-12:00:00}; OPTS=${OPTS:-}; DRYRUN=${DRYRUN:-0}
+WAIT=${WAIT:-0}; WAIT_MIN=${WAIT_MIN:-10}; FORCE=${FORCE:-0}; ME=${USER:-$(whoami)}
 BIN=$HERE/bin
 JOBS=$OUT/jobs; mkdir -p "$JOBS"
 
@@ -100,34 +109,82 @@ if [ ! -x "$BIN/toposzp_comp" ]; then
     DEP=(-W "depend=afterok:$sid")
 fi
 
-IDS=()
-submit() {   # submit <exp> <tag> <place> [extra options]
-    local exp=$1 tag=$2 place=$3; shift 3
-    local f id
+queued_id() {   # id of a queued / running / held job named tsz-<tag>, if any
+    [ "$DRYRUN" = 1 ] && return 0
+    command -v qselect >/dev/null || return 0
+    qselect -u "$ME" -N "tsz-$1" -s QRHWT 2>/dev/null | head -1
+}
+
+IDS=()        # jobs the summary waits for
+PENDING=()    # "exp|tag|place|datasets" not submitted (job limit)
+LIMIT=0
+submit() {   # submit <exp> <tag> <place> [dataset]
+    local exp=$1 tag=$2 place=$3 ds=${4:-}
+    local f id err
+    id=$(queued_id "$tag")
+    if [ -n "$id" ]; then
+        IDS+=("$id"); printf '%-28s %s (already queued)\n' "$tag" "$id"; return 0
+    fi
+    if [ "$FORCE" != 1 ] && [ -f "$JOBS/$tag.out" ] && grep -q '^\[.*\] done\. Results in' "$JOBS/$tag.out"; then
+        printf '%-28s finished before (FORCE=1 to run again)\n' "$tag"; return 0
+    fi
+    if [ "$LIMIT" = 1 ]; then PENDING+=("$exp|$tag|$place|$ds"); return 0; fi
     # shellcheck disable=SC2046
     f=$(write_job "$tag" "$(walltime_for "$exp")" "$place" "$(select_for "$exp")" python3 "$HERE/exp_$exp.py" --data "$DATA" --out "$OUT" \
-        --bin "$BIN" --tag "$tag" "$@" $(opts_for "$exp"))
-    id=$(qsub_ "$f" "${DEP[@]}")
+        --bin "$BIN" --tag "$tag" ${ds:+--datasets "$ds"} $(opts_for "$exp"))
+    if [ "$DRYRUN" = 1 ]; then
+        id=$(qsub_ "$f" "${DEP[@]}")
+    elif ! id=$(qsub "${DEP[@]}" "$f" 2>"$JOBS/.qsub.err"); then
+        err=$(cat "$JOBS/.qsub.err")
+        if echo "$err" | grep -qi 'limit'; then
+            LIMIT=1; PENDING+=("$exp|$tag|$place|$ds"); return 0
+        fi
+        echo "qsub failed for $tag: $err" >&2; exit 1
+    fi
     IDS+=("$id"); printf '%-28s %s\n' "$tag" "$id"
 }
 
-IFS=, read -r -a DS <<< "$DATASETS"
-for e in ${EXPS//,/ }; do
-    case $e in
-        main)      for d in "${DS[@]}"; do submit main      "main-$d"      "$PLACE" --datasets "$d"; done ;;
-        scaling)   for d in "${DS[@]}"; do submit scaling   "scaling-$d"   "$PLACE" --datasets "$d"; done ;;
-        baselines) for d in "${DS[@]}"; do submit baselines "baselines-$d" ""       --datasets "$d"; done ;;
-        bitrate)   submit bitrate bitrate "" ;;
-        pl)        submit pl pl "" ;;
-        vis)       submit vis vis "" ;;
-        *) echo "unknown experiment $e"; exit 1 ;;
-    esac
+submit_all() {
+    LIMIT=0; PENDING=()
+    IFS=, read -r -a DS <<< "$DATASETS"
+    for e in ${EXPS//,/ }; do
+        case $e in
+            main)      for d in "${DS[@]}"; do submit main      "main-$d"      "$PLACE" "$d"; done ;;
+            scaling)   for d in "${DS[@]}"; do submit scaling   "scaling-$d"   "$PLACE" "$d"; done ;;
+            baselines) for d in "${DS[@]}"; do submit baselines "baselines-$d" ""       "$d"; done ;;
+            bitrate)   submit bitrate bitrate "" ;;
+            pl)        submit pl pl "" ;;
+            vis)       submit vis vis "" ;;
+            *) echo "unknown experiment $e"; exit 1 ;;
+        esac
+    done
+}
+
+submit_all
+while [ ${#PENDING[@]} -gt 0 ] && [ "$WAIT" = 1 ]; do
+    echo "$(date +%H:%M) per-user job limit: ${#PENDING[@]} jobs waiting; next try in $WAIT_MIN min"
+    sleep $((WAIT_MIN * 60))
+    IDS=(); submit_all
 done
+
+if [ ${#PENDING[@]} -gt 0 ]; then
+    echo
+    echo "Not submitted (per-user job limit): $(printf '%s\n' "${PENDING[@]}" | cut -d'|' -f2 | paste -sd' ' -)"
+    echo "Run the same command again when some jobs have finished (queued, running and finished jobs"
+    echo "are skipped), or add WAIT=1 to keep trying. Then the summarize job is submitted."
+    echo "watch with: qstat -u $ME"
+    exit 0
+fi
 
 # ---- summary after all of them (afterany: also when some failed or hit the walltime)
 f=$JOBS/summarize.sh
 printf '#!/bin/bash\n#PBS -N tsz-summarize\n#PBS -q %s\n#PBS -A %s\n#PBS -l %s\n#PBS -l walltime=00:30:00\n#PBS -j oe\n#PBS -o %s\npython3 %q %q\n' \
     "$QUEUE" "$ACCOUNT" "$SELECT" "$JOBS/summarize.out" "$HERE/summarize.py" "$OUT" > "$f"
-sid=$(qsub_ "$f" -W "depend=afterany:$(IFS=:; echo "${IDS[*]}")")
+if [ ${#IDS[@]} -gt 0 ]; then
+    sid=$(qsub_ "$f" -W "depend=afterany:$(IFS=:; echo "${IDS[*]}")") || {
+        echo "summarize job not submitted (job limit?): run  python3 $HERE/summarize.py $OUT  when the jobs are done"; exit 0; }
+else
+    sid=$(qsub_ "$f") || { echo "run  python3 $HERE/summarize.py $OUT"; exit 0; }
+fi
 printf '%-28s %s\n' summarize "$sid"
-echo "job scripts and outputs: $JOBS;  watch with: qstat -u ${USER:-$(whoami)}"
+echo "job scripts and outputs: $JOBS;  watch with: qstat -u $ME"

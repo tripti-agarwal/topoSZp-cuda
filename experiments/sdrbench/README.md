@@ -50,8 +50,11 @@ DATA=$DATA experiments/sdrbench/submit_separate.sh $OUT
 OPTS="--reps 3" MAIN_OPTS="--bounds rel:1e-3,rel:1e-4" DRYRUN=1 DATA=$DATA experiments/sdrbench/submit_separate.sh $OUT
 ```
 
-A job that hits its walltime is resumed by submitting it again with the same `RESULTS` (finished runs are
-skipped, also those finished by an earlier single-job run). `main` and `scaling` measure time: with
+Run the same command again at any time: jobs that are queued, running or finished are skipped, and
+the rest is submitted. A job that hit its walltime is submitted again and resumes (finished runs are
+skipped, also those finished by an earlier single-job run). If qsub reports the per-user job limit, the
+jobs that did not fit are listed: run the command again later, or add `WAIT=1` to keep trying every
+10 minutes (inside `screen`/`tmux`, or with `nohup`, on the login node). `main` and `scaling` measure time: with
 `PLACE=excl` they get a whole node, so other jobs on the node do not disturb the timings.
 
 Any experiment also runs by hand, e.g. on an interactive GPU node:
