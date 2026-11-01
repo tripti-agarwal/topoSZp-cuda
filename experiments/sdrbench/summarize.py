@@ -80,10 +80,13 @@ def main():
             flds = OrderedDict((r['field'], r) for r in rs)
             nvals = int(next(iter(flds.values()))['n'])
             dims = next(iter(flds.values()))['dims'].replace('x', ' × ')
-            tb = [r for r in rs if r['status'] == 'ok' and bound(r) == a.table_bound]
+            tb = [r for r in rs if r['status'] == 'ok' and bound(r) == a.table_bound] or \
+                 [r for r in rs if r['status'] == 'ok']   # bound not run: all bounds
             rows.append([ds, len(flds), dims, n(len(flds) * nvals * 4 / 1e9, 2) + ' GB',
                          n(mean([f(r['err_after']) for r in tb]), 3), n(max([f(r['err_after']) for r in tb] or [None]) if tb else None, 3)])
-        out.table('Datasets', ['Dataset', 'Fields', 'Dimensions', 'Size', 'Mean max error / eps (%s)' % a.table_bound,
+        have_tb = any(r['status'] == 'ok' and bound(r) == a.table_bound for r in main_rows)
+        out.table('Datasets', ['Dataset', 'Fields', 'Dimensions', 'Size',
+                               'Mean max error / eps (%s)' % (a.table_bound if have_tb else 'all bounds'),
                                'Largest max error / eps'], rows,
                   'Max error of TopoSZp+ in units of the error bound eps (the guarantee is < 2).')
 
@@ -123,11 +126,15 @@ def main():
             rows.append([ds, '%s %s' % (mode, eb), len(rs), n(tc, 4), n(gb / tc if tc else None, 2), n(td, 4), n(gb / td if td else None, 2),
                          n(gc, 4), n(gb / gc if gc else None, 2), n(gd, 4), n(gb / gd if gd else None, 2),
                          '%d/%d' % (sum(x == '1' for x in ident), len(ident)) if ident else '--'])
+        gnotes = sorted({r['note'] for r in ok if r.get('note', '').startswith('GPU:')})
         out.table('Compression and decompression time: OpenMP (%s threads) and CUDA' % (ok[0]['threads']),
                   ['Dataset', 'Bound', 'Fields', 'CPU comp s', 'GB/s', 'CPU decomp s', 'GB/s', 'GPU comp s', 'GB/s',
                    'GPU decomp s', 'GB/s', 'CPU = GPU output'], rows,
                   'Means per field. Compression = critical points + ranks + encoding; decompression = decoding + topology '
-                  'restoration. GPU times are those reported by the CUDA test programs.')
+                  'restoration. GPU times are those reported by the CUDA test programs.'
+                  + ('  GPU runs failed: %s' % '; '.join(gnotes[:5]) if gnotes else '')
+                  + ('  No GPU times: the CUDA programs were not run (no GPU or --gpu off).'
+                     if not gnotes and not any(r.get('gpu_comp_s') for r in ok) else ''))
 
     # ------------------------------------------------------------------ scaling
     sc = [r for r in read_results(R, 'scaling') if r['status'] == 'ok']
@@ -160,10 +167,16 @@ def main():
         rows = []
         order = ['toposzp', 'szp', 'sz3', 'sz', 'zfp', 'tthresh']
         label = {'toposzp': 'TopoSZp+', 'szp': 'SZp', 'sz3': 'SZ3', 'sz': 'SZ2', 'zfp': 'ZFP', 'tthresh': 'TTHRESH*'}
+        dropped = []
         for (ds, mode, eb), rs in groups(g, 'dataset', 'mode', 'eb').items():
+            # Average every compressor over the same fields: those all of them finished.
             bycomp = groups(rs, 'compressor')
+            common = set.intersection(*[{r['field'] for r in v} for v in bycomp.values()])
+            dropped += sorted({'%s/%s %s %s' % (ds, r['field'], mode, eb) for r in rs if r['field'] not in common})
             for comp in [c for c in order if (c,) in bycomp]:
-                cr = bycomp[(comp,)]
+                cr = [r for r in bycomp[(comp,)] if r['field'] in common]
+                if not cr:
+                    continue
                 tot = [f(r['FN']) + f(r['FP']) + f(r['FT']) for r in cr]
                 rows.append([ds, '%s %s' % (mode, eb), label[comp], len(cr), n(mean([f(r['bitrate']) for r in cr]), 2),
                              x(mean([f(r['ratio']) for r in cr])), n(mean([f(r['FN']) for r in cr]), 0),
@@ -173,7 +186,8 @@ def main():
         out.table(title, ['Dataset', 'Bound', 'Compressor', 'Fields', 'Bits/value', 'Ratio', 'FN', 'FP', 'FT', 'Total', 'Max err / eps'],
                   rows, 'Means over fields; FN/FP/FT counted with the same checker (topo_check) for every compressor. '
                         '*TTHRESH -e is a relative (Frobenius) target, not a pointwise bound.'
-                        + ('  %d runs did not finish (see %s.csv, status column).' % (len(fails), name) if fails else ''))
+                        + ('  %d runs did not finish (see %s.csv, status column).' % (len(fails), name) if fails else '')
+                        + ('  Left out because not every compressor finished them: %s.' % ', '.join(dropped) if dropped else ''))
         if name == 'bitrate':
             plot_bitrate(R, g, label, order)
 
