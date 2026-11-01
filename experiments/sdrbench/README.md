@@ -95,6 +95,18 @@ python3 experiments/sdrbench/run_experiments.py --data $DATA --out trial --bin e
 python3 experiments/sdrbench/summarize.py trial
 ```
 
+## Tables and numbers for the paper
+
+```bash
+python3 experiments/sdrbench/paper_tables.py $OUT            # writes $OUT/paper/
+```
+
+writes ready-to-`\input` tabulars (`datasets`, `preservation`, `time`, `scaling`, `false_cases`, `pl`), the
+bit-rate plots, and `numbers.tex` with `\resdef{key}{value}` for every number quoted in the text. Copy
+`$OUT/paper/` into the paper as `results/` and recompile; missing values print as `--` / `??`, so the paper
+compiles with partial results. Options: `--bounds` (default `rel:1e-3,rel:1e-4,rel:1e-5`), `--time-bound`,
+`--pl-bound`.
+
 ## Experiments and the paper
 
 | Script (`--exp`) | Paper | Output |
