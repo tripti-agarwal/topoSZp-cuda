@@ -7,7 +7,8 @@
 #   TTHRESH=1      also build TTHRESH (not pointwise error-bounded; off by default)
 #
 # Run from anywhere inside the repository, on the GPU node (so nvcc and the
-# GPU architecture are detected). On Swing: module load nvhpc (and cmake).
+# GPU architecture are detected). On Swing: module load gcc/11.4.0 nvhpc cmake
+# (gcc 13 is too new for the CUDA 12.x of nvhpc 24.9).
 #
 # Built:
 #   toposzp_comp, toposzp_decomp   TopoSZp+ OpenMP compressor / decompressor

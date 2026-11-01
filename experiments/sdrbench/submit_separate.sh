@@ -65,6 +65,7 @@ write_job() {   # write_job <name> <walltime> <place: excl or empty> <command...
         [ -n "$place" ] && echo "#PBS -l place=$place"
         echo '#PBS -j oe'
         echo "#PBS -o $JOBS/$name.out"
+        echo 'module load gcc/11.4.0 2>/dev/null || true'
         echo 'module load nvhpc 2>/dev/null || true'
         echo 'module load cmake 2>/dev/null || true'
         echo "cd $HERE"
@@ -88,7 +89,7 @@ opts_for() {
 DEP=()
 if [ ! -x "$BIN/toposzp_comp" ]; then
     f=$JOBS/setup.sh
-    printf '#!/bin/bash\n#PBS -N tsz-setup\n#PBS -q %s\n#PBS -A %s\n#PBS -l %s\n#PBS -l walltime=01:00:00\n#PBS -j oe\n#PBS -o %s\nmodule load nvhpc 2>/dev/null || true\nmodule load cmake 2>/dev/null || true\n%q %q\n' \
+    printf '#!/bin/bash\n#PBS -N tsz-setup\n#PBS -q %s\n#PBS -A %s\n#PBS -l %s\n#PBS -l walltime=01:00:00\n#PBS -j oe\n#PBS -o %s\nmodule load gcc/11.4.0 2>/dev/null || true\nmodule load nvhpc 2>/dev/null || true\nmodule load cmake 2>/dev/null || true\n%q %q\n' \
         "$QUEUE" "$ACCOUNT" "$SELECT" "$JOBS/setup.out" "$HERE/setup.sh" "$BIN" > "$f"
     sid=$(qsub_ "$f"); echo "setup      $sid"
     DEP=(-W "depend=afterok:$sid")

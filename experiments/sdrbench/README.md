@@ -64,7 +64,7 @@ python3 experiments/sdrbench/summarize.py $OUT
 Use a different `--tag` for jobs that run at the same time in the same `RESULTS`.
 
 Or interactively on a GPU node (`qsub -I -l select=1:ngpus=1 -l walltime=04:00:00 -q gpu -A SDR`,
-then `module load nvhpc`):
+then `module load gcc/11.4.0 nvhpc cmake`; gcc 13, the default, is too new for nvcc):
 
 ```bash
 experiments/sdrbench/setup.sh                       # once

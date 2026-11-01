@@ -12,6 +12,7 @@
 #PBS -j oe
 
 cd "${PBS_O_WORKDIR:-.}"
+module load gcc/11.4.0 2>/dev/null || true   # gcc 13 (default) is too new for nvcc
 module load nvhpc 2>/dev/null || true
 module load cmake 2>/dev/null || true
 : "${DATA:?pass DATA=<data folder> with qsub -v}"
