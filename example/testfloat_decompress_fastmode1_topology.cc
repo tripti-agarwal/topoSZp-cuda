@@ -135,10 +135,11 @@ int main(int argc, char *argv[])
     if (sort_positions_size >= sizeof(size_t)) {
         unsigned char *sort_start = bytes + topology_size;
         memcpy(&extrema_count, sort_start, sizeof(size_t));
+        if (extrema_count > 0)   // 0: the field has no extrema, the stream is only this header
         sort_positions = szp_decompress_sort_positions_sized(
             sort_start + sizeof(size_t), sort_positions_size - sizeof(size_t),
             extrema_count, blockSize);
-        if (!sort_positions) {
+        if (!sort_positions && extrema_count > 0) {
             printf("Warning: sort positions decompression failed; extrema are restored without ranks\n");
             extrema_count = 0;
         }

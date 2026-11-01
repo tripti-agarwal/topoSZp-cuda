@@ -117,6 +117,18 @@ int main(int argc, char *argv[])
         data, &outSize, errBound, nbEle, blockSize, cps, critical_count, rows, cols);
     }
   }
+  // A field can have critical points but no extrema (e.g. pressure, which is
+  // monotone in height, has only saddles). The rank stream is then only its
+  // header, extrema_count = 0; the decompressor reads that as "no ranks".
+  if (!bytes_sort_positions && bytes_topology && critical_points && critical_count > 0) {
+    size_t n_ext = 0;
+    for (size_t i = 0; i < critical_count; i++) {
+      int t = depth > 0 ? ((CriticalPoint3D *)critical_points)[i].type : ((CriticalPoint *)critical_points)[i].type;
+      if (t == 1 || t == 2) n_ext++;
+    }
+    if (n_ext == 0 && (bytes_sort_positions = (unsigned char *)calloc(1, sizeof(size_t))) != NULL)
+      sort_positions_size = sizeof(size_t);
+  }
   if (!critical_points || critical_count == 0) {
     printf("Error: No critical points found!\n");
     free(data);
