@@ -3,11 +3,16 @@
  *  @brief GPU topology restoration (same algorithm and results as the CPU
  *         version in szp_topo_restore.h).
  *
- *  Arrays are host arrays; data is updated in place. The extrema step runs
- *  on the host (it is a sort over the extrema only); the saddle stencil and
- *  RBF passes run on the GPU, one kernel launch per colour class.
- *  Returns 0 on success, -1 on a CUDA error (data is then left as after
- *  the extrema step).
+ *  Arrays are host arrays; data is updated in place. The field is copied to
+ *  the GPU once and back once; every step runs on the device: counts, the
+ *  extrema step (ranks in raster order by a block-wise compaction, groups of
+ *  equal decompressed value by a hash table), the extremum locks, the saddle
+ *  candidate lists, and the stencil / RBF passes (one kernel launch per
+ *  colour class). SZP_CUDA_RESTORE=hybrid selects the previous version
+ *  (extrema step and candidate lists on the host) for comparison.
+ *  PL mode (szp_cuda_topo_restore_float_pl) still runs its extrema step and
+ *  candidate lists on the host.
+ *  Returns 0 on success, -1 on a CUDA error (data is then unchanged).
  */
 #ifndef _SZP_CUDA_TOPO_RESTORE_CUH
 #define _SZP_CUDA_TOPO_RESTORE_CUH

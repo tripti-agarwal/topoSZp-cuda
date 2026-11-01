@@ -9,7 +9,7 @@
  *  quantization bin, listed in raster order of the interior).
  *
  *  Steps, in this order:
- *   1. Extrema (host, OpenMP). For every stored maximum/minimum with
+ *   1. Extrema (CPU: OpenMP; GPU: on the device). For every stored maximum/minimum with
  *      dequantized value d and rank r:
  *          maxima:  D(p) = d + (r + 1) * eta
  *          minima:  D(p) = d - (R + 1 - r) * eta
@@ -283,7 +283,7 @@ static SZP_QHD int szp_saddle_rbf_point(float *v, const int *types, const unsign
 /* ---------------- host helpers (shared by the CPU and CUDA drivers) ---- */
 
 /** Colour class of an interior point: ((x-1) mod 3, (y-1) mod 3, (z-1) mod 3). */
-static inline int szp_colour(const SzpGrid &g, long long k)
+static SZP_QHD int szp_colour(const SzpGrid &g, long long k)
 {
     int c = 0;
     for (int a = 0; a < g.nd; a++) c = c * 3 + (int)(((k / g.s[a]) % g.n[a] - 1) % 3);
@@ -316,27 +316,31 @@ static inline void szp_saddle_candidates(const float *v, const int *types, const
     for (long long k : all) list[pos[szp_colour(g, k)]++] = k;
 }
 
+/** 1 if interior point k has a stored extremum in its 3^nd neighbourhood. */
+static SZP_QHD unsigned char szp_extremum_lock_at(const int *types, const SzpGrid &g, long long k)
+{
+    if (!szp_is_interior(g, k)) return 0;
+    const long long s2 = g.nd == 3 ? g.s[2] : 0;
+    for (int a = -1; a <= 1; a++)
+        for (int b = -1; b <= 1; b++)
+            for (int c = (g.nd == 3 ? -1 : 0); c <= (g.nd == 3 ? 1 : 0); c++) {
+                long long nk = k + a * g.s[0] + b * g.s[1] + c * s2;
+                if ((types[nk] == 1 || types[nk] == 2) && szp_is_interior(g, nk)) return 1;
+            }
+    return 0;
+}
+
 /** Points next to a stored extremum (its 3^nd neighbourhood). */
 static inline void szp_extremum_locks(const int *types, const SzpGrid &g, std::vector<unsigned char> &locks)
 {
     const long long N = (long long)g.n[0] * g.n[1] * g.n[2];
     locks.assign((size_t)N, 0);
-    const long long s2 = g.nd == 3 ? g.s[2] : 0;
     /* Gather form (each point looks at its own neighbourhood): no write races. */
 #ifdef _OPENMP
     #pragma omp parallel for schedule(static)
 #endif
-    for (long long k = 0; k < N; k++) {
-        if (!szp_is_interior(g, k)) continue;
-        unsigned char hit = 0;
-        for (int a = -1; a <= 1 && !hit; a++)
-            for (int b = -1; b <= 1 && !hit; b++)
-                for (int c = (g.nd == 3 ? -1 : 0); c <= (g.nd == 3 ? 1 : 0); c++) {
-                    long long nk = k + a * g.s[0] + b * g.s[1] + c * s2;
-                    if ((types[nk] == 1 || types[nk] == 2) && szp_is_interior(g, nk)) { hit = 1; break; }
-                }
-        locks[(size_t)k] = hit;
-    }
+    for (long long k = 0; k < N; k++)
+        locks[(size_t)k] = szp_extremum_lock_at(types, g, k);
 }
 
 /* ---------------- extrema step (host, OpenMP) ------------------------- */
@@ -347,6 +351,63 @@ struct SzpExtremum {
     int    type;   /* 1 = maximum, 2 = minimum */
     int    rank;   /* stored sort position (0-based, ties share) */
 };
+
+/**
+ * New value of one extremum (see step 1 above). data: current field (read
+ * only); dval: its decompressed value; gmax / gsize: largest rank and size of
+ * its group (same type, same decompressed value). Every operation is rounded
+ * separately (szp_quant.h), so host and device give the same float.
+ */
+static SZP_QHD float szp_extremum_target(const float *data, ptrdiff_t idx, float dval, int type, int rank,
+                                         int gmax, int gsize, const ptrdiff_t *nb_off, int n_nb,
+                                         double errBound)
+{
+    const double d = (double)dval;
+    const float c = data[idx];
+
+    float m = data[idx + nb_off[0]];
+    for (int q = 1; q < n_nb; q++) {
+        float v = data[idx + nb_off[q]];
+        m = (type == 1) ? fmaxf(m, v) : fminf(m, v);
+    }
+
+    /* Largest float <= d + eb and smallest float >= d - eb. */
+    const double dhi = szp_dadd(d, errBound), dlo = szp_dadd(d, -errBound);
+    float hi = (float)dhi;
+    if ((double)hi > dhi) hi = nextafterf(hi, -INFINITY);
+    float lo = (float)dlo;
+    if ((double)lo < dlo) lo = nextafterf(lo, INFINITY);
+
+    const double eta = szp_qmul(0.5, errBound) / szp_dadd((double)gmax, 1.0);
+    float t = c;
+    if (type == 1) {
+        if (!(gsize == 1 && c > m)) {
+            t = (float)szp_dadd(d, szp_qmul(szp_dadd((double)rank, 1.0), eta));
+            if (!(t > m)) t = nextafterf(m, INFINITY);
+            t = fminf(fmaxf(t, lo), hi);
+        }
+    } else {
+        if (!(gsize == 1 && c < m)) {
+            t = (float)szp_dadd(d, -szp_qmul(szp_dadd(szp_dadd((double)gmax, 1.0), -(double)rank), eta));
+            if (!(t < m)) t = nextafterf(m, -INFINITY);
+            t = fminf(fmaxf(t, lo), hi);
+        }
+    }
+    return t;
+}
+
+/** Group key of an extremum: type and the bits of its decompressed value (-0 as +0). */
+static SZP_QHD unsigned long long szp_extremum_key(int type, float d)
+{
+    float dv = (d == 0.0f) ? 0.0f : d;
+    unsigned int bits;
+#if defined(__CUDA_ARCH__)
+    bits = __float_as_uint(dv);
+#else
+    memcpy(&bits, &dv, sizeof(bits));
+#endif
+    return ((unsigned long long)(unsigned int)type << 32) | bits;
+}
 
 static inline void
 szp_restore_extrema_ranked_core(float *data, std::vector<SzpExtremum> &ext,
@@ -362,10 +423,7 @@ szp_restore_extrema_ranked_core(float *data, std::vector<SzpExtremum> &ext,
     struct GroupKey { unsigned long long key; size_t k; };
     std::vector<GroupKey> keys(n);
     for (size_t k = 0; k < n; k++) {
-        float dv = (ext[k].d == 0.0f) ? 0.0f : ext[k].d;
-        unsigned int bits;
-        memcpy(&bits, &dv, sizeof(bits));
-        keys[k].key = ((unsigned long long)(unsigned int)ext[k].type << 32) | bits;
+        keys[k].key = szp_extremum_key(ext[k].type, ext[k].d);
         keys[k].k = k;
     }
     std::sort(keys.begin(), keys.end(), [](const GroupKey &a, const GroupKey &b) {
@@ -393,37 +451,8 @@ szp_restore_extrema_ranked_core(float *data, std::vector<SzpExtremum> &ext,
     for (long long kk = 0; kk < (long long)n; kk++) {
         const size_t k = (size_t)kk;
         const SzpExtremum &e = ext[k];
-        const double d = (double)e.d;
-        const float c = data[e.idx];
-
-        float m = data[(ptrdiff_t)e.idx + nb_off[0]];
-        for (int q = 1; q < n_nb; q++) {
-            float v = data[(ptrdiff_t)e.idx + nb_off[q]];
-            m = (e.type == 1) ? fmaxf(m, v) : fminf(m, v);
-        }
-
-        /* Largest float <= d + eb and smallest float >= d - eb. */
-        float hi = (float)(d + errBound);
-        if ((double)hi > d + errBound) hi = nextafterf(hi, -INFINITY);
-        float lo = (float)(d - errBound);
-        if ((double)lo < d - errBound) lo = nextafterf(lo, INFINITY);
-
-        const double eta = 0.5 * errBound / ((double)gmax[k] + 1.0);
-        float t = c;
-        if (e.type == 1) {
-            if (!(gsize[k] == 1 && c > m)) {
-                t = (float)(d + ((double)e.rank + 1.0) * eta);
-                if (!(t > m)) t = nextafterf(m, INFINITY);
-                t = fminf(fmaxf(t, lo), hi);
-            }
-        } else {
-            if (!(gsize[k] == 1 && c < m)) {
-                t = (float)(d - ((double)gmax[k] + 1.0 - (double)e.rank) * eta);
-                if (!(t < m)) t = nextafterf(m, -INFINITY);
-                t = fminf(fmaxf(t, lo), hi);
-            }
-        }
-        tgt[k] = t;
+        tgt[k] = szp_extremum_target(data, (ptrdiff_t)e.idx, e.d, e.type, e.rank, gmax[k], gsize[k],
+                                     nb_off, n_nb, errBound);
     }
 
 #ifdef _OPENMP
