@@ -13,8 +13,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
 
 def add_args(ap):
-    nproc = os.cpu_count() or 1
-    ap.add_argument('--scaling-threads', default=','.join(str(t) for t in [1, 2, 4, 8, 16, 32, 64, 128] if t <= nproc))
+    ncores = usable_cpus()[1]
+    ths = [t for t in [1, 2, 4, 8, 16, 32, 64, 128] if t < ncores] + [ncores]
+    ap.add_argument('--scaling-threads', default=','.join(map(str, ths)),
+                    help='default: powers of two up to the physical cores of this job (%d)' % ncores)
     ap.add_argument('--scaling-bound', default='rel:1e-3')
     ap.add_argument('--scaling-fields', type=int, default=5, help='fields per dataset (0 = all)')
 

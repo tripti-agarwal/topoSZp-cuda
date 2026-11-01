@@ -36,6 +36,22 @@ KEYS = {'main': ('dataset', 'field', 'mode', 'eb'), 'scaling': ('dataset', 'fiel
 DONE = ('ok', 'format_limit')   # statuses that are not retried on resume
 
 # ----------------------------------------------------------------------------- helpers
+def usable_cpus():
+    """(logical CPUs, physical cores) this job may use. os.cpu_count() counts the
+    whole node, but a batch job (e.g. one GPU of a Swing node) gets only part of it."""
+    try:
+        cpus = sorted(os.sched_getaffinity(0))
+    except AttributeError:
+        cpus = list(range(os.cpu_count() or 1))
+    cores = set()
+    for i in cpus:
+        try:
+            base = '/sys/devices/system/cpu/cpu%d/topology/' % i
+            cores.add((open(base + 'physical_package_id').read().strip(), open(base + 'core_id').read().strip()))
+        except OSError:
+            cores.add(i)
+    return len(cpus), max(1, len(cores))
+
 class Ctx:
     pass
 
@@ -179,7 +195,7 @@ def cleanup(*paths):
 def topo(c, f, out_path, abs_eb, logname):
     """topo_check original vs output -> {'before': {...}, 'after': {...}} (or None)."""
     rc, out, _ = run(c, [c.tool('topo_check'), f['path'], out_path, repr(abs_eb)] + dimargs(f), logname,
-                     env={'OMP_NUM_THREADS': c.nproc})
+                     env={'OMP_NUM_THREADS': c.ncores})
     res = {}
     for stage in ('before', 'after'):
         m = re.search(r'^TOPOROW %s (.+)$' % stage, out, re.M)
@@ -348,7 +364,8 @@ def machine_info(c):
             return ''
     info = ['date: %s' % datetime.datetime.now().isoformat(), 'host: %s' % platform.node(),
             'cpu: %s' % sh("lscpu | grep -m1 'Model name' | sed 's/.*: *//'"),
-            'cores (nproc): %s' % c.nproc, 'sockets / NUMA: %s' % sh("lscpu | grep -E '^(Socket|NUMA node)\\(s\\)' | tr -s ' ' | tr '\\n' ';'"),
+            'CPUs usable by this job: %s logical, %s physical cores (node: %s logical)' % (c.nproc, c.ncores, os.cpu_count()),
+            'OMP_PROC_BIND=%s OMP_PLACES=%s' % (os.environ.get('OMP_PROC_BIND', ''), os.environ.get('OMP_PLACES', '')), 'sockets / NUMA: %s' % sh("lscpu | grep -E '^(Socket|NUMA node)\\(s\\)' | tr -s ' ' | tr '\\n' ';'"),
             'memory: %s' % sh("free -g | awk '/Mem/{print $2\" GB\"}'"),
             'gpu: %s' % sh('nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv,noheader'),
             'nvcc: %s' % sh('nvcc --version | tail -1'), 'gcc: %s' % sh('g++ --version | head -1'),
@@ -378,7 +395,11 @@ def common_args(ap):
 def context(a, need_gpu=False, need_compressors=None):
     """Build the run context from parsed options; returns (c, fields by dataset)."""
     c = Ctx()
-    c.nproc = os.cpu_count() or 1
+    c.nproc, c.ncores = usable_cpus()
+    # Pin OpenMP threads (one per core first) so that timings are repeatable; set
+    # OMP_PROC_BIND / OMP_PLACES yourself to override.
+    os.environ.setdefault('OMP_PROC_BIND', 'close')
+    os.environ.setdefault('OMP_PLACES', 'cores')
     c.data = os.path.abspath(a.data)
     c.out = os.path.abspath(a.out or os.path.join(HERE, 'results', datetime.datetime.now().strftime('%Y%m%d_%H%M%S')))
     c.work = os.path.abspath(a.work or os.path.join(c.out, 'work'))

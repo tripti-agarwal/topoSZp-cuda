@@ -22,7 +22,8 @@
 #   EXPS       experiments to submit (default: main,baselines,scaling,bitrate,pl,vis)
 #   DATASETS   datasets to submit for the per-dataset experiments (default: all in the manifest)
 #   ACCOUNT    PBS account (default: SDR)          QUEUE    PBS queue (default: gpu)
-#   SELECT     resources (default: select=1:ngpus=1)
+#   SELECT     resources (default: select=1:ngpus=1); SELECT_<EXP> overrides, e.g.
+#              SELECT_SCALING=select=1:ngpus=8 for all cores of a Swing node (a 1-GPU job gets a share)
 #   PLACE      e.g. excl, to get a whole node for the timed jobs (main, scaling); default: none
 #   WALLTIME   default for every job (default: 12:00:00); WALLTIME_<EXP> overrides, e.g. WALLTIME_PL=02:00:00
 #   OPTS       options added to every experiment, e.g. "--reps 3 --threads 32"
@@ -52,15 +53,15 @@ qsub_() {   # qsub_ <job script> [qsub options]: prints the job id
     fi
 }
 
-write_job() {   # write_job <name> <walltime> <place: excl or empty> <command...>
-    local name=$1 wt=$2 place=$3; shift 3
+write_job() {   # write_job <name> <walltime> <place: excl or empty> <select> <command...>
+    local name=$1 wt=$2 place=$3 sel=$4; shift 4
     local f=$JOBS/$name.sh
     {
         echo '#!/bin/bash'
         echo "#PBS -N tsz-$name"
         echo "#PBS -q $QUEUE"
         echo "#PBS -A $ACCOUNT"
-        echo "#PBS -l $SELECT"
+        echo "#PBS -l $sel"
         echo "#PBS -l walltime=$wt"
         [ -n "$place" ] && echo "#PBS -l place=$place"
         echo '#PBS -j oe'
@@ -79,6 +80,10 @@ write_job() {   # write_job <name> <walltime> <place: excl or empty> <command...
 walltime_for() {   # WALLTIME_<EXP> or WALLTIME
     local v="WALLTIME_$(echo "$1" | tr a-z A-Z)"
     echo "${!v:-$WALLTIME}"
+}
+select_for() {   # SELECT_<EXP> or SELECT
+    local v="SELECT_$(echo "$1" | tr a-z A-Z)"
+    echo "${!v:-$SELECT}"
 }
 opts_for() {
     local v="$(echo "$1" | tr a-z A-Z)_OPTS"
@@ -100,7 +105,7 @@ submit() {   # submit <exp> <tag> <place> [extra options]
     local exp=$1 tag=$2 place=$3; shift 3
     local f id
     # shellcheck disable=SC2046
-    f=$(write_job "$tag" "$(walltime_for "$exp")" "$place" python3 "$HERE/exp_$exp.py" --data "$DATA" --out "$OUT" \
+    f=$(write_job "$tag" "$(walltime_for "$exp")" "$place" "$(select_for "$exp")" python3 "$HERE/exp_$exp.py" --data "$DATA" --out "$OUT" \
         --bin "$BIN" --tag "$tag" "$@" $(opts_for "$exp"))
     id=$(qsub_ "$f" "${DEP[@]}")
     IDS+=("$id"); printf '%-28s %s\n' "$tag" "$id"

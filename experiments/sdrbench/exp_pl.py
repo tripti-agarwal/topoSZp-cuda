@@ -30,7 +30,7 @@ def exp_pl(c, by):
             if r['status'] != 'ok':
                 t.add(dict(row, status=r['status'], note=r['note'])); continue
             rc, out, _ = run(c, [c.tool('pl_topo_check'), f['path'], r['output'], repr(a)] + dimargs(f), lg,
-                             {'OMP_NUM_THREADS': c.nproc}, timeout=c.timeout * 4)
+                             {'OMP_NUM_THREADS': c.ncores}, timeout=c.timeout * 4)
             cleanup(*r['_cleanup'])
             m = re.search(r'^PLTOPO (.+)$', out, re.M)
             tot = re.search(r'^total\s+(\d+) \|\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+\S+\|\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)', out, re.M)
