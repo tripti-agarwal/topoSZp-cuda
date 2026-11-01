@@ -7,9 +7,12 @@ with the current TopoSZp+ code (OpenMP and CUDA), from scratch, on one GPU node.
 |---|---|
 | `download_sdrbench.sh` | Downloads CESM-ATM 2D (1800×3600), CESM-ATM 3D (26×1800×3600), Hurricane-ISABEL (100×500×500), NYX (512³) and SCALE-LETKF (98×1200×1200), checks every file's size, writes `manifest.csv`. Can link data you already have instead. |
 | `setup.sh` | Builds the TopoSZp+ OpenMP compressor/decompressor, the CUDA programs, `topo_check`, `pl_topo_check`, a plain-SZp tool, and the baselines SZ3, SZ2 and ZFP (TTHRESH with `TTHRESH=1`). |
-| `run_experiments.py` | Runs the experiments; one CSV per experiment, resumable. |
-| `summarize.py` | Makes `summary.md`, `tables.tex` and `plots/` from the CSVs. |
-| `run_all.sh`, `run_all.pbs` | Everything with one command / as a PBS job on Swing. |
+| `exp_main.py`, `exp_scaling.py`, `exp_baselines.py`, `exp_bitrate.py`, `exp_pl.py`, `exp_vis.py` | One script per experiment (table below); each runs alone, writes its own CSV and resumes. |
+| `common.py` | Code shared by the experiment scripts (compressor calls, topology check, tables, options). |
+| `run_experiments.py` | Runs several experiments one after another in one process (`--exp main,pl`). |
+| `submit_separate.sh` | Submits every experiment as its own PBS job, the heavy ones (`main`, `baselines`, `scaling`) one job per dataset, plus a summary job at the end. |
+| `summarize.py` | Makes `summary.md`, `tables.tex` and `plots/` from the CSVs (merges the per-job CSVs). |
+| `run_all.sh`, `run_all.pbs` | Everything with one command / as one PBS job on Swing. |
 
 ## Quick start (Swing)
 
@@ -22,10 +25,43 @@ CESM_ATM_2D_SRC=/lcrc/project/ECP-EZ/tripti/SDRBENCH-CESM-ATM-cleared-1800x3600/
 CESM_ATM_3D_SRC=/lcrc/project/ECP-EZ/public/compression/cesmbig-26x1800x3600 \
 experiments/sdrbench/download_sdrbench.sh /lcrc/project/ECP-EZ/tripti/sdrbench-data
 
-# 2. everything, as a batch job (resubmit the same line if it hits the walltime; it resumes)
+# 2a. every experiment as its own job, main/baselines/scaling one job per dataset (recommended)
+DATA=/lcrc/project/ECP-EZ/tripti/sdrbench-data \
+experiments/sdrbench/submit_separate.sh /lcrc/project/ECP-EZ/tripti/toposzp-results
+
+# 2b. or everything in one long job (resubmit the same line if it hits the walltime; it resumes)
 qsub -v DATA=/lcrc/project/ECP-EZ/tripti/sdrbench-data,OUT=/lcrc/project/ECP-EZ/tripti/toposzp-results \
      experiments/sdrbench/run_all.pbs
 ```
+
+## Separate jobs
+
+`submit_separate.sh RESULTS` writes one job script per job into `RESULTS/jobs/` and submits it:
+`main-<dataset>`, `baselines-<dataset>`, `scaling-<dataset>` (one per dataset in the manifest), `bitrate`, `pl`,
+`vis`, and `summarize`, which waits for all of them (`afterany`). If the tools are not built, a `setup` job
+runs first. Each job writes `<experiment>.<job>.csv`, `run.<job>.log`, `logs/<job>/` and its own work folder,
+so jobs can run at the same time; `summarize.py` merges the CSVs.
+
+```bash
+# only some jobs, a shorter walltime for pl, whole nodes for the timed jobs
+EXPS=main,pl DATASETS=NYX,Hurricane WALLTIME=06:00:00 WALLTIME_PL=02:00:00 PLACE=excl \
+DATA=$DATA experiments/sdrbench/submit_separate.sh $OUT
+# options for every job / one experiment; DRYRUN=1 only writes the job scripts and prints the qsub lines
+OPTS="--reps 3" MAIN_OPTS="--bounds rel:1e-3,rel:1e-4" DRYRUN=1 DATA=$DATA experiments/sdrbench/submit_separate.sh $OUT
+```
+
+A job that hits its walltime is resumed by submitting it again with the same `RESULTS` (finished runs are
+skipped, also those finished by an earlier single-job run). `main` and `scaling` measure time: with
+`PLACE=excl` they get a whole node, so other jobs on the node do not disturb the timings.
+
+Any experiment also runs by hand, e.g. on an interactive GPU node:
+
+```bash
+python3 experiments/sdrbench/exp_main.py --data $DATA --out $OUT --datasets CESM-ATM-3D --tag main-CESM-ATM-3D
+python3 experiments/sdrbench/exp_baselines.py --help     # options of one experiment
+python3 experiments/sdrbench/summarize.py $OUT
+```
+Use a different `--tag` for jobs that run at the same time in the same `RESULTS`.
 
 Or interactively on a GPU node (`qsub -I -l select=1:ngpus=1 -l walltime=04:00:00 -q gpu -A SDR`,
 then `module load nvhpc`):
@@ -35,7 +71,7 @@ experiments/sdrbench/setup.sh                       # once
 DATA=/lcrc/project/ECP-EZ/tripti/sdrbench-data experiments/sdrbench/run_all.sh /lcrc/project/ECP-EZ/tripti/toposzp-results
 ```
 
-A short trial first (2 fields per dataset, one bound, few minutes):
+A short trial first (2 fields per dataset, one bound, few minutes), all experiments in one process:
 
 ```bash
 python3 experiments/sdrbench/run_experiments.py --data $DATA --out trial --bin experiments/sdrbench/bin \
@@ -46,14 +82,14 @@ python3 experiments/sdrbench/summarize.py trial
 
 ## Experiments and the paper
 
-| `--exp` | Paper | Output |
+| Script (`--exp`) | Paper | Output |
 |---|---|---|
-| `main` | Dataset table (error bound ε_topo), topology preservation table (plain SZp → TopoSZp+), 3D/GPU section, CPU vs GPU timing | `main.csv` |
-| `scaling` | Parallel scalability table (threads 1…cores) | `scaling.csv` |
-| `baselines` | Average false cases table (FN/FP/FT per dataset, bound, compressor) | `baselines.csv` |
-| `bitrate` | Bit rate vs FN/FP/FT/total figure | `bitrate.csv`, `plots/bitrate_*.pdf` |
-| `pl` | Relation to TTK's piecewise-linear critical points (reviewer question) | `pl.csv` |
-| `vis` | Visualization figure (original / SZp / TopoSZp+ of CLDHGH) | `vis/*.f32`, `*.vti` |
+| `exp_main.py` (`main`) | Dataset table (error bound ε_topo), topology preservation table (plain SZp → TopoSZp+), 3D/GPU section, CPU vs GPU timing | `main.csv` |
+| `exp_scaling.py` (`scaling`) | Parallel scalability table (threads 1…cores) | `scaling.csv` |
+| `exp_baselines.py` (`baselines`) | Average false cases table (FN/FP/FT per dataset, bound, compressor) | `baselines.csv` |
+| `exp_bitrate.py` (`bitrate`) | Bit rate vs FN/FP/FT/total figure | `bitrate.csv`, `plots/bitrate_*.pdf` |
+| `exp_pl.py` (`pl`) | Relation to TTK's piecewise-linear critical points (reviewer question) | `pl.csv` |
+| `exp_vis.py` (`vis`) | Visualization figure (original / SZp / TopoSZp+ of CLDHGH) | `vis/*.f32`, `*.vti` |
 
 Defaults (change with options, `--help` lists all):
 - bounds `abs:1e-3,abs:1e-4,abs:1e-5,rel:1e-3,rel:1e-4,rel:1e-5` (rel = fraction of each field's value range);
@@ -81,5 +117,5 @@ Defaults (change with options, `--help` lists all):
 ## Runtime and disk
 
 Roughly, on one A100 node with 32 cores: `main` ≈ 5 h (dominated by the 33 CESM 3D fields × 6 bounds),
-`baselines` ≈ 4–5 h, `scaling` ≈ 3 h, `bitrate` ≈ 1 h, `pl` ≈ 0.5 h. Run them as separate jobs with `EXPS=...`
-if the walltime is short; every run resumes. The data take ≈ 35 GB; the work folder needs ≈ 3 GB at a time.
+`baselines` ≈ 4–5 h, `scaling` ≈ 3 h, `bitrate` ≈ 1 h, `pl` ≈ 0.5 h. With `submit_separate.sh` the longest
+single job is the CESM 3D part of `main` or `baselines`; every run resumes. The data take ≈ 35 GB; the work folder needs ≈ 3 GB at a time.

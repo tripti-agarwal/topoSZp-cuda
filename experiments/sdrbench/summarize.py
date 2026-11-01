@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Turn the CSVs of run_experiments.py into the paper's tables and plots.
+"""Turn the CSVs of the experiment scripts (exp_*.py / run_experiments.py) into the paper's tables and plots.
 
     python3 summarize.py RESULTS_DIR [--scaling-mode rel --scaling-eb 1e-3]
 
@@ -9,11 +9,11 @@ FT / total, if matplotlib is installed). Averages are over the fields of a
 dataset that ran successfully; runs skipped because of the format limit or
 failures are counted separately and never averaged in.
 """
-import argparse, csv, math, os, sys
+import argparse, csv, glob, math, os, sys
 from collections import OrderedDict, defaultdict
 
-def read(path):
-    return list(csv.DictReader(open(path))) if os.path.exists(path) else []
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from common import read_results   # merges <name>.csv and the per-job <name>.<tag>.csv files
 
 def f(x):
     try:
@@ -66,10 +66,11 @@ def main():
     a = ap.parse_args()
     R = a.results
     out = Out()
-    machine = open(os.path.join(R, 'machine.txt')).read() if os.path.exists(os.path.join(R, 'machine.txt')) else ''
+    mfiles = sorted(glob.glob(os.path.join(R, 'machine*.txt')))
+    machine = open(mfiles[0]).read() if mfiles else ''
     out.md += ['# TopoSZp+ experiment summary', '', '```', machine.strip(), '```', '']
 
-    main_rows = read(os.path.join(R, 'main.csv'))
+    main_rows = read_results(R, 'main')
     ok = [r for r in main_rows if r['status'] == 'ok']
 
     # ------------------------------------------------------------------ datasets
@@ -129,7 +130,7 @@ def main():
                   'restoration. GPU times are those reported by the CUDA test programs.')
 
     # ------------------------------------------------------------------ scaling
-    sc = [r for r in read(os.path.join(R, 'scaling.csv')) if r['status'] == 'ok']
+    sc = [r for r in read_results(R, 'scaling') if r['status'] == 'ok']
     if sc:
         ths = sorted({int(r['threads']) for r in sc})
         rows = []
@@ -152,7 +153,7 @@ def main():
 
     # ------------------------------------------------------------------ baselines
     for name, title in (('baselines', 'Compressor comparison'), ('bitrate', 'Bit-rate sweep')):
-        br = read(os.path.join(R, name + '.csv'))
+        br = read_results(R, name)
         if not br:
             continue
         g = [r for r in br if r['status'] == 'ok']
@@ -177,7 +178,7 @@ def main():
             plot_bitrate(R, g, label, order)
 
     # ------------------------------------------------------------------ PL check
-    pl = [r for r in read(os.path.join(R, 'pl.csv')) if r['status'] == 'ok']
+    pl = [r for r in read_results(R, 'pl') if r['status'] == 'ok']
     if pl:
         rows = []
         for (ds, mode, eb), rs in groups(pl, 'dataset', 'mode', 'eb').items():
