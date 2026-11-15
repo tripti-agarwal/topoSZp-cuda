@@ -31,6 +31,15 @@ int szp_cuda_topo_restore_float_3d(float *data, const int *types, const int *sor
                                    size_t extrema_count, int d1, int d2, int d3, float errBound,
                                    szp_topo_restore_stats *stats);
 
+/* The same restoration for a field that is already on the device: d_data
+   (restored in place), d_types and d_sort_positions (may be NULL) are device
+   arrays; the restored field is also copied to host_out. d3 = 0 for a 2D
+   field d1 x d2. */
+int szp_cuda_topo_restore_float_device(float *host_out, float *d_data, int *d_types,
+                                       int *d_sort_positions, size_t extrema_count,
+                                       int d1, int d2, int d3, float errBound,
+                                       szp_topo_restore_stats *stats);
+
 /* PL mode (szp_pl_topology.h): same algorithm and results as
    szp_topo_restore_float_pl / szp_pl_classify_float. */
 int szp_cuda_topo_restore_float_pl(float *data, const int *codes, const int *sort_positions,

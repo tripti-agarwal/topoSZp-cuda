@@ -41,6 +41,7 @@
 #include <cuda_runtime.h>
 
 #include "szp_cuda_decompress.cuh"
+#include "szp_cuda_topo_restore.cuh"
 #include "szp_defines.h"
 #include "szp_detect_threads.h"
 
@@ -832,23 +833,14 @@ void szp_cuda_double_decompress_threadblock_arg(
 
 /* ---- Topology-preserved float ---- */
 
-void szp_cuda_float_decompress_randomaccess_topology_preserved(
-    float **newData, size_t nbEle, float absErrBound, int blockSize,
-    unsigned char *cmpBytes, int **FN)
+/* Device part: decodes the stream into device arrays (cudaFree them).
+   Returns 0 on success. */
+int szp_cuda_float_decompress_topology_device(
+    size_t nbEle, float absErrBound, int blockSize,
+    unsigned char *cmpBytes, float **d_dataOut, int **d_typesOut)
 {
-    if (!cmpBytes || nbEle == 0) {
-        *newData = NULL;
-        *FN = NULL;
-        return;
-    }
-
-    *newData = (float *)malloc(nbEle * sizeof(float));
-    *FN      = (int *)calloc(nbEle, sizeof(int));
-    if (!*newData || !*FN) {
-        free(*newData); free(*FN);
-        *newData = NULL; *FN = NULL;
-        return;
-    }
+    *d_dataOut = NULL; *d_typesOut = NULL;
+    if (!cmpBytes || nbEle == 0) return -1;
 
     /* Scan block offsets and the end of the stream */
     size_t numBlocks = 0;
@@ -856,7 +848,7 @@ void szp_cuda_float_decompress_randomaccess_topology_preserved(
     size_t cmpTotalSize = 0;
     size_t *h_block_offsets = scan_randomaccess_topo_block_offsets(
         cmpBytes, nbEle, blockSize, &numBlocks, &nbOMPThreads, &cmpTotalSize);
-    if (!h_block_offsets) return;
+    if (!h_block_offsets) return -1;
 
     size_t hdr_size = nbOMPThreads * sizeof(size_t);
 
@@ -888,27 +880,54 @@ void szp_cuda_float_decompress_randomaccess_topology_preserved(
         absErrBound, blockSize, numBlocks);
     CUDA_CHECK(cudaGetLastError());
 
+    cudaFree(d_cmpBytes);
+    cudaFree(d_block_offsets);
+    free(h_block_offsets);
+    *d_dataOut = d_newData;
+    *d_typesOut = d_fnData;
+    return 0;
+}
+
+void szp_cuda_float_decompress_randomaccess_topology_preserved(
+    float **newData, size_t nbEle, float absErrBound, int blockSize,
+    unsigned char *cmpBytes, int **FN)
+{
+    if (!cmpBytes || nbEle == 0) {
+        *newData = NULL;
+        *FN = NULL;
+        return;
+    }
+
+    *newData = (float *)malloc(nbEle * sizeof(float));
+    *FN      = (int *)calloc(nbEle, sizeof(int));
+    if (!*newData || !*FN) {
+        free(*newData); free(*FN);
+        *newData = NULL; *FN = NULL;
+        return;
+    }
+
+    float *d_newData = NULL;
+    int *d_fnData = NULL;
+    if (szp_cuda_float_decompress_topology_device(nbEle, absErrBound, blockSize, cmpBytes,
+                                                  &d_newData, &d_fnData) != 0)
+        return;
+
     CUDA_CHECK(cudaMemcpy(*newData, d_newData, nbEle * sizeof(float),
                           cudaMemcpyDeviceToHost));
     CUDA_CHECK(cudaMemcpy(*FN, d_fnData, nbEle * sizeof(int),
                           cudaMemcpyDeviceToHost));
 
-    cudaFree(d_cmpBytes);
     cudaFree(d_newData);
     cudaFree(d_fnData);
-    cudaFree(d_block_offsets);
-    free(h_block_offsets);
 }
 
 /* ---- Sort-position decompression ---- */
 
-int *szp_cuda_decompress_sort_positions(
+/* Device part: the ranks as a device array (cudaFree it), NULL on failure. */
+int *szp_cuda_decompress_sort_positions_device(
     unsigned char *cmpBytes, size_t critical_count, int blockSize)
 {
     if (!cmpBytes || critical_count == 0) return NULL;
-
-    int *newData = (int *)malloc(critical_count * sizeof(int));
-    if (!newData) return NULL;
 
     /* Scan block offsets — same format as random-access */
     size_t numBlocks = 0;
@@ -916,7 +935,7 @@ int *szp_cuda_decompress_sort_positions(
     size_t cmpTotalSize = 0;
     size_t *h_block_offsets = scan_randomaccess_block_offsets(
         cmpBytes, critical_count, blockSize, &numBlocks, &nbOMPThreads, &cmpTotalSize);
-    if (!h_block_offsets) { free(newData); return NULL; }
+    if (!h_block_offsets) return NULL;
 
     size_t hdr_size = nbOMPThreads * sizeof(size_t);
 
@@ -944,15 +963,67 @@ int *szp_cuda_decompress_sort_positions(
         blockSize, numBlocks);
     CUDA_CHECK(cudaGetLastError());
 
-    CUDA_CHECK(cudaMemcpy(newData, d_newData, critical_count * sizeof(int),
-                          cudaMemcpyDeviceToHost));
-
     cudaFree(d_cmpBytes);
-    cudaFree(d_newData);
     cudaFree(d_block_offsets);
     free(h_block_offsets);
+    return d_newData;
+}
 
+int *szp_cuda_decompress_sort_positions(
+    unsigned char *cmpBytes, size_t critical_count, int blockSize)
+{
+    if (!cmpBytes || critical_count == 0) return NULL;
+
+    int *newData = (int *)malloc(critical_count * sizeof(int));
+    if (!newData) return NULL;
+
+    int *d_newData = szp_cuda_decompress_sort_positions_device(cmpBytes, critical_count, blockSize);
+    if (!d_newData) { free(newData); return NULL; }
+
+    CUDA_CHECK(cudaMemcpy(newData, d_newData, critical_count * sizeof(int),
+                          cudaMemcpyDeviceToHost));
+    cudaFree(d_newData);
     return newData;
+}
+
+/* ---- Decoding + topology restoration in one call ---- */
+
+/**
+ * Decodes the field and its labels, decodes the ranks and restores the
+ * topology without leaving the device; only the final field is copied to
+ * the host. The result is the same as
+ * szp_cuda_float_decompress_randomaccess_topology_preserved +
+ * szp_cuda_decompress_sort_positions + szp_cuda_topo_restore_float_2d/3d.
+ * sortBytes may be NULL (no extrema). d3 = 0 for a 2D field d1 x d2.
+ * *newData is malloc'd (free it). Returns 0 on success.
+ */
+int szp_cuda_float_decompress_topology_restored(
+    float **newData, size_t nbEle, float absErrBound, int blockSize,
+    unsigned char *topoBytes, unsigned char *sortBytes, size_t extrema_count,
+    int d1, int d2, int d3, szp_topo_restore_stats *stats)
+{
+    *newData = NULL;
+    if (!topoBytes || nbEle == 0 || (size_t)d1 * d2 * (d3 > 0 ? d3 : 1) != nbEle) return -1;
+
+    float *d_data = NULL;
+    int *d_types = NULL, *d_sp = NULL;
+    if (szp_cuda_float_decompress_topology_device(nbEle, absErrBound, blockSize, topoBytes,
+                                                  &d_data, &d_types) != 0)
+        return -1;
+    if (sortBytes && extrema_count > 0)
+        d_sp = szp_cuda_decompress_sort_positions_device(sortBytes, extrema_count, blockSize);
+
+    float *out = (float *)malloc(nbEle * sizeof(float));
+    int rc = out ? szp_cuda_topo_restore_float_device(out, d_data, d_types, d_sp,
+                                                      d_sp ? extrema_count : 0,
+                                                      d1, d2, d3, absErrBound, stats)
+                 : -1;
+    cudaFree(d_data);
+    cudaFree(d_types);
+    cudaFree(d_sp);
+    if (rc != 0) { free(out); return -1; }
+    *newData = out;
+    return 0;
 }
 
 } /* extern "C" */

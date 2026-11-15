@@ -197,9 +197,14 @@ __global__ void szp_cand_scatter_kernel(const unsigned char *mark, long long N, 
     list[pos] = k;
 }
 
+/* data: host field, read (unless dev_v is given) and written. dev_v /
+   dev_types / dev_sp: the field, the stored types and the ranks already on
+   the device (not freed here); with dev_v the field is restored in place
+   there and types / sort_positions are not read. */
 static int restore_gpu(float *data, const int *types, const int *sort_positions,
                               size_t extrema_count, const SzpGrid &g, float eb,
-                              szp_topo_restore_stats *stats)
+                              szp_topo_restore_stats *stats,
+                              float *dev_v = NULL, int *dev_types = NULL, int *dev_sp = NULL)
 {
     szp_topo_restore_stats st;
     memset(&st, 0, sizeof(st));
@@ -219,13 +224,17 @@ static int restore_gpu(float *data, const int *types, const int *sort_positions,
     size_t list_cap = 0;
     int rc = -1;
 
-    SZP_CUDA_TRY(cudaMalloc((void **)&d_v, (size_t)N * sizeof(float)));
+    const bool on_device = dev_v != NULL;
+    if (on_device) { d_v = dev_v; d_types = dev_types; }
+    else {
+        SZP_CUDA_TRY(cudaMalloc((void **)&d_v, (size_t)N * sizeof(float)));
+        SZP_CUDA_TRY(cudaMalloc((void **)&d_types, (size_t)N * sizeof(int)));
+        SZP_CUDA_TRY(cudaMemcpy(d_v, data, (size_t)N * sizeof(float), cudaMemcpyHostToDevice));
+        SZP_CUDA_TRY(cudaMemcpy(d_types, types, (size_t)N * sizeof(int), cudaMemcpyHostToDevice));
+    }
     SZP_CUDA_TRY(cudaMalloc((void **)&d_orig, (size_t)N * sizeof(float)));
-    SZP_CUDA_TRY(cudaMalloc((void **)&d_types, (size_t)N * sizeof(int)));
     SZP_CUDA_TRY(cudaMalloc((void **)&d_cnt, 4 * sizeof(unsigned long long)));
-    SZP_CUDA_TRY(cudaMemcpy(d_v, data, (size_t)N * sizeof(float), cudaMemcpyHostToDevice));
     SZP_CUDA_TRY(cudaMemcpy(d_orig, d_v, (size_t)N * sizeof(float), cudaMemcpyDeviceToDevice));
-    SZP_CUDA_TRY(cudaMemcpy(d_types, types, (size_t)N * sizeof(int), cudaMemcpyHostToDevice));
 
     /* counts before */
     SZP_CUDA_TRY(cudaMemset(d_cnt, 0, 4 * sizeof(unsigned long long)));
@@ -249,7 +258,9 @@ static int restore_gpu(float *data, const int *types, const int *sort_positions,
         SZP_CUDA_TRY(cudaMalloc((void **)&d_ext, (size_t)n_ext * sizeof(long long)));
         szp_ext_scatter_kernel<<<nb, SZP_TPB>>>(d_types, g, N, d_bcount, d_ext);
         SZP_CUDA_TRY(cudaGetLastError());
-        if (sort_positions && extrema_count > 0) {
+        if (on_device) {
+            if (extrema_count > 0) d_sp = dev_sp;
+        } else if (sort_positions && extrema_count > 0) {
             SZP_CUDA_TRY(cudaMalloc((void **)&d_sp, extrema_count * sizeof(int)));
             SZP_CUDA_TRY(cudaMemcpy(d_sp, sort_positions, extrema_count * sizeof(int), cudaMemcpyHostToDevice));
         }
@@ -273,7 +284,7 @@ static int restore_gpu(float *data, const int *types, const int *sort_positions,
         SZP_CUDA_TRY(cudaGetLastError());
         /* free the extrema buffers before the saddle passes */
         cudaFree(d_tkey); cudaFree(d_tmax); cudaFree(d_tcnt); cudaFree(d_rank); cudaFree(d_slot);
-        cudaFree(d_tgt); cudaFree(d_ext); cudaFree(d_sp);
+        cudaFree(d_tgt); cudaFree(d_ext); if (!on_device) cudaFree(d_sp);
         d_tkey = NULL; d_tmax = NULL; d_tcnt = NULL; d_rank = NULL; d_slot = NULL; d_tgt = NULL; d_ext = NULL; d_sp = NULL;
     }
     cudaFree(d_bcount); d_bcount = NULL;
@@ -346,7 +357,8 @@ static int restore_gpu(float *data, const int *types, const int *sort_positions,
     rc = 0;
 
 fail:
-    cudaFree(d_v); cudaFree(d_orig); cudaFree(d_tgt); cudaFree(d_types); cudaFree(d_sp); cudaFree(d_rank);
+    if (dev_v == NULL) { cudaFree(d_v); cudaFree(d_types); cudaFree(d_sp); }
+    cudaFree(d_orig); cudaFree(d_tgt); cudaFree(d_rank);
     cudaFree(d_tmax); cudaFree(d_tcnt); cudaFree(d_locks); cudaFree(d_mark); cudaFree(d_w); cudaFree(d_ext);
     cudaFree(d_list); cudaFree(d_cnt); cudaFree(d_bcount); cudaFree(d_tkey); cudaFree(d_slot); cudaFree(d_cc);
     return rc;
@@ -366,6 +378,17 @@ extern "C" int szp_cuda_topo_restore_float_3d(float *data, const int *types, con
 {
     if (!data || !types || d1 < 3 || d2 < 3 || d3 < 3 || !(errBound > 0)) return -1;
     return restore_gpu(data, types, sort_positions, extrema_count, szp_grid_3d(d1, d2, d3), errBound, stats);
+}
+
+extern "C" int szp_cuda_topo_restore_float_device(float *host_out, float *d_data, int *d_types,
+                                                  int *d_sort_positions, size_t extrema_count,
+                                                  int d1, int d2, int d3, float errBound,
+                                                  szp_topo_restore_stats *stats)
+{
+    if (!host_out || !d_data || !d_types || d1 < 3 || d2 < 3 || (d3 > 0 && d3 < 3) || !(errBound > 0)) return -1;
+    return restore_gpu(host_out, NULL, NULL, d_sort_positions ? extrema_count : 0,
+                       d3 > 0 ? szp_grid_3d(d1, d2, d3) : szp_grid_2d(d1, d2), errBound, stats,
+                       d_data, d_types, d_sort_positions);
 }
 
 /* ===================================================================== */

@@ -132,8 +132,12 @@ Defaults (change with options, `--help` lists all):
   type, FP = new critical point at a regular point; each point is counted once.
 - "Before" = plain SZp quantization (same quantizer as TopoSZp+, no restoration), "after" = TopoSZp+ output.
 - TopoSZp+ CPU times: compression = critical points + ranks + encoding; decompression = decoding + topology
-  restoration. GPU times are the `TIMING` line of the CUDA programs (same steps). Plain SZp times are reported
-  separately, so the overhead of topology preservation can be stated.
+  restoration. GPU times are the `TIMING` line of the CUDA programs (same steps): one library call for
+  compression and one for decompression, with the field kept on the GPU between the steps, measured after
+  the program has already run the separate calls once (so the GPU is warm). The program checks that the
+  one-call streams and field equal those of the separate calls; `TIMING_STEPWISE` in the logs is the time of
+  the separate calls, which upload the field again at every step (this is what earlier result sets report).
+  Plain SZp times are reported separately, so the overhead of topology preservation can be stated.
 - Compression ratio of TopoSZp+ is the size of the full stream (data, labels, ranks, footer).
 - `cpu_gpu_identical` in `main.csv`: the OpenMP and CUDA outputs are compared byte by byte.
 - A bound is skipped (status `format_limit`) when max|value| / bound ≥ 2³¹ (the 32-bit bin index of the format);

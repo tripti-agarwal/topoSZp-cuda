@@ -99,22 +99,12 @@ struct CPRasterLess2D {
     }
 };
 
-extern "C"
-CriticalPoint *szp_cuda_find_critical_points(float *data, size_t *outCount,
-                                              int rows, int cols, float absErrBound)
+/* Device part: critical points of d_data in raster order. *d_results_out is
+   a device array (cudaFree it), *count_out its length. */
+static void find_critical_points_device(const float *d_data, int rows, int cols, float absErrBound,
+                                        CriticalPoint **d_results_out, unsigned int *count_out)
 {
-    if (!data || rows <= 2 || cols <= 2) {
-        *outCount = 0;
-        return NULL;
-    }
-
-    size_t grid_size = (size_t)rows * cols;
     size_t total_interior = (size_t)(rows - 2) * (size_t)(cols - 2);
-
-    /* Allocate device memory */
-    float *d_data;
-    CUDA_CHECK(cudaMalloc(&d_data, grid_size * sizeof(float)));
-    CUDA_CHECK(cudaMemcpy(d_data, data, grid_size * sizeof(float), cudaMemcpyHostToDevice));
 
     /* Allocate device output (worst-case: every interior cell is a critical point) */
     CriticalPoint *d_results;
@@ -143,6 +133,31 @@ CriticalPoint *szp_cuda_find_critical_points(float *data, size_t *outCount,
         thrust::sort(rp, rp + h_count, CPRasterLess2D());
     }
 
+    cudaFree(d_count);
+    *d_results_out = d_results;
+    *count_out = h_count;
+}
+
+extern "C"
+CriticalPoint *szp_cuda_find_critical_points(float *data, size_t *outCount,
+                                              int rows, int cols, float absErrBound)
+{
+    if (!data || rows <= 2 || cols <= 2) {
+        *outCount = 0;
+        return NULL;
+    }
+
+    size_t grid_size = (size_t)rows * cols;
+
+    /* Allocate device memory */
+    float *d_data;
+    CUDA_CHECK(cudaMalloc(&d_data, grid_size * sizeof(float)));
+    CUDA_CHECK(cudaMemcpy(d_data, data, grid_size * sizeof(float), cudaMemcpyHostToDevice));
+
+    CriticalPoint *d_results = NULL;
+    unsigned int h_count = 0;
+    find_critical_points_device(d_data, rows, cols, absErrBound, &d_results, &h_count);
+
     CriticalPoint *results = NULL;
     if (h_count > 0) {
         results = (CriticalPoint *)malloc(h_count * sizeof(CriticalPoint));
@@ -153,7 +168,6 @@ CriticalPoint *szp_cuda_find_critical_points(float *data, size_t *outCount,
 
     cudaFree(d_data);
     cudaFree(d_results);
-    cudaFree(d_count);
 
     return results;
 }
@@ -226,34 +240,15 @@ __global__ static void scatter_sort_positions_kernel(
     if (idx < n) cp[sorted_keys[idx].original_index].sort_position = pos[idx];
 }
 
-extern "C"
-void szp_cuda_sort_critical_points_by_original_data(CriticalPoint *critical_points,
-                                                     size_t critical_count,
-                                                     float *data, int cols)
+/* Device part: writes sort_position of every critical point in d_cp.
+   d_data must cover every critical point. */
+static void sort_critical_points_device(CriticalPoint *d_cp, size_t critical_count,
+                                        const float *d_data, int cols)
 {
-    if (!critical_points || critical_count == 0 || !data) return;
-
-    /* Find max flat index to determine data copy size */
-    size_t max_flat = 0;
-    for (size_t i = 0; i < critical_count; i++) {
-        size_t flat = (size_t)critical_points[i].x * cols + critical_points[i].y;
-        if (flat > max_flat) max_flat = flat;
-    }
-    size_t data_bytes = (max_flat + 1) * sizeof(float);
-
-    /* Separate allocations for proper struct alignment */
-    CriticalPoint *d_cp = NULL;
-    float *d_data = NULL;
     BinValueKey *d_keys = NULL;
     int *d_boundaries = NULL;
-
-    CUDA_CHECK(cudaMalloc(&d_cp, critical_count * sizeof(CriticalPoint)));
-    CUDA_CHECK(cudaMalloc(&d_data, data_bytes));
     CUDA_CHECK(cudaMalloc(&d_keys, critical_count * sizeof(BinValueKey)));
     CUDA_CHECK(cudaMalloc(&d_boundaries, critical_count * sizeof(int)));
-
-    CUDA_CHECK(cudaMemcpy(d_cp, critical_points, critical_count * sizeof(CriticalPoint), cudaMemcpyHostToDevice));
-    CUDA_CHECK(cudaMemcpy(d_data, data, data_bytes, cudaMemcpyHostToDevice));
 
     int threadsPerBlock = 256;
     int blocks = ((int)critical_count + threadsPerBlock - 1) / threadsPerBlock;
@@ -289,13 +284,42 @@ void szp_cuda_sort_critical_points_by_original_data(CriticalPoint *critical_poin
         cudaFree(d_pos);
     }
 
+    cudaFree(d_keys);
+    cudaFree(d_boundaries);
+}
+
+extern "C"
+void szp_cuda_sort_critical_points_by_original_data(CriticalPoint *critical_points,
+                                                     size_t critical_count,
+                                                     float *data, int cols)
+{
+    if (!critical_points || critical_count == 0 || !data) return;
+
+    /* Find max flat index to determine data copy size */
+    size_t max_flat = 0;
+    for (size_t i = 0; i < critical_count; i++) {
+        size_t flat = (size_t)critical_points[i].x * cols + critical_points[i].y;
+        if (flat > max_flat) max_flat = flat;
+    }
+    size_t data_bytes = (max_flat + 1) * sizeof(float);
+
+    /* Separate allocations for proper struct alignment */
+    CriticalPoint *d_cp = NULL;
+    float *d_data = NULL;
+
+    CUDA_CHECK(cudaMalloc(&d_cp, critical_count * sizeof(CriticalPoint)));
+    CUDA_CHECK(cudaMalloc(&d_data, data_bytes));
+
+    CUDA_CHECK(cudaMemcpy(d_cp, critical_points, critical_count * sizeof(CriticalPoint), cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_data, data, data_bytes, cudaMemcpyHostToDevice));
+
+    sort_critical_points_device(d_cp, critical_count, d_data, cols);
+
     /* Copy back */
     CUDA_CHECK(cudaMemcpy(critical_points, d_cp, critical_count * sizeof(CriticalPoint), cudaMemcpyDeviceToHost));
 
     cudaFree(d_cp);
     cudaFree(d_data);
-    cudaFree(d_keys);
-    cudaFree(d_boundaries);
 }
 
 /* ================================================================== */
@@ -447,41 +471,10 @@ __global__ void compress_sort_positions_packing_kernel(
     }
 }
 
-extern "C"
-unsigned char *szp_cuda_compress_sort_positions(CriticalPoint *critical_points,
-                                                 size_t critical_count,
-                                                 size_t *outSize, int blockSize)
+/* Device part: rank stream of d_sort_positions[0 .. extrema_count) (> 0). */
+static unsigned char *compress_sort_positions_device(const int *d_sort_positions, size_t extrema_count,
+                                                     size_t *outSize, int blockSize)
 {
-    if (!critical_points || critical_count == 0) {
-        *outSize = 0;
-        return NULL;
-    }
-    if (blockSize > 257) {
-        fprintf(stderr, "szp_cuda_compress_sort_positions: blockSize %d exceeds maximum 257\n", blockSize);
-        *outSize = 0;
-        return NULL;
-    }
-
-    /* Extract sort_position values for extrema (type 1 or 2) */
-    size_t extrema_count = 0;
-    for (size_t i = 0; i < critical_count; i++) {
-        if (critical_points[i].type == 1 || critical_points[i].type == 2)
-            extrema_count++;
-    }
-    if (extrema_count == 0) { *outSize = 0; return NULL; }
-
-    int *sort_positions = (int *)malloc(extrema_count * sizeof(int));
-    size_t ei = 0;
-    for (size_t i = 0; i < critical_count; i++) {
-        if (critical_points[i].type == 1 || critical_points[i].type == 2)
-            sort_positions[ei++] = critical_points[i].sort_position;
-    }
-
-    /* Copy to device */
-    int *d_sort_positions;
-    CUDA_CHECK(cudaMalloc(&d_sort_positions, extrema_count * sizeof(int)));
-    CUDA_CHECK(cudaMemcpy(d_sort_positions, sort_positions, extrema_count * sizeof(int), cudaMemcpyHostToDevice));
-
     size_t num_blocks = (extrema_count + blockSize - 1) / blockSize;
 
     /* Sizing pass */
@@ -523,11 +516,51 @@ unsigned char *szp_cuda_compress_sort_positions(CriticalPoint *critical_points,
 
     CUDA_CHECK(cudaMemcpy(output + headerSize, d_output, totalCompressed, cudaMemcpyDeviceToHost));
 
-    /* Cleanup */
-    cudaFree(d_sort_positions);
     cudaFree(d_block_sizes);
     cudaFree(d_block_offsets);
     cudaFree(d_output);
+    return output;
+}
+
+extern "C"
+unsigned char *szp_cuda_compress_sort_positions(CriticalPoint *critical_points,
+                                                 size_t critical_count,
+                                                 size_t *outSize, int blockSize)
+{
+    if (!critical_points || critical_count == 0) {
+        *outSize = 0;
+        return NULL;
+    }
+    if (blockSize > 257) {
+        fprintf(stderr, "szp_cuda_compress_sort_positions: blockSize %d exceeds maximum 257\n", blockSize);
+        *outSize = 0;
+        return NULL;
+    }
+
+    /* Extract sort_position values for extrema (type 1 or 2) */
+    size_t extrema_count = 0;
+    for (size_t i = 0; i < critical_count; i++) {
+        if (critical_points[i].type == 1 || critical_points[i].type == 2)
+            extrema_count++;
+    }
+    if (extrema_count == 0) { *outSize = 0; return NULL; }
+
+    int *sort_positions = (int *)malloc(extrema_count * sizeof(int));
+    size_t ei = 0;
+    for (size_t i = 0; i < critical_count; i++) {
+        if (critical_points[i].type == 1 || critical_points[i].type == 2)
+            sort_positions[ei++] = critical_points[i].sort_position;
+    }
+
+    /* Copy to device */
+    int *d_sort_positions;
+    CUDA_CHECK(cudaMalloc(&d_sort_positions, extrema_count * sizeof(int)));
+    CUDA_CHECK(cudaMemcpy(d_sort_positions, sort_positions, extrema_count * sizeof(int), cudaMemcpyHostToDevice));
+
+    unsigned char *output = compress_sort_positions_device(d_sort_positions, extrema_count, outSize, blockSize);
+
+    /* Cleanup */
+    cudaFree(d_sort_positions);
     free(sort_positions);
 
     return output;
@@ -709,50 +742,27 @@ __global__ void compress_topo_packing_kernel(
     }
 }
 
-extern "C"
-unsigned char *szp_cuda_float_compress_randomaccess_topology_preserved(
-    float *oriData, size_t *outSize, float absErrBound,
+/* Device part: labels + quantization + encoding of d_data. d_cp (device,
+   may be NULL) holds critical_count critical points. */
+static unsigned char *compress_topology_device(
+    const float *d_data, size_t *outSize, float absErrBound,
     size_t nbEle, int blockSize,
-    CriticalPoint *critical_points, int critical_count,
+    const CriticalPoint *d_cp, int critical_count,
     int rows, int cols)
 {
-    if (absErrBound <= 0.0 || !oriData || nbEle == 0) {
-        *outSize = 0;
-        return NULL;
-    }
-    if (blockSize > 257) {
-        fprintf(stderr, "szp_cuda_float_compress_randomaccess_topology_preserved: blockSize %d exceeds maximum 257\n", blockSize);
-        *outSize = 0;
-        return NULL;
-    }
-    if (szp_check_errbound<float>(oriData, nbEle, (double)absErrBound, "TopoSZp CUDA compress (2D)") < 0) {
-        *outSize = 0;
-        return NULL;
-    }
-
     unsigned int block_size = (unsigned int)blockSize;
     size_t num_blocks = (nbEle + block_size - 1) / block_size;
-
-    /* Device allocations */
-    float *d_data;
-    CUDA_CHECK(cudaMalloc(&d_data, nbEle * sizeof(float)));
-    CUDA_CHECK(cudaMemcpy(d_data, oriData, nbEle * sizeof(float), cudaMemcpyHostToDevice));
 
     /* Build critical type array on device */
     unsigned char *d_critical_type;
     CUDA_CHECK(cudaMalloc(&d_critical_type, nbEle));
     CUDA_CHECK(cudaMemset(d_critical_type, 0, nbEle));
 
-    if (critical_points && critical_count > 0) {
-        CriticalPoint *d_cp;
-        CUDA_CHECK(cudaMalloc(&d_cp, critical_count * sizeof(CriticalPoint)));
-        CUDA_CHECK(cudaMemcpy(d_cp, critical_points, critical_count * sizeof(CriticalPoint), cudaMemcpyHostToDevice));
-
+    if (d_cp && critical_count > 0) {
         int tpb = 256;
         int grid = (critical_count + tpb - 1) / tpb;
         mark_critical_types_kernel<<<grid, tpb>>>(d_cp, critical_count, rows, cols, d_critical_type);
         CUDA_CHECK(cudaGetLastError());
-        cudaFree(d_cp);
     }
 
     /* Sizing pass */
@@ -793,12 +803,152 @@ unsigned char *szp_cuda_float_compress_randomaccess_topology_preserved(
 
     CUDA_CHECK(cudaMemcpy(output + headerSize, d_output, totalCompressed, cudaMemcpyDeviceToHost));
 
-    /* Cleanup */
-    cudaFree(d_data);
     cudaFree(d_critical_type);
     cudaFree(d_block_sizes);
     cudaFree(d_block_offsets);
     cudaFree(d_output);
+    return output;
+}
+
+extern "C"
+unsigned char *szp_cuda_float_compress_randomaccess_topology_preserved(
+    float *oriData, size_t *outSize, float absErrBound,
+    size_t nbEle, int blockSize,
+    CriticalPoint *critical_points, int critical_count,
+    int rows, int cols)
+{
+    if (absErrBound <= 0.0 || !oriData || nbEle == 0) {
+        *outSize = 0;
+        return NULL;
+    }
+    if (blockSize > 257) {
+        fprintf(stderr, "szp_cuda_float_compress_randomaccess_topology_preserved: blockSize %d exceeds maximum 257\n", blockSize);
+        *outSize = 0;
+        return NULL;
+    }
+    if (szp_check_errbound<float>(oriData, nbEle, (double)absErrBound, "TopoSZp CUDA compress (2D)") < 0) {
+        *outSize = 0;
+        return NULL;
+    }
+
+
+    /* Device allocations */
+    float *d_data;
+    CUDA_CHECK(cudaMalloc(&d_data, nbEle * sizeof(float)));
+    CUDA_CHECK(cudaMemcpy(d_data, oriData, nbEle * sizeof(float), cudaMemcpyHostToDevice));
+
+    CriticalPoint *d_cp = NULL;
+    if (critical_points && critical_count > 0) {
+        CUDA_CHECK(cudaMalloc(&d_cp, critical_count * sizeof(CriticalPoint)));
+        CUDA_CHECK(cudaMemcpy(d_cp, critical_points, critical_count * sizeof(CriticalPoint), cudaMemcpyHostToDevice));
+    }
+
+    unsigned char *output = compress_topology_device(d_data, outSize, absErrBound, nbEle, blockSize,
+                                                     d_cp, critical_count, rows, cols);
+    cudaFree(d_cp);
+
+    /* Cleanup */
+    cudaFree(d_data);
 
     return output;
+}
+
+/* ================================================================== */
+/*  ONE-CALL 2D COMPRESSION: the field stays on the device             */
+/* ================================================================== */
+
+/* 1 where the critical point is an extremum (its rank is stored). */
+__global__ static void extrema_flags_kernel(const CriticalPoint *cp, size_t n, size_t *flag)
+{
+    size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < n) flag[idx] = (cp[idx].type == 1 || cp[idx].type == 2) ? 1 : 0;
+}
+
+/* Ranks of the extrema, in the order of cp (raster order). */
+__global__ static void gather_extrema_ranks_kernel(const CriticalPoint *cp, size_t n,
+                                                   const size_t *offset, int *sp)
+{
+    size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < n && (cp[idx].type == 1 || cp[idx].type == 2))
+        sp[offset[idx]] = cp[idx].sort_position;
+}
+
+/**
+ * Detection, ranking, encoding and the rank stream in one call. The field is
+ * uploaded once and the critical points never leave the device. The two
+ * streams are byte-identical to those of the separate calls
+ * (szp_cuda_find_critical_points, szp_cuda_sort_critical_points_by_original_data,
+ * szp_cuda_float_compress_randomaccess_topology_preserved,
+ * szp_cuda_compress_sort_positions).
+ */
+extern "C"
+int szp_cuda_float_compress_topology_ranked(
+    float *oriData, size_t nbEle, float absErrBound, int blockSize,
+    int rows, int cols,
+    unsigned char **topoOut, size_t *topoSize,
+    unsigned char **sortOut, size_t *sortSize,
+    size_t *criticalCount, size_t *extremaCount)
+{
+    *topoOut = NULL; *topoSize = 0; *sortOut = NULL; *sortSize = 0;
+    if (criticalCount) *criticalCount = 0;
+    if (extremaCount) *extremaCount = 0;
+    if (absErrBound <= 0.0 || !oriData || nbEle == 0 || rows <= 2 || cols <= 2 ||
+        (size_t)rows * cols != nbEle)
+        return -1;
+    if (blockSize > 257) {
+        fprintf(stderr, "szp_cuda_float_compress_topology_ranked: blockSize %d exceeds maximum 257\n", blockSize);
+        return -1;
+    }
+    if (szp_check_errbound<float>(oriData, nbEle, (double)absErrBound, "TopoSZp CUDA compress (2D)") < 0)
+        return -1;
+
+    float *d_data;
+    CUDA_CHECK(cudaMalloc(&d_data, nbEle * sizeof(float)));
+    CUDA_CHECK(cudaMemcpy(d_data, oriData, nbEle * sizeof(float), cudaMemcpyHostToDevice));
+
+    /* detection and ranking */
+    CriticalPoint *d_cp = NULL;
+    unsigned int count = 0;
+    find_critical_points_device(d_data, rows, cols, absErrBound, &d_cp, &count);
+    if (count > 0)
+        sort_critical_points_device(d_cp, count, d_data, cols);
+
+    /* rank stream of the extrema */
+    size_t n_ext = 0;
+    if (count > 0) {
+        size_t *d_flag, *d_off;
+        CUDA_CHECK(cudaMalloc(&d_flag, count * sizeof(size_t)));
+        CUDA_CHECK(cudaMalloc(&d_off, count * sizeof(size_t)));
+        int tpb = 256;
+        int grid = ((int)count + tpb - 1) / tpb;
+        extrema_flags_kernel<<<grid, tpb>>>(d_cp, count, d_flag);
+        CUDA_CHECK(cudaGetLastError());
+        thrust::device_ptr<size_t> fp(d_flag);
+        thrust::device_ptr<size_t> fo(d_off);
+        thrust::exclusive_scan(fp, fp + count, fo);
+        size_t lflag, loff;
+        CUDA_CHECK(cudaMemcpy(&lflag, d_flag + count - 1, sizeof(size_t), cudaMemcpyDeviceToHost));
+        CUDA_CHECK(cudaMemcpy(&loff, d_off + count - 1, sizeof(size_t), cudaMemcpyDeviceToHost));
+        n_ext = loff + lflag;
+        if (n_ext > 0) {
+            int *d_sp;
+            CUDA_CHECK(cudaMalloc(&d_sp, n_ext * sizeof(int)));
+            gather_extrema_ranks_kernel<<<grid, tpb>>>(d_cp, count, d_off, d_sp);
+            CUDA_CHECK(cudaGetLastError());
+            *sortOut = compress_sort_positions_device(d_sp, n_ext, sortSize, blockSize);
+            cudaFree(d_sp);
+        }
+        cudaFree(d_flag);
+        cudaFree(d_off);
+    }
+
+    /* labels, quantization, encoding */
+    *topoOut = compress_topology_device(d_data, topoSize, absErrBound, nbEle, blockSize,
+                                        d_cp, (int)count, rows, cols);
+
+    cudaFree(d_data);
+    cudaFree(d_cp);
+    if (criticalCount) *criticalCount = count;
+    if (extremaCount) *extremaCount = n_ext;
+    return *topoOut ? 0 : -1;
 }

@@ -61,6 +61,8 @@ def exp_main(c, by):
                             if gt:
                                 row.update({'gpu_FP': gt['after']['FP'], 'gpu_FN': gt['after']['FN'],
                                             'gpu_FT': gt['after']['FT'], 'gpu_err': gt['after']['err']})
+                        if g.get('note'):
+                            row['note'] = 'GPU: ' + g['note']
                         cleanup(g['output'])
                     else:
                         row['note'] = 'GPU: ' + g['note']

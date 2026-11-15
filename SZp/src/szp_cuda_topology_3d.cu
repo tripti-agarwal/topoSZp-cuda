@@ -181,25 +181,15 @@ struct CPRasterLess3D {
     }
 };
 
-extern "C"
-CriticalPoint3D *szp_cuda_find_critical_points_3d(
-    float *data, size_t *outCount,
-    int d1, int d2, int d3, float absErrBound)
+/* Device part: critical points of d_data in raster order. *d_results_out is
+   a device array (cudaFree it), *count_out its length. */
+static void find_critical_points_3d_device(
+    const float *d_data, int d1, int d2, int d3, float absErrBound,
+    CriticalPoint3D **d_results_out, unsigned int *count_out)
 {
-    if (!data || d1 <= 2 || d2 <= 2 || d3 <= 2) {
-        *outCount = 0;
-        return NULL;
-    }
-
-    size_t grid_size = (size_t)d1 * d2 * d3;
     size_t total_interior = (size_t)(d1 - 2)
                           * (size_t)(d2 - 2)
                           * (size_t)(d3 - 2);
-
-    float *d_data;
-    CUDA_CHECK(cudaMalloc(&d_data, grid_size * sizeof(float)));
-    CUDA_CHECK(cudaMemcpy(d_data, data, grid_size * sizeof(float),
-                          cudaMemcpyHostToDevice));
 
     CriticalPoint3D *d_results;
     CUDA_CHECK(cudaMalloc(&d_results, total_interior * sizeof(CriticalPoint3D)));
@@ -230,6 +220,32 @@ CriticalPoint3D *szp_cuda_find_critical_points_3d(
         thrust::sort(rp, rp + h_count, CPRasterLess3D());
     }
 
+    cudaFree(d_count);
+    *d_results_out = d_results;
+    *count_out = h_count;
+}
+
+extern "C"
+CriticalPoint3D *szp_cuda_find_critical_points_3d(
+    float *data, size_t *outCount,
+    int d1, int d2, int d3, float absErrBound)
+{
+    if (!data || d1 <= 2 || d2 <= 2 || d3 <= 2) {
+        *outCount = 0;
+        return NULL;
+    }
+
+    size_t grid_size = (size_t)d1 * d2 * d3;
+
+    float *d_data;
+    CUDA_CHECK(cudaMalloc(&d_data, grid_size * sizeof(float)));
+    CUDA_CHECK(cudaMemcpy(d_data, data, grid_size * sizeof(float),
+                          cudaMemcpyHostToDevice));
+
+    CriticalPoint3D *d_results = NULL;
+    unsigned int h_count = 0;
+    find_critical_points_3d_device(d_data, d1, d2, d3, absErrBound, &d_results, &h_count);
+
     CriticalPoint3D *results = NULL;
     if (h_count > 0) {
         results = (CriticalPoint3D *)malloc(h_count * sizeof(CriticalPoint3D));
@@ -242,7 +258,6 @@ CriticalPoint3D *szp_cuda_find_critical_points_3d(
 
     cudaFree(d_data);
     cudaFree(d_results);
-    cudaFree(d_count);
 
     return results;
 }
@@ -324,40 +339,16 @@ __global__ static void scatter_sort_positions_3d_kernel(
     if (idx < n) cp[sorted_keys[idx].original_index].sort_position = pos[idx];
 }
 
-extern "C"
-void szp_cuda_sort_critical_points_3d(
-    CriticalPoint3D *critical_points, size_t critical_count,
-    float *data, int d2, int d3)
+/* Device part: writes sort_position of every critical point in d_cp.
+   d_data must cover every critical point. */
+static void sort_critical_points_3d_device(
+    CriticalPoint3D *d_cp, size_t critical_count,
+    const float *d_data, int d2, int d3)
 {
-    if (!critical_points || critical_count == 0 || !data) return;
-
-    /* Find max flat index on host to determine data copy size.
-       Use OpenMP for large counts. */
-    size_t max_flat = 0;
-    #ifdef _OPENMP
-    #pragma omp parallel for reduction(max:max_flat)
-    #endif
-    for (size_t i = 0; i < critical_count; i++) {
-        size_t flat = (size_t)critical_points[i].x * d2 * d3
-                    + (size_t)critical_points[i].y * d3
-                    + critical_points[i].z;
-        if (flat > max_flat) max_flat = flat;
-    }
-    size_t data_bytes = (max_flat + 1) * sizeof(float);
-
-    /* Separate allocations for proper alignment */
-    CriticalPoint3D *d_cp = NULL;
-    float *d_data = NULL;
     BinValueKey3D *d_keys = NULL;
     int *d_boundaries = NULL;
-
-    CUDA_CHECK(cudaMalloc(&d_cp, critical_count * sizeof(CriticalPoint3D)));
-    CUDA_CHECK(cudaMalloc(&d_data, data_bytes));
     CUDA_CHECK(cudaMalloc(&d_keys, critical_count * sizeof(BinValueKey3D)));
     CUDA_CHECK(cudaMalloc(&d_boundaries, critical_count * sizeof(int)));
-
-    CUDA_CHECK(cudaMemcpy(d_cp, critical_points, critical_count * sizeof(CriticalPoint3D), cudaMemcpyHostToDevice));
-    CUDA_CHECK(cudaMemcpy(d_data, data, data_bytes, cudaMemcpyHostToDevice));
 
     int tpb = 256;
     int grid = ((int)critical_count + tpb - 1) / tpb;
@@ -392,13 +383,45 @@ void szp_cuda_sort_critical_points_3d(
         cudaFree(d_pos);
     }
 
+    cudaFree(d_keys);
+    cudaFree(d_boundaries);
+}
+
+extern "C"
+void szp_cuda_sort_critical_points_3d(
+    CriticalPoint3D *critical_points, size_t critical_count,
+    float *data, int d2, int d3)
+{
+    if (!critical_points || critical_count == 0 || !data) return;
+
+    /* Find max flat index on host to determine data copy size.
+       Use OpenMP for large counts. */
+    size_t max_flat = 0;
+    #ifdef _OPENMP
+    #pragma omp parallel for reduction(max:max_flat)
+    #endif
+    for (size_t i = 0; i < critical_count; i++) {
+        size_t flat = (size_t)critical_points[i].x * d2 * d3
+                    + (size_t)critical_points[i].y * d3
+                    + critical_points[i].z;
+        if (flat > max_flat) max_flat = flat;
+    }
+    size_t data_bytes = (max_flat + 1) * sizeof(float);
+
+    CriticalPoint3D *d_cp = NULL;
+    float *d_data = NULL;
+    CUDA_CHECK(cudaMalloc(&d_cp, critical_count * sizeof(CriticalPoint3D)));
+    CUDA_CHECK(cudaMalloc(&d_data, data_bytes));
+    CUDA_CHECK(cudaMemcpy(d_cp, critical_points, critical_count * sizeof(CriticalPoint3D), cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_data, data, data_bytes, cudaMemcpyHostToDevice));
+
+    sort_critical_points_3d_device(d_cp, critical_count, d_data, d2, d3);
+
     /* Copy results back */
     CUDA_CHECK(cudaMemcpy(critical_points, d_cp, critical_count * sizeof(CriticalPoint3D), cudaMemcpyDeviceToHost));
 
     cudaFree(d_cp);
     cudaFree(d_data);
-    cudaFree(d_keys);
-    cudaFree(d_boundaries);
 }
 
 /* ================================================================== */
@@ -521,6 +544,46 @@ __global__ static void compress_sort_positions_packing_3d(
     }
 }
 
+/* Device part: rank stream of d_sp[0 .. extrema_count) (extrema_count > 0). */
+static unsigned char *compress_sort_positions_3d_device(
+    const int *d_sp, size_t extrema_count, size_t *outSize, int blockSize)
+{
+    size_t nb = (extrema_count + blockSize - 1) / blockSize;
+    size_t *d_bs, *d_bo;
+    CUDA_CHECK(cudaMalloc(&d_bs, nb * sizeof(size_t)));
+    CUDA_CHECK(cudaMalloc(&d_bo, nb * sizeof(size_t)));
+
+    int tpb = 256;
+    int grid = ((int)nb + tpb - 1) / tpb;
+    compress_sort_positions_sizing_3d<<<grid, tpb>>>(d_sp, extrema_count,
+                                                      blockSize, d_bs);
+    CUDA_CHECK(cudaGetLastError());
+
+    thrust::device_ptr<size_t> sp_ptr(d_bs);
+    thrust::device_ptr<size_t> op_ptr(d_bo);
+    thrust::exclusive_scan(sp_ptr, sp_ptr + nb, op_ptr);
+
+    size_t lsz, loff;
+    CUDA_CHECK(cudaMemcpy(&lsz, d_bs + nb - 1, sizeof(size_t), cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(&loff, d_bo + nb - 1, sizeof(size_t), cudaMemcpyDeviceToHost));
+    size_t total = loff + lsz;
+
+    size_t hdr = sizeof(size_t);
+    *outSize = hdr + total;
+    unsigned char *out = (unsigned char *)malloc(*outSize);
+    szp_stream_write_tag(out, 1u);   /* one segment */
+
+    unsigned char *d_out;
+    CUDA_CHECK(cudaMalloc(&d_out, total));
+    compress_sort_positions_packing_3d<<<grid, tpb>>>(d_sp, extrema_count,
+                                                       blockSize, d_bo, d_out);
+    CUDA_CHECK(cudaGetLastError());
+    CUDA_CHECK(cudaMemcpy(out + hdr, d_out, total, cudaMemcpyDeviceToHost));
+
+    cudaFree(d_bs); cudaFree(d_bo); cudaFree(d_out);
+    return out;
+}
+
 extern "C"
 unsigned char *szp_cuda_compress_sort_positions_3d(
     CriticalPoint3D *critical_points, size_t critical_count,
@@ -554,39 +617,9 @@ unsigned char *szp_cuda_compress_sort_positions_3d(
     CUDA_CHECK(cudaMemcpy(d_sp, sp, extrema_count * sizeof(int),
                           cudaMemcpyHostToDevice));
 
-    size_t nb = (extrema_count + blockSize - 1) / blockSize;
-    size_t *d_bs, *d_bo;
-    CUDA_CHECK(cudaMalloc(&d_bs, nb * sizeof(size_t)));
-    CUDA_CHECK(cudaMalloc(&d_bo, nb * sizeof(size_t)));
+    unsigned char *out = compress_sort_positions_3d_device(d_sp, extrema_count, outSize, blockSize);
 
-    int tpb = 256;
-    int grid = ((int)nb + tpb - 1) / tpb;
-    compress_sort_positions_sizing_3d<<<grid, tpb>>>(d_sp, extrema_count,
-                                                      blockSize, d_bs);
-    CUDA_CHECK(cudaGetLastError());
-
-    thrust::device_ptr<size_t> sp_ptr(d_bs);
-    thrust::device_ptr<size_t> op_ptr(d_bo);
-    thrust::exclusive_scan(sp_ptr, sp_ptr + nb, op_ptr);
-
-    size_t lsz, loff;
-    CUDA_CHECK(cudaMemcpy(&lsz, d_bs + nb - 1, sizeof(size_t), cudaMemcpyDeviceToHost));
-    CUDA_CHECK(cudaMemcpy(&loff, d_bo + nb - 1, sizeof(size_t), cudaMemcpyDeviceToHost));
-    size_t total = loff + lsz;
-
-    size_t hdr = sizeof(size_t);
-    *outSize = hdr + total;
-    unsigned char *out = (unsigned char *)malloc(*outSize);
-    szp_stream_write_tag(out, 1u);   /* one segment */
-
-    unsigned char *d_out;
-    CUDA_CHECK(cudaMalloc(&d_out, total));
-    compress_sort_positions_packing_3d<<<grid, tpb>>>(d_sp, extrema_count,
-                                                       blockSize, d_bo, d_out);
-    CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaMemcpy(out + hdr, d_out, total, cudaMemcpyDeviceToHost));
-
-    cudaFree(d_sp); cudaFree(d_bs); cudaFree(d_bo); cudaFree(d_out);
+    cudaFree(d_sp);
     free(sp);
     return out;
 }
@@ -876,54 +909,29 @@ __global__ static void compress_topo_packing_3d_preq(
     }
 }
 
-extern "C"
-unsigned char *szp_cuda_float_compress_topology_3d(
-    float *oriData, size_t *outSize, float absErrBound,
+/* Device part: labels + quantization + encoding of d_data. d_cp (device,
+   may be NULL) holds critical_count critical points. With free_data, d_data
+   is freed as soon as it has been quantized. */
+static unsigned char *compress_topology_3d_device(
+    float *d_data, size_t *outSize, float absErrBound,
     size_t nbEle, int blockSize,
-    CriticalPoint3D *critical_points, int critical_count,
-    int d1, int d2, int d3)
+    const CriticalPoint3D *d_cp, int critical_count,
+    int d1, int d2, int d3, int free_data)
 {
-    if (absErrBound <= 0.0 || !oriData || nbEle == 0) {
-        *outSize = 0;
-        return NULL;
-    }
-    if (blockSize > 257) {
-        fprintf(stderr, "szp_cuda_float_compress_topology_3d: blockSize %d exceeds maximum 257\n", blockSize);
-        *outSize = 0;
-        return NULL;
-    }
-    if (szp_check_errbound<float>(oriData, nbEle, (double)absErrBound, "TopoSZp CUDA compress (3D)") < 0) {
-        *outSize = 0;
-        return NULL;
-    }
-
     unsigned int bsz = (unsigned int)blockSize;
     size_t num_blocks = (nbEle + bsz - 1) / bsz;
-
-    /* Device allocations */
-    float *d_data;
-    CUDA_CHECK(cudaMalloc(&d_data, nbEle * sizeof(float)));
-    CUDA_CHECK(cudaMemcpy(d_data, oriData, nbEle * sizeof(float),
-                          cudaMemcpyHostToDevice));
 
     /* Build critical type array */
     unsigned char *d_ct;
     CUDA_CHECK(cudaMalloc(&d_ct, nbEle));
     CUDA_CHECK(cudaMemset(d_ct, 0, nbEle));
 
-    if (critical_points && critical_count > 0) {
-        CriticalPoint3D *d_cp;
-        CUDA_CHECK(cudaMalloc(&d_cp, critical_count * sizeof(CriticalPoint3D)));
-        CUDA_CHECK(cudaMemcpy(d_cp, critical_points,
-                              critical_count * sizeof(CriticalPoint3D),
-                              cudaMemcpyHostToDevice));
-
+    if (d_cp && critical_count > 0) {
         int tpb = 256;
         int grid = (critical_count + tpb - 1) / tpb;
         mark_critical_types_3d_kernel<<<grid, tpb>>>(
             d_cp, critical_count, d1, d2, d3, d_ct);
         CUDA_CHECK(cudaGetLastError());
-        cudaFree(d_cp);
     }
 
     /* ---- Standard quantization (no saddle adjustment) ---- */
@@ -936,7 +944,7 @@ unsigned char *szp_cuda_float_compress_topology_3d(
         CUDA_CHECK(cudaGetLastError());
     }
 
-    cudaFree(d_data);
+    if (free_data) cudaFree(d_data);
 
     /* ---- Compress pre-quantized data ---- */
     size_t *d_bs, *d_bo;
@@ -980,6 +988,149 @@ unsigned char *szp_cuda_float_compress_topology_3d(
     cudaFree(d_out);
 
     return output;
+}
+
+extern "C"
+unsigned char *szp_cuda_float_compress_topology_3d(
+    float *oriData, size_t *outSize, float absErrBound,
+    size_t nbEle, int blockSize,
+    CriticalPoint3D *critical_points, int critical_count,
+    int d1, int d2, int d3)
+{
+    if (absErrBound <= 0.0 || !oriData || nbEle == 0) {
+        *outSize = 0;
+        return NULL;
+    }
+    if (blockSize > 257) {
+        fprintf(stderr, "szp_cuda_float_compress_topology_3d: blockSize %d exceeds maximum 257\n", blockSize);
+        *outSize = 0;
+        return NULL;
+    }
+    if (szp_check_errbound<float>(oriData, nbEle, (double)absErrBound, "TopoSZp CUDA compress (3D)") < 0) {
+        *outSize = 0;
+        return NULL;
+    }
+
+    float *d_data;
+    CUDA_CHECK(cudaMalloc(&d_data, nbEle * sizeof(float)));
+    CUDA_CHECK(cudaMemcpy(d_data, oriData, nbEle * sizeof(float),
+                          cudaMemcpyHostToDevice));
+
+    CriticalPoint3D *d_cp = NULL;
+    if (critical_points && critical_count > 0) {
+        CUDA_CHECK(cudaMalloc(&d_cp, critical_count * sizeof(CriticalPoint3D)));
+        CUDA_CHECK(cudaMemcpy(d_cp, critical_points,
+                              critical_count * sizeof(CriticalPoint3D),
+                              cudaMemcpyHostToDevice));
+    }
+
+    unsigned char *output = compress_topology_3d_device(
+        d_data, outSize, absErrBound, nbEle, blockSize,
+        d_cp, critical_count, d1, d2, d3, 1);
+
+    cudaFree(d_cp);
+    return output;
+}
+
+/* ================================================================== */
+/*  ONE-CALL 3D COMPRESSION: the field stays on the device             */
+/* ================================================================== */
+
+/* 1 where the critical point is an extremum (its rank is stored). */
+__global__ static void extrema_flags_3d_kernel(
+    const CriticalPoint3D *cp, size_t n, size_t *flag)
+{
+    size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < n) flag[idx] = (cp[idx].type == 1 || cp[idx].type == 2) ? 1 : 0;
+}
+
+/* Ranks of the extrema, in the order of cp (raster order). */
+__global__ static void gather_extrema_ranks_3d_kernel(
+    const CriticalPoint3D *cp, size_t n, const size_t *offset, int *sp)
+{
+    size_t idx = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < n && (cp[idx].type == 1 || cp[idx].type == 2))
+        sp[offset[idx]] = cp[idx].sort_position;
+}
+
+/**
+ * Detection, ranking, encoding and the rank stream in one call. The field is
+ * uploaded once and the critical points never leave the device. The two
+ * streams are byte-identical to those of the separate calls
+ * (szp_cuda_find_critical_points_3d, szp_cuda_sort_critical_points_3d,
+ * szp_cuda_float_compress_topology_3d, szp_cuda_compress_sort_positions_3d).
+ */
+extern "C"
+int szp_cuda_float_compress_topology_ranked_3d(
+    float *oriData, size_t nbEle, float absErrBound, int blockSize,
+    int d1, int d2, int d3,
+    unsigned char **topoOut, size_t *topoSize,
+    unsigned char **sortOut, size_t *sortSize,
+    size_t *criticalCount, size_t *extremaCount)
+{
+    *topoOut = NULL; *topoSize = 0; *sortOut = NULL; *sortSize = 0;
+    if (criticalCount) *criticalCount = 0;
+    if (extremaCount) *extremaCount = 0;
+    if (absErrBound <= 0.0 || !oriData || nbEle == 0 || d1 <= 2 || d2 <= 2 || d3 <= 2 ||
+        (size_t)d1 * d2 * d3 != nbEle)
+        return -1;
+    if (blockSize > 257) {
+        fprintf(stderr, "szp_cuda_float_compress_topology_ranked_3d: blockSize %d exceeds maximum 257\n", blockSize);
+        return -1;
+    }
+    if (szp_check_errbound<float>(oriData, nbEle, (double)absErrBound, "TopoSZp CUDA compress (3D)") < 0)
+        return -1;
+
+    float *d_data;
+    CUDA_CHECK(cudaMalloc(&d_data, nbEle * sizeof(float)));
+    CUDA_CHECK(cudaMemcpy(d_data, oriData, nbEle * sizeof(float),
+                          cudaMemcpyHostToDevice));
+
+    /* detection and ranking */
+    CriticalPoint3D *d_cp = NULL;
+    unsigned int count = 0;
+    find_critical_points_3d_device(d_data, d1, d2, d3, absErrBound, &d_cp, &count);
+    if (count > 0)
+        sort_critical_points_3d_device(d_cp, count, d_data, d2, d3);
+
+    /* rank stream of the extrema */
+    size_t n_ext = 0;
+    if (count > 0) {
+        size_t *d_flag, *d_off;
+        CUDA_CHECK(cudaMalloc(&d_flag, count * sizeof(size_t)));
+        CUDA_CHECK(cudaMalloc(&d_off, count * sizeof(size_t)));
+        int tpb = 256;
+        int grid = ((int)count + tpb - 1) / tpb;
+        extrema_flags_3d_kernel<<<grid, tpb>>>(d_cp, count, d_flag);
+        CUDA_CHECK(cudaGetLastError());
+        thrust::device_ptr<size_t> fp(d_flag);
+        thrust::device_ptr<size_t> fo(d_off);
+        thrust::exclusive_scan(fp, fp + count, fo);
+        size_t lflag, loff;
+        CUDA_CHECK(cudaMemcpy(&lflag, d_flag + count - 1, sizeof(size_t), cudaMemcpyDeviceToHost));
+        CUDA_CHECK(cudaMemcpy(&loff, d_off + count - 1, sizeof(size_t), cudaMemcpyDeviceToHost));
+        n_ext = loff + lflag;
+        if (n_ext > 0) {
+            int *d_sp;
+            CUDA_CHECK(cudaMalloc(&d_sp, n_ext * sizeof(int)));
+            gather_extrema_ranks_3d_kernel<<<grid, tpb>>>(d_cp, count, d_off, d_sp);
+            CUDA_CHECK(cudaGetLastError());
+            *sortOut = compress_sort_positions_3d_device(d_sp, n_ext, sortSize, blockSize);
+            cudaFree(d_sp);
+        }
+        cudaFree(d_flag);
+        cudaFree(d_off);
+    }
+
+    /* labels, quantization, encoding (frees d_data) */
+    *topoOut = compress_topology_3d_device(
+        d_data, topoSize, absErrBound, nbEle, blockSize,
+        d_cp, (int)count, d1, d2, d3, 1);
+
+    cudaFree(d_cp);
+    if (criticalCount) *criticalCount = count;
+    if (extremaCount) *extremaCount = n_ext;
+    return *topoOut ? 0 : -1;
 }
 
 /* ================================================================== */

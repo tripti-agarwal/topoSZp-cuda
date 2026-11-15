@@ -49,6 +49,19 @@ unsigned char *szp_cuda_float_compress_randomaccess_topology_preserved(
     CriticalPoint *critical_points, int critical_count,
     int rows, int cols);
 
+/**
+ * Detection, ranking, encoding and the rank stream in one call; the field is
+ * uploaded once and stays on the device. topoOut / sortOut (malloc'd, free
+ * them) are byte-identical to the streams of the separate calls above.
+ * sortOut is NULL when the field has no extrema. Returns 0 on success.
+ */
+int szp_cuda_float_compress_topology_ranked(
+    float *oriData, size_t nbEle, float absErrBound, int blockSize,
+    int rows, int cols,
+    unsigned char **topoOut, size_t *topoSize,
+    unsigned char **sortOut, size_t *sortSize,
+    size_t *criticalCount, size_t *extremaCount);
+
 #ifdef __cplusplus
 }
 #endif

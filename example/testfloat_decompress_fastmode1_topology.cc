@@ -177,10 +177,10 @@ int main(int argc, char *argv[])
                rs.saddles_by_stencil, rs.other_fixes, rs.rounds);
     else
         printf("topology restoration: extrema lost %zu -> %zu of %zu; saddles lost %zu -> %zu of %zu "
-               "(stencil %zu, RBF %zu)\n",
+               "(stencil %zu, RBF %zu, neighbourhood move %zu)\n",
                rs.extrema_lost_before, rs.extrema_lost_after, rs.extrema,
                rs.saddles_lost_before, rs.saddles_lost_after, rs.saddles,
-               rs.saddles_by_stencil, rs.saddles_by_rbf);
+               rs.saddles_by_stencil, rs.saddles_by_rbf, rs.saddles_by_neighbours);
     szp_writeFloatData_inBytes(data, nbEle, outputFilePath, &status);
     if (status != SZ_SCES)
     {

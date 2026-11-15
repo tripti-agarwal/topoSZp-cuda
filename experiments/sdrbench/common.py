@@ -272,6 +272,10 @@ def toposzp_gpu(c, f, abs_eb, logname):
         tc, td = float(kv['comp_s']), float(kv['decomp_s'])
         best['comp_s'] = tc if best['comp_s'] is None else min(best['comp_s'], tc)
         best['decomp_s'] = td if best['decomp_s'] is None else min(best['decomp_s'], td)
+        # The tool times its one-call path only when that path reproduces the
+        # step-by-step streams and field; otherwise TIMING is the step-by-step time.
+        if re.search(r'^ONECALL.*DIFFERENT', out, re.M):
+            best['note'] = 'one-call GPU path differs from the step-by-step path; step-by-step times reported'
     best.update({'status': 'ok', 'output': dump})
     return best
 

@@ -311,19 +311,55 @@ int main(int argc, char *argv[]) {
                rs.saddles_by_stencil, rs.other_fixes, rs.rounds, rs.fp_before, rs.fp_after,
                rs.ft_before, rs.ft_after);
     printf("  Extrema lost %zu -> %zu of %zu; saddles lost %zu -> %zu of %zu "
-           "(stencil %zu, RBF %zu)\n",
+           "(stencil %zu, RBF %zu, neighbourhood move %zu)\n",
            rs.extrema_lost_before, rs.extrema_lost_after, rs.extrema,
            rs.saddles_lost_before, rs.saddles_lost_after, rs.saddles,
-           rs.saddles_by_stencil, rs.saddles_by_rbf);
+           rs.saddles_by_stencil, rs.saddles_by_rbf, rs.saddles_by_neighbours);
     printf("  RBF restored %zu saddles\n", rs.saddles_by_rbf);
 
     double t7c = get_time_ms();
     printf("  Post-processing done in %.2f ms\n\n", t7c - t7b);
     /* Compression = CP detection + ranking + compression + rank stream;
-       decompression = decoding + rank decoding + topology restoration. */
-    printf("TIMING comp_s=%.6f decomp_s=%.6f\n",
-           ((t1 - t0) + (t3 - t2) + (t5 - t4) + (ts1 - ts0)) / 1000.0,
-           ((t7 - t6) + (t7c - ts1)) / 1000.0);
+       decompression = decoding + rank decoding + topology restoration.
+       TIMING_STEPWISE: the separate library calls above (each uploads the
+       field again). TIMING: the one-call path, where the field stays on the
+       device; its streams and its output must equal the step-by-step ones,
+       and its times are reported only if they do. */
+    double step_comp_s = ((t1 - t0) + (t3 - t2) + (t5 - t4) + (ts1 - ts0)) / 1000.0;
+    double step_decomp_s = ((t7 - t6) + (t7c - ts1)) / 1000.0;
+    printf("TIMING_STEPWISE comp_s=%.6f decomp_s=%.6f\n", step_comp_s, step_decomp_s);
+    if (g_pl) {
+        printf("TIMING comp_s=%.6f decomp_s=%.6f\n", step_comp_s, step_decomp_s);
+    } else {
+        unsigned char *oc_topo = NULL, *oc_sort = NULL;
+        size_t oc_topo_size = 0, oc_sort_size = 0, oc_cp = 0, oc_ext = 0;
+        double oc0 = get_time_ms();
+        int oc_rc = szp_cuda_float_compress_topology_ranked(
+            data, nbEle, absErrBound, blockSize, rows, cols,
+            &oc_topo, &oc_topo_size, &oc_sort, &oc_sort_size, &oc_cp, &oc_ext);
+        double oc1 = get_time_ms();
+        int same_c = oc_rc == 0 && oc_topo_size == topo_outSize &&
+                     memcmp(oc_topo, topo_compressed, topo_outSize) == 0 &&
+                     oc_sort_size == (sort_compressed ? sort_outSize : 0) &&
+                     (oc_sort_size == 0 || memcmp(oc_sort, sort_compressed, oc_sort_size) == 0);
+        float *oc_out = NULL;
+        szp_topo_restore_stats oc_rs;
+        double od0 = get_time_ms();
+        int od_rc = oc_rc == 0 ? szp_cuda_float_decompress_topology_restored(
+                                     &oc_out, nbEle, absErrBound, blockSize, oc_topo, oc_sort, oc_ext,
+                                     rows, cols, 0, &oc_rs)
+                               : -1;
+        double od1 = get_time_ms();
+        int same_d = od_rc == 0 && memcmp(oc_out, decompressed, nbEle * sizeof(float)) == 0;
+        printf("ONECALL compress: %s (%.2f ms)  decompress: %s (%.2f ms)\n",
+               same_c ? "identical streams" : "DIFFERENT STREAMS", oc1 - oc0,
+               same_d ? "identical field" : "DIFFERENT FIELD", od1 - od0);
+        if (same_c && same_d)
+            printf("TIMING comp_s=%.6f decomp_s=%.6f\n", (oc1 - oc0) / 1000.0, (od1 - od0) / 1000.0);
+        else
+            printf("TIMING comp_s=%.6f decomp_s=%.6f\n", step_comp_s, step_decomp_s);
+        free(oc_topo); free(oc_sort); free(oc_out);
+    }
 
     /* Optional: write the post-processed field for external checks
        (example/topo_check), e.g. TOPOSZP_DUMP=out.f32 ./test_cuda_topology ... */
