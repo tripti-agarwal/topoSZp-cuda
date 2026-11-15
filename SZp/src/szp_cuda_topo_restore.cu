@@ -162,7 +162,7 @@ __global__ void szp_ext_write_kernel(float *v, const long long *ext_idx, long lo
 __global__ void szp_locks_kernel(const int *types, SzpGrid g, long long N, unsigned char *locks)
 {
     long long k = (long long)blockIdx.x * blockDim.x + threadIdx.x;
-    if (k < N) locks[k] = szp_extremum_lock_at(types, g, k);
+    if (k < N) szp_extremum_lock_from(types, g, k, locks);   /* locks zeroed before */
 }
 
 /* Saddle candidates (stored saddles that are not saddles now) by colour:
@@ -284,20 +284,21 @@ static int restore_gpu(float *data, const int *types, const int *sort_positions,
     SZP_CUDA_TRY(cudaMemcpy(cnt, d_cnt, sizeof(cnt), cudaMemcpyDeviceToHost));
     st.saddles_lost_before = (size_t)cnt[3];
 
-    /* 2-3. saddles: stencil then RBF, twice */
+    /* 2-4. saddles: stencil, RBF, neighbourhood move */
     SZP_CUDA_TRY(cudaMalloc((void **)&d_locks, (size_t)N));
     SZP_CUDA_TRY(cudaMalloc((void **)&d_mark, (size_t)N));
     SZP_CUDA_TRY(cudaMalloc((void **)&d_cc, 2 * SZP_MAXCOL * sizeof(unsigned long long)));
     SZP_CUDA_TRY(cudaMalloc((void **)&d_w, sizeof(w)));
     szp_rbf_weights(g.nd, w);
     SZP_CUDA_TRY(cudaMemcpy(d_w, w, sizeof(w), cudaMemcpyHostToDevice));
+    SZP_CUDA_TRY(cudaMemset(d_locks, 0, (size_t)N));
     szp_locks_kernel<<<nb, SZP_TPB>>>(d_types, g, N, d_locks);
     SZP_CUDA_TRY(cudaGetLastError());
 
-    /* passes: stencil, RBF, stencil, RBF (3^nd colours), then the neighbourhood
-       move up to twice (5^nd colours; the second only if the first restored any) */
-    for (int pass = 0; pass < 6; pass++) {
-        const int mode = pass < 4 ? (pass & 1) : 2;
+    /* passes: stencil, RBF (3^nd colours), then the neighbourhood move up to
+       twice (5^nd colours; the second only if szp_nbr_repeat says so) */
+    for (int pass = 0; pass < 4; pass++) {
+        const int mode = pass < 2 ? pass : 2;
         const int mod = mode == 2 ? 5 : 3;
         const int ncol = szp_ncolours(g, mod);
         unsigned long long cc[SZP_MAXCOL], start[SZP_MAXCOL + 1], got = 0;
@@ -331,7 +332,7 @@ static int restore_gpu(float *data, const int *types, const int *sort_positions,
         }
         if (mode == 0)      st.saddles_by_stencil += (size_t)got;
         else if (mode == 1) st.saddles_by_rbf += (size_t)got;
-        else              { st.saddles_by_neighbours += (size_t)got; if (got == 0) break; }
+        else              { st.saddles_by_neighbours += (size_t)got; if (!szp_nbr_repeat(got, total)) break; }
     }
 
     SZP_CUDA_TRY(cudaMemset(d_cnt, 0, 4 * sizeof(unsigned long long)));

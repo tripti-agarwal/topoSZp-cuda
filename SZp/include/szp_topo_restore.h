@@ -27,7 +27,7 @@
  *      towards the current value. A change is kept only if the point becomes
  *      a saddle and no neighbour gets a critical type other than its stored
  *      one, loses its stored type, or stops being below a stored maximum /
- *      above a stored minimum next to it. Both passes run twice.
+ *      above a stored minimum next to it.
  *   4. Saddle neighbourhood move. Most saddles that are still lost cannot be
  *      restored by changing the saddle point alone: quantization tied a
  *      neighbour it must be above with a neighbour it must be below. For
@@ -113,6 +113,9 @@ void szp_topo_restore_float_3d(float *data, const int *types, const int *sort_po
 #include <math.h>
 #include <algorithm>
 #include <vector>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 #include "szp_quant.h"
 
 /* ---------------- grid and point classification (host + device) ------- */
@@ -295,6 +298,36 @@ static SZP_QHD int szp_saddle_rbf_point(float *v, const int *types, const unsign
     return 0;
 }
 
+/** Appends to chk the interior points at Manhattan distance `ring` (1 or 2)
+    from k (coordinates co) and whether each is a stored critical point that
+    is present in v; returns the new count. */
+static SZP_QHD int szp_nbr_ring(const float *v, const int *types, const SzpGrid &g, long long k,
+                                const int *co, int ring, long long *chk, int *chk_keep, int nchk)
+{
+    const int nd = g.nd;
+    for (int a = 0; a < nd; a++)
+        for (int b = (ring == 1 ? a : 0); b <= a; b++)
+            for (int sa = -1; sa <= 1; sa += 2)
+                for (int sb = -1; sb <= (ring == 2 && b < a ? 1 : -1); sb += 2) {
+                    /* ring 1: sa e_a; ring 2: 2 sa e_a (b == a) or sa e_a + sb e_b (b < a) */
+                    int d[3] = {0, 0, 0};
+                    if (ring == 1) d[a] = sa;
+                    else if (b == a) d[a] = 2 * sa;
+                    else { d[a] = sa; d[b] = sb; }
+                    long long q = k;
+                    int inside = 1;
+                    for (int x = 0; x < nd; x++) {
+                        const int c = co[x] + d[x];
+                        inside &= c >= 1 && c <= g.n[x] - 2;     /* interior only */
+                        q += d[x] * g.s[x];
+                    }
+                    if (!inside) continue;
+                    chk[nchk] = q;
+                    chk_keep[nchk++] = types[q] != 0 && szp_classify(v, g, q) == types[q];
+                }
+    return nchk;
+}
+
 /**
  * Neighbourhood move (step 4): make stored saddle k a saddle by choosing its
  * value and moving face neighbours that are in the way. Returns 1 if kept.
@@ -308,21 +341,14 @@ static SZP_QHD int szp_saddle_nbr_point(float *v, const int *types, const float 
     int co[3] = {0, 0, 0};
     for (int a = 0; a < nd; a++) co[a] = (int)((k / g.s[a]) % g.n[a]);
 
-    /* points whose type can change: Manhattan distance <= 2 from k */
+    /* Points whose type can change: Manhattan distance <= 2 from k. The face
+       neighbours (ring 1) are listed now; most failed trials fail there, so
+       ring 2 is listed only when a trial gets that far (nchk1 = end of ring 1).
+       chk_keep: the point is a stored critical point that is present now. */
     long long chk[25];
-    int chk_before[25], nchk = 0;
-    for (int i = -2; i <= 2; i++)
-        for (int j = -2; j <= 2; j++)
-            for (int l = (nd == 3 ? -2 : 0); l <= (nd == 3 ? 2 : 0); l++) {
-                int dist = (i < 0 ? -i : i) + (j < 0 ? -j : j) + (l < 0 ? -l : l);
-                if (dist == 0 || dist > 2) continue;
-                int c0 = co[0] + i, c1 = co[1] + j, c2 = co[2] + l;
-                if (c0 < 1 || c0 > g.n[0] - 2 || c1 < 1 || c1 > g.n[1] - 2) continue;   /* interior only */
-                if (nd == 3 && (c2 < 1 || c2 > g.n[2] - 2)) continue;
-                long long q = k + i * g.s[0] + j * g.s[1] + (nd == 3 ? l * g.s[2] : 0);
-                chk[nchk] = q;
-                chk_before[nchk++] = szp_classify(v, g, q);
-            }
+    int chk_keep[25], nchk = 0, nchk1, ring2 = 0;
+    nchk = szp_nbr_ring(v, types, g, k, co, 1, chk, chk_keep, 0);
+    nchk1 = nchk;
 
     const float W = szp_fmul(eb, 0.999f), delta = szp_fmul(eb, 0.015625f);
     const float p_lo = szp_fadd(orig[k], -W), p_hi = szp_fadd(orig[k], W);
@@ -353,6 +379,7 @@ static SZP_QHD int szp_saddle_nbr_point(float *v, const int *types, const float 
         for (int ci = 0; ci < 3; ci++) {
             const float t = cand[ci];
             if (!(t > tlo && t < thi)) continue;
+            if ((ci >= 1 && t == cand[0]) || (ci == 2 && t == cand[1])) continue;   /* tried already */
             long long idx[7];
             float saved[7];
             int ns = 0, feasible = 1;
@@ -383,7 +410,14 @@ static SZP_QHD int szp_saddle_nbr_point(float *v, const int *types, const float 
             for (int i = 0; ok && i < nchk; i++) {
                 const int t0 = types[chk[i]], after = szp_classify(v, g, chk[i]);
                 if (after != 0 && after != t0) ok = 0;                      /* FP or FT */
-                else if (t0 != 0 && chk_before[i] == t0 && after != t0) ok = 0;   /* lost */
+                else if (chk_keep[i] && after != t0) ok = 0;                /* lost */
+                if (ok && i == nchk1 - 1 && !ring2) {
+                    /* ring 2 describes the field without this trial: undo it, list, redo */
+                    for (int j = 0; j < ns; j++) { const float x = v[idx[j]]; v[idx[j]] = saved[j]; saved[j] = x; }
+                    nchk = szp_nbr_ring(v, types, g, k, co, 2, chk, chk_keep, nchk);
+                    for (int j = 0; j < ns; j++) { const float x = v[idx[j]]; v[idx[j]] = saved[j]; saved[j] = x; }
+                    ring2 = 1;
+                }
             }
             if (ok) return 1;
             for (int i = ns - 1; i >= 0; i--) v[idx[i]] = saved[i];
@@ -415,21 +449,57 @@ static inline void szp_saddle_candidates(const float *v, const int *types, const
 {
     const int ncol = szp_ncolours(g, mod);
     const long long N = (long long)g.n[0] * g.n[1] * g.n[2];
-    std::vector<unsigned char> flag((size_t)N, 0);
+    /* Per-thread lists over contiguous index ranges; inside a colour the
+       points keep index order (thread 0's first), whatever the thread count. */
 #ifdef _OPENMP
-    #pragma omp parallel for schedule(static)
+    const int nt = omp_get_max_threads();
+#else
+    const int nt = 1;
 #endif
-    for (long long k = 0; k < N; k++)
-        flag[(size_t)k] = types[k] == 3 && szp_is_interior(g, k) && szp_classify(v, g, k) != 3;
-    std::vector<long long> all;
-    for (long long k = 0; k < N; k++)
-        if (flag[(size_t)k]) all.push_back(k);
+    std::vector<std::vector<long long> > part((size_t)nt);
+    std::vector<std::vector<unsigned char> > pcol((size_t)nt);
+    std::vector<size_t> cnt((size_t)nt * ncol, 0);
+#ifdef _OPENMP
+    #pragma omp parallel for schedule(static, 1) num_threads(nt)
+#endif
+    for (int t = 0; t < nt; t++) {
+        const long long lo = N * t / nt, hi = N * (t + 1) / nt;
+        std::vector<long long> &mine = part[(size_t)t];
+        std::vector<unsigned char> &col = pcol[(size_t)t];
+        size_t *c = &cnt[(size_t)t * ncol];
+        for (long long k = lo; k < hi; k++)
+            if (types[k] == 3 && szp_is_interior(g, k) && szp_classify(v, g, k) != 3) {
+                const int cl = szp_colour_mod(g, k, mod);
+                mine.push_back(k); col.push_back((unsigned char)cl); c[cl]++;
+            }
+    }
     start.assign(ncol + 1, 0);
-    for (long long k : all) start[szp_colour_mod(g, k, mod) + 1]++;
+    for (int t = 0; t < nt; t++)
+        for (int c = 0; c < ncol; c++) start[c + 1] += cnt[(size_t)t * ncol + c];
     for (int c = 0; c < ncol; c++) start[c + 1] += start[c];
-    list.resize(all.size());
-    std::vector<size_t> pos(start.begin(), start.end() - 1);
-    for (long long k : all) list[pos[szp_colour_mod(g, k, mod)]++] = k;
+    list.resize(start[ncol]);
+    /* cnt becomes the write offset of thread t in colour c */
+    for (int c = 0; c < ncol; c++) {
+        size_t off = start[c];
+        for (int t = 0; t < nt; t++) { size_t n = cnt[(size_t)t * ncol + c]; cnt[(size_t)t * ncol + c] = off; off += n; }
+    }
+#ifdef _OPENMP
+    #pragma omp parallel for schedule(static, 1) num_threads(nt)
+#endif
+    for (int t = 0; t < nt; t++) {
+        size_t *pos = &cnt[(size_t)t * ncol];
+        const std::vector<long long> &mine = part[(size_t)t];
+        const std::vector<unsigned char> &col = pcol[(size_t)t];
+        for (size_t i = 0; i < mine.size(); i++) list[pos[col[i]]++] = mine[i];
+    }
+}
+
+/** Whether the neighbourhood move runs a second time: the first pass
+    restored `got` of `candidates` (same rule on host and device). */
+#define SZP_NBR_REPEAT_DIV 8
+static inline int szp_nbr_repeat(unsigned long long got, unsigned long long candidates)
+{
+    return got > 0 && got * SZP_NBR_REPEAT_DIV >= candidates;
 }
 
 /** 1 if interior point k has a stored extremum in its 3^nd neighbourhood. */
@@ -446,17 +516,43 @@ static SZP_QHD unsigned char szp_extremum_lock_at(const int *types, const SzpGri
     return 0;
 }
 
-/** Points next to a stored extremum (its 3^nd neighbourhood). */
-static inline void szp_extremum_locks(const int *types, const SzpGrid &g, std::vector<unsigned char> &locks)
+/** Marks the interior points of the 3^nd neighbourhood of stored extremum k
+    (locks must be zero before). Several extrema may write the same byte; all
+    write 1. */
+static SZP_QHD void szp_extremum_lock_from(const int *types, const SzpGrid &g, long long k, unsigned char *locks)
+{
+    if ((types[k] != 1 && types[k] != 2) || !szp_is_interior(g, k)) return;
+    const long long s2 = g.nd == 3 ? g.s[2] : 0;
+    for (int a = -1; a <= 1; a++)
+        for (int b = -1; b <= 1; b++)
+            for (int c = (g.nd == 3 ? -1 : 0); c <= (g.nd == 3 ? 1 : 0); c++) {
+                long long nk = k + a * g.s[0] + b * g.s[1] + c * s2;
+                if (!szp_is_interior(g, nk)) continue;
+#if defined(_OPENMP) && !defined(__CUDACC__)
+                #pragma omp atomic write
+#endif
+                locks[nk] = 1;
+            }
+}
+
+/** Points next to a stored extremum (its 3^nd neighbourhood). n_extrema:
+    number of stored extrema, only used to choose the cheaper of two forms
+    with the same result (each extremum marks its neighbourhood, or each
+    point looks for an extremum). */
+static inline void szp_extremum_locks(const int *types, const SzpGrid &g, std::vector<unsigned char> &locks,
+                                      size_t n_extrema = 0)
 {
     const long long N = (long long)g.n[0] * g.n[1] * g.n[2];
     locks.assign((size_t)N, 0);
-    /* Gather form (each point looks at its own neighbourhood): no write races. */
+    unsigned char *L = locks.data();
+    const bool gather = n_extrema > (size_t)N / 16;
 #ifdef _OPENMP
     #pragma omp parallel for schedule(static)
 #endif
-    for (long long k = 0; k < N; k++)
-        locks[(size_t)k] = szp_extremum_lock_at(types, g, k);
+    for (long long k = 0; k < N; k++) {
+        if (gather) L[k] = szp_extremum_lock_at(types, g, k);
+        else        szp_extremum_lock_from(types, g, k, L);
+    }
 }
 
 /* ---------------- extrema step (host, OpenMP) ------------------------- */

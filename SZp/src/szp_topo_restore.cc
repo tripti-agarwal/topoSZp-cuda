@@ -16,12 +16,13 @@
 /* use: 0 stencil, 1 RBF (3^nd colour classes); 2 neighbourhood move (5^nd). */
 static size_t saddle_pass_cpu(float *data, const int *types, const float *orig,
                               const unsigned char *locks, const SzpGrid &g, float eb,
-                              const double *w, int use_rbf)
+                              const double *w, int use_rbf, size_t *candidates = NULL)
 {
     std::vector<long long> list;
     std::vector<size_t> start;
     const int mod = use_rbf == 2 ? 5 : 3;
     szp_saddle_candidates(data, types, g, list, start, mod);
+    if (candidates) *candidates = list.size();
     const int ncol = szp_ncolours(g, mod);
     size_t restored = 0;
     for (int c = 0; c < ncol; c++) {
@@ -56,20 +57,21 @@ static void restore_cpu(float *data, const int *types, const int *sort_positions
     szp_restore_extrema_ranked(data, orig.data(), types, sort_positions, extrema_count, g, eb);
     szp_count_lost(data, types, g, NULL, NULL, NULL, &st.saddles_lost_before);
 
-    /* 2-3. saddles: stencil then RBF, twice */
+    /* 2-3. saddles: stencil, then RBF */
     std::vector<unsigned char> locks;
-    szp_extremum_locks(types, g, locks);
+    szp_extremum_locks(types, g, locks, st.extrema);
     double w[27];
     szp_rbf_weights(g.nd, w);
+    st.saddles_by_stencil += saddle_pass_cpu(data, types, orig.data(), locks.data(), g, eb, w, 0);
+    st.saddles_by_rbf += saddle_pass_cpu(data, types, orig.data(), locks.data(), g, eb, w, 1);
+    /* 4. neighbourhood move; a second time only if the first restored at
+       least SZP_NBR_REPEAT_DIV-th of its candidates (otherwise the rest are
+       mostly flat regions, where a second try costs as much and gains little) */
     for (int round = 0; round < 2; round++) {
-        st.saddles_by_stencil += saddle_pass_cpu(data, types, orig.data(), locks.data(), g, eb, w, 0);
-        st.saddles_by_rbf += saddle_pass_cpu(data, types, orig.data(), locks.data(), g, eb, w, 1);
-    }
-    /* 4. neighbourhood move, up to twice */
-    for (int round = 0; round < 2; round++) {
-        size_t got = saddle_pass_cpu(data, types, orig.data(), locks.data(), g, eb, w, 2);
+        size_t cand = 0;
+        size_t got = saddle_pass_cpu(data, types, orig.data(), locks.data(), g, eb, w, 2, &cand);
         st.saddles_by_neighbours += got;
-        if (got == 0) break;
+        if (!szp_nbr_repeat(got, cand)) break;
     }
     szp_count_lost(data, types, g, NULL, &st.extrema_lost_after, NULL, &st.saddles_lost_after);
     if (stats) *stats = st;
