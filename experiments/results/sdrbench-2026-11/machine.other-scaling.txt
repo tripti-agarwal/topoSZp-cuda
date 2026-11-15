@@ -1,0 +1,12 @@
+date: 2026-11-01T17:31:11.793804
+host: gpu3
+cpu: AMD EPYC 7742 64-Core Processor
+CPUs usable by this job: 32 logical, 16 physical cores (node: 256 logical)
+OMP_PROC_BIND=close OMP_PLACES=cores
+sockets / NUMA: Socket(s): 2;NUMA node(s): 8;
+memory: 1007 GB
+gpu: NVIDIA A100-SXM4-40GB, 40960 MiB, 580.95.05
+nvcc: Build cuda_12.6.r12.6/compiler.34431801_0
+gcc: g++ (Ubuntu 11.4.0-1ubuntu1~22.04.2) 11.4.0
+repo: 300cc7e (claude/sdrbench-experiments)
+settings: threads=16 block=64 reps=3 gpu_reps=1

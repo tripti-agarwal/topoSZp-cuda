@@ -1,0 +1,17 @@
+[19:32:52] date: 2026-11-01T19:32:50.958498
+[19:32:52] host: gpu3
+[19:32:52] cpu: AMD EPYC 7742 64-Core Processor
+[19:32:52] CPUs usable by this job: 32 logical, 16 physical cores (node: 256 logical)
+[19:32:52] OMP_PROC_BIND=close OMP_PLACES=cores
+[19:32:52] sockets / NUMA: Socket(s): 2;NUMA node(s): 8;
+[19:32:52] memory: 1007 GB
+[19:32:52] gpu: NVIDIA A100-SXM4-40GB, 40960 MiB, 580.95.05
+[19:32:52] nvcc: Build cuda_12.6.r12.6/compiler.34431801_0
+[19:32:52] gcc: g++ (Ubuntu 11.4.0-1ubuntu1~22.04.2) 11.4.0
+[19:32:52] repo: 300cc7e (claude/sdrbench-experiments)
+[19:32:52] settings: threads=16 block=64 reps=3 gpu_reps=1
+[19:32:52] datasets: CESM-ATM-2D (60 fields), CESM-ATM-3D (34 fields), Hurricane (20 fields), NYX (6 fields), SCALE-LETKF (12 fields)
+[19:32:52] ==== experiment: vis (CESM-ATM-2D/CLDHGH_1_1800_3600, abs:1e-3)
+[19:32:54] vis: no .vti for original (VTK for Python missing?); the raw .f32 files are in /lcrc/project/ECP-EZ/tripti/toposzp-results/vis
+[19:32:54] vis: CESM-ATM-2D/CLDHGH_1_1800_3600 at abs:1e-3 -> /lcrc/project/ECP-EZ/tripti/toposzp-results/vis/CESM-ATM-2D_CLDHGH_1_1800_3600_abs1e-3_{original,szp,toposzp}.f32 (topo_check results in logs/other-vis/vis.log)
+[19:32:54] done. Results in /lcrc/project/ECP-EZ/tripti/toposzp-results; tables: python3 /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/sdrbench/summarize.py /lcrc/project/ECP-EZ/tripti/toposzp-results

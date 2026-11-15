@@ -1,0 +1,261 @@
+Lmod has detected the following error: The following module(s) are unknown:
+"gcc/11.2.0"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore-cache load "gcc/11.2.0"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
++ python3 /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/sdrbench/exp_main.py --data /lcrc/project/ECP-EZ/tripti/sdrbench-data --out /lcrc/project/ECP-EZ/tripti/toposzp-results --bin /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/sdrbench/bin --tag main-CESM-ATM-3D --datasets CESM-ATM-3D --work /var/tmp/pbs.60753.gpumgt1/toposzp-work
+[15:15:08] date: 2026-11-01T15:15:06.767691
+[15:15:08] host: gpu3
+[15:15:08] cpu: AMD EPYC 7742 64-Core Processor
+[15:15:08] CPUs usable by this job: 32 logical, 16 physical cores (node: 256 logical)
+[15:15:08] OMP_PROC_BIND=close OMP_PLACES=cores
+[15:15:08] sockets / NUMA: Socket(s): 2;NUMA node(s): 8;
+[15:15:08] memory: 1007 GB
+[15:15:08] gpu: NVIDIA A100-SXM4-40GB, 40960 MiB, 580.95.05
+[15:15:08] nvcc: Build cuda_12.6.r12.6/compiler.34431801_0
+[15:15:08] gcc: g++ (Ubuntu 11.4.0-1ubuntu1~22.04.2) 11.4.0
+[15:15:08] repo: 46eab58 (claude/sdrbench-experiments)
+[15:15:08] settings: threads=16 block=64 reps=3 gpu_reps=1
+[15:15:08] datasets: CESM-ATM-3D (34 fields)
+[15:15:08] GPU: yes
+[15:15:08] ==== experiment: main (bounds abs:1e-3,abs:1e-4,abs:1e-5,rel:1e-3,rel:1e-4,rel:1e-5)
+[15:15:52] main CESM-ATM-3D/CLDICE_1_26_1800_3600 abs:1e-3: ratio 12.0104  ext 312539/312539  sad 0->3297/2633822  FP 0 FT 0  err 0.500 eps  cpu 0.612/4.264 s  gpu 0.598/1.408 s identical=1
+[15:16:36] main CESM-ATM-3D/CLDICE_1_26_1800_3600 abs:1e-4: ratio 12.0104  ext 312539/312539  sad 0->3297/2633822  FP 0 FT 0  err 0.785 eps  cpu 0.556/4.308 s  gpu 0.893/1.348 s identical=1
+[15:17:22] main CESM-ATM-3D/CLDICE_1_26_1800_3600 abs:1e-5: ratio 11.6538  ext 312539/312539  sad 27->93484/2633822  FP 0 FT 0  err 1.870 eps  cpu 0.616/4.454 s  gpu 1.095/1.438 s identical=1
+[15:18:07] main CESM-ATM-3D/CLDICE_1_26_1800_3600 rel:1e-3: ratio 8.4928  ext 312539/312539  sad 304235->1084034/2633822  FP 0 FT 0  err 1.998 eps  cpu 0.686/3.820 s  gpu 0.746/1.528 s identical=1
+[15:18:52] main CESM-ATM-3D/CLDICE_1_26_1800_3600 rel:1e-4: ratio 6.7419  ext 312539/312539  sad 853763->1376139/2633822  FP 0 FT 0  err 1.997 eps  cpu 0.698/3.781 s  gpu 0.905/1.395 s identical=1
+[15:19:35] main CESM-ATM-3D/CLDICE_1_26_1800_3600 rel:1e-5: ratio 5.2427  ext 312539/312539  sad 1278009->1518909/2633822  FP 0 FT 0  err 1.996 eps  cpu 0.703/3.501 s  gpu 0.668/1.376 s identical=1
+[15:20:23] main CESM-ATM-3D/CLDLIQ_1_26_1800_3600 abs:1e-3: ratio 11.8884  ext 515871/515871  sad 0->5017/4135861  FP 0 FT 0  err 0.520 eps  cpu 0.622/5.312 s  gpu 0.750/1.596 s identical=1
+[15:21:10] main CESM-ATM-3D/CLDLIQ_1_26_1800_3600 abs:1e-4: ratio 11.7957  ext 515871/515871  sad 10->27736/4135861  FP 0 FT 0  err 1.957 eps  cpu 0.639/5.126 s  gpu 1.075/1.278 s identical=1
+[15:21:58] main CESM-ATM-3D/CLDLIQ_1_26_1800_3600 abs:1e-5: ratio 10.2602  ext 515871/515871  sad 9855->823422/4135861  FP 0 FT 0  err 1.982 eps  cpu 0.692/4.835 s  gpu 0.674/1.622 s identical=1
+Lmod has detected the following error: The following module(s) are unknown:
+"gcc/11.2.0"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore-cache load "gcc/11.2.0"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
++ python3 /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/sdrbench/exp_main.py --data /lcrc/project/ECP-EZ/tripti/sdrbench-data --out /lcrc/project/ECP-EZ/tripti/toposzp-results --bin /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/sdrbench/bin --tag main-CESM-ATM-3D --datasets CESM-ATM-3D --work /var/tmp/pbs.60762.gpumgt1/toposzp-work
+[15:22:44] date: 2026-11-01T15:22:43.483204
+[15:22:44] host: gpu3
+[15:22:44] cpu: AMD EPYC 7742 64-Core Processor
+[15:22:44] CPUs usable by this job: 32 logical, 16 physical cores (node: 256 logical)
+[15:22:44] OMP_PROC_BIND=close OMP_PLACES=cores
+[15:22:44] sockets / NUMA: Socket(s): 2;NUMA node(s): 8;
+[15:22:44] memory: 1007 GB
+[15:22:44] gpu: NVIDIA A100-SXM4-40GB, 40960 MiB, 580.95.05
+[15:22:44] nvcc: Build cuda_12.6.r12.6/compiler.34431801_0
+[15:22:44] gcc: g++ (Ubuntu 11.4.0-1ubuntu1~22.04.2) 11.4.0
+[15:22:44] repo: 300cc7e (claude/sdrbench-experiments)
+[15:22:44] settings: threads=16 block=64 reps=3 gpu_reps=1
+[15:22:44] datasets: CESM-ATM-3D (34 fields)
+[15:22:44] GPU: yes
+[15:22:44] ==== experiment: main (bounds abs:1e-3,abs:1e-4,abs:1e-5,rel:1e-3,rel:1e-4,rel:1e-5)
+[15:23:27] main CESM-ATM-3D/CLDLIQ_1_26_1800_3600 rel:1e-3: ratio 8.6611  ext 515871/515871  sad 408796->1608305/4135861  FP 0 FT 0  err 1.999 eps  cpu 0.744/4.512 s  gpu 0.655/1.573 s identical=1
+[15:24:09] main CESM-ATM-3D/CLDLIQ_1_26_1800_3600 rel:1e-4: ratio 6.9886  ext 515871/515871  sad 1282575->1777442/4135861  FP 0 FT 0  err 1.997 eps  cpu 0.861/4.513 s  gpu 0.632/1.247 s identical=1
+[15:24:50] main CESM-ATM-3D/CLDLIQ_1_26_1800_3600 rel:1e-5: ratio 5.6109  ext 515871/515871  sad 1705841->1846518/4135861  FP 0 FT 0  err 1.994 eps  cpu 0.719/3.937 s  gpu 0.619/1.184 s identical=1
+[15:25:32] main CESM-ATM-3D/CLOUD_1_26_1800_3600 abs:1e-3: ratio 6.4359  ext 735891/735891  sad 1654315->3774810/4367885  FP 0 FT 0  err 1.999 eps  cpu 0.898/3.884 s  gpu 0.990/1.177 s identical=1
+[15:26:11] main CESM-ATM-3D/CLOUD_1_26_1800_3600 abs:1e-4: ratio 4.6780  ext 735891/735891  sad 3507359->4196379/4367885  FP 0 FT 0  err 1.998 eps  cpu 0.907/3.240 s  gpu 0.706/1.414 s identical=1
+[15:26:49] main CESM-ATM-3D/CLOUD_1_26_1800_3600 abs:1e-5: ratio 3.5698  ext 735891/735891  sad 4167632->4327229/4367885  FP 0 FT 0  err 1.997 eps  cpu 0.917/2.862 s  gpu 0.675/1.177 s identical=1
+[15:27:29] main CESM-ATM-3D/CLOUD_1_26_1800_3600 rel:1e-3: ratio 6.4035  ext 735891/735891  sad 1689570->3784485/4367885  FP 0 FT 0  err 1.998 eps  cpu 0.748/3.593 s  gpu 0.842/1.189 s identical=1
+[15:28:08] main CESM-ATM-3D/CLOUD_1_26_1800_3600 rel:1e-4: ratio 4.6557  ext 735891/735891  sad 3526122->4199630/4367885  FP 0 FT 0  err 1.998 eps  cpu 0.894/3.264 s  gpu 0.691/1.211 s identical=1
+[15:28:47] main CESM-ATM-3D/CLOUD_1_26_1800_3600 rel:1e-5: ratio 3.5559  ext 735891/735891  sad 4172031->4328014/4367885  FP 0 FT 0  err 1.996 eps  cpu 0.947/2.962 s  gpu 0.881/1.186 s identical=1
+[15:29:25] main CESM-ATM-3D/CMFDQR_1_26_1800_3600 abs:1e-3: ratio 11.9357  ext 417844/417844  sad 0->4535/2646937  FP 0 FT 0  err 0.500 eps  cpu 0.553/4.005 s  gpu 0.936/1.185 s identical=1
+[15:30:04] main CESM-ATM-3D/CMFDQR_1_26_1800_3600 abs:1e-4: ratio 11.9357  ext 417844/417844  sad 0->4535/2646937  FP 0 FT 0  err 0.500 eps  cpu 0.563/4.072 s  gpu 0.627/1.532 s identical=1
+[15:30:42] main CESM-ATM-3D/CMFDQR_1_26_1800_3600 abs:1e-5: ratio 11.9357  ext 417844/417844  sad 0->4535/2646937  FP 0 FT 0  err 0.500 eps  cpu 0.641/4.081 s  gpu 0.580/1.199 s identical=1
+[15:31:22] main CESM-ATM-3D/CMFDQR_1_26_1800_3600 rel:1e-3: ratio 9.3190  ext 417844/417844  sad 189986->1059977/2646937  FP 0 FT 0  err 1.998 eps  cpu 0.718/3.949 s  gpu 0.623/1.190 s identical=1
+[15:31:58] main CESM-ATM-3D/CMFDQR_1_26_1800_3600 rel:1e-4: ratio 7.5806  ext 417844/417844  sad 770733->1851574/2646937  FP 0 FT 0  err 1.998 eps  cpu 0.620/3.174 s  gpu 1.018/1.170 s identical=1
+[15:32:35] main CESM-ATM-3D/CMFDQR_1_26_1800_3600 rel:1e-5: ratio 6.0111  ext 417844/417844  sad 1546140->2286291/2646937  FP 0 FT 0  err 1.997 eps  cpu 0.768/3.132 s  gpu 0.747/1.171 s identical=1
+[15:33:18] main CESM-ATM-3D/CMFDQ_1_26_1800_3600 abs:1e-3: ratio 11.7865  ext 663226/663226  sad 0->4506/3958787  FP 0 FT 0  err 0.500 eps  cpu 0.709/5.075 s  gpu 0.657/1.437 s identical=1
+[15:34:00] main CESM-ATM-3D/CMFDQ_1_26_1800_3600 abs:1e-4: ratio 11.7865  ext 663226/663226  sad 0->4506/3958787  FP 0 FT 0  err 0.500 eps  cpu 0.701/5.278 s  gpu 0.636/1.238 s identical=1
+[15:34:40] main CESM-ATM-3D/CMFDQ_1_26_1800_3600 abs:1e-5: ratio 11.7865  ext 663226/663226  sad 0->4506/3958787  FP 0 FT 0  err 0.498 eps  cpu 0.610/4.882 s  gpu 0.611/1.231 s identical=1
+[15:35:23] main CESM-ATM-3D/CMFDQ_1_26_1800_3600 rel:1e-3: ratio 8.9016  ext 663226/663226  sad 341171->1455904/3958787  FP 0 FT 0  err 1.998 eps  cpu 0.814/4.788 s  gpu 0.661/1.153 s identical=1
+[15:36:04] main CESM-ATM-3D/CMFDQ_1_26_1800_3600 rel:1e-4: ratio 7.0380  ext 663226/663226  sad 1174690->2237637/3958787  FP 0 FT 0  err 1.998 eps  cpu 0.837/4.255 s  gpu 0.721/1.487 s identical=1
+[15:36:44] main CESM-ATM-3D/CMFDQ_1_26_1800_3600 rel:1e-5: ratio 5.4761  ext 663226/663226  sad 2056884->2908285/3958787  FP 0 FT 0  err 1.997 eps  cpu 0.718/3.385 s  gpu 0.902/1.205 s identical=1
+[15:37:28] main CESM-ATM-3D/CMFDT_1_26_1800_3600 abs:1e-3: ratio 11.6783  ext 819992/819992  sad 0->5815/4666027  FP 0 FT 0  err 0.487 eps  cpu 0.671/5.573 s  gpu 0.706/1.245 s identical=1
+[15:38:13] main CESM-ATM-3D/CMFDT_1_26_1800_3600 abs:1e-4: ratio 11.6623  ext 819992/819992  sad 0->8103/4666027  FP 0 FT 0  err 1.554 eps  cpu 0.751/5.929 s  gpu 0.720/1.297 s identical=1
+[15:38:57] main CESM-ATM-3D/CMFDT_1_26_1800_3600 abs:1e-5: ratio 10.8482  ext 819992/819992  sad 2663->410932/4666027  FP 0 FT 0  err 1.977 eps  cpu 0.767/5.747 s  gpu 0.720/1.263 s identical=1
+[15:39:39] main CESM-ATM-3D/CMFDT_1_26_1800_3600 rel:1e-3: ratio 8.4272  ext 819992/819992  sad 335991->2048482/4666027  FP 0 FT 0  err 1.998 eps  cpu 0.735/4.752 s  gpu 0.696/1.203 s identical=1
+[15:40:20] main CESM-ATM-3D/CMFDT_1_26_1800_3600 rel:1e-4: ratio 6.3494  ext 819992/819992  sad 1657609->3825615/4666027  FP 0 FT 0  err 1.999 eps  cpu 0.892/4.164 s  gpu 0.682/1.167 s identical=1
+[15:41:00] main CESM-ATM-3D/CMFDT_1_26_1800_3600 rel:1e-5: ratio 4.7747  ext 819992/819992  sad 3449531->4459469/4666027  FP 0 FT 0  err 1.998 eps  cpu 0.909/3.380 s  gpu 0.929/1.286 s identical=1
+[15:41:39] main CESM-ATM-3D/CONCLD_1_26_1800_3600 abs:1e-3: ratio 8.5588  ext 360049/360049  sad 163016->1409363/2741318  FP 0 FT 0  err 1.997 eps  cpu 0.678/3.639 s  gpu 0.570/1.128 s identical=1
+[15:42:17] main CESM-ATM-3D/CONCLD_1_26_1800_3600 abs:1e-4: ratio 6.6038  ext 360049/360049  sad 979894->2344585/2741318  FP 0 FT 0  err 1.998 eps  cpu 0.642/3.216 s  gpu 0.682/1.153 s identical=1
+[15:42:54] main CESM-ATM-3D/CONCLD_1_26_1800_3600 abs:1e-5: ratio 4.9931  ext 360049/360049  sad 2089850->2638471/2741318  FP 0 FT 0  err 1.998 eps  cpu 0.796/3.011 s  gpu 0.879/1.306 s identical=1
+[15:43:33] main CESM-ATM-3D/CONCLD_1_26_1800_3600 rel:1e-3: ratio 7.9562  ext 360049/360049  sad 325600->1778739/2741318  FP 0 FT 0  err 1.997 eps  cpu 0.759/3.678 s  gpu 0.678/1.188 s identical=1
+[15:44:10] main CESM-ATM-3D/CONCLD_1_26_1800_3600 rel:1e-4: ratio 6.0440  ext 360049/360049  sad 1356403->2477537/2741318  FP 0 FT 0  err 1.998 eps  cpu 0.639/2.917 s  gpu 0.607/1.170 s identical=1
+[15:44:46] main CESM-ATM-3D/CONCLD_1_26_1800_3600 rel:1e-5: ratio 4.6072  ext 360049/360049  sad 2313996->2677104/2741318  FP 0 FT 0  err 1.997 eps  cpu 0.656/2.676 s  gpu 0.611/1.169 s identical=1
+[15:45:33] main CESM-ATM-3D/DCQ_1_26_1800_3600 abs:1e-3: ratio 11.6476  ext 886337/886337  sad 0->8122/5000457  FP 0 FT 0  err 0.500 eps  cpu 0.738/6.110 s  gpu 0.698/1.272 s identical=1
+[15:46:19] main CESM-ATM-3D/DCQ_1_26_1800_3600 abs:1e-4: ratio 11.6476  ext 886337/886337  sad 0->8122/5000457  FP 0 FT 0  err 0.500 eps  cpu 0.772/6.198 s  gpu 0.641/1.206 s identical=1
+[15:47:03] main CESM-ATM-3D/DCQ_1_26_1800_3600 abs:1e-5: ratio 11.6476  ext 886337/886337  sad 0->8122/5000457  FP 0 FT 0  err 0.497 eps  cpu 0.720/5.842 s  gpu 0.670/1.240 s identical=1
+[15:47:48] main CESM-ATM-3D/DCQ_1_26_1800_3600 rel:1e-3: ratio 8.1753  ext 886337/886337  sad 533146->2292034/5000457  FP 0 FT 0  err 1.998 eps  cpu 0.901/5.257 s  gpu 0.716/1.216 s identical=1
+[15:48:32] main CESM-ATM-3D/DCQ_1_26_1800_3600 rel:1e-4: ratio 6.3554  ext 886337/886337  sad 1900893->2882087/5000457  FP 0 FT 0  err 1.998 eps  cpu 0.899/4.775 s  gpu 0.748/1.201 s identical=1
+[15:49:13] main CESM-ATM-3D/DCQ_1_26_1800_3600 rel:1e-5: ratio 4.8045  ext 886337/886337  sad 2808566->3483892/5000457  FP 0 FT 0  err 1.998 eps  cpu 0.831/3.780 s  gpu 0.744/1.168 s identical=1
+[15:49:59] main CESM-ATM-3D/DTCOND_1_26_1800_3600 abs:1e-3: ratio 11.6025  ext 952702/952702  sad 0->8301/5353719  FP 0 FT 0  err 0.488 eps  cpu 0.820/6.271 s  gpu 0.712/1.293 s identical=1
+[15:50:45] main CESM-ATM-3D/DTCOND_1_26_1800_3600 abs:1e-4: ratio 11.5491  ext 952702/952702  sad 0->13226/5353719  FP 0 FT 0  err 1.715 eps  cpu 0.803/6.098 s  gpu 0.699/1.251 s identical=1
+[15:51:30] main CESM-ATM-3D/DTCOND_1_26_1800_3600 abs:1e-5: ratio 10.0206  ext 952702/952702  sad 9209->769548/5353719  FP 0 FT 0  err 1.989 eps  cpu 0.734/5.707 s  gpu 0.839/1.259 s identical=1
+[15:52:16] main CESM-ATM-3D/DTCOND_1_26_1800_3600 rel:1e-3: ratio 7.8756  ext 952702/952702  sad 482746->2351848/5353719  FP 0 FT 0  err 1.998 eps  cpu 0.829/5.001 s  gpu 0.702/1.518 s identical=1
+[15:52:59] main CESM-ATM-3D/DTCOND_1_26_1800_3600 rel:1e-4: ratio 5.9107  ext 952702/952702  sad 1979962->3508674/5353719  FP 0 FT 0  err 1.998 eps  cpu 0.873/4.684 s  gpu 0.747/1.236 s identical=1
+[15:53:41] main CESM-ATM-3D/DTCOND_1_26_1800_3600 rel:1e-5: ratio 4.4076  ext 952702/952702  sad 3386769->4388677/5353719  FP 0 FT 0  err 1.998 eps  cpu 0.972/4.009 s  gpu 0.743/1.163 s identical=1
+[15:54:24] main CESM-ATM-3D/DTV_1_26_1800_3600 abs:1e-3: ratio 11.8886  ext 481189/481189  sad 0->3643/4940195  FP 0 FT 0  err 0.998 eps  cpu 0.668/5.667 s  gpu 0.650/1.211 s identical=1
+[15:55:09] main CESM-ATM-3D/DTV_1_26_1800_3600 abs:1e-4: ratio 11.7658  ext 481189/481189  sad 1->5995/4940195  FP 0 FT 0  err 1.654 eps  cpu 0.745/6.003 s  gpu 0.776/1.256 s identical=1
+[15:55:54] main CESM-ATM-3D/DTV_1_26_1800_3600 abs:1e-5: ratio 11.1503  ext 481189/481189  sad 2895->235230/4940195  FP 0 FT 0  err 1.991 eps  cpu 0.781/5.917 s  gpu 0.704/1.239 s identical=1
+[15:56:37] main CESM-ATM-3D/DTV_1_26_1800_3600 rel:1e-3: ratio 10.5241  ext 481189/481189  sad 38752->589619/4940195  FP 0 FT 0  err 1.997 eps  cpu 0.721/5.422 s  gpu 0.623/1.225 s identical=1
+[15:57:22] main CESM-ATM-3D/DTV_1_26_1800_3600 rel:1e-4: ratio 9.0866  ext 481189/481189  sad 231659->1036681/4940195  FP 0 FT 0  err 1.997 eps  cpu 0.840/5.523 s  gpu 0.695/1.204 s identical=1
+[15:58:08] main CESM-ATM-3D/DTV_1_26_1800_3600 rel:1e-5: ratio 6.9016  ext 481189/481189  sad 661390->3164689/4940195  FP 0 FT 0  err 1.998 eps  cpu 0.792/4.544 s  gpu 0.778/1.196 s identical=1
+[15:58:40] main CESM-ATM-3D/FICE_1_26_1800_3600 abs:1e-3: ratio 9.3127  ext 3912/3912  sad 4085->62721/106756  FP 0 FT 0  err 1.989 eps  cpu 0.532/2.372 s  gpu 0.458/1.037 s identical=1
+[15:59:11] main CESM-ATM-3D/FICE_1_26_1800_3600 abs:1e-4: ratio 7.9016  ext 3912/3912  sad 20319->88721/106756  FP 0 FT 0  err 1.995 eps  cpu 0.462/2.201 s  gpu 0.478/1.074 s identical=1
+[15:59:43] main CESM-ATM-3D/FICE_1_26_1800_3600 abs:1e-5: ratio 6.3359  ext 3912/3912  sad 50313->99725/106756  FP 0 FT 0  err 1.991 eps  cpu 0.565/2.365 s  gpu 0.529/1.056 s identical=1
+[16:00:15] main CESM-ATM-3D/FICE_1_26_1800_3600 rel:1e-3: ratio 9.3127  ext 3912/3912  sad 4085->62721/106756  FP 0 FT 0  err 1.989 eps  cpu 0.427/2.183 s  gpu 0.489/1.122 s identical=1
+[16:00:47] main CESM-ATM-3D/FICE_1_26_1800_3600 rel:1e-4: ratio 7.9016  ext 3912/3912  sad 20319->88721/106756  FP 0 FT 0  err 1.995 eps  cpu 0.531/2.374 s  gpu 0.510/1.088 s identical=1
+[16:01:18] main CESM-ATM-3D/FICE_1_26_1800_3600 rel:1e-5: ratio 6.3359  ext 3912/3912  sad 50313->99725/106756  FP 0 FT 0  err 1.991 eps  cpu 0.472/2.195 s  gpu 0.595/1.087 s identical=1
+[16:01:57] main CESM-ATM-3D/GCLDLWP_1_26_1800_3600 abs:1e-3: ratio 4.2984  ext 291622/291622  sad 1955766->2317141/2847336  FP 0 FT 0  err 1.996 eps  cpu 0.711/2.889 s  gpu 0.621/1.131 s identical=1
+[16:02:36] main CESM-ATM-3D/GCLDLWP_1_26_1800_3600 abs:1e-4: ratio 3.4036  ext 291622/291622  sad 2219050->2418989/2847336  FP 0 FT 0  err 1.996 eps  cpu 0.901/2.811 s  gpu 0.689/1.193 s identical=1
+[16:03:15] main CESM-ATM-3D/GCLDLWP_1_26_1800_3600 abs:1e-5: ratio 2.7811  ext 291622/291622  sad 2376796->2464099/2847336  FP 0 FT 0  err 1.995 eps  cpu 0.916/3.124 s  gpu 0.705/1.228 s identical=1
+[16:03:53] main CESM-ATM-3D/GCLDLWP_1_26_1800_3600 rel:1e-3: ratio 7.7048  ext 291622/291622  sad 741596->1736653/2847336  FP 0 FT 0  err 1.998 eps  cpu 0.655/3.417 s  gpu 0.578/1.141 s identical=1
+[16:04:32] main CESM-ATM-3D/GCLDLWP_1_26_1800_3600 rel:1e-4: ratio 5.9045  ext 291622/291622  sad 1551066->2019643/2847336  FP 0 FT 0  err 1.997 eps  cpu 0.805/3.504 s  gpu 0.599/1.155 s identical=1
+[16:05:10] main CESM-ATM-3D/GCLDLWP_1_26_1800_3600 rel:1e-5: ratio 4.5445  ext 291622/291622  sad 1899920->2281593/2847336  FP 0 FT 0  err 1.995 eps  cpu 0.785/2.898 s  gpu 0.629/1.161 s identical=1
+[16:05:56] main CESM-ATM-3D/ICIMR_1_26_1800_3600 abs:1e-3: ratio 11.5905  ext 981449/981449  sad 63->15691/4477401  FP 0 FT 0  err 1.850 eps  cpu 0.763/5.798 s  gpu 0.629/1.211 s identical=1
+[16:06:41] main CESM-ATM-3D/ICIMR_1_26_1800_3600 abs:1e-4: ratio 10.7607  ext 981449/981449  sad 14501->407883/4477401  FP 0 FT 0  err 1.991 eps  cpu 0.693/5.302 s  gpu 0.661/1.256 s identical=1
+[16:07:27] main CESM-ATM-3D/ICIMR_1_26_1800_3600 abs:1e-5: ratio 9.0654  ext 981449/981449  sad 305437->1455263/4477401  FP 0 FT 0  err 1.999 eps  cpu 0.754/5.122 s  gpu 0.660/1.598 s identical=1
+[16:08:11] main CESM-ATM-3D/ICIMR_1_26_1800_3600 rel:1e-3: ratio 8.8077  ext 981449/981449  sad 389934->1613491/4477401  FP 0 FT 0  err 1.997 eps  cpu 0.879/5.181 s  gpu 0.629/1.208 s identical=1
+[16:08:54] main CESM-ATM-3D/ICIMR_1_26_1800_3600 rel:1e-4: ratio 6.9722  ext 981449/981449  sad 1379246->2670063/4477401  FP 0 FT 0  err 1.998 eps  cpu 0.797/4.187 s  gpu 0.641/1.176 s identical=1
+[16:09:37] main CESM-ATM-3D/ICIMR_1_26_1800_3600 rel:1e-5: ratio 5.4505  ext 981449/981449  sad 2562128->3212380/4477401  FP 0 FT 0  err 1.997 eps  cpu 0.945/4.119 s  gpu 0.693/1.166 s identical=1
+[16:10:20] main CESM-ATM-3D/ICLDIWP_1_26_1800_3600 abs:1e-3: ratio 3.9817  ext 911339/911339  sad 2810700->2951349/4229891  FP 0 FT 0  err 1.998 eps  cpu 0.963/3.971 s  gpu 0.702/1.219 s identical=1
+[16:11:01] main CESM-ATM-3D/ICLDIWP_1_26_1800_3600 abs:1e-4: ratio 3.2938  ext 911339/911339  sad 2937787->2986828/4229891  FP 0 FT 0  err 1.994 eps  cpu 0.876/3.526 s  gpu 0.701/1.195 s identical=1
+[16:11:44] main CESM-ATM-3D/ICLDIWP_1_26_1800_3600 abs:1e-5: ratio 2.8014  ext 911339/911339  sad 2968442->2995281/4229891  FP 0 FT 0  err 1.966 eps  cpu 1.049/3.876 s  gpu 0.745/1.216 s identical=1
+[16:12:28] main CESM-ATM-3D/ICLDIWP_1_26_1800_3600 rel:1e-3: ratio 8.5666  ext 911339/911339  sad 549994->1450094/4229891  FP 0 FT 0  err 1.998 eps  cpu 0.775/5.129 s  gpu 0.644/1.197 s identical=1
+[16:13:11] main CESM-ATM-3D/ICLDIWP_1_26_1800_3600 rel:1e-4: ratio 6.7484  ext 911339/911339  sad 1362821->2244561/4229891  FP 0 FT 0  err 1.998 eps  cpu 0.790/4.226 s  gpu 0.663/1.226 s identical=1
+[16:13:53] main CESM-ATM-3D/ICLDIWP_1_26_1800_3600 rel:1e-5: ratio 5.2828  ext 911339/911339  sad 2222560->2753087/4229891  FP 0 FT 0  err 1.998 eps  cpu 0.835/3.873 s  gpu 0.702/1.208 s identical=1
+[16:14:35] main CESM-ATM-3D/ICLDTWP_1_26_1800_3600 abs:1e-3: ratio 3.0255  ext 1037282/1037282  sad 4384824->4533303/4940778  FP 0 FT 0  err 1.998 eps  cpu 1.072/3.225 s  gpu 0.772/1.214 s identical=1
+[16:15:16] main CESM-ATM-3D/ICLDTWP_1_26_1800_3600 abs:1e-4: ratio 2.5148  ext 1037282/1037282  sad 4502526->4567788/4940778  FP 0 FT 0  err 1.994 eps  cpu 1.096/3.362 s  gpu 0.760/1.172 s identical=1
+[16:15:57] main CESM-ATM-3D/ICLDTWP_1_26_1800_3600 abs:1e-5: ratio 2.1471  ext 1037282/1037282  sad 4534170->4587670/4940778  FP 0 FT 0  err 1.966 eps  cpu 1.036/2.997 s  gpu 1.138/1.233 s identical=1
+[16:16:42] main CESM-ATM-3D/ICLDTWP_1_26_1800_3600 rel:1e-3: ratio 8.2416  ext 1037282/1037282  sad 596257->2470711/4940778  FP 0 FT 0  err 1.997 eps  cpu 0.921/5.257 s  gpu 0.673/1.210 s identical=1
+[16:17:26] main CESM-ATM-3D/ICLDTWP_1_26_1800_3600 rel:1e-4: ratio 6.2829  ext 1037282/1037282  sad 2053267->3331334/4940778  FP 0 FT 0  err 1.998 eps  cpu 0.950/4.505 s  gpu 0.724/1.178 s identical=1
+[16:18:07] main CESM-ATM-3D/ICLDTWP_1_26_1800_3600 rel:1e-5: ratio 4.7680  ext 1037282/1037282  sad 3232775->4068034/4940778  FP 0 FT 0  err 1.997 eps  cpu 0.887/3.433 s  gpu 1.002/1.199 s identical=1
+[16:18:56] main CESM-ATM-3D/ICWMR_1_26_1800_3600 abs:1e-3: ratio 11.1272  ext 949578/949578  sad 2513->300512/5607716  FP 0 FT 0  err 1.981 eps  cpu 0.863/6.471 s  gpu 0.669/1.231 s identical=1
+[16:19:44] main CESM-ATM-3D/ICWMR_1_26_1800_3600 abs:1e-4: ratio 9.5247  ext 949578/949578  sad 201080->1897036/5607716  FP 0 FT 0  err 1.998 eps  cpu 0.909/5.863 s  gpu 0.682/1.276 s identical=1
+[16:20:28] main CESM-ATM-3D/ICWMR_1_26_1800_3600 abs:1e-5: ratio 7.9063  ext 949578/949578  sad 1338043->2793446/5607716  FP 0 FT 0  err 1.998 eps  cpu 0.836/4.769 s  gpu 0.658/1.208 s identical=1
+[16:21:16] main CESM-ATM-3D/ICWMR_1_26_1800_3600 rel:1e-3: ratio 8.4536  ext 949578/949578  sad 859027->2580189/5607716  FP 0 FT 0  err 1.999 eps  cpu 0.964/5.513 s  gpu 0.686/1.267 s identical=1
+[16:22:01] main CESM-ATM-3D/ICWMR_1_26_1800_3600 rel:1e-4: ratio 6.8246  ext 949578/949578  sad 2259406->3048116/5607716  FP 0 FT 0  err 1.998 eps  cpu 0.897/4.982 s  gpu 0.717/1.217 s identical=1
+[16:22:47] main CESM-ATM-3D/ICWMR_1_26_1800_3600 rel:1e-5: ratio 5.5110  ext 949578/949578  sad 2980971->3202763/5607716  FP 0 FT 0  err 1.996 eps  cpu 0.894/4.453 s  gpu 0.702/1.202 s identical=1
+[16:23:27] main CESM-ATM-3D/OMEGAT_1_26_1800_3600 abs:1e-3: ratio 2.8561  ext 720002/720002  sad 3777989->4278157/4333809  FP 0 FT 0  err 1.999 eps  cpu 0.999/3.119 s  gpu 0.844/1.376 s identical=1
+[16:24:08] main CESM-ATM-3D/OMEGAT_1_26_1800_3600 abs:1e-4: ratio 2.2314  ext 720002/720002  sad 4206554->4324280/4333809  FP 0 FT 0  err 1.998 eps  cpu 1.044/2.886 s  gpu 0.880/1.216 s identical=1
+[16:24:48] main CESM-ATM-3D/OMEGAT_1_26_1800_3600 abs:1e-5: ratio 1.8231  ext 720002/720002  sad 4311630->4332144/4333809  FP 0 FT 0  err 1.997 eps  cpu 1.107/2.985 s  gpu 0.877/1.254 s identical=1
+[16:25:33] main CESM-ATM-3D/OMEGAT_1_26_1800_3600 rel:1e-3: ratio 7.5591  ext 720002/720002  sad 117411->1283029/4333809  FP 0 FT 0  err 1.996 eps  cpu 0.793/4.989 s  gpu 0.732/1.390 s identical=1
+[16:26:17] main CESM-ATM-3D/OMEGAT_1_26_1800_3600 rel:1e-4: ratio 5.4411  ext 720002/720002  sad 1166485->2897100/4333809  FP 0 FT 0  err 1.998 eps  cpu 0.880/4.473 s  gpu 0.728/1.292 s identical=1
+[16:26:58] main CESM-ATM-3D/OMEGAT_1_26_1800_3600 rel:1e-5: ratio 3.8666  ext 720002/720002  sad 2696788->3988069/4333809  FP 0 FT 0  err 1.998 eps  cpu 0.929/3.533 s  gpu 0.798/1.212 s identical=1
+[16:27:42] main CESM-ATM-3D/OMEGA_1_26_1800_3600 abs:1e-3: ratio 6.1886  ext 722223/722223  sad 637789->2397757/4343906  FP 0 FT 0  err 1.998 eps  cpu 0.818/4.418 s  gpu 0.673/1.172 s identical=1
+[16:28:24] main CESM-ATM-3D/OMEGA_1_26_1800_3600 abs:1e-4: ratio 4.3463  ext 722223/722223  sad 2221215->3762039/4343906  FP 0 FT 0  err 1.998 eps  cpu 0.922/3.709 s  gpu 0.758/1.179 s identical=1
+[16:29:04] main CESM-ATM-3D/OMEGA_1_26_1800_3600 abs:1e-5: ratio 3.1691  ext 722223/722223  sad 3498515->4236302/4343906  FP 0 FT 0  err 1.998 eps  cpu 0.958/3.242 s  gpu 0.746/1.195 s identical=1
+[16:29:49] main CESM-ATM-3D/OMEGA_1_26_1800_3600 rel:1e-3: ratio 7.4886  ext 722223/722223  sad 117597->1346348/4343906  FP 0 FT 0  err 1.997 eps  cpu 0.793/4.996 s  gpu 0.730/1.218 s identical=1
+[16:30:32] main CESM-ATM-3D/OMEGA_1_26_1800_3600 rel:1e-4: ratio 5.3832  ext 722223/722223  sad 1216174->3004759/4343906  FP 0 FT 0  err 1.999 eps  cpu 0.812/4.305 s  gpu 0.758/1.216 s identical=1
+[16:31:13] main CESM-ATM-3D/OMEGA_1_26_1800_3600 rel:1e-5: ratio 3.8241  ext 722223/722223  sad 2786517->4025614/4343906  FP 0 FT 0  err 1.998 eps  cpu 0.926/3.356 s  gpu 0.765/1.208 s identical=1
+[16:31:53] main CESM-ATM-3D/QC_1_26_1800_3600 abs:1e-3: ratio 11.8914  ext 487934/487934  sad 0->5095/2956652  FP 0 FT 0  err 0.500 eps  cpu 0.657/4.557 s  gpu 0.566/1.345 s identical=1
+[16:32:31] main CESM-ATM-3D/QC_1_26_1800_3600 abs:1e-4: ratio 11.8914  ext 487934/487934  sad 0->5095/2956652  FP 0 FT 0  err 0.500 eps  cpu 0.602/4.281 s  gpu 0.554/1.180 s identical=1
+[16:33:10] main CESM-ATM-3D/QC_1_26_1800_3600 abs:1e-5: ratio 11.8914  ext 487934/487934  sad 0->5095/2956652  FP 0 FT 0  err 0.500 eps  cpu 0.676/4.638 s  gpu 0.554/1.156 s identical=1
+[16:33:50] main CESM-ATM-3D/QC_1_26_1800_3600 rel:1e-3: ratio 8.8332  ext 487934/487934  sad 342145->1675925/2956652  FP 0 FT 0  err 1.998 eps  cpu 0.770/3.914 s  gpu 0.600/1.165 s identical=1
+[16:34:27] main CESM-ATM-3D/QC_1_26_1800_3600 rel:1e-4: ratio 7.0319  ext 487934/487934  sad 1256636->2408853/2956652  FP 0 FT 0  err 1.998 eps  cpu 0.725/3.250 s  gpu 0.584/1.119 s identical=1
+[16:35:04] main CESM-ATM-3D/QC_1_26_1800_3600 rel:1e-5: ratio 5.5349  ext 487934/487934  sad 2143473->2705005/2956652  FP 0 FT 0  err 1.998 eps  cpu 0.727/2.921 s  gpu 0.625/1.157 s identical=1
+[16:35:49] main CESM-ATM-3D/QRL_1_26_1800_3600 abs:1e-3: ratio 11.8442  ext 585831/585831  sad 0->4868/4608848  FP 0 FT 0  err 0.486 eps  cpu 0.759/5.566 s  gpu 0.640/1.250 s identical=1
+[16:36:32] main CESM-ATM-3D/QRL_1_26_1800_3600 abs:1e-4: ratio 11.8251  ext 585831/585831  sad 1->7519/4608848  FP 0 FT 0  err 1.886 eps  cpu 0.745/5.764 s  gpu 0.636/1.195 s identical=1
+[16:37:15] main CESM-ATM-3D/QRL_1_26_1800_3600 abs:1e-5: ratio 10.3604  ext 585831/585831  sad 1882->574810/4608848  FP 0 FT 0  err 1.936 eps  cpu 0.719/5.168 s  gpu 0.613/1.179 s identical=1
+[16:37:57] main CESM-ATM-3D/QRL_1_26_1800_3600 rel:1e-3: ratio 6.9485  ext 585831/585831  sad 416994->3642069/4608848  FP 0 FT 0  err 1.998 eps  cpu 0.903/4.362 s  gpu 0.621/1.177 s identical=1
+[16:38:38] main CESM-ATM-3D/QRL_1_26_1800_3600 rel:1e-4: ratio 5.1691  ext 585831/585831  sad 2223516->4331008/4608848  FP 0 FT 0  err 1.998 eps  cpu 0.897/3.702 s  gpu 0.698/1.161 s identical=1
+[16:39:17] main CESM-ATM-3D/QRL_1_26_1800_3600 rel:1e-5: ratio 3.6933  ext 585831/585831  sad 3827012->4533629/4608848  FP 0 FT 0  err 1.998 eps  cpu 0.880/3.117 s  gpu 0.706/1.143 s identical=1
+[16:39:58] main CESM-ATM-3D/QRS_1_26_1800_3600 abs:1e-3: ratio 11.9325  ext 447511/447511  sad 0->3521/3297330  FP 0 FT 0  err 0.499 eps  cpu 0.643/4.673 s  gpu 0.589/1.191 s identical=1
+[16:40:38] main CESM-ATM-3D/QRS_1_26_1800_3600 abs:1e-4: ratio 11.9325  ext 447511/447511  sad 0->3521/3297330  FP 0 FT 0  err 0.688 eps  cpu 0.675/4.721 s  gpu 0.575/1.222 s identical=1
+[16:41:18] main CESM-ATM-3D/QRS_1_26_1800_3600 abs:1e-5: ratio 11.1021  ext 447511/447511  sad 10->232025/3297330  FP 0 FT 0  err 1.962 eps  cpu 0.692/4.706 s  gpu 0.560/1.158 s identical=1
+[16:41:57] main CESM-ATM-3D/QRS_1_26_1800_3600 rel:1e-3: ratio 6.7670  ext 447511/447511  sad 552803->2600248/3297330  FP 0 FT 0  err 1.999 eps  cpu 0.769/3.508 s  gpu 0.592/1.167 s identical=1
+[16:42:36] main CESM-ATM-3D/QRS_1_26_1800_3600 rel:1e-4: ratio 4.9184  ext 447511/447511  sad 1947008->3065903/3297330  FP 0 FT 0  err 1.998 eps  cpu 0.826/3.337 s  gpu 0.619/1.138 s identical=1
+[16:43:13] main CESM-ATM-3D/QRS_1_26_1800_3600 rel:1e-5: ratio 3.5647  ext 447511/447511  sad 2890791->3233901/3297330  FP 0 FT 0  err 1.997 eps  cpu 0.837/2.874 s  gpu 0.667/1.185 s identical=1
+[16:43:48] main CESM-ATM-3D/Q_1_26_1800_3600 abs:1e-3: ratio 11.3556  ext 16345/16345  sad 0->1025/389348  FP 0 FT 0  err 1.031 eps  cpu 0.516/2.607 s  gpu 0.468/1.072 s identical=1
+[16:44:20] main CESM-ATM-3D/Q_1_26_1800_3600 abs:1e-4: ratio 10.0278  ext 16345/16345  sad 7->16220/389348  FP 0 FT 0  err 1.941 eps  cpu 0.463/2.369 s  gpu 0.477/1.046 s identical=1
+[16:44:54] main CESM-ATM-3D/Q_1_26_1800_3600 abs:1e-5: ratio 8.7087  ext 16345/16345  sad 903->34039/389348  FP 0 FT 0  err 1.994 eps  cpu 0.609/2.657 s  gpu 0.501/1.096 s identical=1
+[16:45:27] main CESM-ATM-3D/Q_1_26_1800_3600 rel:1e-3: ratio 9.1440  ext 16345/16345  sad 337->30968/389348  FP 0 FT 0  err 1.983 eps  cpu 0.492/2.445 s  gpu 0.495/1.108 s identical=1
+[16:46:00] main CESM-ATM-3D/Q_1_26_1800_3600 rel:1e-4: ratio 7.5103  ext 16345/16345  sad 6520->79034/389348  FP 0 FT 0  err 1.998 eps  cpu 0.599/2.615 s  gpu 0.503/1.045 s identical=1
+[16:46:34] main CESM-ATM-3D/Q_1_26_1800_3600 rel:1e-5: ratio 5.7266  ext 16345/16345  sad 31979->208702/389348  FP 0 FT 0  err 1.996 eps  cpu 0.528/2.405 s  gpu 0.517/1.131 s identical=1
+[16:47:10] main CESM-ATM-3D/RELHUM_1_26_1800_3600 abs:1e-3: ratio 3.4307  ext 111811/111811  sad 1482077->1554448/1564236  FP 0 FT 0  err 1.991 eps  cpu 0.752/2.561 s  gpu 0.618/1.144 s identical=1
+[16:47:46] main CESM-ATM-3D/RELHUM_1_26_1800_3600 abs:1e-4: ratio 2.6340  ext 111811/111811  sad 1551079->1560898/1564236  FP 0 FT 0  err 1.946 eps  cpu 0.775/2.583 s  gpu 0.657/1.169 s identical=1
+[16:48:23] main CESM-ATM-3D/RELHUM_1_26_1800_3600 abs:1e-5: ratio 2.1080  ext 111811/111811  sad 1561932->1563096/1564236  FP 0 FT 0  err 1.818 eps  cpu 0.875/2.650 s  gpu 0.670/1.176 s identical=1
+[16:48:58] main CESM-ATM-3D/RELHUM_1_26_1800_3600 rel:1e-3: ratio 6.6194  ext 111811/111811  sad 371391->1454445/1564236  FP 0 FT 0  err 1.999 eps  cpu 0.626/2.581 s  gpu 0.546/1.124 s identical=1
+[16:49:34] main CESM-ATM-3D/RELHUM_1_26_1800_3600 rel:1e-4: ratio 4.7019  ext 111811/111811  sad 1126548->1528527/1564236  FP 0 FT 0  err 1.998 eps  cpu 0.705/2.691 s  gpu 0.592/1.153 s identical=1
+[16:50:09] main CESM-ATM-3D/RELHUM_1_26_1800_3600 rel:1e-5: ratio 3.4289  ext 111811/111811  sad 1482447->1554483/1564236  FP 0 FT 0  err 1.995 eps  cpu 0.692/2.425 s  gpu 0.616/1.174 s identical=1
+[16:50:43] main CESM-ATM-3D/T_1_26_1800_3600 abs:1e-3: ratio 3.9788  ext 3995/3995  sad 135213->240301/250931  FP 0 FT 0  err 1.968 eps  cpu 0.659/2.439 s  gpu 0.536/1.130 s identical=1
+[16:51:17] main CESM-ATM-3D/T_1_26_1800_3600 abs:1e-4: ratio 2.8775  ext 3995/3995  sad 228505->249324/250931  FP 0 FT 0  err 1.831 eps  cpu 0.653/2.359 s  gpu 0.576/1.142 s identical=1
+[16:51:54] main CESM-ATM-3D/T_1_26_1800_3600 abs:1e-5: ratio 2.2288  ext 3995/3995  sad 250931->250931/250931  FP 0 FT 0  err 0.000 eps  cpu 0.817/2.546 s  gpu 0.635/1.173 s identical=1
+[16:52:27] main CESM-ATM-3D/T_1_26_1800_3600 rel:1e-3: ratio 7.0915  ext 3995/3995  sad 3021->208480/250931  FP 0 FT 0  err 1.994 eps  cpu 0.527/2.357 s  gpu 0.535/1.154 s identical=1
+[16:53:01] main CESM-ATM-3D/T_1_26_1800_3600 rel:1e-4: ratio 5.8984  ext 3995/3995  sad 27363->225209/250931  FP 0 FT 0  err 1.998 eps  cpu 0.601/2.439 s  gpu 0.507/1.094 s identical=1
+[16:53:34] main CESM-ATM-3D/T_1_26_1800_3600 rel:1e-5: ratio 4.1072  ext 3995/3995  sad 123773->238935/250931  FP 0 FT 0  err 1.985 eps  cpu 0.573/2.320 s  gpu 0.532/1.122 s identical=1
+[16:54:11] main CESM-ATM-3D/T_1_26_1800_3600.dat.sjt abs:1e-3: ratio 2.9774  ext 122033/122033  sad 1062346->1436024/1566906  FP 0 FT 0  err 1.968 eps  cpu 0.834/2.801 s  gpu 0.646/1.158 s identical=1
+[16:54:49] main CESM-ATM-3D/T_1_26_1800_3600.dat.sjt abs:1e-4: ratio 2.2758  ext 122033/122033  sad 1278535->1484253/1566906  FP 0 FT 0  err 1.831 eps  cpu 0.851/2.701 s  gpu 0.675/1.203 s identical=1
+[16:55:27] main CESM-ATM-3D/T_1_26_1800_3600.dat.sjt abs:1e-5: ratio 1.8542  ext 122033/122033  sad 1566906->1566906/1566906  FP 0 FT 0  err 0.000 eps  cpu 0.969/2.671 s  gpu 0.709/1.211 s identical=1
+[16:56:03] main CESM-ATM-3D/T_1_26_1800_3600.dat.sjt rel:1e-3: ratio 6.6557  ext 122033/122033  sad 166546->1180066/1566906  FP 0 FT 0  err 1.998 eps  cpu 0.599/2.813 s  gpu 0.536/1.126 s identical=1
+[16:56:40] main CESM-ATM-3D/T_1_26_1800_3600.dat.sjt rel:1e-4: ratio 4.3353  ext 122033/122033  sad 632515->1336576/1566906  FP 0 FT 0  err 1.997 eps  cpu 0.760/2.939 s  gpu 0.634/1.177 s identical=1
+[16:57:17] main CESM-ATM-3D/T_1_26_1800_3600.dat.sjt rel:1e-5: ratio 3.0549  ext 122033/122033  sad 1042306->1433044/1566906  FP 0 FT 0  err 1.986 eps  cpu 0.802/2.781 s  gpu 0.625/1.137 s identical=1
+[16:57:52] main CESM-ATM-3D/UU_1_26_1800_3600 abs:1e-3: ratio 2.4525  ext 25221/25221  sad 694750->726868/727727  FP 0 FT 0  err 1.996 eps  cpu 0.781/2.512 s  gpu 0.609/1.130 s identical=1
+[16:58:27] main CESM-ATM-3D/UU_1_26_1800_3600 abs:1e-4: ratio 1.9607  ext 25221/25221  sad 721848->727602/727727  FP 0 FT 0  err 1.965 eps  cpu 0.789/2.452 s  gpu 0.668/1.204 s identical=1
+[16:59:04] main CESM-ATM-3D/UU_1_26_1800_3600 abs:1e-5: ratio 1.6358  ext 25221/25221  sad 726748->727709/727727  FP 0 FT 0  err 1.907 eps  cpu 0.894/2.635 s  gpu 0.707/1.224 s identical=1
+[16:59:38] main CESM-ATM-3D/UU_1_26_1800_3600 rel:1e-3: ratio 7.7092  ext 25221/25221  sad 1406->367155/727727  FP 0 FT 0  err 1.997 eps  cpu 0.577/2.697 s  gpu 0.517/1.113 s identical=1
+[17:00:13] main CESM-ATM-3D/UU_1_26_1800_3600 rel:1e-4: ratio 6.4435  ext 25221/25221  sad 33366->633984/727727  FP 0 FT 0  err 1.998 eps  cpu 0.612/2.625 s  gpu 0.505/1.111 s identical=1
+[17:00:47] main CESM-ATM-3D/UU_1_26_1800_3600 rel:1e-5: ratio 4.6214  ext 25221/25221  sad 240682->703320/727727  FP 0 FT 0  err 1.998 eps  cpu 0.601/2.444 s  gpu 0.539/1.111 s identical=1
+[17:01:22] main CESM-ATM-3D/U_1_26_1800_3600 abs:1e-3: ratio 3.6205  ext 11511/11511  sad 291519->384574/389785  FP 0 FT 0  err 1.992 eps  cpu 0.687/2.502 s  gpu 0.591/1.120 s identical=1
+[17:01:56] main CESM-ATM-3D/U_1_26_1800_3600 abs:1e-4: ratio 2.6713  ext 11511/11511  sad 372319->388862/389785  FP 0 FT 0  err 1.991 eps  cpu 0.722/2.459 s  gpu 0.712/1.150 s identical=1
+[17:02:32] main CESM-ATM-3D/U_1_26_1800_3600 abs:1e-5: ratio 2.0970  ext 11511/11511  sad 387419->389662/389785  FP 0 FT 0  err 1.937 eps  cpu 0.806/2.505 s  gpu 0.639/1.153 s identical=1
+[17:03:05] main CESM-ATM-3D/U_1_26_1800_3600 rel:1e-3: ratio 7.0385  ext 11511/11511  sad 5759->305952/389785  FP 0 FT 0  err 1.998 eps  cpu 0.524/2.374 s  gpu 0.496/1.130 s identical=1
+[17:03:39] main CESM-ATM-3D/U_1_26_1800_3600 rel:1e-4: ratio 5.6557  ext 11511/11511  sad 67836->365834/389785  FP 0 FT 0  err 1.998 eps  cpu 0.617/2.581 s  gpu 0.639/1.107 s identical=1
+[17:04:13] main CESM-ATM-3D/U_1_26_1800_3600 rel:1e-5: ratio 3.8893  ext 11511/11511  sad 258430->382709/389785  FP 0 FT 0  err 1.996 eps  cpu 0.648/2.447 s  gpu 0.659/1.130 s identical=1
+[17:04:57] main CESM-ATM-3D/VD01_1_26_1800_3600 abs:1e-3: ratio 11.8333  ext 578175/578175  sad 0->3670/4567151  FP 0 FT 0  err 0.500 eps  cpu 0.758/5.737 s  gpu 0.598/1.226 s identical=1
+[17:05:41] main CESM-ATM-3D/VD01_1_26_1800_3600 abs:1e-4: ratio 11.8333  ext 578175/578175  sad 0->3670/4567151  FP 0 FT 0  err 0.500 eps  cpu 0.673/5.559 s  gpu 0.714/1.203 s identical=1
+[17:06:24] main CESM-ATM-3D/VD01_1_26_1800_3600 abs:1e-5: ratio 11.8333  ext 578175/578175  sad 0->3670/4567151  FP 0 FT 0  err 0.499 eps  cpu 0.684/5.638 s  gpu 0.637/1.215 s identical=1
+[17:07:08] main CESM-ATM-3D/VD01_1_26_1800_3600 rel:1e-3: ratio 10.4491  ext 578175/578175  sad 75157->548410/4567151  FP 0 FT 0  err 1.997 eps  cpu 0.802/5.478 s  gpu 0.639/1.222 s identical=1
+[17:07:51] main CESM-ATM-3D/VD01_1_26_1800_3600 rel:1e-4: ratio 9.4277  ext 578175/578175  sad 332429->635525/4567151  FP 0 FT 0  err 1.998 eps  cpu 0.749/5.055 s  gpu 0.624/1.199 s identical=1
+[17:08:34] main CESM-ATM-3D/VD01_1_26_1800_3600 rel:1e-5: ratio 7.9416  ext 578175/578175  sad 568477->982098/4567151  FP 0 FT 0  err 1.997 eps  cpu 0.852/5.369 s  gpu 0.784/1.220 s identical=1
+[17:09:10] main CESM-ATM-3D/VQ_1_26_1800_3600 abs:1e-3: ratio 9.9914  ext 57364/57364  sad 4628->222527/1181379  FP 0 FT 0  err 1.998 eps  cpu 0.619/3.082 s  gpu 0.605/1.131 s identical=1
+[17:09:45] main CESM-ATM-3D/VQ_1_26_1800_3600 abs:1e-4: ratio 8.3987  ext 57364/57364  sad 59048->432370/1181379  FP 0 FT 0  err 1.998 eps  cpu 0.573/2.803 s  gpu 0.528/1.155 s identical=1
+[17:10:20] main CESM-ATM-3D/VQ_1_26_1800_3600 abs:1e-5: ratio 6.4239  ext 57364/57364  sad 243886->557549/1181379  FP 0 FT 0  err 1.998 eps  cpu 0.581/2.814 s  gpu 0.563/1.161 s identical=1
+[17:10:55] main CESM-ATM-3D/VQ_1_26_1800_3600 rel:1e-3: ratio 9.2742  ext 57364/57364  sad 17993->330788/1181379  FP 0 FT 0  err 1.998 eps  cpu 0.629/3.081 s  gpu 0.528/1.132 s identical=1
+[17:11:31] main CESM-ATM-3D/VQ_1_26_1800_3600 rel:1e-4: ratio 7.5064  ext 57364/57364  sad 131940->495180/1181379  FP 0 FT 0  err 1.996 eps  cpu 0.632/3.012 s  gpu 0.629/1.146 s identical=1
+[17:12:06] main CESM-ATM-3D/VQ_1_26_1800_3600 rel:1e-5: ratio 5.5362  ext 57364/57364  sad 347346->641151/1181379  FP 0 FT 0  err 1.997 eps  cpu 0.619/2.660 s  gpu 0.566/1.150 s identical=1
+[17:12:43] main CESM-ATM-3D/VT_1_26_1800_3600 abs:1e-3: ratio 1.9384  ext 55437/55437  sad 1214510->1218402/1218522  FP 0 FT 0  err 1.984 eps  cpu 0.793/2.460 s  gpu 0.714/1.223 s identical=1
+[17:13:21] main CESM-ATM-3D/VT_1_26_1800_3600 abs:1e-4: ratio 1.6207  ext 55437/55437  sad 1218155->1218515/1218522  FP 0 FT 0  err 1.907 eps  cpu 0.930/2.649 s  gpu 0.768/1.273 s identical=1
+[17:13:59] main CESM-ATM-3D/VT_1_26_1800_3600 abs:1e-5: ratio 1.3893  ext 55437/55437  sad 1218508->1218522/1218522  FP 0 FT 0  err 1.526 eps  cpu 0.995/2.658 s  gpu 0.811/1.274 s identical=1
+[17:14:34] main CESM-ATM-3D/VT_1_26_1800_3600 rel:1e-3: ratio 6.9868  ext 55437/55437  sad 22326->887688/1218522  FP 0 FT 0  err 1.994 eps  cpu 0.551/2.683 s  gpu 0.631/1.111 s identical=1
+[17:15:11] main CESM-ATM-3D/VT_1_26_1800_3600 rel:1e-4: ratio 5.3762  ext 55437/55437  sad 246530->1160728/1218522  FP 0 FT 0  err 1.999 eps  cpu 0.615/2.701 s  gpu 0.659/1.142 s identical=1
+[17:15:46] main CESM-ATM-3D/VT_1_26_1800_3600 rel:1e-5: ratio 3.6983  ext 55437/55437  sad 809747->1204860/1218522  FP 0 FT 0  err 1.998 eps  cpu 0.718/2.473 s  gpu 0.711/1.169 s identical=1
+[17:16:23] main CESM-ATM-3D/VU_1_26_1800_3600 abs:1e-3: ratio 2.5867  ext 63503/63503  sad 1161529->1239368/1241464  FP 0 FT 0  err 1.999 eps  cpu 0.786/2.539 s  gpu 0.662/1.179 s identical=1
+[17:16:59] main CESM-ATM-3D/VU_1_26_1800_3600 abs:1e-4: ratio 2.0463  ext 63503/63503  sad 1227408->1241100/1241464  FP 0 FT 0  err 1.996 eps  cpu 0.752/2.425 s  gpu 0.745/1.190 s identical=1
+[17:17:36] main CESM-ATM-3D/VU_1_26_1800_3600 abs:1e-5: ratio 1.6944  ext 63503/63503  sad 1239490->1241412/1241464  FP 0 FT 0  err 1.988 eps  cpu 0.930/2.650 s  gpu 0.809/1.234 s identical=1
+[17:18:12] main CESM-ATM-3D/VU_1_26_1800_3600 rel:1e-3: ratio 8.2033  ext 63503/63503  sad 1270->295722/1241464  FP 0 FT 0  err 1.996 eps  cpu 0.608/2.953 s  gpu 0.532/1.143 s identical=1
+[17:18:48] main CESM-ATM-3D/VU_1_26_1800_3600 rel:1e-4: ratio 6.6587  ext 63503/63503  sad 39370->977816/1241464  FP 0 FT 0  err 1.998 eps  cpu 0.647/2.833 s  gpu 0.642/1.126 s identical=1
+[17:19:24] main CESM-ATM-3D/VU_1_26_1800_3600 rel:1e-5: ratio 4.8478  ext 63503/63503  sad 321639->1191465/1241464  FP 0 FT 0  err 1.998 eps  cpu 0.608/2.614 s  gpu 0.557/1.108 s identical=1
+[17:20:00] main CESM-ATM-3D/VV_1_26_1800_3600 abs:1e-3: ratio 2.6009  ext 55989/55989  sad 1116677->1213842/1216750  FP 0 FT 0  err 1.996 eps  cpu 0.809/2.616 s  gpu 0.678/1.170 s identical=1
+[17:20:37] main CESM-ATM-3D/VV_1_26_1800_3600 abs:1e-4: ratio 2.0555  ext 55989/55989  sad 1200000->1216283/1216750  FP 0 FT 0  err 1.974 eps  cpu 0.812/2.615 s  gpu 0.697/1.230 s identical=1
+[17:21:14] main CESM-ATM-3D/VV_1_26_1800_3600 abs:1e-5: ratio 1.7010  ext 55989/55989  sad 1214653->1216693/1216750  FP 0 FT 0  err 1.812 eps  cpu 0.918/2.648 s  gpu 0.712/1.195 s identical=1
+[17:21:49] main CESM-ATM-3D/VV_1_26_1800_3600 rel:1e-3: ratio 7.5878  ext 55989/55989  sad 3287->539473/1216750  FP 0 FT 0  err 1.987 eps  cpu 0.553/2.745 s  gpu 0.513/1.126 s identical=1
+[17:22:25] main CESM-ATM-3D/VV_1_26_1800_3600 rel:1e-4: ratio 6.2836  ext 55989/55989  sad 73147->1045319/1216750  FP 0 FT 0  err 1.998 eps  cpu 0.674/2.792 s  gpu 0.559/1.139 s identical=1
+[17:23:01] main CESM-ATM-3D/VV_1_26_1800_3600 rel:1e-5: ratio 4.4601  ext 55989/55989  sad 457080->1175842/1216750  FP 0 FT 0  err 1.998 eps  cpu 0.644/2.634 s  gpu 0.588/1.165 s identical=1
+[17:23:37] main CESM-ATM-3D/V_1_26_1800_3600 abs:1e-3: ratio 3.6036  ext 54378/54378  sad 772922->1129897/1142093  FP 0 FT 0  err 1.997 eps  cpu 0.712/2.622 s  gpu 0.643/1.114 s identical=1
+[17:24:12] main CESM-ATM-3D/V_1_26_1800_3600 abs:1e-4: ratio 2.6626  ext 54378/54378  sad 1068985->1139838/1142093  FP 0 FT 0  err 1.991 eps  cpu 0.676/2.397 s  gpu 0.643/1.147 s identical=1
+[17:24:49] main CESM-ATM-3D/V_1_26_1800_3600 abs:1e-5: ratio 2.0918  ext 54378/54378  sad 1132465->1141774/1142093  FP 0 FT 0  err 1.982 eps  cpu 0.845/2.645 s  gpu 0.694/1.174 s identical=1
+[17:25:25] main CESM-ATM-3D/V_1_26_1800_3600 rel:1e-3: ratio 7.0116  ext 54378/54378  sad 15716->826449/1142093  FP 0 FT 0  err 1.996 eps  cpu 0.632/2.794 s  gpu 0.565/1.143 s identical=1
+[17:26:01] main CESM-ATM-3D/V_1_26_1800_3600 rel:1e-4: ratio 5.4319  ext 54378/54378  sad 193880->1084626/1142093  FP 0 FT 0  err 1.999 eps  cpu 0.664/2.749 s  gpu 0.602/1.106 s identical=1
+[17:26:35] main CESM-ATM-3D/V_1_26_1800_3600 rel:1e-5: ratio 3.7314  ext 54378/54378  sad 723511->1127976/1142093  FP 0 FT 0  err 1.998 eps  cpu 0.644/2.446 s  gpu 0.579/1.110 s identical=1
+[17:27:10] main CESM-ATM-3D/Z3_1_26_1800_3600 abs:1e-3: ratio 2.5031  ext 0/0  sad 119152->119662/120204  FP 0 FT 0  err 1.465 eps  cpu 0.750/2.475 s  gpu 0.619/1.127 s identical=1
+[17:27:45] main CESM-ATM-3D/Z3_1_26_1800_3600 abs:1e-4: ratio 1.9965  ext 0/0  sad 120134->120169/120204  FP 0 FT 0  err 0.997 eps  cpu 0.847/2.469 s  gpu 0.690/1.212 s identical=1
+[17:27:45] main CESM-ATM-3D/Z3_1_26_1800_3600 abs:1e-5: format_limit
+[17:28:16] main CESM-ATM-3D/Z3_1_26_1800_3600 rel:1e-3: ratio 9.0810  ext 0/0  sad 0->379/120204  FP 0 FT 0  err 1.000 eps  cpu 0.515/2.405 s  gpu 0.476/1.077 s identical=1
+[17:28:48] main CESM-ATM-3D/Z3_1_26_1800_3600 rel:1e-4: ratio 7.0260  ext 0/0  sad 208->3082/120204  FP 0 FT 0  err 1.937 eps  cpu 0.488/2.257 s  gpu 0.487/1.115 s identical=1
+[17:29:21] main CESM-ATM-3D/Z3_1_26_1800_3600 rel:1e-5: ratio 5.4764  ext 0/0  sad 4076->17933/120204  FP 0 FT 0  err 1.968 eps  cpu 0.616/2.433 s  gpu 0.540/1.105 s identical=1
+[17:29:21] done. Results in /lcrc/project/ECP-EZ/tripti/toposzp-results; tables: python3 /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/sdrbench/summarize.py /lcrc/project/ECP-EZ/tripti/toposzp-results

@@ -1,0 +1,77 @@
+Lmod has detected the following error: The following module(s) are unknown:
+"gcc/11.2.0"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore-cache load "gcc/11.2.0"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
++ python3 /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/sdrbench/exp_main.py --data /lcrc/project/ECP-EZ/tripti/sdrbench-data --out /lcrc/project/ECP-EZ/tripti/toposzp-results --bin /lcrc/project/ECP-EZ/tripti/topoSZp-cuda/experiments/sdrbench/bin --tag main-Hurricane --datasets Hurricane --work /var/tmp/pbs.60754.gpumgt1/toposzp-work
+[15:15:08] date: 2026-11-01T15:15:06.767785
+[15:15:08] host: gpu3
+[15:15:08] cpu: AMD EPYC 7742 64-Core Processor
+[15:15:08] CPUs usable by this job: 32 logical, 16 physical cores (node: 256 logical)
+[15:15:08] OMP_PROC_BIND=close OMP_PLACES=cores
+[15:15:08] sockets / NUMA: Socket(s): 2;NUMA node(s): 8;
+[15:15:08] memory: 1007 GB
+[15:15:08] gpu: NVIDIA A100-SXM4-40GB, 40960 MiB, 580.95.05
+[15:15:08] nvcc: Build cuda_12.6.r12.6/compiler.34431801_0
+[15:15:08] gcc: g++ (Ubuntu 11.4.0-1ubuntu1~22.04.2) 11.4.0
+[15:15:08] repo: 46eab58 (claude/sdrbench-experiments)
+[15:15:08] settings: threads=16 block=64 reps=3 gpu_reps=1
+[15:15:08] datasets: Hurricane (20 fields)
+[15:15:08] GPU: yes
+[15:15:08] ==== experiment: main (bounds abs:1e-3,abs:1e-4,abs:1e-5,rel:1e-3,rel:1e-4,rel:1e-5)
+[15:15:16] main Hurricane/CLOUDf48 abs:1e-3: ratio 12.0061  ext 36461/36461  sad 0->672/74141  FP 0 FT 0  err 1.000 eps  cpu 0.160/0.473 s  gpu 0.102/0.244 s identical=1
+[15:15:24] main Hurricane/CLOUDf48 abs:1e-4: ratio 10.3205  ext 36461/36461  sad 1123->12337/74141  FP 0 FT 0  err 1.912 eps  cpu 0.171/0.500 s  gpu 0.104/0.324 s identical=1
+[15:15:32] main Hurricane/CLOUDf48 abs:1e-5: ratio 8.2600  ext 36461/36461  sad 17920->39749/74141  FP 0 FT 0  err 1.993 eps  cpu 0.163/0.444 s  gpu 0.117/0.290 s identical=1
+[15:15:40] main Hurricane/CLOUDf48 rel:1e-3: ratio 7.0684  ext 36461/36461  sad 36936->54454/74141  FP 0 FT 0  err 1.985 eps  cpu 0.174/0.428 s  gpu 0.122/0.231 s identical=1
+[15:15:48] main Hurricane/CLOUDf48 rel:1e-4: ratio 5.7327  ext 36461/36461  sad 57886->67241/74141  FP 0 FT 0  err 1.995 eps  cpu 0.170/0.396 s  gpu 0.476/0.223 s identical=1
+[15:15:56] main Hurricane/CLOUDf48 rel:1e-5: ratio 4.7647  ext 36461/36461  sad 68972->72454/74141  FP 0 FT 0  err 1.985 eps  cpu 0.182/0.468 s  gpu 0.444/0.239 s identical=1
+[15:16:04] main Hurricane/CLOUDf48.log10 abs:1e-3: ratio 4.1784  ext 36461/36461  sad 71484->73644/74140  FP 0 FT 0  err 1.925 eps  cpu 0.179/0.476 s  gpu 0.115/0.245 s identical=1
+[15:16:12] main Hurricane/CLOUDf48.log10 abs:1e-4: ratio 3.6359  ext 36461/36461  sad 73853->74093/74140  FP 0 FT 0  err 1.907 eps  cpu 0.206/0.453 s  gpu 0.145/0.275 s identical=1
+[15:16:20] main Hurricane/CLOUDf48.log10 abs:1e-5: ratio 3.2264  ext 36461/36461  sad 74108->74136/74140  FP 0 FT 0  err 1.454 eps  cpu 0.210/0.442 s  gpu 0.101/0.174 s identical=1
+[15:16:28] main Hurricane/CLOUDf48.log10 rel:1e-3: ratio 4.9833  ext 36461/36461  sad 57378->69759/74140  FP 0 FT 0  err 1.978 eps  cpu 0.196/0.491 s  gpu 0.118/0.178 s identical=1
+[15:16:36] main Hurricane/CLOUDf48.log10 rel:1e-4: ratio 4.1860  ext 36461/36461  sad 71464->73659/74140  FP 0 FT 0  err 1.954 eps  cpu 0.176/0.410 s  gpu 0.140/0.217 s identical=1
+[15:16:44] main Hurricane/CLOUDf48.log10 rel:1e-5: ratio 3.6380  ext 36461/36461  sad 73848->74097/74140  FP 0 FT 0  err 1.893 eps  cpu 0.202/0.424 s  gpu 0.118/0.214 s identical=1
+[15:16:55] main Hurricane/PRECIPf48 abs:1e-3: ratio 10.9607  ext 297102/297102  sad 7->13422/827357  FP 0 FT 0  err 1.954 eps  cpu 0.240/1.024 s  gpu 0.141/0.469 s identical=1
+[15:17:06] main Hurricane/PRECIPf48 abs:1e-4: ratio 9.6507  ext 297102/297102  sad 333->19667/827357  FP 0 FT 0  err 1.992 eps  cpu 0.255/0.981 s  gpu 0.181/0.386 s identical=1
+[15:17:16] main Hurricane/PRECIPf48 abs:1e-5: ratio 7.8621  ext 297102/297102  sad 7600->44945/827357  FP 0 FT 0  err 1.972 eps  cpu 0.232/0.951 s  gpu 0.482/0.250 s identical=1
+[15:17:26] main Hurricane/PRECIPf48 rel:1e-3: ratio 7.6474  ext 297102/297102  sad 10310->49056/827357  FP 0 FT 0  err 1.998 eps  cpu 0.230/0.957 s  gpu 0.381/0.303 s identical=1
+[15:17:36] main Hurricane/PRECIPf48 rel:1e-4: ratio 6.1147  ext 297102/297102  sad 39487->81956/827357  FP 0 FT 0  err 1.990 eps  cpu 0.243/0.955 s  gpu 0.173/0.577 s identical=1
+[15:17:46] main Hurricane/PRECIPf48 rel:1e-5: ratio 4.9189  ext 297102/297102  sad 69703->117793/827357  FP 0 FT 0  err 1.990 eps  cpu 0.242/0.929 s  gpu 0.157/0.236 s identical=1
+[15:17:56] main Hurricane/PRECIPf48.log10 abs:1e-3: ratio 2.3778  ext 297089/297089  sad 750612->805510/827250  FP 0 FT 0  err 1.993 eps  cpu 0.250/0.557 s  gpu 0.206/0.232 s identical=1
+[15:18:05] main Hurricane/PRECIPf48.log10 abs:1e-4: ratio 1.9184  ext 297089/297089  sad 817195->824582/827250  FP 0 FT 0  err 1.979 eps  cpu 0.266/0.499 s  gpu 0.178/0.220 s identical=1
+[15:18:15] main Hurricane/PRECIPf48.log10 abs:1e-5: ratio 1.6090  ext 297089/297089  sad 826253->826989/827250  FP 0 FT 0  err 1.907 eps  cpu 0.289/0.542 s  gpu 0.395/0.301 s identical=1
+[15:18:25] main Hurricane/PRECIPf48.log10 rel:1e-3: ratio 3.6470  ext 297089/297089  sad 327284->596670/827250  FP 0 FT 0  err 1.996 eps  cpu 0.262/0.826 s  gpu 0.141/0.218 s identical=1
+[15:18:36] main Hurricane/PRECIPf48.log10 rel:1e-4: ratio 2.7308  ext 297089/297089  sad 645021->769076/827250  FP 0 FT 0  err 1.993 eps  cpu 0.275/0.634 s  gpu 0.236/0.238 s identical=1
+[15:18:45] main Hurricane/PRECIPf48.log10 rel:1e-5: ratio 2.1474  ext 297089/297089  sad 794675->818618/827250  FP 0 FT 0  err 1.990 eps  cpu 0.294/0.600 s  gpu 0.158/0.251 s identical=1
+[15:18:55] main Hurricane/Pf48 abs:1e-3: ratio 1.8618  ext 22106/22106  sad 338659->340002/340505  FP 0 FT 0  err 1.968 eps  cpu 0.237/0.518 s  gpu 0.188/0.240 s identical=1
+[15:19:04] main Hurricane/Pf48 abs:1e-4: ratio 1.5658  ext 22106/22106  sad 340331->340461/340505  FP 0 FT 0  err 1.831 eps  cpu 0.261/0.544 s  gpu 0.166/0.252 s identical=1
+[15:19:14] main Hurricane/Pf48 abs:1e-5: ratio 1.3499  ext 22106/22106  sad 340496->340502/340505  FP 0 FT 0  err 1.144 eps  cpu 0.277/0.511 s  gpu 0.181/0.392 s identical=1
+[15:19:23] main Hurricane/Pf48 rel:1e-3: ratio 5.5799  ext 22106/22106  sad 15292->79540/340505  FP 0 FT 0  err 1.985 eps  cpu 0.189/0.600 s  gpu 0.166/0.236 s identical=1
+[15:19:32] main Hurricane/Pf48 rel:1e-4: ratio 3.9183  ext 22106/22106  sad 102077->217811/340505  FP 0 FT 0  err 1.995 eps  cpu 0.195/0.535 s  gpu 0.125/0.268 s identical=1
+[15:19:40] main Hurricane/Pf48 rel:1e-5: ratio 2.8417  ext 22106/22106  sad 260338->313834/340505  FP 0 FT 0  err 1.993 eps  cpu 0.237/0.493 s  gpu 0.147/0.229 s identical=1
+[15:19:49] main Hurricane/QCLOUDf48 abs:1e-3: ratio 12.0110  ext 36642/36642  sad 0->1013/51527  FP 0 FT 0  err 1.000 eps  cpu 0.169/0.492 s  gpu 0.115/0.339 s identical=1
+[15:19:57] main Hurricane/QCLOUDf48 abs:1e-4: ratio 10.6939  ext 36642/36642  sad 1116->11466/51527  FP 0 FT 0  err 1.912 eps  cpu 0.191/0.519 s  gpu 0.132/0.243 s identical=1
+[15:20:04] main Hurricane/QCLOUDf48 abs:1e-5: ratio 9.3466  ext 36642/36642  sad 15940->26994/51527  FP 0 FT 0  err 1.989 eps  cpu 0.190/0.534 s  gpu 0.107/0.223 s identical=1
+[15:20:12] main Hurricane/QCLOUDf48 rel:1e-3: ratio 8.5136  ext 36642/36642  sad 26281->31452/51527  FP 0 FT 0  err 1.962 eps  cpu 0.152/0.439 s  gpu 0.111/0.219 s identical=1
+[15:20:20] main Hurricane/QCLOUDf48 rel:1e-4: ratio 7.4640  ext 36642/36642  sad 32092->34372/51527  FP 0 FT 0  err 1.975 eps  cpu 0.146/0.409 s  gpu 0.106/0.350 s identical=1
+[15:20:28] main Hurricane/QCLOUDf48 rel:1e-5: ratio 6.6040  ext 36642/36642  sad 34427->35964/51527  FP 0 FT 0  err 1.937 eps  cpu 0.188/0.445 s  gpu 0.121/0.335 s identical=1
+[15:20:36] main Hurricane/QCLOUDf48.log10 abs:1e-3: ratio 5.1346  ext 36642/36642  sad 50742->51332/51527  FP 0 FT 0  err 1.851 eps  cpu 0.196/0.446 s  gpu 0.192/0.311 s identical=1
+[15:20:44] main Hurricane/QCLOUDf48.log10 abs:1e-4: ratio 4.6048  ext 36642/36642  sad 51443->51508/51527  FP 0 FT 0  err 1.836 eps  cpu 0.226/0.485 s  gpu 0.114/0.252 s identical=1
+[15:20:52] main Hurricane/QCLOUDf48.log10 abs:1e-5: ratio 4.1989  ext 36642/36642  sad 51519->51527/51527  FP 0 FT 0  err 1.454 eps  cpu 0.187/0.512 s  gpu 0.107/0.190 s identical=1
+[15:20:59] main Hurricane/QCLOUDf48.log10 rel:1e-3: ratio 6.3681  ext 36642/36642  sad 36293->46503/51527  FP 0 FT 0  err 1.964 eps  cpu 0.146/0.420 s  gpu 0.106/0.199 s identical=1
+[15:21:07] main Hurricane/QCLOUDf48.log10 rel:1e-4: ratio 5.4678  ext 36642/36642  sad 48962->50873/51527  FP 0 FT 0  err 1.944 eps  cpu 0.147/0.394 s  gpu 0.107/0.232 s identical=1
+[15:21:15] main Hurricane/QCLOUDf48.log10 rel:1e-5: ratio 4.9049  ext 36642/36642  sad 51219->51456/51527  FP 0 FT 0  err 1.854 eps  cpu 0.193/0.423 s  gpu 0.121/0.235 s identical=1
+[15:21:25] main Hurricane/QGRAUPf48 abs:1e-3: ratio 11.3861  ext 213438/213438  sad 0->6544/697977  FP 0 FT 0  err 1.143 eps  cpu 0.226/0.900 s  gpu 0.290/0.233 s identical=1
+[15:21:35] main Hurricane/QGRAUPf48 abs:1e-4: ratio 10.7932  ext 213438/213438  sad 58->8537/697977  FP 0 FT 0  err 1.822 eps  cpu 0.232/0.878 s  gpu 0.425/0.283 s identical=1
+[15:21:45] main Hurricane/QGRAUPf48 abs:1e-5: ratio 9.7692  ext 213438/213438  sad 2951->18032/697977  FP 0 FT 0  err 1.948 eps  cpu 0.199/0.854 s  gpu 0.140/0.210 s identical=1
+[15:21:54] main Hurricane/QGRAUPf48 rel:1e-3: ratio 9.6135  ext 213438/213438  sad 4015->19575/697977  FP 0 FT 0  err 1.975 eps  cpu 0.193/0.842 s  gpu 0.144/0.241 s identical=1
+[15:22:04] main Hurricane/QGRAUPf48 rel:1e-4: ratio 8.4486  ext 213438/213438  sad 15311->30537/697977  FP 0 FT 0  err 1.965 eps  cpu 0.197/0.865 s  gpu 0.478/0.261 s identical=1
+[15:22:14] main Hurricane/QGRAUPf48 rel:1e-5: ratio 7.3513  ext 213438/213438  sad 25432->40027/697977  FP 0 FT 0  err 1.963 eps  cpu 0.216/0.898 s  gpu 0.276/0.214 s identical=1
+[15:22:26] main Hurricane/QGRAUPf48.log10 abs:1e-3: ratio 2.2336  ext 213433/213433  sad 643621->682244/697904  FP 0 FT 0  err 1.995 eps  cpu 0.256/0.578 s  gpu 0.142/0.243 s identical=1

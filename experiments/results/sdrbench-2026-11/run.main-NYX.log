@@ -1,0 +1,21 @@
+[15:19:32] date: 2026-11-01T15:19:31.050088
+[15:19:32] host: gpu3
+[15:19:32] cpu: AMD EPYC 7742 64-Core Processor
+[15:19:32] CPUs usable by this job: 32 logical, 16 physical cores (node: 256 logical)
+[15:19:32] OMP_PROC_BIND=close OMP_PLACES=cores
+[15:19:32] sockets / NUMA: Socket(s): 2;NUMA node(s): 8;
+[15:19:32] memory: 1007 GB
+[15:19:32] gpu: NVIDIA A100-SXM4-40GB, 40960 MiB, 580.95.05
+[15:19:32] nvcc: Build cuda_12.6.r12.6/compiler.34431801_0
+[15:19:32] gcc: g++ (Ubuntu 11.4.0-1ubuntu1~22.04.2) 11.4.0
+[15:19:32] repo: 17a7e32 (claude/sdrbench-experiments)
+[15:19:32] settings: threads=16 block=64 reps=3 gpu_reps=1
+[15:19:32] datasets: NYX (6 fields)
+[15:19:32] GPU: yes
+[15:19:32] ==== experiment: main (bounds abs:1e-3,abs:1e-4,abs:1e-5,rel:1e-3,rel:1e-4,rel:1e-5)
+[15:20:04] main NYX/baryon_density abs:1e-3: ratio 2.5859  ext 201798/201798  sad 771977->1058679/1236507  FP 0 FT 0  err 1.996 eps  cpu 0.633/2.138 s  gpu 0.750/0.947 s identical=1
+[15:20:37] main NYX/baryon_density abs:1e-4: ratio 2.0456  ext 201798/201798  sad 1168681->1213325/1236507  FP 0 FT 0  err 1.991 eps  cpu 0.693/2.034 s  gpu 0.732/0.989 s identical=1
+[15:20:37] main NYX/baryon_density abs:1e-5: format_limit
+[15:21:07] main NYX/baryon_density rel:1e-3: ratio 11.9871  ext 201798/201798  sad 8->638/1236507  FP 0 FT 0  err 1.523 eps  cpu 0.458/2.545 s  gpu 0.699/0.968 s identical=1
+[15:21:37] main NYX/baryon_density rel:1e-4: ratio 11.3868  ext 201798/201798  sad 193->2585/1236507  FP 0 FT 0  err 1.879 eps  cpu 0.428/2.610 s  gpu 0.417/1.189 s identical=1
+[15:22:08] main NYX/baryon_density rel:1e-5: ratio 7.6004  ext 201798/201798  sad 2029->21923/1236507  FP 0 FT 0  err 1.971 eps  cpu 0.477/2.634 s  gpu 0.635/0.943 s identical=1
