@@ -23,7 +23,8 @@
     } while (0)
 
 /* One thread per candidate of the current colour class. Points of one class
-   are at least 3 apart, so the updates do not interact. */
+   are at least 3 apart (5 for the neighbourhood move, mode 2), so the updates
+   do not interact. */
 __global__ void szp_saddle_kernel(float *v, const int *types, const float *orig,
                                   const unsigned char *locks, SzpGrid g, float eb,
                                   const double *w, const long long *list,
@@ -33,96 +34,10 @@ __global__ void szp_saddle_kernel(float *v, const int *types, const float *orig,
     size_t i = lo + (size_t)blockIdx.x * blockDim.x + threadIdx.x;
     if (i >= hi) return;
     long long k = list[i];
-    int ok = use_rbf ? szp_saddle_rbf_point(v, types, locks, orig, g, k, eb, w)
-                     : szp_saddle_stencil_point(v, types, orig, g, k, eb);
+    int ok = use_rbf == 2 ? szp_saddle_nbr_point(v, types, orig, g, k, eb)
+           : use_rbf      ? szp_saddle_rbf_point(v, types, locks, orig, g, k, eb, w)
+                          : szp_saddle_stencil_point(v, types, orig, g, k, eb);
     if (ok) atomicAdd(restored, 1ULL);
-}
-
-/* Previous driver: extrema step, counts and candidate lists on the host,
-   saddle passes on the GPU. Kept for comparison (SZP_CUDA_RESTORE=hybrid). */
-static int restore_gpu_hybrid(float *data, const int *types, const int *sort_positions,
-                       size_t extrema_count, const SzpGrid &g, float eb,
-                       szp_topo_restore_stats *stats)
-{
-    szp_topo_restore_stats st;
-    memset(&st, 0, sizeof(st));
-    const size_t N = (size_t)g.n[0] * g.n[1] * g.n[2];
-    const int ncol = g.nd == 3 ? 27 : 9;
-    std::vector<float> orig(data, data + N);
-    std::vector<unsigned char> locks;
-    std::vector<long long> list;
-    std::vector<size_t> start;
-    double w[27];
-    float *d_v = NULL, *d_orig = NULL;
-    int *d_types = NULL;
-    unsigned char *d_locks = NULL;
-    double *d_w = NULL;
-    long long *d_list = NULL;
-    unsigned long long *d_count = NULL;
-    size_t list_cap = 0;
-    int rc = -1;
-
-    szp_count_lost(data, types, g, &st.extrema, &st.extrema_lost_before, &st.saddles, NULL);
-
-    /* 1. extrema (host) */
-    szp_restore_extrema_ranked(data, orig.data(), types, sort_positions, extrema_count, g, eb);
-    szp_count_lost(data, types, g, NULL, NULL, NULL, &st.saddles_lost_before);
-
-    /* 2-3. saddles (GPU) */
-    szp_extremum_locks(types, g, locks);
-    szp_rbf_weights(g.nd, w);
-    SZP_CUDA_TRY(cudaMalloc((void **)&d_v, N * sizeof(float)));
-    SZP_CUDA_TRY(cudaMalloc((void **)&d_orig, N * sizeof(float)));
-    SZP_CUDA_TRY(cudaMalloc((void **)&d_types, N * sizeof(int)));
-    SZP_CUDA_TRY(cudaMalloc((void **)&d_locks, N));
-    SZP_CUDA_TRY(cudaMalloc((void **)&d_w, sizeof(w)));
-    SZP_CUDA_TRY(cudaMalloc((void **)&d_count, sizeof(unsigned long long)));
-    SZP_CUDA_TRY(cudaMemcpy(d_v, data, N * sizeof(float), cudaMemcpyHostToDevice));
-    SZP_CUDA_TRY(cudaMemcpy(d_orig, orig.data(), N * sizeof(float), cudaMemcpyHostToDevice));
-    SZP_CUDA_TRY(cudaMemcpy(d_types, types, N * sizeof(int), cudaMemcpyHostToDevice));
-    SZP_CUDA_TRY(cudaMemcpy(d_locks, locks.data(), N, cudaMemcpyHostToDevice));
-    SZP_CUDA_TRY(cudaMemcpy(d_w, w, sizeof(w), cudaMemcpyHostToDevice));
-
-    for (int round = 0; round < 2; round++) {
-        for (int use_rbf = 0; use_rbf < 2; use_rbf++) {
-            /* Candidates from the current field (same order as the CPU). */
-            if (round > 0 || use_rbf > 0)
-                SZP_CUDA_TRY(cudaMemcpy(data, d_v, N * sizeof(float), cudaMemcpyDeviceToHost));
-            szp_saddle_candidates(data, types, g, list, start);
-            if (list.empty()) continue;
-            if (list.size() > list_cap) {
-                if (d_list) cudaFree(d_list);
-                d_list = NULL;
-                list_cap = list.size();
-                SZP_CUDA_TRY(cudaMalloc((void **)&d_list, list_cap * sizeof(long long)));
-            }
-            SZP_CUDA_TRY(cudaMemcpy(d_list, list.data(), list.size() * sizeof(long long),
-                                    cudaMemcpyHostToDevice));
-            SZP_CUDA_TRY(cudaMemset(d_count, 0, sizeof(unsigned long long)));
-            for (int c = 0; c < ncol; c++) {
-                size_t lo = start[c], hi = start[c + 1];
-                if (hi <= lo) continue;
-                const unsigned int tpb = 128;
-                unsigned int nblk = (unsigned int)((hi - lo + tpb - 1) / tpb);
-                szp_saddle_kernel<<<nblk, tpb>>>(d_v, d_types, d_orig, d_locks, g, eb, d_w,
-                                                 d_list, lo, hi, use_rbf, d_count);
-                SZP_CUDA_TRY(cudaGetLastError());
-            }
-            unsigned long long got = 0;
-            SZP_CUDA_TRY(cudaMemcpy(&got, d_count, sizeof(got), cudaMemcpyDeviceToHost));
-            if (use_rbf) st.saddles_by_rbf += (size_t)got;
-            else         st.saddles_by_stencil += (size_t)got;
-        }
-    }
-    SZP_CUDA_TRY(cudaMemcpy(data, d_v, N * sizeof(float), cudaMemcpyDeviceToHost));
-    szp_count_lost(data, types, g, NULL, &st.extrema_lost_after, NULL, &st.saddles_lost_after);
-    if (stats) *stats = st;
-    rc = 0;
-
-fail:
-    cudaFree(d_v); cudaFree(d_orig); cudaFree(d_types); cudaFree(d_locks);
-    cudaFree(d_w); cudaFree(d_list); cudaFree(d_count);
-    return rc;
 }
 
 /* ===================================================================== */
@@ -130,6 +45,7 @@ fail:
 /* ===================================================================== */
 
 #define SZP_TPB 256   /* threads per block (multiple of 32) */
+#define SZP_MAXCOL 125   /* 5^3 colour classes of the neighbourhood move; < SZP_TPB and < 255 */
 
 static unsigned int szp_nblk(long long n) { return (unsigned int)((n + SZP_TPB - 1) / SZP_TPB); }
 
@@ -250,26 +166,26 @@ __global__ void szp_locks_kernel(const int *types, SzpGrid g, long long N, unsig
 }
 
 /* Saddle candidates (stored saddles that are not saddles now) by colour:
-   mark[k] = colour or 255, per-colour counts, then a scatter. The order
+   mark[k] = colour (modulus 3 or 5 per axis) or 255, per-colour counts, then a scatter. The order
    inside a colour does not matter: points of one colour do not interact. */
-__global__ void szp_cand_mark_kernel(const float *v, const int *types, SzpGrid g, long long N,
+__global__ void szp_cand_mark_kernel(const float *v, const int *types, SzpGrid g, long long N, int mod,
                                      unsigned char *mark, unsigned long long *ccount)
 {
-    __shared__ unsigned int h[27];
-    if (threadIdx.x < 27) h[threadIdx.x] = 0;
+    __shared__ unsigned int h[SZP_MAXCOL];
+    if (threadIdx.x < SZP_MAXCOL) h[threadIdx.x] = 0;
     __syncthreads();
     long long k = (long long)blockIdx.x * blockDim.x + threadIdx.x;
     if (k < N) {
         unsigned char m = 255;
         if (types[k] == 3 && szp_is_interior(g, k) && szp_classify(v, g, k) != 3) {
-            int c = szp_colour(g, k);
+            int c = szp_colour_mod(g, k, mod);
             m = (unsigned char)c;
             atomicAdd(&h[c], 1u);
         }
         mark[k] = m;
     }
     __syncthreads();
-    if (threadIdx.x < 27 && h[threadIdx.x]) atomicAdd(&ccount[threadIdx.x], (unsigned long long)h[threadIdx.x]);
+    if (threadIdx.x < SZP_MAXCOL && h[threadIdx.x]) atomicAdd(&ccount[threadIdx.x], (unsigned long long)h[threadIdx.x]);
 }
 
 __global__ void szp_cand_scatter_kernel(const unsigned char *mark, long long N, unsigned long long *cursor,
@@ -281,14 +197,13 @@ __global__ void szp_cand_scatter_kernel(const unsigned char *mark, long long N, 
     list[pos] = k;
 }
 
-static int restore_gpu_device(float *data, const int *types, const int *sort_positions,
+static int restore_gpu(float *data, const int *types, const int *sort_positions,
                               size_t extrema_count, const SzpGrid &g, float eb,
                               szp_topo_restore_stats *stats)
 {
     szp_topo_restore_stats st;
     memset(&st, 0, sizeof(st));
     const long long N = (long long)g.n[0] * g.n[1] * g.n[2];
-    const int ncol = g.nd == 3 ? 27 : 9;
     const unsigned int nb = szp_nblk(N);
     const unsigned int count_blocks = nb < 4096u ? nb : 4096u;
     double w[27];
@@ -372,31 +287,35 @@ static int restore_gpu_device(float *data, const int *types, const int *sort_pos
     /* 2-3. saddles: stencil then RBF, twice */
     SZP_CUDA_TRY(cudaMalloc((void **)&d_locks, (size_t)N));
     SZP_CUDA_TRY(cudaMalloc((void **)&d_mark, (size_t)N));
-    SZP_CUDA_TRY(cudaMalloc((void **)&d_cc, 2 * 27 * sizeof(unsigned long long)));
+    SZP_CUDA_TRY(cudaMalloc((void **)&d_cc, 2 * SZP_MAXCOL * sizeof(unsigned long long)));
     SZP_CUDA_TRY(cudaMalloc((void **)&d_w, sizeof(w)));
     szp_rbf_weights(g.nd, w);
     SZP_CUDA_TRY(cudaMemcpy(d_w, w, sizeof(w), cudaMemcpyHostToDevice));
     szp_locks_kernel<<<nb, SZP_TPB>>>(d_types, g, N, d_locks);
     SZP_CUDA_TRY(cudaGetLastError());
 
-    for (int round = 0; round < 2; round++) {
-        for (int use_rbf = 0; use_rbf < 2; use_rbf++) {
-            unsigned long long cc[27], start[28];
-            SZP_CUDA_TRY(cudaMemset(d_cc, 0, 27 * sizeof(unsigned long long)));
-            szp_cand_mark_kernel<<<nb, SZP_TPB>>>(d_v, d_types, g, N, d_mark, d_cc);
-            SZP_CUDA_TRY(cudaGetLastError());
-            SZP_CUDA_TRY(cudaMemcpy(cc, d_cc, sizeof(cc), cudaMemcpyDeviceToHost));
-            start[0] = 0;
-            for (int c = 0; c < 27; c++) start[c + 1] = start[c] + cc[c];
-            const unsigned long long total = start[27];
-            if (total == 0) continue;
+    /* passes: stencil, RBF, stencil, RBF (3^nd colours), then the neighbourhood
+       move up to twice (5^nd colours; the second only if the first restored any) */
+    for (int pass = 0; pass < 6; pass++) {
+        const int mode = pass < 4 ? (pass & 1) : 2;
+        const int mod = mode == 2 ? 5 : 3;
+        const int ncol = szp_ncolours(g, mod);
+        unsigned long long cc[SZP_MAXCOL], start[SZP_MAXCOL + 1], got = 0;
+        SZP_CUDA_TRY(cudaMemset(d_cc, 0, SZP_MAXCOL * sizeof(unsigned long long)));
+        szp_cand_mark_kernel<<<nb, SZP_TPB>>>(d_v, d_types, g, N, mod, d_mark, d_cc);
+        SZP_CUDA_TRY(cudaGetLastError());
+        SZP_CUDA_TRY(cudaMemcpy(cc, d_cc, sizeof(cc), cudaMemcpyDeviceToHost));
+        start[0] = 0;
+        for (int c = 0; c < SZP_MAXCOL; c++) start[c + 1] = start[c] + cc[c];
+        const unsigned long long total = start[SZP_MAXCOL];
+        if (total > 0) {
             if (total > list_cap) {
                 cudaFree(d_list); d_list = NULL;
                 list_cap = (size_t)total;
                 SZP_CUDA_TRY(cudaMalloc((void **)&d_list, list_cap * sizeof(long long)));
             }
-            SZP_CUDA_TRY(cudaMemcpy(d_cc + 27, start, 27 * sizeof(unsigned long long), cudaMemcpyHostToDevice));
-            szp_cand_scatter_kernel<<<nb, SZP_TPB>>>(d_mark, N, d_cc + 27, d_list);
+            SZP_CUDA_TRY(cudaMemcpy(d_cc + SZP_MAXCOL, start, SZP_MAXCOL * sizeof(unsigned long long), cudaMemcpyHostToDevice));
+            szp_cand_scatter_kernel<<<nb, SZP_TPB>>>(d_mark, N, d_cc + SZP_MAXCOL, d_list);
             SZP_CUDA_TRY(cudaGetLastError());
             SZP_CUDA_TRY(cudaMemset(d_cnt, 0, sizeof(unsigned long long)));
             for (int c = 0; c < ncol; c++) {
@@ -405,14 +324,14 @@ static int restore_gpu_device(float *data, const int *types, const int *sort_pos
                 const unsigned int tpb = 128;
                 unsigned int nblk = (unsigned int)((hi - lo + tpb - 1) / tpb);
                 szp_saddle_kernel<<<nblk, tpb>>>(d_v, d_types, d_orig, d_locks, g, eb, d_w,
-                                                 d_list, lo, hi, use_rbf, d_cnt);
+                                                 d_list, lo, hi, mode, d_cnt);
                 SZP_CUDA_TRY(cudaGetLastError());
             }
-            unsigned long long got = 0;
             SZP_CUDA_TRY(cudaMemcpy(&got, d_cnt, sizeof(got), cudaMemcpyDeviceToHost));
-            if (use_rbf) st.saddles_by_rbf += (size_t)got;
-            else         st.saddles_by_stencil += (size_t)got;
         }
+        if (mode == 0)      st.saddles_by_stencil += (size_t)got;
+        else if (mode == 1) st.saddles_by_rbf += (size_t)got;
+        else              { st.saddles_by_neighbours += (size_t)got; if (got == 0) break; }
     }
 
     SZP_CUDA_TRY(cudaMemset(d_cnt, 0, 4 * sizeof(unsigned long long)));
@@ -430,17 +349,6 @@ fail:
     cudaFree(d_tmax); cudaFree(d_tcnt); cudaFree(d_locks); cudaFree(d_mark); cudaFree(d_w); cudaFree(d_ext);
     cudaFree(d_list); cudaFree(d_cnt); cudaFree(d_bcount); cudaFree(d_tkey); cudaFree(d_slot); cudaFree(d_cc);
     return rc;
-}
-
-/* SZP_CUDA_RESTORE=hybrid selects the previous driver (for comparisons). */
-static int restore_gpu(float *data, const int *types, const int *sort_positions,
-                       size_t extrema_count, const SzpGrid &g, float eb,
-                       szp_topo_restore_stats *stats)
-{
-    const char *mode = getenv("SZP_CUDA_RESTORE");
-    if (mode && strcmp(mode, "hybrid") == 0)
-        return restore_gpu_hybrid(data, types, sort_positions, extrema_count, g, eb, stats);
-    return restore_gpu_device(data, types, sort_positions, extrema_count, g, eb, stats);
 }
 
 extern "C" int szp_cuda_topo_restore_float_2d(float *data, const int *types, const int *sort_positions,

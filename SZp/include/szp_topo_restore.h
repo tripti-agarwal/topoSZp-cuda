@@ -28,6 +28,18 @@
  *      a saddle and no neighbour gets a critical type other than its stored
  *      one, loses its stored type, or stops being below a stored maximum /
  *      above a stored minimum next to it. Both passes run twice.
+ *   4. Saddle neighbourhood move. Most saddles that are still lost cannot be
+ *      restored by changing the saddle point alone: quantization tied a
+ *      neighbour it must be above with a neighbour it must be below. For
+ *      every such saddle and every assignment of its axes to "high" (above
+ *      both neighbours), "low" (below both) or "free" (at least one high and
+ *      one low), a value t for the point is chosen and the high neighbours
+ *      that are not below t are moved just below it, the low neighbours that
+ *      are not above t just above it; only points stored as regular or as
+ *      saddles are moved, each within eb of its dequantized value. The change
+ *      is kept only if the point becomes a saddle and no point within
+ *      distance 2 gets a critical type other than its stored one or loses
+ *      its stored type. This pass runs up to twice.
  *
  *  Every changed value stays within eb of its dequantized value, so with the
  *  base SZp bound |original - dequantized| <= eb the error is at most 2 eb.
@@ -37,7 +49,9 @@
  *  apart, farther than anything one update reads (distance 2), so a class is
  *  processed fully in parallel and the result is the same for any thread
  *  count and identical on CPU and GPU (all floating-point operations are
- *  explicitly rounded on the device, see szp_quant.h).
+ *  explicitly rounded on the device, see szp_quant.h). The neighbourhood
+ *  move writes up to distance 1 and reads up to distance 3, so it uses 5^dim
+ *  colour classes ((coordinate - 1) mod 5 per axis).
  *
  *  Critical points use strict comparisons with the face neighbours
  *  (4 in 2D, 6 in 3D); a saddle has at least one axis where the point is
@@ -61,6 +75,7 @@ typedef struct {
     size_t saddles_lost_before;  /* stored saddles that were not saddles after the extrema step */
     size_t saddles_by_stencil;   /* restored by the stencil passes */
     size_t saddles_by_rbf;       /* restored by the RBF passes */
+    size_t saddles_by_neighbours;/* restored by the neighbourhood-move passes */
     size_t saddles_lost_after;   /* still not saddles at the end */
     /* PL mode only (szp_pl_topology.h); 0 in axis mode, where the
        restoration guarantees no false positives and no false types. */
@@ -280,24 +295,125 @@ static SZP_QHD int szp_saddle_rbf_point(float *v, const int *types, const unsign
     return 0;
 }
 
+/**
+ * Neighbourhood move (step 4): make stored saddle k a saddle by choosing its
+ * value and moving face neighbours that are in the way. Returns 1 if kept.
+ * Reads values up to distance 3 from k, writes k and its face neighbours.
+ */
+static SZP_QHD int szp_saddle_nbr_point(float *v, const int *types, const float *orig,
+                                        const SzpGrid &g, long long k, float eb)
+{
+    if (types[k] != 3 || szp_classify(v, g, k) == 3) return 0;
+    const int nd = g.nd;
+    int co[3] = {0, 0, 0};
+    for (int a = 0; a < nd; a++) co[a] = (int)((k / g.s[a]) % g.n[a]);
+
+    /* points whose type can change: Manhattan distance <= 2 from k */
+    long long chk[25];
+    int chk_before[25], nchk = 0;
+    for (int i = -2; i <= 2; i++)
+        for (int j = -2; j <= 2; j++)
+            for (int l = (nd == 3 ? -2 : 0); l <= (nd == 3 ? 2 : 0); l++) {
+                int dist = (i < 0 ? -i : i) + (j < 0 ? -j : j) + (l < 0 ? -l : l);
+                if (dist == 0 || dist > 2) continue;
+                int c0 = co[0] + i, c1 = co[1] + j, c2 = co[2] + l;
+                if (c0 < 1 || c0 > g.n[0] - 2 || c1 < 1 || c1 > g.n[1] - 2) continue;   /* interior only */
+                if (nd == 3 && (c2 < 1 || c2 > g.n[2] - 2)) continue;
+                long long q = k + i * g.s[0] + j * g.s[1] + (nd == 3 ? l * g.s[2] : 0);
+                chk[nchk] = q;
+                chk_before[nchk++] = szp_classify(v, g, q);
+            }
+
+    const float W = szp_fmul(eb, 0.999f), delta = szp_fmul(eb, 0.015625f);
+    const float p_lo = szp_fadd(orig[k], -W), p_hi = szp_fadd(orig[k], W);
+    const int npat = nd == 3 ? 27 : 9;
+    for (int pc = 0; pc < npat; pc++) {
+        int role[3] = {0, 0, 0}, nh = 0, nl = 0;     /* per axis: 0 free, 1 high, 2 low */
+        { int x = pc; for (int a = 0; a < nd; a++) { role[a] = x % 3; x /= 3; nh += role[a] == 1; nl += role[a] == 2; } }
+        if (!nh || !nl) continue;
+
+        /* values t reachable for k: above what every high neighbour can go
+           below, below what every low neighbour can go above */
+        float tlo = p_lo, thi = p_hi;
+        for (int a = 0; a < nd; a++) {
+            if (role[a] == 0) continue;
+            for (int sgn = 0; sgn < 2; sgn++) {
+                long long n = sgn ? k + g.s[a] : k - g.s[a];
+                int movable = types[n] == 0 || types[n] == 3;
+                if (role[a] == 1) tlo = fmaxf(tlo, movable ? fminf(v[n], szp_fadd(orig[n], -W)) : v[n]);
+                else              thi = fminf(thi, movable ? fmaxf(v[n], szp_fadd(orig[n], W)) : v[n]);
+            }
+        }
+        if (!(tlo < thi)) continue;
+        const float span = szp_fadd(thi, -tlo);
+        float cand[3];
+        cand[0] = fminf(fmaxf(v[k], szp_fadd(tlo, szp_fmul(0.25f, span))), szp_fadd(tlo, szp_fmul(0.75f, span)));
+        cand[1] = szp_fadd(tlo, szp_fmul(0.5f, span));
+        cand[2] = orig[k];
+        for (int ci = 0; ci < 3; ci++) {
+            const float t = cand[ci];
+            if (!(t > tlo && t < thi)) continue;
+            long long idx[7];
+            float saved[7];
+            int ns = 0, feasible = 1;
+            idx[ns] = k; saved[ns++] = v[k]; v[k] = t;
+            for (int a = 0; a < nd; a++) {
+                if (role[a] == 0) continue;
+                for (int sgn = 0; sgn < 2; sgn++) {
+                    long long n = sgn ? k + g.s[a] : k - g.s[a];
+                    const int movable = types[n] == 0 || types[n] == 3;
+                    float nv;
+                    if (role[a] == 1) {
+                        if (v[n] < t) continue;
+                        const float lim = szp_fadd(orig[n], -W);
+                        nv = fmaxf(szp_fadd(t, -delta), lim);
+                        if (!(nv < t)) nv = nextafterf(t, -INFINITY);
+                        if (!movable || nv < lim) feasible = 0;
+                    } else {
+                        if (v[n] > t) continue;
+                        const float lim = szp_fadd(orig[n], W);
+                        nv = fminf(szp_fadd(t, delta), lim);
+                        if (!(nv > t)) nv = nextafterf(t, INFINITY);
+                        if (!movable || nv > lim) feasible = 0;
+                    }
+                    idx[ns] = n; saved[ns++] = v[n]; v[n] = nv;
+                }
+            }
+            int ok = feasible && szp_classify(v, g, k) == 3;
+            for (int i = 0; ok && i < nchk; i++) {
+                const int t0 = types[chk[i]], after = szp_classify(v, g, chk[i]);
+                if (after != 0 && after != t0) ok = 0;                      /* FP or FT */
+                else if (t0 != 0 && chk_before[i] == t0 && after != t0) ok = 0;   /* lost */
+            }
+            if (ok) return 1;
+            for (int i = ns - 1; i >= 0; i--) v[idx[i]] = saved[i];
+        }
+    }
+    return 0;
+}
+
 /* ---------------- host helpers (shared by the CPU and CUDA drivers) ---- */
 
 /** Colour class of an interior point: ((x-1) mod 3, (y-1) mod 3, (z-1) mod 3). */
-static SZP_QHD int szp_colour(const SzpGrid &g, long long k)
+static SZP_QHD int szp_colour_mod(const SzpGrid &g, long long k, int mod)
 {
     int c = 0;
-    for (int a = 0; a < g.nd; a++) c = c * 3 + (int)(((k / g.s[a]) % g.n[a] - 1) % 3);
+    for (int a = 0; a < g.nd; a++) c = c * mod + (int)(((k / g.s[a]) % g.n[a] - 1) % mod);
     return c;
 }
+static SZP_QHD int szp_colour(const SzpGrid &g, long long k) { return szp_colour_mod(g, k, 3); }
+/** Number of colour classes for a modulus (3 for the single-point passes, 5 for the neighbourhood move). */
+static SZP_QHD int szp_ncolours(const SzpGrid &g, int mod) { return g.nd == 3 ? mod * mod * mod : mod * mod; }
 
 /**
  * Stored saddles that are not saddles now, grouped by colour (counting sort,
- * raster order inside each colour). start has 3^nd + 1 entries.
+ * raster order inside each colour). start has mod^nd + 1 entries.
  */
 static inline void szp_saddle_candidates(const float *v, const int *types, const SzpGrid &g,
-                                         std::vector<long long> &list, std::vector<size_t> &start)
+                                         std::vector<long long> &list, std::vector<size_t> &start,
+                                         int mod = 3)
 {
-    const int ncol = g.nd == 3 ? 27 : 9;
+    const int ncol = szp_ncolours(g, mod);
     const long long N = (long long)g.n[0] * g.n[1] * g.n[2];
     std::vector<unsigned char> flag((size_t)N, 0);
 #ifdef _OPENMP
@@ -309,11 +425,11 @@ static inline void szp_saddle_candidates(const float *v, const int *types, const
     for (long long k = 0; k < N; k++)
         if (flag[(size_t)k]) all.push_back(k);
     start.assign(ncol + 1, 0);
-    for (long long k : all) start[szp_colour(g, k) + 1]++;
+    for (long long k : all) start[szp_colour_mod(g, k, mod) + 1]++;
     for (int c = 0; c < ncol; c++) start[c + 1] += start[c];
     list.resize(all.size());
     std::vector<size_t> pos(start.begin(), start.end() - 1);
-    for (long long k : all) list[pos[szp_colour(g, k)]++] = k;
+    for (long long k : all) list[pos[szp_colour_mod(g, k, mod)]++] = k;
 }
 
 /** 1 if interior point k has a stored extremum in its 3^nd neighbourhood. */

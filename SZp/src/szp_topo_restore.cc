@@ -13,14 +13,16 @@
 #endif
 
 /* One saddle pass (stencil or RBF) over all colour classes. */
+/* use: 0 stencil, 1 RBF (3^nd colour classes); 2 neighbourhood move (5^nd). */
 static size_t saddle_pass_cpu(float *data, const int *types, const float *orig,
                               const unsigned char *locks, const SzpGrid &g, float eb,
                               const double *w, int use_rbf)
 {
     std::vector<long long> list;
     std::vector<size_t> start;
-    szp_saddle_candidates(data, types, g, list, start);
-    const int ncol = g.nd == 3 ? 27 : 9;
+    const int mod = use_rbf == 2 ? 5 : 3;
+    szp_saddle_candidates(data, types, g, list, start, mod);
+    const int ncol = szp_ncolours(g, mod);
     size_t restored = 0;
     for (int c = 0; c < ncol; c++) {
         const long long lo = (long long)start[c], hi = (long long)start[c + 1];
@@ -30,8 +32,9 @@ static size_t saddle_pass_cpu(float *data, const int *types, const float *orig,
 #endif
         for (long long i = lo; i < hi; i++) {
             long long k = list[(size_t)i];
-            got += use_rbf ? szp_saddle_rbf_point(data, types, locks, orig, g, k, eb, w)
-                           : szp_saddle_stencil_point(data, types, orig, g, k, eb);
+            got += use_rbf == 2 ? szp_saddle_nbr_point(data, types, orig, g, k, eb)
+                 : use_rbf      ? szp_saddle_rbf_point(data, types, locks, orig, g, k, eb, w)
+                                : szp_saddle_stencil_point(data, types, orig, g, k, eb);
         }
         restored += got;
     }
@@ -61,6 +64,12 @@ static void restore_cpu(float *data, const int *types, const int *sort_positions
     for (int round = 0; round < 2; round++) {
         st.saddles_by_stencil += saddle_pass_cpu(data, types, orig.data(), locks.data(), g, eb, w, 0);
         st.saddles_by_rbf += saddle_pass_cpu(data, types, orig.data(), locks.data(), g, eb, w, 1);
+    }
+    /* 4. neighbourhood move, up to twice */
+    for (int round = 0; round < 2; round++) {
+        size_t got = saddle_pass_cpu(data, types, orig.data(), locks.data(), g, eb, w, 2);
+        st.saddles_by_neighbours += got;
+        if (got == 0) break;
     }
     szp_count_lost(data, types, g, NULL, &st.extrema_lost_after, NULL, &st.saddles_lost_after);
     if (stats) *stats = st;

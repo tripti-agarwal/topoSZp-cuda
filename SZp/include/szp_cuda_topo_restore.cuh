@@ -8,8 +8,7 @@
  *  extrema step (ranks in raster order by a block-wise compaction, groups of
  *  equal decompressed value by a hash table), the extremum locks, the saddle
  *  candidate lists, and the stencil / RBF passes (one kernel launch per
- *  colour class). SZP_CUDA_RESTORE=hybrid selects the previous version
- *  (extrema step and candidate lists on the host) for comparison.
+ *  colour class), and the neighbourhood-move passes.
  *  PL mode (szp_cuda_topo_restore_float_pl) still runs its extrema step and
  *  candidate lists on the host.
  *  Returns 0 on success, -1 on a CUDA error (data is then unchanged).
