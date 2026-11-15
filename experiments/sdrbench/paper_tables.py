@@ -257,6 +257,7 @@ def main():
     br = [r for r in read_results(R, 'baselines') if r['status'] == 'ok']
     comps = [c for c in COMP if any(r['compressor'] == c for r in br)]
     rows = []
+    bitsover = []   # bits/value of TopoSZp+ minus SZp (labels + ranks)
     for i, d in enumerate([x for x in datasets if any(r['dataset'] == x for r in br)]):
         if i:
             rows.append('\\midrule')
@@ -286,8 +287,13 @@ def main():
                 if stat[c]['bitrate'] and stat['toposzp']['bitrate']:
                     N.set('bitsx-' + ck, num(stat['toposzp']['bitrate'] / stat[c]['bitrate'], 1))
             N.set('fields-compared-' + k, len(common))
+            if 'toposzp' in stat and 'szp' in stat and stat['toposzp']['bitrate'] is not None and stat['szp']['bitrate'] is not None:
+                ov = stat['toposzp']['bitrate'] - stat['szp']['bitrate']
+                N.set('bitsover-' + k, num(ov, 2)); bitsover.append(ov)
         for j, c in enumerate(comps):
             rows.append(' & '.join([nm(d) if j == 0 else '', COMP[c]] + cells[c]) + ' \\\\')
+    N.set('bitsover-min', num(min(bitsover) if bitsover else None, 1))
+    N.set('bitsover-max', num(max(bitsover) if bitsover else None, 1))
     head = [' & ' + ''.join(' & \\multicolumn{4}{c}{\\textbf{%s}}' % texbound(b, True) for b in bounds) + ' \\\\',
             ''.join('\\cmidrule(lr){%d-%d}' % (3 + 4 * i, 6 + 4 * i) for i in range(len(bounds))),
             '\\textbf{Dataset} & \\textbf{Compressor}' + ' & \\textbf{Bits} & \\textbf{FN} & \\textbf{FP} & \\textbf{FT}' * len(bounds)
