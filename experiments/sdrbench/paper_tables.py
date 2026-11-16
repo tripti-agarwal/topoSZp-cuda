@@ -34,7 +34,7 @@ SLUG = {'CESM-ATM-2D': 'cesm2d', 'CESM-ATM-3D': 'cesm3d', 'Hurricane': 'hurrican
 DOMAIN = {'CESM-ATM-2D': 'Climate', 'CESM-ATM-3D': 'Climate', 'Hurricane': 'Weather', 'NYX': 'Cosmology',
           'SCALE-LETKF': 'Weather'}
 COMP = OrderedDict([('toposzp', 'TopoSZp+'), ('szp', 'SZp'), ('sz3', 'SZ3'), ('sz', 'SZ2'), ('zfp', 'ZFP'),
-                    ('tthresh', 'TTHRESH')])
+                    ('lopc', 'LOPC'), ('tthresh', 'TTHRESH')])   # lopc-gpu: same output as lopc, times only
 NA = '--'
 
 def f(x):

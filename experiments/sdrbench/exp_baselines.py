@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
 
 def add_args(ap):
-    ap.add_argument('--compressors', default='toposzp,szp,sz3,sz,zfp,tthresh', help='missing tools are skipped')
+    ap.add_argument('--compressors', default='toposzp,szp,sz3,sz,zfp,lopc,lopc-gpu,tthresh', help='missing tools are skipped')
     ap.add_argument('--baseline-bounds', default='abs:1e-3,abs:1e-4,abs:1e-5,rel:1e-3,rel:1e-4,rel:1e-5')
     ap.add_argument('--baseline-fields', type=int, default=0, help='fields per dataset (0 = all)')
 
