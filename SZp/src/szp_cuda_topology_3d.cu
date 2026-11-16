@@ -12,6 +12,7 @@
  */
 
 #include "szp_timing.h"
+#include "szp_cuda_host_util.cuh"
 #include "szp_quant.h"
 #include "szp_detect_threads.h"
 #include <cstdio>
@@ -1083,16 +1084,20 @@ int szp_cuda_float_compress_topology_ranked_3d(
         fprintf(stderr, "szp_cuda_float_compress_topology_ranked_3d: blockSize %d exceeds maximum 257\n", blockSize);
         return -1;
     }
-    if (szp_check_errbound<float>(oriData, nbEle, (double)absErrBound, "TopoSZp CUDA compress (3D)") < 0)
-        return -1;
-
-    SZP_TICK(0);   /* host: range check */
 
     float *d_data;
     CUDA_CHECK(cudaMalloc(&d_data, nbEle * sizeof(float)));
     CUDA_CHECK(cudaMemcpy(d_data, oriData, nbEle * sizeof(float),
                           cudaMemcpyHostToDevice));
     SZP_TICK(1);   /* upload */
+
+    /* format check (max |value| / eb, NaN, Inf) on the device: on one host
+       thread this scan took longer than all the kernels below */
+    if (szp_cuda_check_errbound_device(d_data, nbEle, (double)absErrBound, "TopoSZp CUDA compress (3D)") < 0) {
+        cudaFree(d_data);
+        return -1;
+    }
+    SZP_TICK(0);   /* range check */
 
     /* detection and ranking */
     CriticalPoint3D *d_cp = NULL;

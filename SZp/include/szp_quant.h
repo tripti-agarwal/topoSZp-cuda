@@ -102,23 +102,15 @@ SZP_QHD int szp_quantize(T v, double eb, double inv)
  * Returns 0 if fine, 1 if usable with a warning (printed), -1 if the bound
  * cannot be used (printed). `who` names the caller in the message.
  */
+/* The decisions of szp_check_errbound, given max |value| and the number of
+   NaN / Inf values (shared by the host scan and the device scan). */
 template <typename T>
-static int szp_check_errbound(const T *data, size_t n, double eb, const char *who)
+static int szp_check_errbound_limits(T amax, size_t bad, double eb, const char *who)
 {
     const char *tname = sizeof(T) == sizeof(float) ? "float32" : "float64";
     if (!(eb > 0) || !isfinite(eb)) {
         fprintf(stderr, "%s: error bound %g must be a positive number\n", who, eb);
         return -1;
-    }
-    T amax = 0;
-    size_t bad = 0;
-#ifdef _OPENMP
-    #pragma omp parallel for reduction(max:amax) reduction(+:bad)
-#endif
-    for (long long i = 0; i < (long long)n; i++) {
-        T a = data[i] < 0 ? -data[i] : data[i];
-        if (!(a == a) || a > (T)DBL_MAX) { bad++; continue; }   /* NaN or Inf */
-        if (a > amax) amax = a;
     }
     if (bad) {
         fprintf(stderr, "%s: %zu values are NaN or Inf; they cannot be compressed with an error bound\n", who, bad);
@@ -140,6 +132,22 @@ static int szp_check_errbound(const T *data, size_t n, double eb, const char *wh
         return 1;
     }
     return 0;
+}
+
+template <typename T>
+static int szp_check_errbound(const T *data, size_t n, double eb, const char *who)
+{
+    T amax = 0;
+    size_t bad = 0;
+#ifdef _OPENMP
+    #pragma omp parallel for reduction(max:amax) reduction(+:bad)
+#endif
+    for (long long i = 0; i < (long long)n; i++) {
+        T a = data[i] < 0 ? -data[i] : data[i];
+        if (!(a == a) || a > (T)DBL_MAX) { bad++; continue; }   /* NaN or Inf */
+        if (a > amax) amax = a;
+    }
+    return szp_check_errbound_limits<T>(amax, bad, eb, who);
 }
 
 #endif /* __cplusplus */

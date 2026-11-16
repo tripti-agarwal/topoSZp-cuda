@@ -43,6 +43,7 @@
 #include "szp_cuda_decompress.cuh"
 #include "szp_cuda_topo_restore.cuh"
 #include "szp_timing.h"
+#include "szp_cuda_host_util.cuh"
 #include "szp_defines.h"
 #include "szp_detect_threads.h"
 
@@ -1023,6 +1024,7 @@ int szp_cuda_float_decompress_topology_restored(
     SZP_TICK(1);   /* ranks */
 
     float *out = (float *)malloc(nbEle * sizeof(float));
+    szp_touch_pages(out, nbEle * sizeof(float));   /* so the final copy does not fault page by page */
     int rc = out ? szp_cuda_topo_restore_float_device(out, d_data, d_types, d_sp,
                                                       d_sp ? extrema_count : 0,
                                                       d1, d2, d3, absErrBound, stats)
