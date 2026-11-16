@@ -34,7 +34,7 @@ SLUG = {'CESM-ATM-2D': 'cesm2d', 'CESM-ATM-3D': 'cesm3d', 'Hurricane': 'hurrican
 DOMAIN = {'CESM-ATM-2D': 'Climate', 'CESM-ATM-3D': 'Climate', 'Hurricane': 'Weather', 'NYX': 'Cosmology',
           'SCALE-LETKF': 'Weather'}
 COMP = OrderedDict([('toposzp', 'TopoSZp+'), ('szp', 'SZp'), ('sz3', 'SZ3'), ('sz', 'SZ2'), ('zfp', 'ZFP'),
-                    ('tthresh', 'TTHRESH')])
+                    ('lopc', 'LOPC'), ('tthresh', 'TTHRESH')])   # lopc-gpu: same output as lopc, times only
 NA = '--'
 
 def f(x):
@@ -179,7 +179,7 @@ def main():
                                     arrow(vals['all']), '%s$\\to$%s' % (num(fnb, 0), num(fna, 0)), times(red),
                                     num(sum(f(r['FP_after']) or 0 for r in g) if g else None, 0),
                                     num(sum(f(r['FT_after']) or 0 for r in g) if g else None, 0),
-                                    num(max([f(r['err_after']) for r in g]) if g else None, 2)]) + ' \\\\')
+                                    num(max([f(r['err_after']) for r in g]) if g else None, 3)]) + ' \\\\')
             k = '%s-%s' % (sl(d), bslug(b))
             N.set('fnred-' + k, num(red, 1)); N.set('ratio-' + k, num(rt, 2)); N.set('ratioszp-' + k, num(rz, 2))
             N.set('ratiofrac-' + k, num(rt / rz if rt and rz else None, 2))
@@ -219,6 +219,10 @@ def main():
         N.set('gpux-decomp-' + k, num(gd / cd if gd and cd else None, 1))
         N.set('overhead-comp-' + k, num(zc / cc if zc and cc else None, 1))       # SZp throughput / TopoSZp+ throughput
         N.set('overhead-decomp-' + k, num(zd / cd if zd and cd else None, 1))
+    for what in ('comp', 'decomp'):       # smallest / largest GPU speedup over the datasets
+        v = [float(N.d['gpux-%s-%s' % (what, sl(d))]) for d in datasets if N.d.get('gpux-%s-%s' % (what, sl(d)), NA) != NA]
+        N.set('gpux-%s-min' % what, num(min(v), 1) if v else NA)
+        N.set('gpux-%s-max' % what, num(max(v), 1) if v else NA)
     thr_used = ok[0]['threads'] if ok else '?'
     N.set('threads', thr_used)
     with open(os.path.join(out, 'time.tex'), 'w') as fh:
@@ -331,6 +335,23 @@ def main():
 
     # bit-rate plots made by summarize.py (needs matplotlib)
     import glob, shutil
+    # ---- equal-bit-rate curve (summarize.py writes plots/bitrate_curves.csv): numbers quoted in the text
+    curve = os.path.join(R, 'plots', 'bitrate_curves.csv')
+    if os.path.exists(curve):
+        import csv
+        slug = {v: k for k, v in COMP.items()}
+        with open(curve) as fh:
+            cr = [r for r in csv.DictReader(fh) if r['dataset'] == 'CESM-ATM-2D']
+        for r in cr:
+            k = '%s-%s%s' % (slug.get(r['compressor'], r['compressor'].lower()), r['mode'], r['eb'])
+            N.set('br-bits-' + k, num(f(r['bitrate']), 1))
+            N.set('br-fnk-' + k, num(f(r['FN']) / 1000.0, 1))          # thousands of FN per field
+        for c in sorted({r['compressor'] for r in cr}):
+            b = [f(r['bitrate']) for r in cr if r['compressor'] == c]
+            N.set('br-minbits-' + slug.get(c, c.lower()), num(min(b), 1))
+            N.set('br-maxbits-' + slug.get(c, c.lower()), num(max(b), 1))
+        if cr:
+            N.set('br-fields', '%d' % min(int(r['fields']) for r in cr))
     for src in glob.glob(os.path.join(R, 'plots', 'bitrate_*.pdf')):
         shutil.copy(src, os.path.join(out, os.path.basename(src)))
 

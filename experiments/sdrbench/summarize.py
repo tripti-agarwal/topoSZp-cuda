@@ -165,8 +165,9 @@ def main():
             continue
         g = [r for r in br if r['status'] == 'ok']
         rows = []
-        order = ['toposzp', 'szp', 'sz3', 'sz', 'zfp', 'tthresh']
-        label = {'toposzp': 'TopoSZp+', 'szp': 'SZp', 'sz3': 'SZ3', 'sz': 'SZ2', 'zfp': 'ZFP', 'tthresh': 'TTHRESH*'}
+        order = ['toposzp', 'szp', 'sz3', 'sz', 'zfp', 'lopc', 'lopc-gpu', 'tthresh']
+        label = {'toposzp': 'TopoSZp+', 'szp': 'SZp', 'sz3': 'SZ3', 'sz': 'SZ2', 'zfp': 'ZFP', 'lopc': 'LOPC',
+                 'lopc-gpu': 'LOPC (GPU)', 'tthresh': 'TTHRESH*'}
         dropped = []
         for (ds, mode, eb), rs in groups(g, 'dataset', 'mode', 'eb').items():
             # Average every compressor over the same fields: those all of them finished.

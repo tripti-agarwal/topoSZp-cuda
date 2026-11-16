@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
 
 def add_args(ap):
-    ap.add_argument('--compressors', default='toposzp,szp,sz3,sz,zfp,tthresh', help='missing tools are skipped')
+    ap.add_argument('--compressors', default='toposzp,szp,sz3,sz,zfp,lopc,lopc-gpu,tthresh', help='missing tools are skipped')
     ap.add_argument('--bitrate-datasets', default='CESM-ATM-2D')
     ap.add_argument('--bitrate-bounds', default='abs:1e-2,abs:5e-3,abs:1e-3,abs:5e-4,abs:1e-4,abs:5e-5,abs:1e-5,abs:5e-6,abs:1e-6')
     ap.add_argument('--bitrate-fields', type=int, default=0, help='fields per dataset (0 = all)')

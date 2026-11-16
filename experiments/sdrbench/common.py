@@ -96,13 +96,25 @@ def result_files(out, name):
     p = os.path.join(out, name + '.csv')
     return ([p] if os.path.exists(p) else []) + sorted(glob.glob(os.path.join(out, name + '.*.csv')))
 
+def excluded_fields(out):
+    """Fields listed in RESULTS/exclude.txt (one "dataset/field" per line, #
+    comments): files in the data folder that are not SDRBench fields."""
+    p = os.path.join(out, 'exclude.txt')
+    if not os.path.exists(p):
+        return set()
+    with open(p) as f:
+        return {l.split('#')[0].strip() for l in f if l.split('#')[0].strip()}
+
 def read_results(out, name):
     """All rows of an experiment from every job; for a run repeated after a
-    failure, only its latest row is kept."""
+    failure, only its latest row is kept. Fields in exclude.txt are left out."""
     rows = OrderedDict()
+    skip = excluded_fields(out)
     for p in result_files(out, name):
         with open(p) as f:
             for r in csv.DictReader(f):
+                if r.get('dataset', '') + '/' + r.get('field', '') in skip:
+                    continue
                 rows[tuple(r.get(k, '') for k in KEYS[name])] = r
     return list(rows.values())
 
@@ -140,7 +152,7 @@ def load_manifest(c):
     for r in rows:
         if c.datasets and r['dataset'] not in c.datasets:
             continue
-        dims = [int(r['d1']), int(r['d2'])] + ([int(r['d3'])] if r.get('d3') else [])
+        dims = [int(r['d1']), int(r['d2'])] + ([int(r['d3'])] if r.get('d3') and int(r['d3']) > 0 else [])
         fields.append({'dataset': r['dataset'], 'field': r['field'], 'path': r['path'], 'dims': dims,
                        'n': math.prod(dims)})
     by = {}
@@ -311,6 +323,12 @@ def baseline(c, name, f, abs_eb, logname):
         dd = fast_first(f) + (['1'] if len(f['dims']) == 2 else [])
         cc = [c.tool('tthresh'), '-i', p, '-t', 'float', '-s'] + dd + ['-e', eb, '-c', cmp_]
         dc = [c.tool('tthresh'), '-c', cmp_, '-o', dec]
+    elif name in ('lopc', 'lopc-gpu'):
+        # LOPC (local-order-preserving compressor): OpenMP or CUDA build, same stream and output.
+        # Dimensions slowest first, absolute bound; it prints its own times (without file I/O).
+        dd = [str(x) for x in f['dims']]
+        cc = [c.tool(name), p, cmp_, eb] + dd
+        dc = [c.tool(name) + '_decomp', cmp_, dec, eb] + dd
     else:
         raise ValueError(name)
     env = {'OMP_NUM_THREADS': c.threads}
@@ -318,10 +336,14 @@ def baseline(c, name, f, abs_eb, logname):
     if rc != 0 or not os.path.exists(cmp_):
         cleanup(p, cmp_, dec)
         return {'status': 'compress_failed', 'note': first_error(out)}
+    if name.startswith('lopc'):
+        tc = num(r'encoding time:\s*([0-9.eE+-]+)', out) or tc
     rc, out, td = run(c, dc, logname, env)
     if rc != 0 or not os.path.exists(dec) or os.path.getsize(dec) != 4 * f['n']:
         cleanup(p, cmp_, dec)
         return {'status': 'decompress_failed', 'note': first_error(out)}
+    if name.startswith('lopc'):
+        td = num(r'decoding time:\s*([0-9.eE+-]+)', out) or td
     return {'status': 'ok', 'bytes': os.path.getsize(cmp_), 'comp_s': tc, 'decomp_s': td, 'output': dec,
             '_cleanup': [p, cmp_, dec]}
 

@@ -18,6 +18,7 @@
 #   fstats                         value range / max |value| of a float32 file
 #   test_cuda_topology[_3d]        TopoSZp+ CUDA pipeline (if a GPU is present)
 #   sz3, sz (SZ2), zfp [, tthresh] baseline compressors
+#   lopc, lopc-gpu (+ _decomp)     LOPC, OpenMP and CUDA builds
 
 set -u
 HERE=$(cd "$(dirname "$0")" && pwd)
@@ -97,7 +98,17 @@ if [ "${NO_BASELINES:-0}" != 1 ]; then
     getsrc tthresh https://github.com/rballester/tthresh.git "" && cmk tthresh &&
     find "$BLD/src/tthresh/build" -name tthresh -type f -executable -exec cp {} "$BIN/" \;
   fi
-  for c in sz3 sz zfp tthresh; do [ -x "$BIN/$c" ] && say "   $c: OK"; done
+  if [ ! -x "$BIN/lopc" ] || { [ -n "${ARCH:-}" ] && [ ! -x "$BIN/lopc-gpu" ]; }; then
+    # LOPC: local-order-preserving compressor (CPU/GPU builds give the same stream)
+    getsrc LOPC https://github.com/burtscher/LOPC.git "${LOPC_REF:-}" &&
+    (cd "$BLD/src/LOPC" && run make openmp &&
+     cp topo_compress_omp_f32 "$BIN/lopc" && cp topo_decompress_omp_f32 "$BIN/lopc_decomp")
+    if [ -n "${ARCH:-}" ]; then
+      (cd "$BLD/src/LOPC" && run make gpu NV_SM="$ARCH" &&
+       cp topo_compress_gpu_f32 "$BIN/lopc-gpu" && cp topo_decompress_gpu_f32 "$BIN/lopc-gpu_decomp")
+    fi
+  fi
+  for c in sz3 sz zfp lopc lopc-gpu tthresh; do [ -x "$BIN/$c" ] && say "   $c: OK"; done
   # SZ2 and SZ3 binaries need their shared libraries at run time
   echo "export LD_LIBRARY_PATH=$BLD/inst/lib:$BLD/inst/lib64:\${LD_LIBRARY_PATH:-}" > "$BIN/env.sh"
 fi
