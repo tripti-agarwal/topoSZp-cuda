@@ -325,7 +325,7 @@ def main():
                                 num(ax)]) + ' \\\\')
         k = sl(d)
         for key, v, p in (('plext', e, 1), ('plsadszp', s0, 1), ('plsadtopo', s1, 1), ('plfpszp', fp0, 0),
-                          ('plfptopo', fp1, 0), ('axispl', ax, 1)):
+                          ('plfptopo', fp1, 0), ('plftszp', ft0, 0), ('plfttopo', ft1, 0), ('axispl', ax, 1)):
             N.set('%s-%s' % (key, k), num(v, p))
     with open(os.path.join(out, 'pl.tex'), 'w') as fh:
         fh.write(tabular('@{}lrrrrr@{}', [
