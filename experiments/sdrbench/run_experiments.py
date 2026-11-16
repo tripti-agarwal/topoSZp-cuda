@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Run several TopoSZp+ experiments on the SDRBench fields, one after another.
 
-    python3 run_experiments.py --data DATA --out RESULTS [--exp main,scaling,baselines,bitrate,pl,vis] [options]
+    python3 run_experiments.py --data DATA --out RESULTS [--exp main,scaling,baselines,bitrate,pl,vis,ablation] [options]
 
 Each experiment is its own script and can also be run alone, e.g. as a
 separate batch job (submit_separate.sh does that):
@@ -12,6 +12,7 @@ separate batch job (submit_separate.sh does that):
     exp_bitrate.py    bit rate vs FN / FP / FT                         -> bitrate.csv
     exp_pl.py         check against TTK's piecewise-linear definition  -> pl.csv
     exp_vis.py        fields for the visualization figure              -> vis/
+    exp_ablation.py   restoration steps and GPU time breakdown         -> ablation.csv
 
 This wrapper accepts the options of all of them (--help lists them). Every
 experiment resumes: runs already in RESULTS are skipped. Then run
@@ -21,7 +22,7 @@ import argparse, importlib, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import HERE, common_args, context, log, split
 
-EXPERIMENTS = ['main', 'scaling', 'baselines', 'bitrate', 'pl', 'vis']
+EXPERIMENTS = ['main', 'scaling', 'baselines', 'bitrate', 'pl', 'vis', 'ablation']
 
 def main():
     mods = {e: importlib.import_module('exp_' + e) for e in EXPERIMENTS}
@@ -36,7 +37,7 @@ def main():
     for e in exps:
         if e not in mods:
             sys.exit('unknown experiment %s (choose from %s)' % (e, ','.join(EXPERIMENTS)))
-    c, by = context(a, need_gpu='main' in exps,
+    c, by = context(a, need_gpu=bool({'main', 'ablation'} & set(exps)),
                     need_compressors=a.compressors if {'baselines', 'bitrate'} & set(exps) else None)
     for e in exps:
         mods[e].run_exp(c, by, a)

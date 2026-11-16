@@ -30,9 +30,18 @@ COLS = {
            'err_final', 'note'],
 }
 COLS['bitrate'] = COLS['baselines']
+COLS['ablation'] = (['dataset', 'field', 'dims', 'n', 'mode', 'eb', 'abs_eb', 'status', 'threads',
+                     'extrema', 'extrema_lost', 'saddles', 'saddles_lost', 'by_stencil', 'by_rbf', 'by_move',
+                     'saddles_lost_after', 'cpu_decomp_s'] +
+                    ['cpu_%s_s' % k for k in ('setup', 'extrema', 'stencil', 'rbf', 'move', 'finish')] +
+                    ['gpu_comp_s', 'gpu_decomp_s', 'gpu_stepwise_comp_s', 'gpu_stepwise_decomp_s'] +
+                    ['gc_%s_s' % k for k in ('check', 'upload', 'detect', 'rank', 'rankstream', 'encode')] +
+                    ['gd_%s_s' % k for k in ('decode', 'ranks', 'restore')] +
+                    ['gr_%s_s' % k for k in ('setup', 'extrema', 'stencil', 'rbf', 'move', 'finish')] + ['note'])
 KEYS = {'main': ('dataset', 'field', 'mode', 'eb'), 'scaling': ('dataset', 'field', 'mode', 'eb', 'threads'),
         'baselines': ('compressor', 'dataset', 'field', 'mode', 'eb'),
-        'bitrate': ('compressor', 'dataset', 'field', 'mode', 'eb'), 'pl': ('dataset', 'field', 'mode', 'eb')}
+        'bitrate': ('compressor', 'dataset', 'field', 'mode', 'eb'), 'pl': ('dataset', 'field', 'mode', 'eb'),
+        'ablation': ('dataset', 'field', 'mode', 'eb')}
 DONE = ('ok', 'format_limit')   # statuses that are not retried on resume
 
 # ----------------------------------------------------------------------------- helpers

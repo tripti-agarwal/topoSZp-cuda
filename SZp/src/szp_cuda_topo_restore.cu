@@ -10,6 +10,7 @@
 #include <vector>
 #include "szp_cuda_topo_restore.cuh"
 #include "szp_topo_restore.h"
+#include "szp_timing.h"
 #include "szp_pl_topology.h"
 
 #define SZP_CUDA_TRY(call)                                                      \
@@ -223,6 +224,11 @@ static int restore_gpu(float *data, const int *types, const int *sort_positions,
     long long n_ext = 0;
     size_t list_cap = 0;
     int rc = -1;
+    /* step times (SZP_TIMING=1; synchronizes the device after every step):
+       setup (uploads on the host path), extrema, stencil, RBF, move, finish (download) */
+    const int timing = szp_timing_on();
+    double tsec[6] = {0, 0, 0, 0, 0, 0}, tlast = szp_now();
+#define SZP_TICK(slot) do { if (timing) { cudaDeviceSynchronize(); const double t_ = szp_now(); tsec[slot] += t_ - tlast; tlast = t_; } } while (0)
 
     const bool on_device = dev_v != NULL;
     if (on_device) { d_v = dev_v; d_types = dev_types; }
@@ -242,6 +248,7 @@ static int restore_gpu(float *data, const int *types, const int *sort_positions,
     SZP_CUDA_TRY(cudaGetLastError());
     SZP_CUDA_TRY(cudaMemcpy(cnt, d_cnt, sizeof(cnt), cudaMemcpyDeviceToHost));
     st.extrema = (size_t)cnt[0]; st.extrema_lost_before = (size_t)cnt[1]; st.saddles = (size_t)cnt[2];
+    SZP_TICK(0);
 
     /* 1. extrema */
     SZP_CUDA_TRY(cudaMalloc((void **)&d_bcount, (size_t)nb * sizeof(unsigned long long)));
@@ -294,6 +301,7 @@ static int restore_gpu(float *data, const int *types, const int *sort_positions,
     SZP_CUDA_TRY(cudaGetLastError());
     SZP_CUDA_TRY(cudaMemcpy(cnt, d_cnt, sizeof(cnt), cudaMemcpyDeviceToHost));
     st.saddles_lost_before = (size_t)cnt[3];
+    SZP_TICK(1);
 
     /* 2-4. saddles: stencil, RBF, neighbourhood move */
     SZP_CUDA_TRY(cudaMalloc((void **)&d_locks, (size_t)N));
@@ -305,6 +313,7 @@ static int restore_gpu(float *data, const int *types, const int *sort_positions,
     SZP_CUDA_TRY(cudaMemset(d_locks, 0, (size_t)N));
     szp_locks_kernel<<<nb, SZP_TPB>>>(d_types, g, N, d_locks);
     SZP_CUDA_TRY(cudaGetLastError());
+    SZP_TICK(0);
 
     /* passes: stencil, RBF (3^nd colours), then the neighbourhood move up to
        twice (5^nd colours; the second only if szp_nbr_repeat says so) */
@@ -341,6 +350,7 @@ static int restore_gpu(float *data, const int *types, const int *sort_positions,
             }
             SZP_CUDA_TRY(cudaMemcpy(&got, d_cnt, sizeof(got), cudaMemcpyDeviceToHost));
         }
+        SZP_TICK(2 + mode);
         if (mode == 0)      st.saddles_by_stencil += (size_t)got;
         else if (mode == 1) st.saddles_by_rbf += (size_t)got;
         else              { st.saddles_by_neighbours += (size_t)got; if (!szp_nbr_repeat(got, total)) break; }
@@ -353,6 +363,11 @@ static int restore_gpu(float *data, const int *types, const int *sort_positions,
     st.extrema_lost_after = (size_t)cnt[1]; st.saddles_lost_after = (size_t)cnt[3];
 
     SZP_CUDA_TRY(cudaMemcpy(data, d_v, (size_t)N * sizeof(float), cudaMemcpyDeviceToHost));
+    SZP_TICK(5);
+    if (timing)
+        fprintf(stderr, "SZP_TIMING restore_gpu setup=%.6f extrema=%.6f stencil=%.6f rbf=%.6f move=%.6f finish=%.6f on_device=%d\n",
+                tsec[0], tsec[1], tsec[2], tsec[3], tsec[4], tsec[5], on_device ? 1 : 0);
+#undef SZP_TICK
     if (stats) *stats = st;
     rc = 0;
 
