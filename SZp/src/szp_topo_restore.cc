@@ -6,6 +6,8 @@
 #include <string.h>
 #include <vector>
 #include "szp_topo_restore.h"
+#include "szp_timing.h"
+#include <stdio.h>
 #include "szp_pl_topology.h"
 #include "szp_quant.h"
 #ifdef _OPENMP
@@ -49,21 +51,30 @@ static void restore_cpu(float *data, const int *types, const int *sort_positions
     szp_topo_restore_stats st;
     memset(&st, 0, sizeof(st));
     const size_t N = (size_t)g.n[0] * g.n[1] * g.n[2];
+    /* step times (SZP_TIMING=1): setup, extrema, stencil, RBF, move, finish */
+    const int timing = szp_timing_on();
+    double tsec[6] = {0, 0, 0, 0, 0, 0}, tlast = szp_now();
+#define SZP_TICK(slot) do { if (timing) { const double t_ = szp_now(); tsec[slot] += t_ - tlast; tlast = t_; } } while (0)
     std::vector<float> orig(data, data + N);
 
     szp_count_lost(data, types, g, &st.extrema, &st.extrema_lost_before, &st.saddles, NULL);
+    SZP_TICK(0);
 
     /* 1. extrema */
     szp_restore_extrema_ranked(data, orig.data(), types, sort_positions, extrema_count, g, eb);
     szp_count_lost(data, types, g, NULL, NULL, NULL, &st.saddles_lost_before);
+    SZP_TICK(1);
 
     /* 2-3. saddles: stencil, then RBF */
     std::vector<unsigned char> locks;
     szp_extremum_locks(types, g, locks, st.extrema);
     double w[27];
     szp_rbf_weights(g.nd, w);
+    SZP_TICK(0);
     st.saddles_by_stencil += saddle_pass_cpu(data, types, orig.data(), locks.data(), g, eb, w, 0);
+    SZP_TICK(2);
     st.saddles_by_rbf += saddle_pass_cpu(data, types, orig.data(), locks.data(), g, eb, w, 1);
+    SZP_TICK(3);
     /* 4. neighbourhood move; a second time only if the first restored at
        least SZP_NBR_REPEAT_DIV-th of its candidates (otherwise the rest are
        mostly flat regions, where a second try costs as much and gains little) */
@@ -73,7 +84,13 @@ static void restore_cpu(float *data, const int *types, const int *sort_positions
         st.saddles_by_neighbours += got;
         if (!szp_nbr_repeat(got, cand)) break;
     }
+    SZP_TICK(4);
     szp_count_lost(data, types, g, NULL, &st.extrema_lost_after, NULL, &st.saddles_lost_after);
+    SZP_TICK(5);
+#undef SZP_TICK
+    if (timing)
+        fprintf(stderr, "SZP_TIMING restore_cpu setup=%.6f extrema=%.6f stencil=%.6f rbf=%.6f move=%.6f finish=%.6f\n",
+                tsec[0], tsec[1], tsec[2], tsec[3], tsec[4], tsec[5]);
     if (stats) *stats = st;
 }
 

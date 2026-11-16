@@ -7,6 +7,7 @@
  *  and topology-preserved random-access compression.
  */
 
+#include "szp_timing.h"
 #include "szp_quant.h"
 #include "szp_detect_threads.h"
 #include <cstdio>
@@ -890,6 +891,10 @@ int szp_cuda_float_compress_topology_ranked(
     size_t *criticalCount, size_t *extremaCount)
 {
     *topoOut = NULL; *topoSize = 0; *sortOut = NULL; *sortSize = 0;
+    /* step times (SZP_TIMING=1; synchronizes the device after every step) */
+    const int timing = szp_timing_on();
+    double tsec[6] = {0, 0, 0, 0, 0, 0}, tlast = szp_now();
+#define SZP_TICK(slot) do { if (timing) { cudaDeviceSynchronize(); const double t_ = szp_now(); tsec[slot] += t_ - tlast; tlast = t_; } } while (0)
     if (criticalCount) *criticalCount = 0;
     if (extremaCount) *extremaCount = 0;
     if (absErrBound <= 0.0 || !oriData || nbEle == 0 || rows <= 2 || cols <= 2 ||
@@ -902,16 +907,21 @@ int szp_cuda_float_compress_topology_ranked(
     if (szp_check_errbound<float>(oriData, nbEle, (double)absErrBound, "TopoSZp CUDA compress (2D)") < 0)
         return -1;
 
+    SZP_TICK(0);   /* host: range check */
+
     float *d_data;
     CUDA_CHECK(cudaMalloc(&d_data, nbEle * sizeof(float)));
     CUDA_CHECK(cudaMemcpy(d_data, oriData, nbEle * sizeof(float), cudaMemcpyHostToDevice));
+    SZP_TICK(1);   /* upload */
 
     /* detection and ranking */
     CriticalPoint *d_cp = NULL;
     unsigned int count = 0;
     find_critical_points_device(d_data, rows, cols, absErrBound, &d_cp, &count);
+    SZP_TICK(2);
     if (count > 0)
         sort_critical_points_device(d_cp, count, d_data, cols);
+    SZP_TICK(3);
 
     /* rank stream of the extrema */
     size_t n_ext = 0;
@@ -942,6 +952,8 @@ int szp_cuda_float_compress_topology_ranked(
         cudaFree(d_off);
     }
 
+    SZP_TICK(4);   /* rank stream */
+
     /* labels, quantization, encoding */
     *topoOut = compress_topology_device(d_data, topoSize, absErrBound, nbEle, blockSize,
                                         d_cp, (int)count, rows, cols);
@@ -950,5 +962,10 @@ int szp_cuda_float_compress_topology_ranked(
     cudaFree(d_cp);
     if (criticalCount) *criticalCount = count;
     if (extremaCount) *extremaCount = n_ext;
+    SZP_TICK(5);   /* labels, quantization, encoding, download */
+#undef SZP_TICK
+    if (timing)
+        fprintf(stderr, "SZP_TIMING compress_gpu check=%.6f upload=%.6f detect=%.6f rank=%.6f rankstream=%.6f encode=%.6f\n",
+                tsec[0], tsec[1], tsec[2], tsec[3], tsec[4], tsec[5]);
     return *topoOut ? 0 : -1;
 }

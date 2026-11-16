@@ -42,6 +42,7 @@
 
 #include "szp_cuda_decompress.cuh"
 #include "szp_cuda_topo_restore.cuh"
+#include "szp_timing.h"
 #include "szp_defines.h"
 #include "szp_detect_threads.h"
 
@@ -1005,19 +1006,31 @@ int szp_cuda_float_decompress_topology_restored(
     *newData = NULL;
     if (!topoBytes || nbEle == 0 || (size_t)d1 * d2 * (d3 > 0 ? d3 : 1) != nbEle) return -1;
 
+    /* step times (SZP_TIMING=1; synchronizes the device after every step);
+       the restoration prints its own steps (restore_gpu) */
+    const int timing = szp_timing_on();
+    double tsec[3] = {0, 0, 0}, tlast = szp_now();
+#define SZP_TICK(slot) do { if (timing) { cudaDeviceSynchronize(); const double t_ = szp_now(); tsec[slot] += t_ - tlast; tlast = t_; } } while (0)
+
     float *d_data = NULL;
     int *d_types = NULL, *d_sp = NULL;
     if (szp_cuda_float_decompress_topology_device(nbEle, absErrBound, blockSize, topoBytes,
                                                   &d_data, &d_types) != 0)
         return -1;
+    SZP_TICK(0);   /* block offsets (host), upload of the stream, decoding */
     if (sortBytes && extrema_count > 0)
         d_sp = szp_cuda_decompress_sort_positions_device(sortBytes, extrema_count, blockSize);
+    SZP_TICK(1);   /* ranks */
 
     float *out = (float *)malloc(nbEle * sizeof(float));
     int rc = out ? szp_cuda_topo_restore_float_device(out, d_data, d_types, d_sp,
                                                       d_sp ? extrema_count : 0,
                                                       d1, d2, d3, absErrBound, stats)
                  : -1;
+    SZP_TICK(2);   /* restoration and download */
+#undef SZP_TICK
+    if (timing)
+        fprintf(stderr, "SZP_TIMING decompress_gpu decode=%.6f ranks=%.6f restore=%.6f\n", tsec[0], tsec[1], tsec[2]);
     cudaFree(d_data);
     cudaFree(d_types);
     cudaFree(d_sp);

@@ -1,0 +1,11 @@
+{
+  "_comment": "Copy to <bin>/external_compressors.json and edit. Each entry is one compressor: 'compress' and 'decompress' are command lines with placeholders {input} {compressed} {output} {eb} (absolute bound) {dims} (slowest first) {dims_fast} (fastest first) {d1} {d2} {d3} {ndims} {n} {threads}. The decompressed file must be raw float32 of the original size. Optional 'compress_time_regex' / 'decompress_time_regex' pick the time (seconds) from the program output; otherwise the wall time of the command is used. Entries starting with _ are ignored.",
+  "_topoa": {
+    "compress": "/path/to/topoa_compress {input} {compressed} {eb} {dims}",
+    "decompress": "/path/to/topoa_decompress {compressed} {output} {eb} {dims}"
+  },
+  "_toposz": {
+    "compress": "/path/to/toposz -z -i {input} -o {compressed} -e {eb} -{ndims} {dims_fast}",
+    "decompress": "/path/to/toposz -x -i {compressed} -o {output} -{ndims} {dims_fast}"
+  }
+}
