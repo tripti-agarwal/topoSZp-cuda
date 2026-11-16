@@ -96,13 +96,25 @@ def result_files(out, name):
     p = os.path.join(out, name + '.csv')
     return ([p] if os.path.exists(p) else []) + sorted(glob.glob(os.path.join(out, name + '.*.csv')))
 
+def excluded_fields(out):
+    """Fields listed in RESULTS/exclude.txt (one "dataset/field" per line, #
+    comments): files in the data folder that are not SDRBench fields."""
+    p = os.path.join(out, 'exclude.txt')
+    if not os.path.exists(p):
+        return set()
+    with open(p) as f:
+        return {l.split('#')[0].strip() for l in f if l.split('#')[0].strip()}
+
 def read_results(out, name):
     """All rows of an experiment from every job; for a run repeated after a
-    failure, only its latest row is kept."""
+    failure, only its latest row is kept. Fields in exclude.txt are left out."""
     rows = OrderedDict()
+    skip = excluded_fields(out)
     for p in result_files(out, name):
         with open(p) as f:
             for r in csv.DictReader(f):
+                if r.get('dataset', '') + '/' + r.get('field', '') in skip:
+                    continue
                 rows[tuple(r.get(k, '') for k in KEYS[name])] = r
     return list(rows.values())
 
