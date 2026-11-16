@@ -21,6 +21,11 @@
 #include <vector>
 #ifdef __linux__
 #include <sched.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#ifndef MADV_POPULATE_WRITE
+#define MADV_POPULATE_WRITE 23   /* Linux 5.14 */
+#endif
 #endif
 #include "szp_quant.h"
 
@@ -98,5 +103,43 @@ static inline void szp_touch_pages(void *buf, size_t bytes)
         });
     for (auto &x : th) x.join();
 }
+
+/**
+ * Maps the pages of a freshly allocated result buffer in the background while
+ * the GPU works, so the final copy into it does not wait for page faults.
+ * With MADV_POPULATE_WRITE (Linux >= 5.14) the pages are mapped without
+ * changing their contents, which is safe even if the copy has already begun;
+ * join() must be called before the buffer is handed to the caller. Without
+ * it, the buffer is touched before start() returns (szp_touch_pages).
+ */
+struct SzpPretouch {
+    std::vector<std::thread> th;
+    void start(void *buf, size_t bytes)
+    {
+        if (!buf || bytes < ((size_t)32 << 20)) return;
+#ifdef __linux__
+        const size_t pg = (size_t)sysconf(_SC_PAGESIZE);
+        char *lo = (char *)(((size_t)buf + pg - 1) / pg * pg);
+        char *hi = (char *)(((size_t)buf + bytes) / pg * pg);
+        if (hi > lo && madvise(lo, pg, MADV_POPULATE_WRITE) == 0) {
+            unsigned nt = std::thread::hardware_concurrency();
+            cpu_set_t set;
+            if (sched_getaffinity(0, sizeof(set), &set) == 0) nt = (unsigned)CPU_COUNT(&set);
+            if (nt > 16) nt = 16;
+            if (nt < 1) nt = 1;
+            const size_t npages = (size_t)(hi - lo) / pg;
+            for (unsigned t = 0; t < nt; t++) {
+                char *a = lo + npages / nt * t * pg;
+                char *b = t + 1 == nt ? hi : lo + npages / nt * (t + 1) * pg;
+                th.emplace_back([a, b] { if (b > a) (void)madvise(a, (size_t)(b - a), MADV_POPULATE_WRITE); });
+            }
+            return;
+        }
+#endif
+        szp_touch_pages(buf, bytes);
+    }
+    void join() { for (auto &x : th) x.join(); th.clear(); }
+    ~SzpPretouch() { join(); }
+};
 
 #endif

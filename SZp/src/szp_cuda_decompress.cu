@@ -1013,22 +1013,30 @@ int szp_cuda_float_decompress_topology_restored(
     double tsec[3] = {0, 0, 0}, tlast = szp_now();
 #define SZP_TICK(slot) do { if (timing) { cudaDeviceSynchronize(); const double t_ = szp_now(); tsec[slot] += t_ - tlast; tlast = t_; } } while (0)
 
+    /* The result buffer: its pages are mapped in the background while the
+       GPU decodes and restores, so the final copy does not fault page by page. */
+    float *out = (float *)malloc(nbEle * sizeof(float));
+    SzpPretouch pretouch;
+    pretouch.start(out, out ? nbEle * sizeof(float) : 0);
+
     float *d_data = NULL;
     int *d_types = NULL, *d_sp = NULL;
     if (szp_cuda_float_decompress_topology_device(nbEle, absErrBound, blockSize, topoBytes,
-                                                  &d_data, &d_types) != 0)
+                                                  &d_data, &d_types) != 0) {
+        pretouch.join();
+        free(out);
         return -1;
+    }
     SZP_TICK(0);   /* block offsets (host), upload of the stream, decoding */
     if (sortBytes && extrema_count > 0)
         d_sp = szp_cuda_decompress_sort_positions_device(sortBytes, extrema_count, blockSize);
     SZP_TICK(1);   /* ranks */
 
-    float *out = (float *)malloc(nbEle * sizeof(float));
-    szp_touch_pages(out, nbEle * sizeof(float));   /* so the final copy does not fault page by page */
     int rc = out ? szp_cuda_topo_restore_float_device(out, d_data, d_types, d_sp,
                                                       d_sp ? extrema_count : 0,
                                                       d1, d2, d3, absErrBound, stats)
                  : -1;
+    pretouch.join();
     SZP_TICK(2);   /* restoration and download */
 #undef SZP_TICK
     if (timing)
