@@ -13,6 +13,7 @@ separate batch job (submit_separate.sh does that):
     exp_pl.py         check against TTK's piecewise-linear definition  -> pl.csv
     exp_vis.py        fields for the visualization figure              -> vis/
     exp_ablation.py   restoration steps and GPU time breakdown         -> ablation.csv
+    exp_compare.py    topology-preserving compressors, PSNR, PL      -> compare.csv
 
 This wrapper accepts the options of all of them (--help lists them). Every
 experiment resumes: runs already in RESULTS are skipped. Then run
@@ -22,7 +23,7 @@ import argparse, importlib, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import HERE, common_args, context, log, split
 
-EXPERIMENTS = ['main', 'scaling', 'baselines', 'bitrate', 'pl', 'vis', 'ablation']
+EXPERIMENTS = ['main', 'scaling', 'baselines', 'bitrate', 'pl', 'vis', 'ablation', 'compare']
 
 def main():
     mods = {e: importlib.import_module('exp_' + e) for e in EXPERIMENTS}
@@ -38,7 +39,7 @@ def main():
         if e not in mods:
             sys.exit('unknown experiment %s (choose from %s)' % (e, ','.join(EXPERIMENTS)))
     c, by = context(a, need_gpu=bool({'main', 'ablation'} & set(exps)),
-                    need_compressors=a.compressors if {'baselines', 'bitrate'} & set(exps) else None)
+                    need_compressors=a.compressors if {'baselines', 'bitrate', 'compare'} & set(exps) else None)
     for e in exps:
         mods[e].run_exp(c, by, a)
     log(c, 'done. Results in %s; tables: python3 %s %s' % (c.out, os.path.join(HERE, 'summarize.py'), c.out))

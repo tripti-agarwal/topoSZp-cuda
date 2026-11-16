@@ -6,7 +6,7 @@ plain SZp, SZ3, SZ2, ZFP, TTHRESH) and the topology check, plus the options and
 setup shared by every experiment script.
 """
 from collections import OrderedDict
-import argparse, csv, datetime, filecmp, glob, hashlib, math, os, platform, re, shutil, subprocess, sys, time
+import argparse, shlex, csv, datetime, filecmp, glob, hashlib, math, os, platform, re, shutil, subprocess, sys, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
@@ -38,10 +38,16 @@ COLS['ablation'] = (['dataset', 'field', 'dims', 'n', 'mode', 'eb', 'abs_eb', 's
                     ['gc_%s_s' % k for k in ('check', 'upload', 'detect', 'rank', 'rankstream', 'encode')] +
                     ['gd_%s_s' % k for k in ('decode', 'ranks', 'restore')] +
                     ['gr_%s_s' % k for k in ('setup', 'extrema', 'stencil', 'rbf', 'move', 'finish')] + ['note'])
+COLS['compare'] = (['compressor', 'dataset', 'field', 'dims', 'n', 'mode', 'eb', 'abs_eb', 'status', 'bytes', 'ratio',
+                    'bitrate', 'comp_s', 'decomp_s'] + TOPO +
+                   ['psnr', 'tb_orig', 'tb_kept', 'tb_FN', 'tb_FP', 'tb_FT',
+                    'pl_extrema', 'pl_extrema_kept_pct', 'pl_saddles', 'pl_saddles_kept_pct',
+                    'pl_saddles_pers_ge_2eb_kept_pct', 'pl_FN', 'pl_FT', 'pl_FP', 'note'])
 KEYS = {'main': ('dataset', 'field', 'mode', 'eb'), 'scaling': ('dataset', 'field', 'mode', 'eb', 'threads'),
         'baselines': ('compressor', 'dataset', 'field', 'mode', 'eb'),
         'bitrate': ('compressor', 'dataset', 'field', 'mode', 'eb'), 'pl': ('dataset', 'field', 'mode', 'eb'),
-        'ablation': ('dataset', 'field', 'mode', 'eb')}
+        'ablation': ('dataset', 'field', 'mode', 'eb'),
+        'compare': ('compressor', 'dataset', 'field', 'mode', 'eb')}
 DONE = ('ok', 'format_limit')   # statuses that are not retried on resume
 
 # ----------------------------------------------------------------------------- helpers
@@ -338,6 +344,15 @@ def baseline(c, name, f, abs_eb, logname):
         dd = [str(x) for x in f['dims']]
         cc = [c.tool(name), p, cmp_, eb] + dd
         dc = [c.tool(name) + '_decomp', cmp_, dec, eb] + dd
+    elif name in getattr(c, 'external', {}):
+        # A compressor described in external_compressors.json (see README): command templates.
+        spec = c.external[name]
+        dims = [str(x) for x in f['dims']]
+        sub = {'input': p, 'compressed': cmp_, 'output': dec, 'eb': eb, 'n': str(f['n']), 'threads': str(c.threads),
+               'dims': ' '.join(dims), 'dims_fast': ' '.join(reversed(dims)), 'ndims': str(len(dims)),
+               'd1': dims[0], 'd2': dims[1], 'd3': dims[2] if len(dims) == 3 else ''}
+        cc = shlex.split(spec['compress'].format(**sub))
+        dc = shlex.split(spec['decompress'].format(**sub))
     else:
         raise ValueError(name)
     env = {'OMP_NUM_THREADS': c.threads}
@@ -347,12 +362,16 @@ def baseline(c, name, f, abs_eb, logname):
         return {'status': 'compress_failed', 'note': first_error(out)}
     if name.startswith('lopc'):
         tc = num(r'encoding time:\s*([0-9.eE+-]+)', out) or tc
+    if name in getattr(c, 'external', {}) and c.external[name].get('compress_time_regex'):
+        tc = num(c.external[name]['compress_time_regex'], out) or tc
     rc, out, td = run(c, dc, logname, env)
     if rc != 0 or not os.path.exists(dec) or os.path.getsize(dec) != 4 * f['n']:
         cleanup(p, cmp_, dec)
         return {'status': 'decompress_failed', 'note': first_error(out)}
     if name.startswith('lopc'):
         td = num(r'decoding time:\s*([0-9.eE+-]+)', out) or td
+    if name in getattr(c, 'external', {}) and c.external[name].get('decompress_time_regex'):
+        td = num(c.external[name]['decompress_time_regex'], out) or td
     return {'status': 'ok', 'bytes': os.path.getsize(cmp_), 'comp_s': tc, 'decomp_s': td, 'output': dec,
             '_cleanup': [p, cmp_, dec]}
 
@@ -465,8 +484,15 @@ def context(a, need_gpu=False, need_compressors=None):
         if mode == 'on' and not have_gpu:
             sys.exit('--gpu on, but the CUDA programs or the GPU are not available')
     c.compressors = []
+    c.external = {}
+    ext = getattr(a, 'external', None) or os.path.join(c.bin, 'external_compressors.json')
+    if os.path.exists(ext):
+        import json
+        with open(ext) as fh:
+            c.external = {k: v for k, v in json.load(fh).items() if not k.startswith('_')}
     if need_compressors:
-        c.compressors = [x for x in need_compressors.split(',') if x in ('toposzp', 'szp') or os.access(c.tool(x), os.X_OK)]
+        want = need_compressors.split(',') + [x for x in c.external if x not in need_compressors.split(',')]
+        c.compressors = [x for x in want if x in ('toposzp', 'szp') or x in c.external or os.access(c.tool(x), os.X_OK)]
     c.stats = {}
     for sp in glob.glob(os.path.join(c.out, 'fstats*.csv')):   # value ranges cached by earlier / parallel jobs
         for r in csv.reader(open(sp)):

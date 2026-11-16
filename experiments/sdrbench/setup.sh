@@ -16,6 +16,7 @@
 #   topo_check                     axis-rule critical points: FN/FP/FT before/after, error
 #   pl_topo_check                  piecewise-linear (TTK) critical points, persistence
 #   fstats                         value range / max |value| of a float32 file
+#   quality_check                  PSNR and critical points with ties broken by index (any compressor)
 #   test_cuda_topology[_3d]        TopoSZp+ CUDA pipeline (if a GPU is present)
 #   sz3, sz (SZ2), zfp [, tthresh] baseline compressors
 #   lopc, lopc-gpu (+ _decomp)     LOPC, OpenMP and CUDA builds
@@ -48,6 +49,7 @@ run $CXX $FL $SRC "$HERE/tools/plain_szp.cc"                           -o "$BIN/
 run $CXX -O3 -fopenmp -ISZp/include example/topo_check.cc            -o "$BIN/topo_check"
 run $CXX -O3 -fopenmp -ISZp/include example/pl_topo_check.cc         -o "$BIN/pl_topo_check"
 run $CXX -O3 "$HERE/tools/fstats.cc"                                  -o "$BIN/fstats"
+run $CXX -O3 -fopenmp example/quality_check.cc                       -o "$BIN/quality_check"
 "$BIN/pl_topo_check" --selftest >> "$LOG" 2>&1 && say "   pl_topo_check selftest passed" || { say "   pl_topo_check selftest FAILED"; fail=1; }
 
 if [ "${NO_GPU:-0}" != 1 ] && command -v nvcc >/dev/null && nvidia-smi -L >/dev/null 2>&1; then
@@ -109,6 +111,9 @@ if [ "${NO_BASELINES:-0}" != 1 ]; then
     fi
   fi
   for c in sz3 sz zfp lopc lopc-gpu tthresh; do [ -x "$BIN/$c" ] && say "   $c: OK"; done
+  # Compressors without a public build recipe (TopoSZ, TopoA, ...): describe their
+  # command lines in $BIN/external_compressors.json (template written once, see README).
+  [ -f "$BIN/external_compressors.json" ] || cp "$HERE/external_compressors.example.json" "$BIN/external_compressors.json.example" 2>/dev/null
   # SZ2 and SZ3 binaries need their shared libraries at run time
   echo "export LD_LIBRARY_PATH=$BLD/inst/lib:$BLD/inst/lib64:\${LD_LIBRARY_PATH:-}" > "$BIN/env.sh"
 fi

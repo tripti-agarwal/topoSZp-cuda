@@ -32,7 +32,7 @@
 # Environment (all optional except DATA):
 #   DATA       data folder with manifest.csv (download_sdrbench.sh)
 #   PLAN       compact (default) or separate
-#   EXPS       experiments to submit (default: main,baselines,scaling,bitrate,pl,vis,ablation)
+#   EXPS       experiments to submit (default: main,baselines,scaling,bitrate,pl,vis,ablation,compare)
 #   DATASETS   datasets (default: all in the manifest)
 #   ACCOUNT    PBS account (default: SDR)          QUEUE    PBS queue (default: gpu)
 #   SELECT     resources (default: select=1:ngpus=1); SELECT_<JOB> overrides for one job,
@@ -53,7 +53,7 @@ DATA=$(cd "$DATA" && pwd)
 mkdir -p "$OUT"; OUT=$(cd "$OUT" && pwd)
 [ -f "$DATA/manifest.csv" ] || { echo "no $DATA/manifest.csv: run download_sdrbench.sh first"; exit 1; }
 PLAN=${PLAN:-compact}
-EXPS=${EXPS:-main,baselines,scaling,bitrate,pl,vis,ablation}
+EXPS=${EXPS:-main,baselines,scaling,bitrate,pl,vis,ablation,compare}
 ACCOUNT=${ACCOUNT:-SDR}; QUEUE=${QUEUE:-gpu}; SELECT=${SELECT:-select=1:ngpus=1}; PLACE=${PLACE:-}
 WALLTIME=${WALLTIME:-04:00:00}; OPTS=${OPTS:-}; DRYRUN=${DRYRUN:-0}
 WAIT=${WAIT:-0}; WAIT_MIN=${WAIT_MIN:-10}; FORCE=${FORCE:-0}; ME=${USER:-$(whoami)}
@@ -101,6 +101,7 @@ if [ "$PLAN" = compact ]; then
     has_exp pl      && o+=("pl|other-pl|--datasets $DATASETS")
     has_exp vis     && o+=("vis|other-vis|")
     has_exp ablation && o+=("ablation|other-ablation|--datasets $DATASETS")
+    has_exp compare && add_job compare 0 "compare|compare|--datasets $DATASETS"
     [ ${#o[@]} -gt 0 ] && add_job other 1 "${o[@]}"
 else
     for e in ${EXPS//,/ }; do
@@ -109,6 +110,7 @@ else
             baselines)    for d in "${DS[@]}"; do add_job "$e-$d" 0 "$e|$e-$d|--datasets $d --baseline-bounds $BASELINE_BOUNDS"; done ;;
             bitrate|pl|vis) add_job "$e" 0 "$e|$e|" ;;
             ablation)     add_job "$e" 1 "$e|$e|" ;;
+            compare)      add_job "$e" 0 "$e|$e|" ;;
             *) echo "unknown experiment $e"; exit 1 ;;
         esac
     done
