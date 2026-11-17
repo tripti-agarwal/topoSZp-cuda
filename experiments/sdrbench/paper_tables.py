@@ -34,7 +34,7 @@ SLUG = {'CESM-ATM-2D': 'cesm2d', 'CESM-ATM-3D': 'cesm3d', 'Hurricane': 'hurrican
 DOMAIN = {'CESM-ATM-2D': 'Climate', 'CESM-ATM-3D': 'Climate', 'Hurricane': 'Weather', 'NYX': 'Cosmology',
           'SCALE-LETKF': 'Weather'}
 COMP = OrderedDict([('toposzp', 'TopoSZp+'), ('szp', 'SZp'), ('sz3', 'SZ3'), ('sz', 'SZ2'), ('zfp', 'ZFP'),
-                    ('lopc', 'LOPC'), ('tthresh', 'TTHRESH')])   # lopc-gpu: same output as lopc, times only
+                    ('tthresh', 'TTHRESH')])   # LOPC is compared in its own table (compare.csv)
 NA = '--'
 
 def f(x):
@@ -335,6 +335,140 @@ def main():
 
     # bit-rate plots made by summarize.py (needs matplotlib)
     import glob, shutil
+    # ---------------------------------------------------------------- ablation (restoration steps, GPU time)
+    ab = [r for r in read_results(R, 'ablation') if r['status'] == 'ok']
+    if ab:
+        rows_a, rows_g = [], []
+        sm = lambda g, k: sum(f(r.get(k)) or 0.0 for r in g)
+        for d in [x for x in datasets if any(r['dataset'] == x for r in ab)]:
+            g = by_ds(ab, d)
+            lost = sm(g, 'saddles_lost') or None
+            share = lambda k: 100.0 * sm(g, k) / lost if lost else None
+            cpu = {k: sm(g, 'cpu_%s_s' % k) for k in ('setup', 'extrema', 'stencil', 'rbf', 'move', 'finish')}
+            ct = sum(cpu.values()) or None
+            cs = lambda *ks: 100.0 * sum(cpu[k] for k in ks) / ct if ct else None
+            rows_a.append(' & '.join([nm(d), num(share('by_stencil')), num(share('by_rbf')), num(share('by_move')),
+                                      num(share('saddles_lost_after')), num(cs('extrema'), 0), num(cs('stencil'), 0),
+                                      num(cs('rbf'), 0), num(cs('move'), 0), num(cs('setup', 'finish'), 0)]) + ' \\\\')
+            for k, v in (('stencil', share('by_stencil')), ('rbf', share('by_rbf')), ('move', share('by_move')),
+                         ('left', share('saddles_lost_after'))):
+                N.set('abl-sad-%s-%s' % (k, sl(d)), num(v))
+            for k in ('extrema', 'stencil', 'rbf', 'move'):
+                N.set('abl-cpu-%s-%s' % (k, sl(d)), num(cs(k), 0))
+            N.set('abl-cpu-restore-share-' + sl(d), num(100.0 * ct / sm(g, 'cpu_decomp_s') if ct and sm(g, 'cpu_decomp_s') else None, 0))
+            gg = [r for r in g if f(r.get('gpu_comp_s'))]
+            if gg:
+                gc = {k: sm(gg, 'gc_%s_s' % k) for k in ('check', 'upload', 'detect', 'rank', 'rankstream', 'encode')}
+                gd = {k: sm(gg, 'gd_%s_s' % k) for k in ('decode', 'ranks', 'restore')}
+                gr = {k: sm(gg, 'gr_%s_s' % k) for k in ('setup', 'extrema', 'stencil', 'rbf', 'move', 'finish')}
+                gct, gdt = sum(gc.values()), sum(gd.values())
+                p_ = lambda x, t: 100.0 * x / t if t else None
+                kern = gc['detect'] + gc['rank'] + gc['rankstream']
+                steps = gr['setup'] + gr['extrema'] + gr['stencil'] + gr['rbf'] + gr['move']
+                other = gd['restore'] - steps - gr['finish'] + gd['ranks']     # allocation, rank decoding
+                xc = sm(gg, 'gpu_stepwise_comp_s') / sm(gg, 'gpu_comp_s')
+                xd = sm(gg, 'gpu_stepwise_decomp_s') / sm(gg, 'gpu_decomp_s')
+                rows_g.append(' & '.join([nm(d), num(p_(gc['upload'], gct), 0), num(p_(kern, gct), 0), num(p_(gc['encode'], gct), 0),
+                                          num(p_(gc['check'], gct), 0), times(xc),
+                                          num(p_(gd['decode'], gdt), 0), num(p_(steps, gdt), 0), num(p_(gr['finish'], gdt), 0),
+                                          num(p_(other, gdt), 0), times(xd)]) + ' \\\\')
+                for k, v in (('upload', p_(gc['upload'], gct)), ('kernels', p_(kern, gct)), ('encode', p_(gc['encode'], gct)),
+                             ('check', p_(gc['check'], gct))):
+                    N.set('abl-gc-%s-%s' % (k, sl(d)), num(v, 0))
+                for k, v in (('decode', p_(gd['decode'], gdt)), ('steps', p_(steps, gdt)), ('copy', p_(gr['finish'], gdt)),
+                             ('move', p_(gr['move'], gdt))):
+                    N.set('abl-gd-%s-%s' % (k, sl(d)), num(v, 0))
+                N.set('abl-onecall-comp-' + sl(d), num(xc, 1)); N.set('abl-onecall-decomp-' + sl(d), num(xd, 1))
+        N.set('abl-fields', '%d' % max(len(by_ds(ab, d)) for d in datasets if by_ds(ab, d)))
+        v = [float(N.d[k]) for k in N.d if k.startswith('abl-onecall-comp-')]
+        if v:
+            N.set('abl-onecall-comp-min', num(min(v), 1)); N.set('abl-onecall-comp-max', num(max(v), 1))
+            v = [float(N.d[k]) for k in N.d if k.startswith('abl-onecall-decomp-') and not k.endswith(('min', 'max'))]
+            N.set('abl-onecall-decomp-min', num(min(v), 1)); N.set('abl-onecall-decomp-max', num(max(v), 1))
+        with open(os.path.join(out, 'ablation.tex'), 'w') as fh:
+            fh.write(tabular('@{}lrrrrrrrrr@{}', [
+                ' & \\multicolumn{4}{c}{\\textbf{Lost saddles (\\%)}} & \\multicolumn{5}{c}{\\textbf{CPU restoration time (\\%)}} \\\\',
+                '\\cmidrule(lr){2-5}\\cmidrule(lr){6-10}',
+                '\\textbf{Dataset} & \\textbf{Stencil} & \\textbf{RBF} & \\textbf{Move} & \\textbf{Left} & \\textbf{Extr.} & '
+                '\\textbf{Stencil} & \\textbf{RBF} & \\textbf{Move} & \\textbf{Other} \\\\'], rows_a))
+        if rows_g:
+            with open(os.path.join(out, 'gpu_breakdown.tex'), 'w') as fh:
+                fh.write(tabular('@{}lrrrrrrrrrr@{}', [
+                    ' & \\multicolumn{5}{c}{\\textbf{GPU compression}} & \\multicolumn{5}{c}{\\textbf{GPU decompression}} \\\\',
+                    '\\cmidrule(lr){2-6}\\cmidrule(lr){7-11}',
+                    '\\textbf{Dataset} & \\textbf{Upl.} & \\textbf{Kern.} & \\textbf{Enc.} & \\textbf{Chk.} & \\textbf{vs.\\ sep.} & '
+                    '\\textbf{Dec.} & \\textbf{Rest.} & \\textbf{Copy} & \\textbf{Other} & \\textbf{vs.\\ sep.} \\\\'], rows_g))
+
+    # ---------------------------------------------------------------- comparison with topology-preserving compressors
+    cp = [r for r in read_results(R, 'compare') if r['status'] == 'ok']
+    if cp:
+        CL = OrderedDict([('toposzp', 'TopoSZp+'), ('szp', 'SZp'), ('sz3', 'SZ3'), ('zfp', 'ZFP'), ('lopc', 'LOPC')])
+        ext = sorted({r['compressor'] for r in cp} - set(CL) - {'lopc-gpu'})
+        for x in ext:
+            CL[x] = x
+        for mode, eb in sorted({(r['mode'], r['eb']) for r in cp}):
+            tag = bslug((mode, float(eb)))
+            rows = []
+            for d in [x for x in datasets if any(r['dataset'] == x for r in cp)]:
+                g = [r for r in by_ds(cp, d) if r['mode'] == mode and r['eb'] == eb]
+                have = [c for c in list(CL) + ['lopc-gpu'] if any(r['compressor'] == c for r in g)]
+                if not have:
+                    continue
+                common = set.intersection(*[{r['field'] for r in g if r['compressor'] == c} for c in have])
+                first = True
+                for c in have:
+                    v = [r for r in g if r['compressor'] == c and r['field'] in common]
+                    if not v:
+                        continue
+                    n = len(v)
+                    s_ = lambda k: sum(f(r.get(k)) or 0.0 for r in v)
+                    orig = s_('max_orig') + s_('min_orig') + s_('sad_orig')
+                    kept = s_('max_kept') + s_('min_kept') + s_('sad_kept')
+                    gb = sum(4.0 * f(r['n']) for r in v) / 1e9
+                    ps = [f(r['psnr']) for r in v if r['psnr'] not in ('', 'inf', 'nan')]
+                    plv = [r for r in v if r.get('pl_saddles')]
+                    pers = [f(r['pl_saddles_pers_ge_2eb_kept_pct']) for r in plv if (f(r['pl_saddles_pers_ge_2eb_kept_pct']) or -1) >= 0]
+                    val = {'bits': mean([f(r['bitrate']) for r in v]), 'psnr': mean(ps), 'err': max(f(r['err']) for r in v),
+                           'kept': pct(kept, orig), 'fp': (s_('FP') + s_('FT')) / n / 1000.0,
+                           'tbkept': pct(s_('tb_kept'), s_('tb_orig')), 'tbfp': (s_('tb_FP') + s_('tb_FT')) / n / 1000.0,
+                           'plext': mean([f(r['pl_extrema_kept_pct']) for r in plv]),
+                           'plsad': mean([f(r['pl_saddles_kept_pct']) for r in plv]), 'plpers': mean(pers),
+                           'plfp': mean([f(r['pl_FP']) + f(r['pl_FT']) for r in plv]),
+                           'comp': gb / s_('comp_s') if s_('comp_s') else None, 'decomp': gb / s_('decomp_s') if s_('decomp_s') else None}
+                    for k, p_ in (('bits', 2), ('psnr', 1), ('err', 2), ('kept', 1), ('fp', 1), ('tbkept', 1), ('tbfp', 1),
+                                  ('plext', 1), ('plsad', 1), ('plpers', 1), ('comp', 3), ('decomp', 2)):
+                        N.set('cmp-%s-%s-%s-%s' % (k, c, sl(d), tag), num(val[k], p_))
+                    if val['plfp'] is not None:
+                        N.set('cmp-plfp-%s-%s-%s' % (c, sl(d), tag), num(val['plfp'] / 1000.0, 0))
+                    if c == 'lopc-gpu':
+                        continue                      # same output as lopc; only its times are used (numbers.tex)
+                    rows.append(' & '.join([('\\multirow{%d}{*}{%s}' % (len([x for x in have if x != 'lopc-gpu']), nm(d))) if first else '',
+                                            CL[c], num(val['bits'], 2), num(val['psnr'], 1), num(val['kept'], 1), num(val['fp'], 1),
+                                            num(val['tbkept'], 1), num(val['tbfp'], 1), num(val['plsad'], 1), num(val['plpers'], 1),
+                                            num(val['comp'], 3), num(val['decomp'], 2)]) + ' \\\\')
+                    first = False
+                    N.set('cmp-fields-%s-%s' % (sl(d), tag), '%d' % n)
+                rows.append('\\addlinespace[2pt]')
+            if rows and rows[-1].startswith('\\addlinespace'):
+                rows.pop()
+            # smallest / largest value over the datasets (all, and the 3D ones) for the text
+            for k in ('bits', 'psnr', 'err', 'kept', 'fp', 'tbkept', 'tbfp', 'plext', 'plsad', 'plpers', 'plfp', 'comp', 'decomp'):
+                for c in list(CL) + ['lopc-gpu']:
+                    for suffix, dss in (('', datasets), ('3d', [x for x in datasets if x != 'CESM-ATM-2D'])):
+                        raw = [N.d.get('cmp-%s-%s-%s-%s' % (k, c, sl(x), tag)) for x in dss]
+                        v = [float(x.replace('{,}', '')) for x in raw if x and x != NA]
+                        if v:
+                            p_ = 3 if k == 'comp' else (2 if k in ('bits', 'err', 'decomp') else (0 if k == 'plfp' else 1))
+                            N.set('cmp-%s-%s-min%s-%s' % (k, c, suffix, tag), num(min(v), p_))
+                            N.set('cmp-%s-%s-max%s-%s' % (k, c, suffix, tag), num(max(v), p_))
+            with open(os.path.join(out, 'compare_%s.tex' % tag), 'w') as fh:
+                fh.write(tabular('@{}llrrrrrrrrrr@{}', [
+                    ' & & & & \\multicolumn{2}{c}{\\textbf{Strict}} & \\multicolumn{2}{c}{\\textbf{Tie-broken}} & '
+                    '\\multicolumn{2}{c}{\\textbf{PL saddles (\\%)}} & \\multicolumn{2}{c}{\\textbf{CPU GB/s}} \\\\',
+                    '\\cmidrule(lr){5-6}\\cmidrule(lr){7-8}\\cmidrule(lr){9-10}\\cmidrule(lr){11-12}',
+                    '\\textbf{Dataset} & \\textbf{Compressor} & \\textbf{Bits} & \\textbf{PSNR} & \\textbf{Kept\\,\\%} & \\textbf{FP+FT} & '
+                    '\\textbf{Kept\\,\\%} & \\textbf{FP+FT} & \\textbf{All} & \\textbf{Pers.} & \\textbf{Comp.} & \\textbf{Dec.} \\\\'], rows))
+
     # ---- equal-bit-rate curve (summarize.py writes plots/bitrate_curves.csv): numbers quoted in the text
     curve = os.path.join(R, 'plots', 'bitrate_curves.csv')
     if os.path.exists(curve):
